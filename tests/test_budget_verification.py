@@ -93,15 +93,15 @@ def test_program_distribution(budget_data):
 def test_grand_total_consistency(budget_data):
     """Test that grand total matches sum of all totals."""
     year, df = budget_data
-    
+
     # Read grand total from file
     grand_total_path = Path(f"output/{year}/grand_total.txt")
     assert grand_total_path.exists(), f"{year}: Grand total file not found"
-    
-    with open(grand_total_path, 'r') as f:
+
+    with open(grand_total_path, "r") as f:
         content = f.read()
         grand_total = float(content.split(":")[1].strip())
-    
+
     # Calculate all types of totals (rounded to 2 decimal places)
     state_body_sum = round(
         df.drop_duplicates(subset="state_body")["state_body_total"].sum(),
@@ -113,22 +113,25 @@ def test_grand_total_consistency(budget_data):
     )
     subprogram_sum = round(df["subprogram_total"].sum(), 2)
     grand_total = round(grand_total, 2)
-    
+
     # Compare grand total with each type of sum
-    assert grand_total == state_body_sum, (
-        f"{year}: Grand total ({grand_total}) doesn't match "
-        f"sum of state body totals ({state_body_sum})"
-    )
-    
-    assert grand_total == program_sum, (
-        f"{year}: Grand total ({grand_total}) doesn't match "
-        f"sum of program totals ({program_sum})"
-    )
-    
-    assert grand_total == subprogram_sum, (
-        f"{year}: Grand total ({grand_total}) doesn't match "
-        f"sum of subprogram totals ({subprogram_sum})"
-    )
+    if grand_total != state_body_sum:
+        error_msg = (
+            f"{year}: Grand total ({grand_total}) differs from state body totals ({state_body_sum}) by {grand_total - state_body_sum}"
+        )
+        raise AssertionError(error_msg)
+
+    if grand_total != program_sum:
+        error_msg = (
+            f"{year}: Grand total ({grand_total}) differs from program totals ({program_sum}) by {grand_total - program_sum}"
+        )
+        raise AssertionError(error_msg)
+
+    if grand_total != subprogram_sum:
+        error_msg = (
+            f"{year}: Grand total ({grand_total}) differs from subprogram totals ({subprogram_sum}) by {grand_total - subprogram_sum}"
+        )
+        raise AssertionError(error_msg)
 
 
 def test_state_body_total_consistency(budget_data):
@@ -137,6 +140,9 @@ def test_state_body_total_consistency(budget_data):
     
     # For each state body
     state_bodies = df["state_body"].unique()
+    mismatches_program = []
+    mismatches_subprogram = []
+    
     for state_body in state_bodies:
         state_body_data = df[df["state_body"] == state_body]
         
@@ -160,74 +166,146 @@ def test_state_body_total_consistency(budget_data):
             2
         )
         
-        # Compare totals
-        assert state_body_total == program_sum, (
-            f"{year}: State body '{state_body}' total ({state_body_total}) "
-            f"doesn't match sum of its program totals ({program_sum})"
-        )
+        # Collect mismatches
+        if state_body_total != program_sum:
+            mismatches_program.append({
+                "state_body": state_body,
+                "total": state_body_total,
+                "program_sum": program_sum,
+                "difference": state_body_total - program_sum
+            })
+            
+        if state_body_total != subprogram_sum:
+            mismatches_subprogram.append({
+                "state_body": state_body,
+                "total": state_body_total,
+                "subprogram_sum": subprogram_sum,
+                "difference": state_body_total - subprogram_sum
+            })
+    
+    # Raise error with summary first if there are any mismatches
+    if mismatches_program or mismatches_subprogram:
+        error_msg = f"{year}: Found mismatches in {len(mismatches_program)} state bodies for program totals and {len(mismatches_subprogram)} for subprogram totals"
         
-        assert state_body_total == subprogram_sum, (
-            f"{year}: State body '{state_body}' total ({state_body_total}) "
-            f"doesn't match sum of its subprogram totals ({subprogram_sum})"
-        )
+        if mismatches_program:
+            total_difference = sum(m["difference"] for m in mismatches_program)
+            error_msg += (
+                f"\n\nProgram total mismatches (total difference: {total_difference}):"
+                f"\nState Body | Total | Program Sum | Difference"
+            )
+            for m in mismatches_program:
+                error_msg += f"\n{m['state_body']} | {m['total']} | {m['program_sum']} | {m['difference']}"
+                
+        if mismatches_subprogram:
+            total_difference = sum(m["difference"] for m in mismatches_subprogram)
+            error_msg += (
+                f"\n\nSubprogram total mismatches (total difference: {total_difference}):"
+                f"\nState Body | Total | Subprogram Sum | Difference"
+            )
+            for m in mismatches_subprogram:
+                error_msg += f"\n{m['state_body']} | {m['total']} | {m['subprogram_sum']} | {m['difference']}"
+        
+        raise AssertionError(error_msg)
 
 
 def test_program_total_consistency(budget_data):
     """Test that program totals match sum of their subprograms."""
     year, df = budget_data
-    
+
     # Group subprograms by state body and program
     subprogram_sums = (
         df.groupby(["state_body", "program_code"])["subprogram_total"]
         .sum()
         .reset_index()
+        .rename(columns={"subprogram_total": "sum_of_subprograms"})
     )
-    
+
     # Get program totals
     program_totals = df.drop_duplicates(subset=["state_body", "program_code"])[
-        ["state_body", "program_code", "program_total"]
+        [
+            "state_body",
+            "program_code",
+            "program_total",
+            "program_name",
+        ]  # Added program_name
     ]
-    
+
     # Merge and check for mismatches
     merged = subprogram_sums.merge(
-        program_totals, 
-        on=["state_body", "program_code"]
+        program_totals, on=["state_body", "program_code"]
     )
-    
+
     mismatches = merged[
-        round(merged["subprogram_total"], 2) != round(merged["program_total"], 2)
+        round(merged["sum_of_subprograms"], 2)
+        != round(merged["program_total"], 2)
     ]
-    
-    assert len(mismatches) == 0, (
-        f"{year}: Found mismatches between program totals and their subprogram sums:\n"
-        f"{mismatches.to_string()}"
-    )
+
+    if len(mismatches) > 0:
+        total_difference = round(
+            mismatches["program_total"].sum() - mismatches["sum_of_subprograms"].sum(),
+            2
+        )
+        
+        # Add difference column for clarity
+        mismatches["difference"] = round(
+            mismatches["program_total"] - mismatches["sum_of_subprograms"], 
+            2
+        )
+        
+        # Get subprogram details for mismatched programs
+        error_details = []
+        for _, row in mismatches.iterrows():
+            subprograms = df[
+                (df["state_body"] == row["state_body"]) & 
+                (df["program_code"] == row["program_code"])
+            ][["subprogram_code", "subprogram_name", "subprogram_total"]]
+            
+            error_details.append(
+                f"\n\nState Body: {row['state_body']}"
+                f"\nProgram: {row['program_code']} - {row['program_name']}"
+                f"\nProgram Total: {row['program_total']}"
+                f"\nSum of Subprograms: {row['sum_of_subprograms']}"
+                f"\nDifference: {row['difference']}"
+                f"\nSubprograms:"
+                f"\n{subprograms.to_string()}"
+            )
+        
+        error_msg = (
+            f"{year}: Found {len(mismatches)} programs with total difference of {total_difference}"
+            f"{''.join(error_details)}"
+        )
+        raise AssertionError(error_msg)
 
 
 def test_data_quality(budget_data):
     """Test data quality (null values, empty strings, negative values warnings)."""
     year, df = budget_data
-    
+
     required_columns = [
-        "state_body", "state_body_total",
-        "program_code", "program_name", "program_total",
-        "subprogram_code", "subprogram_name", "subprogram_total"
+        "state_body",
+        "state_body_total",
+        "program_code",
+        "program_name",
+        "program_total",
+        "subprogram_code",
+        "subprogram_name",
+        "subprogram_total",
     ]
-    
+
     for column in required_columns:
         # Check for null values
         null_count = df[column].isnull().sum()
-        assert null_count == 0, (
-            f"{year}: Found {null_count} null values in column '{column}'"
-        )
-        
+        assert (
+            null_count == 0
+        ), f"{year}: Found {null_count} null values in column '{column}'"
+
         # Check for empty strings in text columns
         if df[column].dtype == "object":
             empty_count = (df[column].str.strip() == "").sum()
-            assert empty_count == 0, (
-                f"{year}: Found {empty_count} empty strings in column '{column}'"
-            )
-        
+            assert (
+                empty_count == 0
+            ), f"{year}: Found {empty_count} empty strings in column '{column}'"
+
         # Warn about negative values in total columns
         if column in ["state_body_total", "program_total", "subprogram_total"]:
             negative_rows = df[df[column] < 0]
