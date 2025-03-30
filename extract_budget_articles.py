@@ -426,6 +426,7 @@ def flatten_budget_excel(excel_path: str) -> tuple[pd.DataFrame, float]:
 
 # Define file paths and corresponding years
 budget_files = {
+    2019: "raw_data/budget_laws/2019/Orenqi havelvacner_Excel/2.Հավելված N1 աղյուսակ N2 ծախսերն ըստ ծրագրերի և միջոցառումների.xls",
     2020: "raw_data/budget_laws/2020/2.1.Havelvacner_Orenq/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xlsx",
     2021: "raw_data/budget_laws/2021/Orenqo havelvacner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
     2022: "raw_data/budget_laws/2022/1.1.ORENQI_HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
