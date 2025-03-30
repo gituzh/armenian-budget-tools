@@ -344,7 +344,7 @@ def flatten_budget_excel(excel_path: str) -> tuple[pd.DataFrame, float]:
         # B. Detect and store a new program row
         #    - column 1 is numeric (program code)
         #    - columns 3–6 are all non-empty
-        if is_numeric(c1) and all([c3, c4, c5, c6]):
+        if not c0 and c1 and is_numeric(c1) and all([c3, c4, c6]):
             current_program_code = c1
             current_program_name = c3
             current_program_goal = c4
@@ -355,7 +355,7 @@ def flatten_budget_excel(excel_path: str) -> tuple[pd.DataFrame, float]:
         # C. Detect a subprogram row
         #    - column 2 contains a dash (e.g. "1154 - 11001")
         #    - columns 3–6 are all non-empty
-        if "-" in c2 and all([c3, c4, c5, c6]):
+        if not c0 and not c1 and c2 and "-" in c2 and all([c3, c4, c5, c6]):
             try:
                 subprogram_total = float(c6)
             except ValueError:
