@@ -1,7 +1,8 @@
 import re
+import logging
+import os
 import pandas as pd
 from tqdm import tqdm
-import logging
 
 # Configure logging
 logging.basicConfig(
@@ -407,116 +408,50 @@ def flatten_budget_excel(excel_path: str) -> tuple[pd.DataFrame, float]:
     return result_df, grand_total
 
 
-################################################################################
-# 2023
-################################################################################    
+# Define file paths and corresponding years
+budget_files = {
+    2020: "raw_data/budget_laws/2020/2.1.Havelvacner_Orenq/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xlsx",
+    2021: "raw_data/budget_laws/2021/Orenqo havelvacner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    2022: "raw_data/budget_laws/2022/1.1.ORENQI_HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    2023: "raw_data/budget_laws/2023/1.1.ORENQI HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    2024: "raw_data/budget_laws/2024/ORENQ HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների+.xls",
+    2025: "raw_data/budget_laws/2025/օրենքի հավելվածներ/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+}
 
-df_2023, grand_total_2023 = flatten_budget_excel_2024(
-    "raw_data/budget_laws/2023/1.1.ORENQI HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls"
-)
+# Process each year
+for year, file_path in budget_files.items():
+    logger.info(f"\nProcessing year {year}")
 
-# Info
-logger.info(df_2023.info())
+    # Choose appropriate function based on year
+    if year == 2025:
+        flatten_func = flatten_budget_excel
+    else:
+        flatten_func = flatten_budget_excel_2024
 
-# Get the number of unique program codes and program names
-logger.info(
-    "Number of unique program codes: %d", len(df_2023["program_code"].unique())
-)
+    # Process the file
+    df, grand_total = flatten_func(file_path)
 
-logger.info(
-    "Number of unique program names: %d", len(df_2023["program_name"].unique())
-)
+    # Log information
+    logger.info(df.info())
+    logger.info(
+        "Number of unique program codes: %d", len(df["program_code"].unique())
+    )
+    logger.info(
+        "Number of unique program names: %d", len(df["program_name"].unique())
+    )
+    logger.info(f"Grand total ({year}): {grand_total}")
 
-# Grand total
-logger.info("Grand total (2023): %s", grand_total_2023)
+    # Create output directory if it doesn't exist
+    output_dir = f"output/{year}"
+    os.makedirs(output_dir, exist_ok=True)
 
-# Save to CSV
-df_2023.to_csv(
-    "output/2023/budget_by_program_and_subprogram.csv",
-    index=False,
-    encoding="utf-8-sig",
-)
+    # Save to CSV
+    df.to_csv(
+        f"{output_dir}/budget_by_program_and_subprogram.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
 
-# Save grand total
-with open("output/2023/grand_total.txt", "w") as f:
-    f.write(f"Grand total: {grand_total_2023}")
-
-
-################################################################################
-# 2024
-################################################################################
-
-df_2024, grand_total_2024 = flatten_budget_excel_2024(
-    "raw_data/budget_laws/2024/ORENQ HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների+.xls"
-)
-
-# Info
-logger.info(df_2024.info())
-
-# Get the number of unique program codes and program names
-logger.info(
-    "Number of unique program codes: %d", len(df_2024["program_code"].unique())
-)
-logger.info(
-    "Number of unique program names: %d", len(df_2024["program_name"].unique())
-)
-
-# Grand total
-logger.info("Grand total (2024): %s", grand_total_2024)
-
-
-df_2024.to_csv(
-    "output/2024/budget_by_program_and_subprogram.csv",
-    index=False,
-    encoding="utf-8-sig",
-)
-
-# Save grand total
-with open("output/2024/grand_total.txt", "w") as f:
-    f.write(f"Grand total: {grand_total_2024}")
-
-
-################################################################################
-# 2025
-################################################################################
-
-# Run the function
-df, grand_total = flatten_budget_excel(
-    "raw_data/budget_laws/2025/օրենքի հավելվածներ/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx"
-)
-
-
-df.info()
-
-# Print total for verification
-logger.info("Grand total from 'ԸՆԴԱՄԵՆԸ': %s AMD", f"{grand_total:,.2f}")
-
-# Get the number of unique program codes and program names
-logger.info(
-    "Number of unique program codes: %d", len(df["program_code"].unique())
-)
-logger.info(
-    "Number of unique program names: %d", len(df["program_name"].unique())
-)
-
-# Save to CSV
-df.to_csv(
-    "output/2025/budget_by_program_and_subprogram.csv",
-    index=False,
-    encoding="utf-8-sig",
-)
-
-# Save grand total
-with open("output/2025/grand_total.txt", "w") as f:
-    f.write(f"Grand total: {grand_total}")
-
-df["state_body_total"].sum()
-
-df["program_total"].sum()
-
-df["subprogram_total"].sum()
-
-df[df["program_code"] == "1162"]["subprogram_total"].sum()
-
-
-df[df["subprogram_code"] == "1220 - 11001"]["subprogram_total"].sum()
+    # Save grand total
+    with open(f"{output_dir}/grand_total.txt", "w") as f:
+        f.write(f"Grand total: {grand_total}")
