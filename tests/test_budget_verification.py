@@ -116,77 +116,69 @@ def test_grand_total_consistency(budget_data):
 
     # Compare grand total with each type of sum
     if grand_total != state_body_sum:
-        error_msg = (
-            f"{year}: Grand total ({grand_total}) differs from state body totals ({state_body_sum}) by {grand_total - state_body_sum}"
-        )
+        error_msg = f"{year}: Grand total ({grand_total}) differs from state body totals ({state_body_sum}) by {grand_total - state_body_sum}"
         raise AssertionError(error_msg)
 
     if grand_total != program_sum:
-        error_msg = (
-            f"{year}: Grand total ({grand_total}) differs from program totals ({program_sum}) by {grand_total - program_sum}"
-        )
+        error_msg = f"{year}: Grand total ({grand_total}) differs from program totals ({program_sum}) by {grand_total - program_sum}"
         raise AssertionError(error_msg)
 
     if grand_total != subprogram_sum:
-        error_msg = (
-            f"{year}: Grand total ({grand_total}) differs from subprogram totals ({subprogram_sum}) by {grand_total - subprogram_sum}"
-        )
+        error_msg = f"{year}: Grand total ({grand_total}) differs from subprogram totals ({subprogram_sum}) by {grand_total - subprogram_sum}"
         raise AssertionError(error_msg)
 
 
 def test_state_body_total_consistency(budget_data):
     """Test that state body totals match sum of their programs and subprograms."""
     year, df = budget_data
-    
+
     # For each state body
     state_bodies = df["state_body"].unique()
     mismatches_program = []
     mismatches_subprogram = []
-    
+
     for state_body in state_bodies:
         state_body_data = df[df["state_body"] == state_body]
-        
+
         # Get state body total
-        state_body_total = round(
-            state_body_data["state_body_total"].iloc[0],
-            2
-        )
-        
+        state_body_total = round(state_body_data["state_body_total"].iloc[0], 2)
+
         # Calculate sum of programs for this state body
         program_sum = round(
-            state_body_data.drop_duplicates(
-                subset="program_code"
-            )["program_total"].sum(),
-            2
+            state_body_data.drop_duplicates(subset="program_code")[
+                "program_total"
+            ].sum(),
+            2,
         )
-        
+
         # Calculate sum of subprograms for this state body
-        subprogram_sum = round(
-            state_body_data["subprogram_total"].sum(),
-            2
-        )
-        
+        subprogram_sum = round(state_body_data["subprogram_total"].sum(), 2)
+
         # Collect mismatches
         if state_body_total != program_sum:
-            mismatches_program.append({
-                "state_body": state_body,
-                "total": state_body_total,
-                "program_sum": program_sum,
-                "difference": state_body_total - program_sum
-            })
-            
+            mismatches_program.append(
+                {
+                    "state_body": state_body,
+                    "total": state_body_total,
+                    "program_sum": program_sum,
+                    "difference": state_body_total - program_sum,
+                }
+            )
+
         if state_body_total != subprogram_sum:
-            mismatches_subprogram.append({
-                "state_body": state_body,
-                "total": state_body_total,
-                "subprogram_sum": subprogram_sum,
-                "difference": state_body_total - subprogram_sum
-            })
-    
+            mismatches_subprogram.append(
+                {
+                    "state_body": state_body,
+                    "total": state_body_total,
+                    "subprogram_sum": subprogram_sum,
+                    "difference": state_body_total - subprogram_sum,
+                }
+            )
+
     # Raise error with summary first if there are any mismatches
     if mismatches_program or mismatches_subprogram:
         error_msg = f"{year}: Found mismatches in {len(mismatches_program)} state bodies for program totals and {len(mismatches_subprogram)} for subprogram totals"
-        
+
         if mismatches_program:
             total_difference = sum(m["difference"] for m in mismatches_program)
             error_msg += (
@@ -195,16 +187,18 @@ def test_state_body_total_consistency(budget_data):
             )
             for m in mismatches_program:
                 error_msg += f"\n{m['state_body']} | {m['total']} | {m['program_sum']} | {m['difference']}"
-                
+
         if mismatches_subprogram:
-            total_difference = sum(m["difference"] for m in mismatches_subprogram)
+            total_difference = sum(
+                m["difference"] for m in mismatches_subprogram
+            )
             error_msg += (
                 f"\n\nSubprogram total mismatches (total difference: {total_difference}):"
                 f"\nState Body | Total | Subprogram Sum | Difference"
             )
             for m in mismatches_subprogram:
                 error_msg += f"\n{m['state_body']} | {m['total']} | {m['subprogram_sum']} | {m['difference']}"
-        
+
         raise AssertionError(error_msg)
 
 
@@ -242,24 +236,24 @@ def test_program_total_consistency(budget_data):
 
     if len(mismatches) > 0:
         total_difference = round(
-            mismatches["program_total"].sum() - mismatches["sum_of_subprograms"].sum(),
-            2
+            mismatches["program_total"].sum()
+            - mismatches["sum_of_subprograms"].sum(),
+            2,
         )
-        
+
         # Add difference column for clarity
         mismatches["difference"] = round(
-            mismatches["program_total"] - mismatches["sum_of_subprograms"], 
-            2
+            mismatches["program_total"] - mismatches["sum_of_subprograms"], 2
         )
-        
+
         # Get subprogram details for mismatched programs
         error_details = []
         for _, row in mismatches.iterrows():
             subprograms = df[
-                (df["state_body"] == row["state_body"]) & 
-                (df["program_code"] == row["program_code"])
+                (df["state_body"] == row["state_body"])
+                & (df["program_code"] == row["program_code"])
             ][["subprogram_code", "subprogram_name", "subprogram_total"]]
-            
+
             error_details.append(
                 f"\n\nState Body: {row['state_body']}"
                 f"\nProgram: {row['program_code']} - {row['program_name']}"
@@ -269,7 +263,7 @@ def test_program_total_consistency(budget_data):
                 f"\nSubprograms:"
                 f"\n{subprograms.to_string()}"
             )
-        
+
         error_msg = (
             f"{year}: Found {len(mismatches)} programs with total difference of {total_difference}"
             f"{''.join(error_details)}"
@@ -316,3 +310,38 @@ def test_data_quality(budget_data):
                     f"\n{negative_rows[['state_body', 'program_code', 'subprogram_code', column]].to_string()}"
                 )
                 warnings.warn(warning_msg, UserWarning)
+
+
+def test_program_codes_format(budget_data):
+    """Test that program and subprogram codes are integers and properly formatted."""
+    year, df = budget_data
+
+    # Check program_code is integer
+    assert df["program_code"].dtype in [
+        "int64",
+        "int32",
+    ], f"{year}: program_code should be integer type, found {df['program_code'].dtype}"
+
+    # Check subprogram_code is integer
+    assert df["subprogram_code"].dtype in [
+        "int64",
+        "int32",
+    ], f"{year}: subprogram_code should be integer type, found {df['subprogram_code'].dtype}"
+
+    # For 2025, verify program_code_ext
+    if year == 2025:
+        assert (
+            "program_code_ext" in df.columns
+        ), f"{year}: program_code_ext column is missing"
+
+        assert df["program_code_ext"].dtype in [
+            "int64",
+            "int32",
+        ], f"{year}: program_code_ext should be integer type, found {df['program_code_ext'].dtype}"
+
+        # Verify program_code matches program_code_ext
+        mismatches = df[df["program_code"] != df["program_code_ext"]]
+        assert len(mismatches) == 0, (
+            f"{year}: Found {len(mismatches)} rows where program_code doesn't match program_code_ext:\n"
+            f"{mismatches[['program_code', 'program_code_ext', 'subprogram_code']].head()}"
+        )

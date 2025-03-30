@@ -49,7 +49,7 @@ def flatten_budget_excel_2024(excel_path: str) -> tuple[pd.DataFrame, float]:
         try:
             float(val)
             return True
-        except:
+        except ValueError:
             return False
 
     # 2. Locate "ԸՆԴԱՄԵՆԸ" row in col2; grand total is in col3.
@@ -116,8 +116,12 @@ def flatten_budget_excel_2024(excel_path: str) -> tuple[pd.DataFrame, float]:
         if not in_subprogram_block:
             # If col0 is non-empty and numeric and col3 is numeric, it's a new program.
             if col0 and is_numeric(col0) and is_numeric(col3):
-                current_program_code = col0
-                current_program_total = float(col3)
+                try:
+                    current_program_code = int(float(col0))  # Convert to int
+                    current_program_total = float(col3)
+                except ValueError:
+                    logger.warning("Skipping program row due to invalid program code")
+                    continue
                 # Look ahead to collect extra program details from rows with empty col0.
                 prog_name = ""
                 prog_goal = ""
@@ -168,8 +172,12 @@ def flatten_budget_excel_2024(excel_path: str) -> tuple[pd.DataFrame, float]:
         if in_subprogram_block:
             # A subprogram row is detected if col1 is non-empty and numeric and col3 is numeric.
             if col1 and is_numeric(col1) and is_numeric(col3):
-                subprogram_code = col1
-                subprogram_total = float(col3)
+                try:
+                    subprogram_code = int(float(col1))  # Convert to int
+                    subprogram_total = float(col3)
+                except ValueError:
+                    logger.warning("Skipping subprogram row due to invalid subprogram code")
+                    continue
                 subprogram_name = col2  # Use col2 as initial subprogram name.
                 subprogram_desc = ""
                 subprogram_type = ""
@@ -259,7 +267,7 @@ def flatten_budget_excel(excel_path: str) -> tuple[pd.DataFrame, float]:
 
     The function:
     1. Reads all rows (no skipping)
-    2. Identifies the "ԸՆԴԱՄԵՆԸ" row and stores the grand total from its last column
+    2. Identifies the "ԸՆԴԱՄԵՆԸ" row and stores the grand total from column 6
     3. Starts parsing data from the row *after* "ԸՆԴԱՄԵՆԸ"
     4. Detects state body, program, and subprogram rows using specific structural rules
     5. Collects subprogram rows into a flat table with 12 columns
@@ -358,8 +366,14 @@ def flatten_budget_excel(excel_path: str) -> tuple[pd.DataFrame, float]:
         if not c0 and not c1 and c2 and "-" in c2 and all([c3, c4, c5, c6]):
             try:
                 subprogram_total = float(c6)
+                # Extract program code and subprogram code from combined code
+                program_code_ext, subprogram_code = map(int, c2.split("-"))
+                program_code = int(current_program_code)  # Convert to int
             except ValueError:
-                continue  # skip row if total is invalid
+                logger.warning(
+                    "Skipping row %s due to invalid total or codes", i
+                )
+                continue  # skip row if total is invalid or codes aren't numeric
 
             rows.append(
                 {
@@ -369,7 +383,8 @@ def flatten_budget_excel(excel_path: str) -> tuple[pd.DataFrame, float]:
                         if current_state_body_total
                         else ""
                     ),
-                    "program_code": current_program_code,
+                    "program_code": program_code,
+                    "program_code_ext": program_code_ext,
                     "program_name": current_program_name,
                     "program_goal": current_program_goal,
                     "program_result_desc": current_program_result_desc,
@@ -378,7 +393,7 @@ def flatten_budget_excel(excel_path: str) -> tuple[pd.DataFrame, float]:
                         if current_program_total
                         else ""
                     ),
-                    "subprogram_code": c2,
+                    "subprogram_code": subprogram_code,  # Now just the numeric part
                     "subprogram_name": c3,
                     "subprogram_desc": c4,
                     "subprogram_type": c5,
@@ -391,6 +406,7 @@ def flatten_budget_excel(excel_path: str) -> tuple[pd.DataFrame, float]:
         "state_body",
         "state_body_total",
         "program_code",
+        "program_code_ext",
         "program_name",
         "program_goal",
         "program_result_desc",
@@ -420,7 +436,7 @@ budget_files = {
 
 # Process each year
 for year, file_path in budget_files.items():
-    logger.info(f"\nProcessing year {year}")
+    logger.info("\nProcessing year %d", year)
 
     # Choose appropriate function based on year
     if year == 2025:
@@ -439,7 +455,7 @@ for year, file_path in budget_files.items():
     logger.info(
         "Number of unique program names: %d", len(df["program_name"].unique())
     )
-    logger.info(f"Grand total ({year}): {grand_total}")
+    logger.info("Grand total (%d): %f", year, grand_total)
 
     # Create output directory if it doesn't exist
     output_dir = f"output/{year}"
@@ -453,5 +469,5 @@ for year, file_path in budget_files.items():
     )
 
     # Save grand total
-    with open(f"{output_dir}/grand_total.txt", "w") as f:
+    with open(f"{output_dir}/grand_total.txt", "w", encoding="utf-8") as f:
         f.write(f"Grand total: {grand_total}")
