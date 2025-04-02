@@ -75,6 +75,7 @@ The generated CSV files will contain the following columns:
 - State Body (Պետական մարմին)
 - State Body Total (Ընդամենը պետական մարմնի համար)
 - Program Code (Ծրագրի կոդ)
+- Program Code Extended (Ծրագրի կոդ երկարացված)
 - Program Name (Ծրագրի անվանում)
 - Program Goal (Ծրագրի նպատակ)
 - Program Result Description (Ծրագրի արդյունքի նկարագրություն)
