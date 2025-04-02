@@ -27,7 +27,15 @@ git clone https://github.com/gituzh/budget-am.git
 cd budget-am
 ```
 
-2. Install the required packages:
+2. Create and activate a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Unix/macOS
+# or
+.\venv\Scripts\activate  # On Windows
+```
+
+3. Install the required packages:
 ```bash
 pip install -r requirements.txt
 ```
