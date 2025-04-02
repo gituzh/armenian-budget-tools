@@ -49,6 +49,26 @@ python extract_budget_articles.py
 ```
 3. Find the generated CSV files in the `output/[YEAR]` directory
 
+## Testing
+
+To run the test suite:
+
+```bash
+pytest
+```
+
+For more detailed test output, you can use:
+
+```bash
+pytest -v
+```
+
+To run tests with coverage report:
+
+```bash
+pytest --cov=.
+```
+
 ## Output Format
 
 The generated CSV files will contain the following columns:
