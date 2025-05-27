@@ -284,8 +284,27 @@ def _parse_fraction(val):
     if isinstance(val, str):
         val = val.strip().replace("%", "")
 
+    # Handle non-numeric values (like '-') in percentage columns
+    if not _is_numeric(val):
+        return 0.0
+
     # Use Decimal for exact decimal arithmetic
     return float(Decimal(val) / Decimal("100"))
+
+
+def _sort_columns_by_excel_order(mappings: dict[str, int]) -> list[str]:
+    """Sort column names by their original Excel column indices."""
+    return [
+        col_name for col_name, _ in sorted(mappings.items(), key=lambda x: x[1])
+    ]
+
+
+def _extract_value(val: str, col_idx: int, percent_cols: set[int]) -> float:
+    """Extract and convert a value, handling percentages appropriately."""
+    if col_idx in percent_cols:
+        return _parse_fraction(val)
+    else:
+        return float(val) if _is_numeric(val) else 0.0
 
 
 def flatten_budget_excel_2019_2024(
@@ -410,13 +429,9 @@ def flatten_budget_excel_2019_2024(
                 overall_values = {}
                 logger.debug("Overall mappings: %s", overall_mappings)
                 for key, col_idx in overall_mappings.items():
-                    val = row_data[col_idx]
-                    if col_idx in percent_cols:
-                        overall_values[key] = _parse_fraction(val)
-                    else:
-                        overall_values[key] = (
-                            float(val) if _is_numeric(val) else 0.0
-                        )
+                    overall_values[key] = _extract_value(
+                        row_data[col_idx], col_idx, percent_cols
+                    )
                 logger.info("Found overall row: %s", overall_values)
         # Extract state body info
         elif (
@@ -429,10 +444,8 @@ def flatten_budget_excel_2019_2024(
                 source_type, "state_body_"
             )
             for key, col_idx in state_body_mappings.items():
-                current_context[key] = (
-                    float(row_data[col_idx])
-                    if _is_numeric(row_data[col_idx])
-                    else 0.0
+                current_context[key] = _extract_value(
+                    row_data[col_idx], col_idx, percent_cols
                 )
             logger.debug("New state body: %s", current_context["state_body"])
         # Extract program info and check labels
@@ -444,10 +457,8 @@ def flatten_budget_excel_2019_2024(
             # Extract values for all program columns based on source type
             program_mappings = _get_column_mappings(source_type, "program_")
             for key, col_idx in program_mappings.items():
-                current_context[key] = (
-                    float(row_data[col_idx])
-                    if _is_numeric(row_data[col_idx])
-                    else 0.0
+                current_context[key] = _extract_value(
+                    row_data[col_idx], col_idx, percent_cols
                 )
             details, next_i = _collect_details_2019_2024(df, i + 1)
             # Label checks for program details
@@ -497,10 +508,8 @@ def flatten_budget_excel_2019_2024(
                 )
                 subprogram_values = {}
                 for key, col_idx in subprogram_mappings.items():
-                    subprogram_values[key] = (
-                        float(row_data[col_idx])
-                        if _is_numeric(row_data[col_idx])
-                        else 0.0
+                    subprogram_values[key] = _extract_value(
+                        row_data[col_idx], col_idx, percent_cols
                     )
                 details, next_i = _collect_details_2019_2024(df, i + 1)
                 # Label checks for subprogram details
@@ -586,15 +595,15 @@ def flatten_budget_excel_2019_2024(
         "subprogram_type",
     ]
 
-    # Add state body columns
-    col_order.extend(sorted(state_body_mappings.keys()))
+    # Add state body columns (in Excel column order)
+    col_order.extend(_sort_columns_by_excel_order(state_body_mappings))
 
-    # Add program columns
-    col_order.extend(sorted(program_mappings.keys()))
+    # Add program columns (in Excel column order)
+    col_order.extend(_sort_columns_by_excel_order(program_mappings))
 
-    # Add subprogram columns
+    # Add subprogram columns (in Excel column order)
     subprogram_mappings = _get_column_mappings(source_type, "subprogram_")
-    col_order.extend(sorted(subprogram_mappings.keys()))
+    col_order.extend(_sort_columns_by_excel_order(subprogram_mappings))
 
     result_df = pd.DataFrame(results, columns=col_order)
     logger.info(

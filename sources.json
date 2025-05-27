@@ -1,51 +1,51 @@
 {
-  "2019": {
-    "BUDGET_LAW": "raw_data/budget_laws/2019/Orenqi havelvacner_Excel/2.Հավելված N1 աղյուսակ N2 ծախսերն ըստ ծրագրերի և միջոցառումների.xls",
-    "SPENDING_Q1": "raw_data/budget_report/2019-Q1/Havelvac/2. 2019_Ieramsyak_pat.crag.mij..xls",
-    "SPENDING_Q12": "",
-    "SPENDING_Q123": "",
-    "SPENDING_Q1234": ""
-  },
-  "2020": {
-    "BUDGET_LAW": "raw_data/budget_laws/2020/2.1.Havelvacner_Orenq/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xlsx",
-    "SPENDING_Q1": "",
-    "SPENDING_Q12": "",
-    "SPENDING_Q123": "",
-    "SPENDING_Q1234": ""
-  },
-  "2021": {
-    "BUDGET_LAW": "raw_data/budget_laws/2021/Orenqo havelvacner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
-    "SPENDING_Q1": "",
-    "SPENDING_Q12": "",
-    "SPENDING_Q123": "",
-    "SPENDING_Q1234": ""
-  },
-  "2022": {
-    "BUDGET_LAW": "raw_data/budget_laws/2022/1.1.ORENQI_HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
-    "SPENDING_Q1": "",
-    "SPENDING_Q12": "",
-    "SPENDING_Q123": "",
-    "SPENDING_Q1234": ""
-  },
-  "2023": {
-    "BUDGET_LAW": "raw_data/budget_laws/2023/1.1.ORENQI HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
-    "SPENDING_Q1": "",
-    "SPENDING_Q12": "",
-    "SPENDING_Q123": "",
-    "SPENDING_Q1234": ""
-  },
-  "2024": {
-    "BUDGET_LAW": "raw_data/budget_laws/2024/ORENQ HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների+.xls",
-    "SPENDING_Q1": "",
-    "SPENDING_Q12": "",
-    "SPENDING_Q123": "",
-    "SPENDING_Q1234": ""
-  },
-  "2025": {
-    "BUDGET_LAW": "raw_data/budget_laws/2025/օրենքի հավելվածներ/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
-    "SPENDING_Q1": "",
-    "SPENDING_Q12": "",
-    "SPENDING_Q123": "",
-    "SPENDING_Q1234": ""
-  }
-} 
+    "2019": {
+        "BUDGET_LAW": "raw_data/budget_laws/2019/Orenqi havelvacner_Excel/2.Հավելված N1 աղյուսակ N2 ծախսերն ըստ ծրագրերի և միջոցառումների.xls",
+        "SPENDING_Q1": "raw_data/budget_report/2019-Q1/Havelvac/2. 2019_Ieramsyak_pat.crag.mij..xls",
+        "SPENDING_Q12": "raw_data/budget_report/2019-Q2/46e5e267/4. 2019_kisamyak_pat.crag.mij..xls",
+        "SPENDING_Q123": "raw_data/budget_report/2019-Q3/Havelvac/2. 2019_9 amis_patasx.crag.mijocar..xls",
+        "SPENDING_Q1234": "raw_data/budget_report/2019-Q4/3.Հավելված/3.Հավելված 1 աղյուսակ 2_ ծախսերն ըստ ծրագրերի և միջոց.xlsx"
+    },
+    "2020": {
+        "BUDGET_LAW": "raw_data/budget_laws/2020/2.1.Havelvacner_Orenq/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xlsx",
+        "SPENDING_Q1": "",
+        "SPENDING_Q12": "",
+        "SPENDING_Q123": "",
+        "SPENDING_Q1234": ""
+    },
+    "2021": {
+        "BUDGET_LAW": "raw_data/budget_laws/2021/Orenqo havelvacner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+        "SPENDING_Q1": "",
+        "SPENDING_Q12": "",
+        "SPENDING_Q123": "",
+        "SPENDING_Q1234": ""
+    },
+    "2022": {
+        "BUDGET_LAW": "raw_data/budget_laws/2022/1.1.ORENQI_HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+        "SPENDING_Q1": "",
+        "SPENDING_Q12": "",
+        "SPENDING_Q123": "",
+        "SPENDING_Q1234": ""
+    },
+    "2023": {
+        "BUDGET_LAW": "raw_data/budget_laws/2023/1.1.ORENQI HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+        "SPENDING_Q1": "",
+        "SPENDING_Q12": "",
+        "SPENDING_Q123": "",
+        "SPENDING_Q1234": ""
+    },
+    "2024": {
+        "BUDGET_LAW": "raw_data/budget_laws/2024/ORENQ HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների+.xls",
+        "SPENDING_Q1": "",
+        "SPENDING_Q12": "",
+        "SPENDING_Q123": "",
+        "SPENDING_Q1234": ""
+    },
+    "2025": {
+        "BUDGET_LAW": "raw_data/budget_laws/2025/օրենքի հավելվածներ/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+        "SPENDING_Q1": "",
+        "SPENDING_Q12": "",
+        "SPENDING_Q123": "",
+        "SPENDING_Q1234": ""
+    }
+}
