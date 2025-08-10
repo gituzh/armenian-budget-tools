@@ -114,9 +114,7 @@ def download_sources(
                 )
                 continue
 
-            subdir, quarter = _category_and_subdir(
-                dest_root, s.year, s.source_type
-            )
+            subdir, quarter = _category_and_subdir(dest_root, s.year, s.source_type)
             subdir.mkdir(parents=True, exist_ok=True)
             # If override format is provided, force the extension; otherwise infer from URL
             file_name = _safe_file_name(s.url, s.file_format)
@@ -165,13 +163,9 @@ def download_sources(
                     continue
                 with client.stream("GET", s.url) as r:
                     r.raise_for_status()
-                    tmp_path = output_path.with_suffix(
-                        output_path.suffix + ".part"
-                    )
+                    tmp_path = output_path.with_suffix(output_path.suffix + ".part")
                     with open(tmp_path, "wb") as f:
-                        for chunk in r.iter_bytes(
-                            chunk_size=DOWNLOAD_CHUNK_SIZE
-                        ):
+                        for chunk in r.iter_bytes(chunk_size=DOWNLOAD_CHUNK_SIZE):
                             if chunk:
                                 f.write(chunk)
 
@@ -208,9 +202,7 @@ def download_sources(
 
                 # Replace if target missing or overwrite is requested or sizes differ
                 if output_path.exists():
-                    same_size = (
-                        output_path.stat().st_size == tmp_path.stat().st_size
-                    )
+                    same_size = output_path.stat().st_size == tmp_path.stat().st_size
                     if not same_size or overwrite_existing:
                         tmp_path.replace(output_path)
                     else:

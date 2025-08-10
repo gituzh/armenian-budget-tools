@@ -23,9 +23,7 @@ def extract_rar_files(input_dir: Path, output_dir: Path) -> List[Path]:
     unrar = shutil.which("unrar")
 
     if not unar and not unrar:
-        logger.warning(
-            "No RAR extractor found (install 'unar' or 'unrar'). Skipping extraction."
-        )
+        logger.warning("No RAR extractor found (install 'unar' or 'unrar'). Skipping extraction.")
         return extracted
 
     for rar_path in sorted(input_dir.rglob("*.rar")):
@@ -47,9 +45,7 @@ def extract_rar_files(input_dir: Path, output_dir: Path) -> List[Path]:
         try:
             import subprocess
 
-            subprocess.run(
-                cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            )
+            subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             extracted.append(target_dir)
             logger.info("Extracted %s → %s", rar_path, target_dir)
         except (subprocess.CalledProcessError, OSError) as e:

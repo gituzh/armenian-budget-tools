@@ -11,9 +11,7 @@ import yaml
 class SourceDefinition:
     name: str
     year: int
-    source_type: (
-        str  # "spending_q1", "spending_q12", "spending_q123", "spending_q1234"
-    )
+    source_type: str  # "spending_q1", "spending_q12", "spending_q123", "spending_q1234"
     url: str
     file_format: Optional[str] = None  # Optional override: "zip", "rar", "xlsx", etc.
     description: str = ""
@@ -67,9 +65,7 @@ class SourceRegistry:
         year: Optional[int] = None,
         source_types: Optional[Iterable[str]] = None,
     ) -> List[SourceDefinition]:
-        types_set: Optional[set[str]] = (
-            set(source_types) if source_types else None
-        )
+        types_set: Optional[set[str]] = set(source_types) if source_types else None
         result: List[SourceDefinition] = []
         for s in self._sources:
             if year is not None and s.year != int(year):
