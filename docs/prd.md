@@ -30,6 +30,7 @@ Armenian Budget Tools is an open-source toolkit to fetch, parse, normalize, vali
 - **AI agents (MCP)**: List datasets, inspect schemas, filter by criteria, summarize a ministry.
 
 ### Primary Use Cases
+
 - **Parse & normalize** a year’s budget law into a consistent schema.
 - **Validate** hierarchical totals and spending relationships; produce a report.
 - **Export** CSV/Parquet for downstream analysis and BI tools.

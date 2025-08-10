@@ -21,3 +21,6 @@ raw_data/
 *.egg-info/
 
 *.log
+
+data/original/
+data/extracted/
