@@ -4,7 +4,7 @@ parsers:
       # Global pattern for all years
       global:
         # Both Armenian words must appear; file ends with .xls or .xlsx (case-insensitive)
-        regex: "(?i)(?=.*ծրագիր)(?=.*միջոցառում).*\\.(xlsx|xls)$"
+        regex: "(?i)(?=.*ծրագ)(?=.*միջոցառում).*\\.(xlsx|xls)$"
 
   spending:
     search:

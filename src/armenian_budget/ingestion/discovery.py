@@ -6,6 +6,7 @@ import logging
 import re
 import time
 from dataclasses import dataclass, asdict
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Pattern, Tuple
 
@@ -71,15 +72,11 @@ def _compile_pattern_for(
     regex_str: Optional[str] = None
     if quarter is not None:
         key = f"{year}/{quarter}"
-        regex_str = (
-            (group_cfg.get("by_year", {}) or {}).get(str(key), {}).get("regex")
-        )
+        regex_str = (group_cfg.get("by_year", {}) or {}).get(str(key), {}).get("regex")
         if regex_str:
             matched_by = str(key)
     if not regex_str:
-        regex_str = (
-            (group_cfg.get("by_year", {}) or {}).get(str(year), {}).get("regex")
-        )
+        regex_str = (group_cfg.get("by_year", {}) or {}).get(str(year), {}).get("regex")
         if regex_str:
             matched_by = str(year)
     if not regex_str:
@@ -95,9 +92,7 @@ def _compile_pattern_for(
         return None, matched_by
 
 
-def _iter_search_roots(
-    dest_root: Path, year: int, source_type: str
-) -> List[Path]:
+def _iter_search_roots(dest_root: Path, year: int, source_type: str) -> List[Path]:
     st = (source_type or "").lower()
     if st == "budget_law":
         return [dest_root / "extracted" / "budget_laws" / str(year)]
@@ -118,18 +113,12 @@ def _candidate_score(path: Path) -> float:
         size = 0
     ext_bonus = 1.0 if path.suffix.lower() == ".xlsx" else 0.8
     size_score = min(size / float(10 * 1024 * 1024), 1.0)  # up to 10MB scaled
-    depth = (
-        len(path.relative_to(path.anchor).parts)
-        if path.is_absolute()
-        else len(path.parts)
-    )
+    depth = len(path.relative_to(path.anchor).parts) if path.is_absolute() else len(path.parts)
     depth_penalty = 1.0 - min(max(depth - 1, 0) * 0.02, 0.3)
     return ext_bonus + size_score + depth_penalty
 
 
-def _list_candidates(
-    roots: List[Path], pattern: Optional[Pattern[str]]
-) -> List[Path]:
+def _list_candidates(roots: List[Path], pattern: Optional[Pattern[str]]) -> List[Path]:
     candidates: List[Path] = []
     for root in roots:
         if not root.exists():
@@ -173,9 +162,7 @@ def _load_index(dest_root: Path) -> Dict[str, Any]:
         with index_path.open("r", encoding="utf-8") as f:
             return json.load(f) or {}
     except (json.JSONDecodeError, OSError):
-        logging.warning(
-            "Failed to read discovery index; starting fresh: %s", index_path
-        )
+        logging.warning("Failed to read discovery index; starting fresh: %s", index_path)
         return {}
 
 
@@ -185,9 +172,48 @@ def _save_index(dest_root: Path, index: Dict[str, Any]) -> None:
         json.dump(index, f, ensure_ascii=False, indent=2)
 
 
+def _to_relative_index_path(file_path: Path, *, dest_root: Path) -> str:
+    """Return a stable relative path for storing in discovery index.
+
+    Preference order:
+    1) Relative to repository root (current working directory)
+    2) Relative to the parent of dest_root (so typical value is "data/...\n")
+    3) Relative to current working directory using os.path.relpath (fallback)
+
+    Args:
+        file_path: Absolute or relative path to the discovered file.
+        dest_root: Data root provided to discovery (usually ./data).
+
+    Returns:
+        POSIX-style relative path string.
+    """
+    abs_path = file_path.resolve()
+    repo_root = Path.cwd().resolve()
+    candidates = [repo_root, dest_root.resolve().parent]
+    for base in candidates:
+        try:
+            rel = abs_path.relative_to(base)
+            return rel.as_posix()
+        except ValueError:
+            # Not relative to this base
+            pass
+    # Final fallback: make it relative to CWD even if it includes ".."
+    try:
+        return os.path.relpath(str(abs_path), str(repo_root)).replace(os.sep, "/")
+    except (OSError, ValueError):
+        # As a last resort (should not happen), still return POSIX path
+        return abs_path.as_posix()
+
+
 def _is_entry_still_valid(entry: Dict[str, Any]) -> bool:
     try:
-        path = Path(entry.get("path", ""))
+        path_str = entry.get("path", "")
+        if not path_str:
+            return False
+        path = Path(path_str)
+        if not path.is_absolute():
+            # Make relative paths resolvable when CWD is the repo root
+            path = (Path.cwd() / path).resolve()
         if not path.exists():
             return False
         st = path.stat()
@@ -206,14 +232,21 @@ def _validate_with_parser(candidate: Path, year: int, source_type: str) -> bool:
             df, _overall, _, _ = flatten_budget_excel_2025(str(candidate))
         else:
             df, _overall, _, _ = flatten_budget_excel_2019_2024(
-                str(candidate), source_type=SourceType[source_type]
+                str(candidate), source_type=SourceType[source_type], year=int(year)
             )
         if df is None:
             return False
         if getattr(df, "empty", False):
             return False
         return True
-    except (AssertionError, ValueError, KeyError, IndexError, OSError, RuntimeError):
+    except (
+        AssertionError,
+        ValueError,
+        KeyError,
+        IndexError,
+        OSError,
+        RuntimeError,
+    ):
         return False
 
 
@@ -270,7 +303,7 @@ def discover_best_file(
     checksum = _sha256_of_file(selected)
     entry = DiscoveryIndexEntry(
         key=key,
-        path=str(selected.resolve()),
+        path=_to_relative_index_path(selected, dest_root=dest_root),
         matched_by=matched_by or (pattern.pattern if pattern is not None else "fallback"),
         pattern=pattern.pattern if pattern is not None else "",
         mtime=st.st_mtime,
