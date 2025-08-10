@@ -508,12 +508,12 @@ pytest -q -k spending     # run spending tests
 }
 ```
 
-  - Restart Claude Desktop. In a new chat, the `budget-am` tools will be available. Ask things like: “Run tool list_available_data”, “Show schema for 2023 budget law”, “Filter 2023 budget law for Ministry of Education with min amount 1e6”.
+- Restart Claude Desktop. In a new chat, the `budget-am` tools will be available. Ask things like: “Run tool list_available_data”, “Show schema for 2023 budget law”, “Filter 2023 budget law for Ministry of Education with min amount 1e6”.
 
-  - Option B: Remote connector (HTTP) — Use Claude’s “Add custom connector” and set:
-    - Name: budget-am
-    - Remote MCP server URL: `https://127.0.0.1:8765`
-    - First, start the server: `armenian-budget mcp-server --data-path ./data/processed --host 127.0.0.1 --port 8765 --https`
+- Option B: Remote connector (HTTP) — Use Claude’s “Add custom connector” and set:
+  - Name: budget-am
+  - Remote MCP server URL: `https://127.0.0.1:8765`
+  - First, start the server: `armenian-budget mcp-server --data-path ./data/processed --host 127.0.0.1 --port 8765 --https`
 
 - ChatGPT: The web app does not natively support local MCP servers. You can use the official MCP Inspector to proxy interactions during development, or third-party MCP bridges when available. ChatGPT Desktop (if/when it supports MCP) can be configured similarly by spawning the same command.
 
