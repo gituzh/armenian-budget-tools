@@ -452,7 +452,26 @@ npx @modelcontextprotocol/inspector
 # Args: mcp-server --data-path ./data/processed
 ```
 
-You should see the tools listed: `list_available_data`, `get_data_schema`, `filter_budget_data`, `get_ministry_spending_summary`.
+You should see the tools listed:
+
+- list_available_data
+- get_data_schema
+- filter_budget_data
+- get_ministry_spending_summary
+- find_program_across_years_robust
+- search_programs_by_similarity
+- trace_program_lineage
+- register_program_equivalency
+- get_program_equivalencies
+- detect_program_patterns
+- bulk_filter_multiple_datasets
+- extract_rd_budget_robust
+
+Key notes:
+
+- `detect_program_patterns` loads patterns from YAML only (no hardcoded defaults). See Configuration below.
+- `register_program_equivalency` persists manual mappings to YAML; `get_program_equivalencies` reads them.
+- `extract_rd_budget_robust` aggregates R&D across ministries using pattern matching, lineage and manual mappings with confidence flags.
 
 ## Validation rules and behavior
 
@@ -486,6 +505,69 @@ pytest -q -k spending     # run spending tests
 - Architecture: `docs/architecture.md`
 - Product Requirements: `docs/prd.md`
 - Roadmap: `docs/roadmap.md`
+
+### Configuration for MCP advanced tools
+
+- Program pattern definitions (consumed by `detect_program_patterns`):
+  - File: `config/program_patterns.yaml`
+  - Structure:
+
+```yaml
+patterns:
+  research:
+    keywords: ["գիտական", "հետազոտ", "փորձակոնստրուկտոր", "ինովա", "տեխնոլոգ"]
+    required_keywords: ["գիտական", "հետազոտ"]
+    exclude_keywords: ["կրթական", "հիմնական"]
+  education:
+    keywords: ["կրթություն", "ուսում", "դպրոց", "համալսարան"]
+    required_keywords: ["կրթություն"]
+    exclude_keywords: []
+```
+
+- Manual program equivalency mappings (used by `register_program_equivalency`, read by `get_program_equivalencies` and `extract_rd_budget_robust`):
+  - File: `config/program_equivalencies.yaml`
+  - Structure (example):
+
+```yaml
+equivalencies:
+  rd_research:
+    description: "Manual equivalency for MinESCS R&D lineage"
+    created_at: "2025-02-01T12:00:00Z"
+    mappings:
+      - {year: 2019, ministry: "ԿԳՄՍ", program_code: 1162}
+      - {year: 2021, ministry: "ԿԳՄՍ", program_code: 1163}
+```
+
+### Example MCP calls (Inspector)
+
+In MCP Inspector, try:
+
+```json
+{"tool": "detect_program_patterns", "params": {"pattern_type": "research", "years": [2021,2022,2023], "confidence_threshold": 0.75}}
+```
+
+```json
+{"tool": "find_program_across_years_robust", "params": {"reference_year": 2019, "reference_program_code": 1162, "search_years": [2020,2021,2022,2023,2024]}}
+```
+
+```json
+{"tool": "extract_rd_budget_robust", "params": {"years": [2019,2020,2021,2022,2023,2024,2025], "return_details": true}}
+```
+
+### MCP tools (brief reference)
+
+- list_available_data: Inventory and diagnostics of processed datasets
+- get_data_schema: Columns, dtypes, shape, file path for a dataset
+- filter_budget_data: Filter a dataset; returns path to a temporary CSV
+- get_ministry_spending_summary: Aggregates and top programs for a ministry
+- find_program_across_years_robust: Multi-signal program matching across years
+- search_programs_by_similarity: Fuzzy search on Armenian name/goal/description
+- trace_program_lineage: Build a timeline of a program’s evolution with confidence
+- register_program_equivalency: Save manual cross-year mappings (YAML)
+- get_program_equivalencies: Read manual mappings (YAML)
+- detect_program_patterns: YAML-driven keyword pattern detection across years
+- bulk_filter_multiple_datasets: Apply filters over many years/types; combine to CSV
+- extract_rd_budget_robust: End-to-end R&D budget extraction with confidence flags
 
 ## MCP integration (Claude Desktop and ChatGPT)
 
