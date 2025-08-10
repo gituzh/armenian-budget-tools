@@ -9,7 +9,7 @@ __all__ = [
     "__version__",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 # Expose sources subpackage for downstream imports like
 # `from armenian_budget.sources.registry import SourceRegistry`
