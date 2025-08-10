@@ -69,6 +69,12 @@ To run tests with coverage report:
 pytest --cov=.
 ```
 
+## Documentation
+
+- Architecture: `docs/architecture.md`
+- Product Requirements: `docs/prd.md`
+- Roadmap: `docs/roadmap.md`
+
 ## Output Format
 
 The generated CSV files will contain the following columns:
