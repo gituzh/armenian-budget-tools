@@ -7,3 +7,5 @@ xlrd
 pytest
 colorlog
 mcp
+rapidfuzz
+pyyaml

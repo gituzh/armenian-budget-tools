@@ -1,0 +1,62 @@
+patterns:
+  research:
+    keywords:
+      - "գիտական"
+      - "հետազոտ"
+    required_keywords:
+      - "գիտական"
+      - "հետազոտ"
+    exclude_keywords:
+      - "կրթական"
+      - "հիմնական"
+  development:
+    keywords:
+      - "փորձակոնստրուկտոր"
+      - "փորձարարական մշակում"
+      - "տեխնոլոգ"
+    required_keywords:
+      - "փորձարարական մշակում"
+    exclude_keywords:
+      - "կրթական"
+      - "հիմնական"
+      - "կառուցում"
+  innovation:
+    keywords:
+      - "ինովա"
+      - "տեխնոլոգ"
+      - "նորարար"
+    required_keywords:
+      - "ինովա"
+    exclude_keywords:
+      - "կրթական"
+      - "հիմնական"
+  technology:
+    keywords:
+      - "տեխնոլոգ"
+      - "տեխնոլոգիա"
+      - "տեխնոլոգիական"
+    required_keywords:
+      - "տեխնոլոգ"
+      - "տեխնոլոգիա"
+    exclude_keywords:
+      - "կրթական"
+      - "հիմնական"
+  education:
+    keywords:
+      - "կրթություն"
+      - "ուսում"
+      - "դպրոց"
+      - "համալսարան"
+    required_keywords:
+      - "կրթություն"
+    exclude_keywords: []
+  infrastructure:
+    keywords:
+      - "կառուցում"
+      - "ենթակառուցվածք"
+      - "ճանապարհ"
+      - "տրանսպորտ"
+    required_keywords:
+      - "կառուցում"
+    exclude_keywords: []
+
