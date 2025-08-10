@@ -4,19 +4,10 @@ import pytest
 import tempfile
 import pandas as pd
 import os
-from pathlib import Path
-import sys
-
-# Add the repo's src directory to Python path to import package directly
-src_path = Path(__file__).parent.parent / "src"
-if str(src_path) not in sys.path:
-    sys.path.insert(0, str(src_path))
-
 from armenian_budget.ingestion.parsers import (
     flatten_budget_excel_2019_2024,
     flatten_budget_excel_2025,
     SourceType,
-    ProcessingState,
     RowType,
     _detect_row_type_2019_2024,
     _detect_row_type_2025,

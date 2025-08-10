@@ -1,4 +1,4 @@
-"""Armenian Budget Tools (v0.1) — minimal package for CLI and validation.
+"""Armenian Budget Tools (v0.2.0) — minimal package for CLI and validation.
 
 This package intentionally reuses the existing parser functions from the
 `budget` package (under `src/budget-am/budget`). In v0.1 we provide a minimal
