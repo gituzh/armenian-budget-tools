@@ -68,10 +68,8 @@ def validate_financial_totals_consistency(
                 )
 
             # Check state body totals vs subprogram sums (ADDED MISSING VALIDATION)
-            state_body_subprogram_mismatches = (
-                _check_state_body_subprogram_consistency(
-                    df, col_type, subprogram_col, local_tolerance
-                )
+            state_body_subprogram_mismatches = _check_state_body_subprogram_consistency(
+                df, col_type, subprogram_col, local_tolerance
             )
             if state_body_subprogram_mismatches:
                 errors.extend(
@@ -88,10 +86,7 @@ def validate_financial_totals_consistency(
             )
             if program_mismatches:
                 errors.extend(
-                    [
-                        f"{data.year}/{data.source_type}: Program {program_col} "
-                        "inconsistencies:"
-                    ]
+                    [f"{data.year}/{data.source_type}: Program {program_col} inconsistencies:"]
                     + program_mismatches
                 )
 
@@ -114,17 +109,15 @@ def _check_state_body_consistency(
 
         # Sum distinct state body totals to account for multiple sections
         state_body_total_sum = round(
-            state_body_data.drop_duplicates(subset=[state_body_col])[
-                state_body_col
-            ].sum(),
+            state_body_data.drop_duplicates(subset=[state_body_col])[state_body_col].sum(),
             2,
         )
 
         # Sum program totals per (section,total) and program
         program_sum = round(
-            state_body_data.drop_duplicates(
-                subset=[state_body_col, "program_code"]
-            )[program_col].sum(),
+            state_body_data.drop_duplicates(subset=[state_body_col, "program_code"])[
+                program_col
+            ].sum(),
             2,
         )
 
@@ -146,9 +139,7 @@ def _check_state_body_subprogram_consistency(
     for state_body in df["state_body"].unique():
         state_body_data = df[df["state_body"] == state_body]
         state_body_total_sum = round(
-            state_body_data.drop_duplicates(subset=[state_body_col])[
-                state_body_col
-            ].sum(),
+            state_body_data.drop_duplicates(subset=[state_body_col])[state_body_col].sum(),
             2,
         )
         subprogram_sum = round(state_body_data[subprogram_col].sum(), 2)
@@ -173,23 +164,19 @@ def _check_program_consistency(
     errors = []
 
     subprogram_sums = (
-        df.groupby(["state_body", state_body_col, "program_code"])[
-            subprogram_col
-        ]
+        df.groupby(["state_body", state_body_col, "program_code"])[subprogram_col]
         .sum()
         .reset_index()
     )
 
-    program_totals = df.drop_duplicates(
-        subset=["state_body", state_body_col, "program_code"]
-    )[["state_body", state_body_col, "program_code", program_col]]
+    program_totals = df.drop_duplicates(subset=["state_body", state_body_col, "program_code"])[
+        ["state_body", state_body_col, "program_code", program_col]
+    ]
 
     merged = subprogram_sums.merge(
         program_totals, on=["state_body", state_body_col, "program_code"]
     )
-    mismatches = merged[
-        abs(merged[subprogram_col] - merged[program_col]) > tolerance
-    ]
+    mismatches = merged[abs(merged[subprogram_col] - merged[program_col]) > tolerance]
 
     for _, row in mismatches.iterrows():
         errors.append(
@@ -295,10 +282,7 @@ def validate_logical_relationships_spending(data: BudgetDataInfo) -> List[str]:
 
             # If revised columns exist and satisfy the constraint, downgrade to warning
             r_ok_mask = None
-            if (
-                "rev_period_plan" in level_cols
-                and "rev_annual_plan" in level_cols
-            ):
+            if "rev_period_plan" in level_cols and "rev_annual_plan" in level_cols:
                 rperiod_col = level_cols["rev_period_plan"]
                 rannual_col = level_cols["rev_annual_plan"]
                 r_ok_mask = df[rperiod_col] <= df[rannual_col]
@@ -306,9 +290,7 @@ def validate_logical_relationships_spending(data: BudgetDataInfo) -> List[str]:
             # Strict violations: non-negative and not covered by a valid revised relationship
             if r_ok_mask is not None:
                 strict_mask = mask_nonneg & over_mask & (~r_ok_mask)
-                warn_mask = (mask_nonneg & over_mask & r_ok_mask) | (
-                    mask_has_neg & over_mask
-                )
+                warn_mask = (mask_nonneg & over_mask & r_ok_mask) | (mask_has_neg & over_mask)
             else:
                 strict_mask = mask_nonneg & over_mask
                 warn_mask = mask_has_neg & over_mask
@@ -331,12 +313,8 @@ def validate_logical_relationships_spending(data: BudgetDataInfo) -> List[str]:
                     count_rev = int(warn_due_revised.sum())
                     if count_rev > 0:
                         df_rev = df[warn_due_revised].copy()
-                        df_rev["delta"] = (
-                            df_rev[period_col] - df_rev[annual_col]
-                        )
-                        top_rev = df_rev.sort_values(
-                            "delta", ascending=False
-                        ).head(5)
+                        df_rev["delta"] = df_rev[period_col] - df_rev[annual_col]
+                        top_rev = df_rev.sort_values("delta", ascending=False).head(5)
                         lines_main.append(
                             f"  - {count_rev} with revised constraint satisfied (rev_period <= rev_annual):"
                         )
@@ -351,12 +329,8 @@ def validate_logical_relationships_spending(data: BudgetDataInfo) -> List[str]:
                 if count_neg > 0:
                     df_neg = df[warn_due_neg].copy()
                     df_neg["delta"] = df_neg[period_col] - df[annual_col]
-                    top_neg = df_neg.sort_values("delta", ascending=False).head(
-                        5
-                    )
-                    lines_main.append(
-                        f"  - {count_neg} with negative values present:"
-                    )
+                    top_neg = df_neg.sort_values("delta", ascending=False).head(5)
+                    lines_main.append(f"  - {count_neg} with negative values present:")
                     for _, r in top_neg.iterrows():
                         lines_main.append(
                             "     * "
@@ -430,17 +404,13 @@ def validate_data_quality_basic(data: BudgetDataInfo) -> List[str]:
 
     for column in required_columns:
         if column not in df.columns:
-            errors.append(
-                f"{data.year}/{data.source_type}: Missing column '{column}'"
-            )
+            errors.append(f"{data.year}/{data.source_type}: Missing column '{column}'")
             continue
 
         # Check for null values
         null_count = df[column].isnull().sum()
         if null_count > 0:
-            errors.append(
-                f"{data.year}/{data.source_type}: {null_count} null values in '{column}'"
-            )
+            errors.append(f"{data.year}/{data.source_type}: {null_count} null values in '{column}'")
 
         # Check for empty strings in text columns
         if df[column].dtype == "object":
@@ -451,9 +421,7 @@ def validate_data_quality_basic(data: BudgetDataInfo) -> List[str]:
                 )
 
         # Warn about negative values in financial columns
-        if column in [
-            col for level_cols in financial_cols.values() for col in level_cols
-        ]:
+        if column in [col for level_cols in financial_cols.values() for col in level_cols]:
             negative_count = (df[column] < 0).sum()
             if negative_count > 0:
                 neg_df = df[df[column] < 0]
@@ -500,9 +468,7 @@ def compare_annual_plans_with_budget(
     errors = []
 
     if spending_data.year != budget_data.year:
-        errors.append(
-            f"Year mismatch: spending {spending_data.year} vs budget {budget_data.year}"
-        )
+        errors.append(f"Year mismatch: spending {spending_data.year} vs budget {budget_data.year}")
         return errors
 
     # Compare at subprogram level
@@ -521,8 +487,7 @@ def compare_annual_plans_with_budget(
     missing_in_spending = merged[merged["subprogram_annual_plan"].isna()]
     if not missing_in_spending.empty:
         errors.append(
-            f"Found {len(missing_in_spending)} subprograms in "
-            "budget but not in spending report"
+            f"Found {len(missing_in_spending)} subprograms in budget but not in spending report"
         )
 
     missing_in_budget = merged[merged["subprogram_total"].isna()]
@@ -533,15 +498,11 @@ def compare_annual_plans_with_budget(
 
     # Compare values for matching subprograms
     valid_comparisons = merged[
-        merged["subprogram_annual_plan"].notna()
-        & merged["subprogram_total"].notna()
+        merged["subprogram_annual_plan"].notna() & merged["subprogram_total"].notna()
     ]
 
     mismatches = valid_comparisons[
-        abs(
-            valid_comparisons["subprogram_annual_plan"]
-            - valid_comparisons["subprogram_total"]
-        )
+        abs(valid_comparisons["subprogram_annual_plan"] - valid_comparisons["subprogram_total"])
         > tolerance
     ]
 

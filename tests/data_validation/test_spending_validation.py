@@ -94,15 +94,10 @@ def test_spending_percentage_calculations(spending_data):
     df = spending_data.df
 
     # Test actual_vs_rev_annual_plan = actual / rev_annual_plan
-    if (
-        "subprogram_actual" in df.columns
-        and "subprogram_rev_annual_plan" in df.columns
-    ):
+    if "subprogram_actual" in df.columns and "subprogram_rev_annual_plan" in df.columns:
         if "subprogram_actual_vs_rev_annual_plan" in df.columns:
             # Calculate expected percentages
-            expected_pct = (
-                df["subprogram_actual"] / df["subprogram_rev_annual_plan"]
-            )
+            expected_pct = df["subprogram_actual"] / df["subprogram_rev_annual_plan"]
             expected_pct = expected_pct.fillna(0)  # Handle NaNs (not inf)
 
             # Compare with actual percentages (with tolerance for floating point)
@@ -141,9 +136,7 @@ def test_spending_percentage_calculations(spending_data):
                     # Reason hints (division by zero, infinities, etc.)
                     if pd.isna(rev_ann) or rev_ann == 0:
                         reason = "division by zero (rev_annual_plan=0)"
-                    elif (
-                        pd.isna(actual) or pd.isna(stored) or pd.isna(expected)
-                    ):
+                    elif pd.isna(actual) or pd.isna(stored) or pd.isna(expected):
                         reason = "missing value(s)"
                     elif not isinstance(stored, (int, float)) or not isinstance(
                         expected, (int, float)
@@ -218,18 +211,12 @@ def test_spending_actual_vs_plans_reasonableness(spending_data):
     df = spending_data.df
 
     # Test that actual values don't exceed revised annual plans by more than 10%
-    if (
-        "subprogram_actual" in df.columns
-        and "subprogram_rev_annual_plan" in df.columns
-    ):
+    if "subprogram_actual" in df.columns and "subprogram_rev_annual_plan" in df.columns:
         # Filter out zero revised annual plans to avoid division issues
         valid_data = df[df["subprogram_rev_annual_plan"] > 0]
 
         if not valid_data.empty:
-            ratio = (
-                valid_data["subprogram_actual"]
-                / valid_data["subprogram_rev_annual_plan"]
-            )
+            ratio = valid_data["subprogram_actual"] / valid_data["subprogram_rev_annual_plan"]
             excessive_spending = ratio > 1.1  # More than 110% of revised plan
 
             if excessive_spending.any():
@@ -267,18 +254,12 @@ def test_spending_quarterly_progression(spending_data):
     if source_type in ["SPENDING_Q1", "SPENDING_Q12", "SPENDING_Q123"]:
         df = spending_data.df
 
-        if (
-            "subprogram_actual" in df.columns
-            and "subprogram_period_plan" in df.columns
-        ):
+        if "subprogram_actual" in df.columns and "subprogram_period_plan" in df.columns:
             # Period actuals should generally not exceed period plans dramatically
             valid_data = df[df["subprogram_period_plan"] > 0]
 
             if not valid_data.empty:
-                ratio = (
-                    valid_data["subprogram_actual"]
-                    / valid_data["subprogram_period_plan"]
-                )
+                ratio = valid_data["subprogram_actual"] / valid_data["subprogram_period_plan"]
                 mask = ratio > 2.0  # More than 200% of period plan
                 excessive_count = int(mask.sum())
 

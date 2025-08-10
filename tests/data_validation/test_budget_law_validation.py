@@ -58,11 +58,7 @@ def test_budget_law_program_distribution(budget_law_data):
     """Test that programs are properly distributed across state bodies."""
     df = budget_law_data.df
 
-    program_counts = (
-        df.groupby("state_body")["program_code"]
-        .nunique()
-        .sort_values(ascending=False)
-    )
+    program_counts = df.groupby("state_body")["program_code"].nunique().sort_values(ascending=False)
 
     assert program_counts.nunique() > 1, (
         f"{budget_law_data.year}/{budget_law_data.source_type}: All state bodies have the same number of programs"
@@ -85,12 +81,8 @@ def test_budget_law_grand_total_consistency(budget_law_data):
         grand_total = overall_values
 
     # Calculate sums (rounded to 2 decimal places)
-    state_body_sum = round(
-        df.drop_duplicates(subset="state_body")["state_body_total"].sum(), 2
-    )
-    program_sum = round(
-        df.drop_duplicates(subset="program_code")["program_total"].sum(), 2
-    )
+    state_body_sum = round(df.drop_duplicates(subset="state_body")["state_body_total"].sum(), 2)
+    program_sum = round(df.drop_duplicates(subset="program_code")["program_total"].sum(), 2)
     subprogram_sum = round(df["subprogram_total"].sum(), 2)
     grand_total = round(grand_total, 2)
 
