@@ -1,7 +1,27 @@
 [project]
-name = "budget-am"
+name = "armenian-budget-tools"
 version = "0.1.0"
+description = "Armenian Budget Tools: parse and validate Armenian state budget datasets"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "pandas",
+  "openpyxl",
+  "numpy",
+  "tqdm",
+  "xlrd",
+  "colorlog",
+  "PyYAML",
+  "httpx",
+  "mcp",
+]
+
+[project.scripts]
+armenian-budget = "armenian_budget.cli.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
-where = ["src/budget-am"]
-include = ["budget*"]
+where = ["src"]
+include = ["armenian_budget*"]

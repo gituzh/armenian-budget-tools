@@ -6,3 +6,4 @@ tqdm
 xlrd
 pytest
 colorlog
+mcp
