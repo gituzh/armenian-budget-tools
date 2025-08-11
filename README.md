@@ -2,6 +2,33 @@
 
 A Python tool for processing and analyzing Armenian State Budget articles, converting them into easily analyzable CSV format.
 
+## Table of Contents
+
+- [Armenian State Budget Processor](#armenian-state-budget-processor)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Parsing architecture and API](#parsing-architecture-and-api)
+    - [Maintainers: extending/adjusting parsers](#maintainers-extendingadjusting-parsers)
+  - [Features](#features)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Extraction prerequisites (for spending reports)](#extraction-prerequisites-for-spending-reports)
+  - [Usage](#usage)
+    - [Discovery (config-driven)](#discovery-config-driven)
+  - [Testing](#testing)
+    - [Test the MCP server](#test-the-mcp-server)
+  - [Validation rules and behavior](#validation-rules-and-behavior)
+  - [Run tests](#run-tests)
+  - [Documentation](#documentation)
+    - [Configuration for MCP advanced tools](#configuration-for-mcp-advanced-tools)
+    - [Example MCP calls (Inspector)](#example-mcp-calls-inspector)
+    - [MCP tools (brief reference)](#mcp-tools-brief-reference)
+  - [MCP integration (Claude Desktop and ChatGPT)](#mcp-integration-claude-desktop-and-chatgpt)
+  - [Changelog (recent)](#changelog-recent)
+  - [Output Format](#output-format)
+  - [Contributing](#contributing)
+  - [License](#license)
+
 ## Overview
 
 This tool helps process Armenian State Budget Excel files and converts them into structured CSV files, making it easier to analyze budget data. It's designed to handle the specific format of Armenian State Budget documents and extract relevant information into a clean, tabular format.
