@@ -1,0 +1,19 @@
+parsers:
+  budget_law:
+    search:
+      # Global pattern for all years
+      global:
+        # Both Armenian words must appear; file ends with .xls or .xlsx (case-insensitive)
+        regex: "(?i)(?=.*ծրագ)(?=.*միջոցառում).*\\.(xlsx|xls)$"
+
+  spending:
+    search:
+      # Global default for spending reports
+      global:
+        regex: "(?i)(?=.*ծրագիր)(?=.*միջոցառում).*\\.(xlsx|xls)$"
+      # Year and year/quarter specific overrides with higher priority
+      by_year:
+        "2019":
+          regex: "(?i)(?=.*crag)(?=.*mij).*\\.(xlsx|xls)$"
+        "2019/Q1234":
+          regex: "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$"

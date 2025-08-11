@@ -4,3 +4,8 @@ numpy
 jupyter
 tqdm
 xlrd
+pytest
+colorlog
+mcp
+rapidfuzz
+pyyaml

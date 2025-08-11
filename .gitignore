@@ -17,3 +17,11 @@ __pycache__/
 raw_data/
 
 .DS_Store
+
+*.egg-info/
+
+*.log
+
+data/original/
+data/extracted/
+data/processed/tmp
