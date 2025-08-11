@@ -2,12 +2,22 @@ import argparse
 import logging
 from pathlib import Path
 from typing import Optional, List
-
-import colorlog
 import importlib
+import colorlog
 import yaml
-## Avoid static import resolution issues in different environments
-# We'll import the runner dynamically when needed
+
+try:
+    # Prefer package-defined version
+    from armenian_budget import __version__ as _PACKAGE_VERSION
+except ImportError:  # pragma: no cover - defensive fallback
+    _PACKAGE_VERSION = None  # type: ignore[assignment]
+    try:
+        # Fallback to installed package metadata
+        from importlib.metadata import version as _pkg_version, PackageNotFoundError
+
+        _PACKAGE_VERSION = _pkg_version("armenian-budget-tools")  # type: ignore[assignment]
+    except PackageNotFoundError:
+        _PACKAGE_VERSION = "unknown"  # type: ignore[assignment]
 
 
 def setup_logging(
@@ -587,7 +597,10 @@ def cmd_discover(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="armenian-budget", description="Armenian Budget Tools (v0.1)")
+    p = argparse.ArgumentParser(
+        prog="armenian-budget",
+        description=f"Armenian Budget Tools (v{_PACKAGE_VERSION})",
+    )
     p.add_argument("--verbose", action="store_true", help="Enable verbose logging")
     p.add_argument(
         "--warnings-only",
