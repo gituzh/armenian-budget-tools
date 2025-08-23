@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import ssl
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, List, Optional
@@ -92,7 +93,24 @@ def download_sources(
     dest_root.mkdir(parents=True, exist_ok=True)
 
     results: List[DownloadResult] = []
-    client = httpx.Client(timeout=timeout_sec, follow_redirects=True)
+    # Use browser-like headers to avoid server blocking
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+    }
+
+    # Create SSL context that's more permissive for problematic servers
+    ssl_context = ssl.create_default_context()
+    ssl_context.set_ciphers("DEFAULT@SECLEVEL=1")
+    ssl_context.options |= 0x4  # OP_LEGACY_SERVER_CONNECT
+
+    client = httpx.Client(
+        timeout=timeout_sec, follow_redirects=True, headers=headers, verify=ssl_context
+    )
     try:
         for s in sources:
             if not s.url:
