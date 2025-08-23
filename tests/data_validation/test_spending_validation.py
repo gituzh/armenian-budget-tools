@@ -15,6 +15,7 @@ from conftest import (
     get_percentage_columns,
     get_financial_columns,
 )
+from conftest import load_budget_data, get_all_available_data
 
 # Import validation helpers with fallback
 try:
@@ -32,6 +33,12 @@ except ImportError:
         validate_percentage_ranges,
         validate_logical_relationships_spending,
     )
+
+# Tolerances for spending tests
+# Absolute tolerance is in AMD
+SPENDING_ABS_TOL: float = 5.0
+# Fractional tolerance is for percentage/ratio checks
+SPENDING_FRAC_TOL: float = 1e-3
 
 
 def test_spending_financial_consistency(spending_data):
@@ -103,7 +110,7 @@ def test_spending_percentage_calculations(spending_data):
             # Compare with actual percentages (with tolerance for floating point)
             actual_pct = df["subprogram_actual_vs_rev_annual_plan"]
             differences = abs(expected_pct - actual_pct)
-            tolerance = 0.001  # 0.1% tolerance
+            tolerance = SPENDING_FRAC_TOL  # 0.1% tolerance
 
             significant_diffs = differences > tolerance
             if significant_diffs.any():
@@ -285,3 +292,84 @@ def test_spending_quarterly_progression(spending_data):
                     import warnings
 
                     warnings.warn("\n".join(lines))
+
+
+# Precompute spending parameter sets and stable IDs
+_SPENDING_PARAMS = [(y, t) for (y, t) in get_all_available_data() if str(t).startswith("SPENDING_")]
+_SPENDING_IDS = [f"{y}_{t}" for (y, t) in _SPENDING_PARAMS]
+
+
+@pytest.mark.parametrize("year, source_type", _SPENDING_PARAMS, ids=_SPENDING_IDS)
+def test_spending_csv_non_empty(year: int, source_type: str) -> None:
+    data = load_budget_data(year, source_type)
+    assert len(data.df) > 0, f"{year}/{source_type}: CSV is empty ({data.file_path})"
+
+
+@pytest.mark.parametrize("year, source_type", _SPENDING_PARAMS, ids=_SPENDING_IDS)
+def test_spending_overall_matches_csv(year: int, source_type: str) -> None:
+    data = load_budget_data(year, source_type)
+    df = data.df
+    overall = data.overall_values
+
+    def sum_sub(col: str) -> float:
+        return float(df[col].sum()) if col in df.columns else 0.0
+
+    # Annual and revised annual totals
+    if "overall_annual_plan" in overall:
+        _ov = round(float(overall["overall_annual_plan"]), 2)
+        _sum = round(sum_sub("subprogram_annual_plan"), 2)
+        _diff = round(_ov - _sum, 2)
+        assert abs(_ov - _sum) <= SPENDING_ABS_TOL, (
+            f"{year}/{source_type}: overall_annual_plan mismatch: "
+            f"overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}"
+        )
+    if "overall_rev_annual_plan" in overall:
+        _ov = round(float(overall["overall_rev_annual_plan"]), 2)
+        _sum = round(sum_sub("subprogram_rev_annual_plan"), 2)
+        _diff = round(_ov - _sum, 2)
+        assert abs(_ov - _sum) <= SPENDING_ABS_TOL, (
+            f"{year}/{source_type}: overall_rev_annual_plan mismatch: "
+            f"overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}"
+        )
+    # Period totals for quarterly reports
+    if source_type in ("SPENDING_Q1", "SPENDING_Q12", "SPENDING_Q123"):
+        if "overall_period_plan" in overall:
+            _ov = round(float(overall["overall_period_plan"]), 2)
+            _sum = round(sum_sub("subprogram_period_plan"), 2)
+            _diff = round(_ov - _sum, 2)
+            assert abs(_ov - _sum) <= SPENDING_ABS_TOL, (
+                f"{year}/{source_type}: overall_period_plan mismatch: "
+                f"overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}"
+            )
+        if "overall_rev_period_plan" in overall:
+            _ov = round(float(overall["overall_rev_period_plan"]), 2)
+            _sum = round(sum_sub("subprogram_rev_period_plan"), 2)
+            _diff = round(_ov - _sum, 2)
+            assert abs(_ov - _sum) <= SPENDING_ABS_TOL, (
+                f"{year}/{source_type}: overall_rev_period_plan mismatch: "
+                f"overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}"
+            )
+    # Actual totals
+    if "overall_actual" in overall:
+        _ov = round(float(overall["overall_actual"]), 2)
+        _sum = round(sum_sub("subprogram_actual"), 2)
+        _diff = round(_ov - _sum, 2)
+        assert abs(_ov - _sum) <= SPENDING_ABS_TOL, (
+            f"{year}/{source_type}: overall_actual mismatch: "
+            f"overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}"
+        )
+    # Ratios (check math, allow tiny float error)
+    if overall.get("overall_rev_annual_plan"):
+        exp = float(overall.get("overall_actual", 0.0)) / float(overall["overall_rev_annual_plan"])
+        if "overall_actual_vs_rev_annual_plan" in overall:
+            assert (
+                abs(float(overall["overall_actual_vs_rev_annual_plan"]) - exp) <= SPENDING_FRAC_TOL
+            )
+    if source_type in ("SPENDING_Q1", "SPENDING_Q12", "SPENDING_Q123") and overall.get(
+        "overall_rev_period_plan"
+    ):
+        exp = float(overall.get("overall_actual", 0.0)) / float(overall["overall_rev_period_plan"])
+        if "overall_actual_vs_rev_period_plan" in overall:
+            assert (
+                abs(float(overall["overall_actual_vs_rev_period_plan"]) - exp) <= SPENDING_FRAC_TOL
+            )

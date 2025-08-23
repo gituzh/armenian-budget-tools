@@ -9,7 +9,7 @@ test_dir = Path(__file__).parent.parent
 if str(test_dir) not in sys.path:
     sys.path.insert(0, str(test_dir))
 
-from conftest import budget_law_data, BudgetDataInfo
+from conftest import budget_law_data, BudgetDataInfo, get_all_available_data, load_budget_data
 
 # Import validation helpers with fallback
 try:
@@ -23,6 +23,11 @@ except ImportError:
         validate_financial_totals_consistency,
         validate_data_quality_basic,
     )
+
+# Tolerances for budget law tests
+# Budget law totals are expected to match exactly after rounding
+BUDGET_LAW_ABS_TOL: float = 0.0
+BUDGET_LAW_FRAC_TOL: float = 0.0
 
 
 def test_budget_law_financial_consistency(budget_law_data):
@@ -87,19 +92,19 @@ def test_budget_law_grand_total_consistency(budget_law_data):
     grand_total = round(grand_total, 2)
 
     # Compare grand total with each type of sum
-    assert grand_total == state_body_sum, (
+    assert abs(grand_total - state_body_sum) <= BUDGET_LAW_ABS_TOL, (
         f"{budget_law_data.year}/{budget_law_data.source_type}: "
         f"Grand total ({grand_total}) differs from state body totals ({state_body_sum}) "
         f"by {grand_total - state_body_sum}"
     )
 
-    assert grand_total == program_sum, (
+    assert abs(grand_total - program_sum) <= BUDGET_LAW_ABS_TOL, (
         f"{budget_law_data.year}/{budget_law_data.source_type}: "
         f"Grand total ({grand_total}) differs from program totals ({program_sum}) "
         f"by {grand_total - program_sum}"
     )
 
-    assert grand_total == subprogram_sum, (
+    assert abs(grand_total - subprogram_sum) <= BUDGET_LAW_ABS_TOL, (
         f"{budget_law_data.year}/{budget_law_data.source_type}: "
         f"Grand total ({grand_total}) differs from subprogram totals ({subprogram_sum}) "
         f"by {grand_total - subprogram_sum}"
@@ -178,3 +183,14 @@ def test_budget_law_no_negative_totals(budget_law_data):
             f"\n{negative_subprogram_rows[['state_body', 'program_code', 'subprogram_code', 'subprogram_name', 'subprogram_total']].to_string()}"
         )
         warnings.warn(warning_msg, UserWarning)
+
+
+# Non-empty CSV check for Budget Law datasets
+_BL_PARAMS = [(y, t) for (y, t) in get_all_available_data() if str(t) == "BUDGET_LAW"]
+_BL_IDS = [f"{y}_{t}" for (y, t) in _BL_PARAMS]
+
+
+@pytest.mark.parametrize("year, source_type", _BL_PARAMS, ids=_BL_IDS)
+def test_budget_law_csv_non_empty(year: int, source_type: str) -> None:
+    data = load_budget_data(year, source_type)
+    assert len(data.df) > 0, f"{year}/{source_type}: CSV is empty ({data.file_path})"

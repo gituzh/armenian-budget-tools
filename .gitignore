@@ -23,5 +23,7 @@ raw_data/
 *.log
 
 data/original/
-data/extracted/
+data/extracted/*
+!data/extracted/discovery_index.json
 data/processed/tmp
+data/processed/processing_report.json

@@ -6,6 +6,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-08-24
+
+### Added
+
+- Add tests for non-empty budget law files (module: `tests.data_validation.test_budget_law_validation`)
+- Add tests for spending consistency and non-empty datasets (module: `tests.data_validation.test_spending_validation`)
+- Add MCP documentation (file: `docs/mcp.md`)
+
+### Fixed
+
+- Fix parser patterns and refresh discovery index (modules: `config.parsers.yaml`, `data.extracted.discovery_index.json`)
+
+### Changed
+
+- Improve MCP server (module: `armenian_budget.interfaces.mcp.server`)
+- Update `README.md` and tests README
+- Update `.gitignore`
+
 ## [0.2.0] - 2025-08-11
 
 ### Added
@@ -32,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release: add standalone script `extract_budget_articles.py` to extract 2025 budget articles; include sample output under `output/2025/`
 
-[Unreleased]: <https://github.com/gituzh/budget-am/compare/0.2.0...HEAD>
+[Unreleased]: <https://github.com/gituzh/budget-am/compare/0.3.0...HEAD>
+[0.3.0]: <https://github.com/gituzh/budget-am/compare/0.2.0...0.3.0>
 [0.2.0]: <https://github.com/gituzh/budget-am/compare/0.1.0...0.2.0>
 [0.1.0]: <https://github.com/gituzh/budget-am/releases/tag/0.1.0>
