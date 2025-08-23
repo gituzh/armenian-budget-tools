@@ -38,9 +38,17 @@ Parse, validate, and analyze Armenian state budget laws and spending reports. Ou
 
 ## At a glance
 
-- Who it’s for: Analysts using Excel/BI; developers/data scientists using Python/Wolfram; auditors who need source traceability; users who prefer AI‑assisted analysis via the MCP server.
+- Who it’s for:
+  - Analysts using Excel/BI
+  - Developers/data scientists using Python/Wolfram
+  - Auditors who need source traceability
+  - Users who prefer AI‑assisted analysis via the MCP server
 - What it does: Parses and validates Armenian state budget laws (2019–2025) and spending reports (Q1/Q12/Q123/Q1234, 2019–2024 when available), producing clean CSVs for analysis.
-- Where outputs go: `data/original` (downloaded), `data/extracted` (unarchived), `data/processed/csv` (results). Optional end‑of‑run JSON report and recorded checksums for provenance.
+- Where outputs go:
+  - `data/original` (downloaded)
+  - `data/extracted` (unarchived)
+  - `data/processed/csv` (results)
+  - Optional end‑of‑run JSON report and recorded checksums for provenance
 - Why trust it: Deterministic, validation‑first processing with clear warnings vs errors, tolerance‑aware checks, discovery index for input selection, and traceability to original files.
 
 ## Quickstart
@@ -129,6 +137,7 @@ Create or edit `~/Library/Application Support/Claude/claude_desktop_config.json`
 armenian-budget mcp-server --data-path ./data/processed
 ```
 
+- More: see `docs/mcp.md` for resources, tools, and HTTP/HTTPS options.
 - More integration details and HTTPS setup: see [Further reading](#further-reading).
 
 ## Installation
@@ -393,5 +402,6 @@ MIT License — see `LICENSE`.
 ## Further reading
 
 - Architecture: `docs/architecture.md`
+- MCP server: `docs/mcp.md`
 - Product Requirements: `docs/prd.md`
 - Roadmap: `docs/roadmap.md`
