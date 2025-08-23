@@ -1,0 +1,302 @@
+{
+  "2019/budget_law": {
+    "key": "2019/budget_law",
+    "path": "data/extracted/budget_laws/2019/Orenqi havelvacner_Excel/2.Հավելված N1 աղյուսակ N2 ծախսերն ըստ ծրագրերի և միջոցառումների.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1747107406.0,
+    "size": 901120,
+    "checksum": "sha256:ca993049125ccb811ce1af0e14ddf2de5c47feb28ee535434d3b6b197ea27679",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2019/spending_q1": {
+    "key": "2019/spending_q1",
+    "path": "data/extracted/spending_reports/2019/Q1/ebb39f5f/Havelvac/2. 2019_Ieramsyak_pat.crag.mij..xls",
+    "matched_by": "2019",
+    "pattern": "(?i)(?=.*crag)(?=.*mij).*\\.(xlsx|xls)$",
+    "mtime": 1557311542.0,
+    "size": 1212416,
+    "checksum": "sha256:b6e733f8c4664f8b038e5240794b02ad42f101120c211a9acdd3010c1489b80c",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2019/spending_q12": {
+    "key": "2019/spending_q12",
+    "path": "data/extracted/spending_reports/2019/Q12/46e5e267/4. 2019_kisamyak_pat.crag.mij..xls",
+    "matched_by": "2019",
+    "pattern": "(?i)(?=.*crag)(?=.*mij).*\\.(xlsx|xls)$",
+    "mtime": 1747107407.0,
+    "size": 1771008,
+    "checksum": "sha256:d5736fd62f5643dec159c73eb868c55f9457a0243e67786324d248ec7f88427d",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2019/spending_q123": {
+    "key": "2019/spending_q123",
+    "path": "data/extracted/spending_reports/2019/Q123/8fc37ef0/Havelvac/2. 2019_9 amis_patasx.crag.mijocar..xls",
+    "matched_by": "2019",
+    "pattern": "(?i)(?=.*crag)(?=.*mij).*\\.(xlsx|xls)$",
+    "mtime": 1573218402.5438557,
+    "size": 1907712,
+    "checksum": "sha256:bb8c0ecaa1664db58be7a283ac3939231b573c517bcfb9e086c8a27a2fbb9179",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2019/spending_q1234": {
+    "key": "2019/spending_q1234",
+    "path": "data/extracted/spending_reports/2019/Q1234/38b4849d/3.Հավելված/3.Հավելված 1 աղյուսակ 2_ ծախսերն ըստ ծրագրերի և միջոց.xlsx",
+    "matched_by": "2019",
+    "pattern": "(?i)(?=.*crag)(?=.*mij).*\\.(xlsx|xls)$",
+    "mtime": 1587480062.0,
+    "size": 497381,
+    "checksum": "sha256:c9e303ba593eb9d58ab6ae36b6ca8c6faa9d28f899be7d37c2f1fe5ce5ba7caa",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2020/budget_law": {
+    "key": "2020/budget_law",
+    "path": "data/extracted/budget_laws/2020/2.1.Havelvacner_Orenq/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1747107406.9852736,
+    "size": 258329,
+    "checksum": "sha256:39c80aa682e61eb1cb7c920ada96aa211c97bb2328359a30b722cd59d2818dae",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2020/spending_q1": {
+    "key": "2020/spending_q1",
+    "path": "data/extracted/spending_reports/2020/Q1/e35aa8b2/Հավելվածներ/2020_I եռամսյակ_պատասխանատու. ծրագիր.միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1588939765.0,
+    "size": 1579008,
+    "checksum": "sha256:ea18c5ccc166644daeb077e52f568cb16d44be6a6f51794ec581b87564ca92fa",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2020/spending_q12": {
+    "key": "2020/spending_q12",
+    "path": "data/extracted/spending_reports/2020/Q12/fae8ace8/Հավելվածներ/2020_I կիսամյակ_պատասխանատու. ծրագիր.միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1754833097.4385405,
+    "size": 1680896,
+    "checksum": "sha256:942f4a3e4f54bdaa63823d4db64fb51514769e69805f163efdf641027de0a251",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2020/spending_q123": {
+    "key": "2020/spending_q123",
+    "path": "data/extracted/spending_reports/2020/Q123/20209/20209/2020_9 ամիս_պատասխանատու. ծրագիր.միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1754833097.459468,
+    "size": 1768448,
+    "checksum": "sha256:ae7e369ab3ada577089d662a777a8b6a5812e151d0b9182fa5cc6adaefc7b4dd",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2020/spending_q1234": {
+    "key": "2020/spending_q1234",
+    "path": "data/extracted/spending_reports/2020/Q1234/03addb4d/3.Հավելված/3.Հավելված N1 աղյուսակ N2_ծախսերն ըստ ծրագրերի և միջոցառումների.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1754833097.4711432,
+    "size": 1526784,
+    "checksum": "sha256:da22d880bacba138cc60e5f307629ce6d0b8b7d33d82ca56bf5bcffce32c9b6f",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2021/budget_law": {
+    "key": "2021/budget_law",
+    "path": "data/extracted/budget_laws/2021/Orenqo havelvacner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1747107406.9791937,
+    "size": 814080,
+    "checksum": "sha256:3cfd4d86d5314ebbc0018a9978c1ec3e3925b3db4b666dd9856862e8ebe490db",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2021/spending_q1": {
+    "key": "2021/spending_q1",
+    "path": "data/extracted/spending_reports/2021/Q1/9134c724/Հավելվածներ/4. 2021_I եռամսյակ_ պատասխանատու,ծրագիր.միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1620406014.0,
+    "size": 1550848,
+    "checksum": "sha256:a9523a6385a647d82a48cd33ca52afd38956c23d812efb44f5eb20aef6117fe0",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2021/spending_q12": {
+    "key": "2021/spending_q12",
+    "path": "data/extracted/spending_reports/2021/Q12/9fbf73d2/9fbf73d2/Հավելվածներ/4. 2021_I կիսամյակ_ պատասխանատու,ծրագիր.միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1628511744.0839672,
+    "size": 1658368,
+    "checksum": "sha256:b12eea2c390514c19ac14635d9cb751e91dce1085b0a4b4fb38da7b285f8cb66",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2021/spending_q123": {
+    "key": "2021/spending_q123",
+    "path": "data/extracted/spending_reports/2021/Q123/2449c06b 1/Հավելվածներ/4. 2021_9 ամիս_ պատասխանատու,ծրագիր.միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1754839627.5413668,
+    "size": 1711104,
+    "checksum": "sha256:9d85abac83d4c7de8c43974164a6a9b266e81defe5c91387bcfe912ee5e97396",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2021/spending_q1234": {
+    "key": "2021/spending_q1234",
+    "path": "data/extracted/spending_reports/2021/Q1234/d3462f75/3.ՀԱՎԵԼՎԱԾՆԵՐ/3.Հավելված N1 աղյուսակ N2_ծախսերն ըստ ծրագրերի և միջոցառումների.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1650285456.3631458,
+    "size": 1484288,
+    "checksum": "sha256:50a9fea826365a3d121da10c73aa95aa0a4f40e11e7a2e94f5aa0e41d4612d77",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2022/budget_law": {
+    "key": "2022/budget_law",
+    "path": "data/extracted/budget_laws/2022/1.1.ORENQI_HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1747107406.9194386,
+    "size": 857088,
+    "checksum": "sha256:c6ed9ee1189d0404706aafd4daadf9aa4cc737b97bee3531680595f84a6dfa4a",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2022/spending_q1": {
+    "key": "2022/spending_q1",
+    "path": "data/extracted/spending_reports/2022/Q1/46670e22/4.Հավելվածներ/2. 2022_I եռամսյակ_ պատասխանատու,ծրագիր,միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1651851854.3751202,
+    "size": 1564160,
+    "checksum": "sha256:4ccb2343ece21be1b719fe797857b5e9e66528ccbd09e279f2f7c9b45c2d48c2",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2022/spending_q12": {
+    "key": "2022/spending_q12",
+    "path": "data/extracted/spending_reports/2022/Q12/2c396593/4.Հավելվածներ/2. 2022_I կիսամյակ_ պատասխանատու,ծրագիր,միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1660058398.2529907,
+    "size": 1660416,
+    "checksum": "sha256:aa10681f47d80a6c076570c3e7d3d058aba7b8f42846777a66bbb203af280770",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2022/spending_q123": {
+    "key": "2022/spending_q123",
+    "path": "data/extracted/spending_reports/2022/Q123/efbe8db6/4.Հավելվածներ/2. 2022_9 ամիս_ պատասխանատու,ծրագիր,միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1667993993.4303703,
+    "size": 1751552,
+    "checksum": "sha256:8206ea8a15d7ecaf623a212e7536c7300e59b226c7ee9eb4967075d4a90cf566",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2022/spending_q1234": {
+    "key": "2022/spending_q1234",
+    "path": "data/extracted/spending_reports/2022/Q1234/65b6c5b5/4.Հավելվածներ/3.Հավելված N1 աղյուսակ N2_ծախսերն ըստ ծրագրերի և միջոցառումների.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1681973210.0,
+    "size": 1482752,
+    "checksum": "sha256:adca6fb775b8a29bad4eace916a1985abea2abed5f04ca6d672e038e48049d72",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2023/budget_law": {
+    "key": "2023/budget_law",
+    "path": "data/extracted/budget_laws/2023/1.1.ORENQI HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1747107406.9435482,
+    "size": 893440,
+    "checksum": "sha256:73feba3b44b175f87a8bae129d2f9e47c3c6628a7d9a541fc3ae36829151bf83",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2023/spending_q1": {
+    "key": "2023/spending_q1",
+    "path": "data/extracted/spending_reports/2023/Q1/1973b22e/4.Հավելվածներ/2. 2023_I եռամսյակ_ պատասխանատու,ծրագիր,միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1683561026.0,
+    "size": 1645568,
+    "checksum": "sha256:69722074420b8a403e9892b3180b460ec46f431ae8ee136d0fde469dfa8f47af",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2023/spending_q12": {
+    "key": "2023/spending_q12",
+    "path": "data/extracted/spending_reports/2023/Q12/f601731c/4.Հավելվածներ/2. 2023_I կիսամյակ_ պատասխանատու,ծրագիր,միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1691588245.896328,
+    "size": 1743360,
+    "checksum": "sha256:a01a6e67f6a660a1b9912186b0e17f5e8eef4be196e0199f14463e160c48ff31",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2023/spending_q123": {
+    "key": "2023/spending_q123",
+    "path": "data/extracted/spending_reports/2023/Q123/49c3ab4d/49c3ab4d/2. 2023_9 ամիս_ պատասխանատու,ծրագիր,միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1699534154.344595,
+    "size": 1812480,
+    "checksum": "sha256:20f092c043d7ae0d0b536c91b7c17e8a8ce9e9200d180bedfa169346e9e15361",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2023/spending_q1234": {
+    "key": "2023/spending_q1234",
+    "path": "data/extracted/spending_reports/2023/Q1234/eeb4fff4/4.Հավելվածներ/3.Հավելված N1 աղյուսակ N2_ծախսերն ըստ ծրագրերի և միջոցառումների.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1713273230.0,
+    "size": 1546240,
+    "checksum": "sha256:d01972b870023647175a449d1160c790ae94e2c8fd9b1713075e9748e242ae62",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2024/budget_law": {
+    "key": "2024/budget_law",
+    "path": "data/extracted/budget_laws/2024/ORENQ HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների+.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1747107406.0,
+    "size": 897024,
+    "checksum": "sha256:660e189c8929c75229e1224dacf1f00e589ee7e7a2c2b368ee6c260fc2cdf6a3",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2024/spending_q1": {
+    "key": "2024/spending_q1",
+    "path": "data/extracted/spending_reports/2024/Q1/1600a624/4.Հավելվածներ/2. 2024_I եռամսյակ_ պատասխանատու,ծրագիր,միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1715168874.3668766,
+    "size": 1660928,
+    "checksum": "sha256:449807e25d15aa8f4621cbedb9cfa1f99c14897f64870c01e890fdd113c36db6",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2024/spending_q12": {
+    "key": "2024/spending_q12",
+    "path": "data/extracted/spending_reports/2024/Q12/4151505e/4.Հավելվածներ/2. 2024_I կիսամյակ_ պատասխանատու,ծրագիր,միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1723107471.4779625,
+    "size": 1717760,
+    "checksum": "sha256:07cf027cd3893311ec7a6db7e43f509753757019ef8d75a279bca0ca086d8e8b",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2024/spending_q123": {
+    "key": "2024/spending_q123",
+    "path": "data/extracted/spending_reports/2024/Q123/3ec82128/3ec82128/2. 2024_9 ամիս_ պատասխանատու,ծրագիր,միջոցառում.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1731056425.527048,
+    "size": 1778176,
+    "checksum": "sha256:dbdf681bd8de29d69d4b73009bef119c8bba7a3a59adac3665309b15a0c0605f",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  },
+  "2025/budget_law": {
+    "key": "2025/budget_law",
+    "path": "data/extracted/budget_laws/2025/օրենքի հավելվածներ/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1747107406.9242134,
+    "size": 148356,
+    "checksum": "sha256:8a95bddc42991c018bbc8af2210829306fe68cfd56ec71e407a9c06929b24970",
+    "discovered_at": "2025-08-23T19:15:00Z"
+  }
+}
