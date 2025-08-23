@@ -24,6 +24,11 @@ except ImportError:
         validate_data_quality_basic,
     )
 
+# Tolerances for budget law tests
+# Budget law totals are expected to match exactly after rounding
+BUDGET_LAW_ABS_TOL: float = 0.0
+BUDGET_LAW_FRAC_TOL: float = 0.0
+
 
 def test_budget_law_financial_consistency(budget_law_data):
     """Test that budget law financial totals are consistent across all levels."""
@@ -87,19 +92,19 @@ def test_budget_law_grand_total_consistency(budget_law_data):
     grand_total = round(grand_total, 2)
 
     # Compare grand total with each type of sum
-    assert grand_total == state_body_sum, (
+    assert abs(grand_total - state_body_sum) <= BUDGET_LAW_ABS_TOL, (
         f"{budget_law_data.year}/{budget_law_data.source_type}: "
         f"Grand total ({grand_total}) differs from state body totals ({state_body_sum}) "
         f"by {grand_total - state_body_sum}"
     )
 
-    assert grand_total == program_sum, (
+    assert abs(grand_total - program_sum) <= BUDGET_LAW_ABS_TOL, (
         f"{budget_law_data.year}/{budget_law_data.source_type}: "
         f"Grand total ({grand_total}) differs from program totals ({program_sum}) "
         f"by {grand_total - program_sum}"
     )
 
-    assert grand_total == subprogram_sum, (
+    assert abs(grand_total - subprogram_sum) <= BUDGET_LAW_ABS_TOL, (
         f"{budget_law_data.year}/{budget_law_data.source_type}: "
         f"Grand total ({grand_total}) differs from subprogram totals ({subprogram_sum}) "
         f"by {grand_total - subprogram_sum}"

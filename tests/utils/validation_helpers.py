@@ -47,6 +47,24 @@ def validate_financial_totals_consistency(
     if str(data.source_type).startswith("SPENDING_"):
         local_tolerance = max(local_tolerance, 1.0)
 
+    # Helper: summarize a list of mismatch lines by extracting diff values
+    def _summarize_diff_lines(lines: List[str]) -> tuple[int, float]:
+        count = len(lines)
+        max_abs = 0.0
+        for s in lines:
+            start = s.rfind("(diff:")
+            if start != -1:
+                end = s.find(")", start)
+                if end != -1:
+                    raw = s[start + len("(diff:") : end].strip()
+                    try:
+                        val = float(raw)
+                        if abs(val) > max_abs:
+                            max_abs = abs(val)
+                    except (TypeError, ValueError):
+                        continue
+        return count, max_abs
+
     # For each financial column type, check consistency
     for col_type in financial_cols["state_body"]:
         base_name = col_type.replace("state_body_", "")
@@ -59,10 +77,13 @@ def validate_financial_totals_consistency(
                 df, col_type, program_col, local_tolerance
             )
             if state_body_program_mismatches:
+                _cnt, _max = _summarize_diff_lines(state_body_program_mismatches)
                 errors.extend(
                     [
-                        f"{data.year}/{data.source_type}: State body {col_type} "
-                        "vs program sums inconsistencies:"
+                        (
+                            f"{data.year}/{data.source_type}: State body {col_type} "
+                            f"vs program sums inconsistencies: [count={_cnt}, max_abs_diff={_max:.2f}]"
+                        )
                     ]
                     + state_body_program_mismatches
                 )
@@ -72,10 +93,13 @@ def validate_financial_totals_consistency(
                 df, col_type, subprogram_col, local_tolerance
             )
             if state_body_subprogram_mismatches:
+                _cnt, _max = _summarize_diff_lines(state_body_subprogram_mismatches)
                 errors.extend(
                     [
-                        f"{data.year}/{data.source_type}: State body {col_type} "
-                        "vs subprogram sums inconsistencies:"
+                        (
+                            f"{data.year}/{data.source_type}: State body {col_type} "
+                            f"vs subprogram sums inconsistencies: [count={_cnt}, max_abs_diff={_max:.2f}]"
+                        )
                     ]
                     + state_body_subprogram_mismatches
                 )
@@ -85,8 +109,14 @@ def validate_financial_totals_consistency(
                 df, program_col, subprogram_col, col_type, local_tolerance
             )
             if program_mismatches:
+                _cnt, _max = _summarize_diff_lines(program_mismatches)
                 errors.extend(
-                    [f"{data.year}/{data.source_type}: Program {program_col} inconsistencies:"]
+                    [
+                        (
+                            f"{data.year}/{data.source_type}: Program {program_col} inconsistencies: "
+                            f"[count={_cnt}, max_abs_diff={_max:.2f}]"
+                        )
+                    ]
                     + program_mismatches
                 )
 
