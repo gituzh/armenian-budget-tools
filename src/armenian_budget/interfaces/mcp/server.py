@@ -24,6 +24,32 @@ import json
 import sys
 import yaml
 import pandas as pd
+import importlib as _importlib
+try:
+    _importlib.import_module("polars")
+except Exception:
+    pass
+
+# Core query engine (new)
+try:
+    from armenian_budget.core.query import (
+        list_datasets as core_list_datasets,
+        get_dataset_schema as core_get_dataset_schema,
+        get_column_roles as core_get_column_roles,
+        scan_dataset as core_scan_dataset,
+        build_lazy_query as core_build_lazy_query,
+        estimate_result_size as core_estimate_result_size,
+        distinct_values as core_distinct_values,
+    )
+except Exception:
+    # Fallbacks: if core not available yet, keep server importable; tools will error when called
+    core_list_datasets = None  # type: ignore
+    core_get_dataset_schema = None  # type: ignore
+    core_get_column_roles = None  # type: ignore
+    core_scan_dataset = None  # type: ignore
+    core_build_lazy_query = None  # type: ignore
+    core_estimate_result_size = None  # type: ignore
+    core_distinct_values = None  # type: ignore
 
 try:
     from mcp.server.fastmcp import FastMCP
@@ -577,6 +603,262 @@ def _save_temp_file(df: pd.DataFrame) -> Path:
     tmp_path = tmp_dir / f"filtered_{uuid4().hex[:8]}.csv"
     df.to_csv(tmp_path, index=False)
     return tmp_path
+
+
+def _save_temp_polars(df: Any, *, file_format: str = "parquet") -> Path:
+    tmp_dir = Path("data/processed/tmp")
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    ext = "parquet" if file_format == "parquet" else "csv"
+    tmp_path = tmp_dir / f"query_{uuid4().hex[:8]}.{ext}"
+    if file_format == "parquet":
+        try:
+            df.write_parquet(tmp_path)
+            return tmp_path
+        except Exception:
+            # Fallback to CSV if parquet fails
+            pass
+    # CSV fallback
+    df.write_csv(tmp_path)
+    return tmp_path
+
+
+def _sync_core_data_dir() -> None:
+    """Sync core query modules to current data dir for CSVs."""
+    try:
+        import armenian_budget.core.query.catalog as cq_catalog
+        import armenian_budget.core.query.scan as cq_scan
+
+        base = _processed_csv_dir()
+        cq_catalog.DATA_PROCESSED_CSV = base  # type: ignore[attr-defined]
+        # scan.py also caches this constant at import time
+        cq_scan.DATA_PROCESSED_CSV = base  # type: ignore[attr-defined]
+    except Exception:
+        pass
+
+
+# -------------------------
+# MARK: New Query Tools (Phase 1-2)
+# -------------------------
+
+
+@_SERVER.tool(
+    "get_catalog",
+    title="Get dataset catalog",
+    description="List available datasets with approximate sizes; supports filtering by years and source types.",
+)
+async def get_catalog(years: Optional[List[int]] = None, source_types: Optional[List[str]] = None) -> Dict[str, Any]:
+    try:
+        _sync_core_data_dir()
+        if core_list_datasets is None:
+            return {"error": "core query module not available"}
+        entries = core_list_datasets(years=years, source_types=source_types)
+        datasets = [
+            {
+                "year": int(e.year),
+                "source_type": str(e.source_type),
+                "path": str(e.path),
+                "row_count_approx": int(e.row_count_approx) if e.row_count_approx is not None else None,
+                "file_size_bytes": int(e.file_size_bytes) if e.file_size_bytes is not None else None,
+                "last_modified_iso": e.last_modified_iso,
+            }
+            for e in entries
+        ]
+        return {"datasets": datasets, "total": len(datasets)}
+    except Exception as exc:
+        logger.error("get_catalog error: %s", exc)
+        return {"error": str(exc)}
+
+
+@_SERVER.tool(
+    "get_schema",
+    title="Get dataset schema",
+    description="Return columns, dtypes, roles, shape, and sample rows for the dataset.",
+)
+async def get_schema(year: int, source_type: str) -> Dict[str, Any]:
+    try:
+        _sync_core_data_dir()
+        if core_get_dataset_schema is None or core_scan_dataset is None:
+            return {"error": "core query module not available"}
+        card = core_get_dataset_schema(int(year), str(source_type))
+        roles = core_get_column_roles(str(source_type)) if core_get_column_roles else {}
+
+        # If card lacks columns, infer via Polars scan
+        need_infer = not card.get("columns")
+        if need_infer:
+            lf = core_scan_dataset(int(year), str(source_type))
+            columns = list(lf.columns)
+            dtypes = {c: str(lf.schema[c]) for c in columns}
+            # Approximate total rows from file line count (cheap)
+            csv_path = _processed_csv_dir() / f"{int(year)}_{str(source_type).upper()}.csv"
+            try:
+                with open(csv_path, "r", encoding="utf-8") as f:
+                    total_rows = max(0, sum(1 for _ in f) - 1)
+            except Exception:
+                total_rows = None
+            sample_rows = lf.limit(3).collect().to_dicts()
+            card.update(
+                {
+                    "columns": columns,
+                    "dtypes": dtypes,
+                    "roles": roles,
+                    "shape": [total_rows, len(columns)] if total_rows is not None else ["approx", len(columns)],
+                    "sample_rows": sample_rows,
+                }
+            )
+        else:
+            card["roles"] = roles
+
+        return card
+    except Exception as exc:
+        logger.error("get_schema error: %s", exc)
+        return {"error": str(exc)}
+
+
+@_SERVER.tool(
+    "distinct_values",
+    title="Get distinct values",
+    description="Return most frequent distinct values for a column to aid exploration.",
+)
+async def tool_distinct_values(year: int, source_type: str, column: str, limit: int = 100, min_count: int = 1) -> Dict[str, Any]:
+    try:
+        _sync_core_data_dir()
+        if core_scan_dataset is None or core_distinct_values is None:
+            return {"error": "core query module not available"}
+        lf = core_scan_dataset(int(year), str(source_type))
+        if column not in lf.columns:
+            return {"error": f"Unknown column: {column}", "columns": lf.columns}
+        vals = core_distinct_values(lf, column, limit=int(limit), min_count=int(min_count))
+        return {"values": vals, "column": column, "year": int(year), "source_type": str(source_type)}
+    except FileNotFoundError as exc:
+        return {"error": str(exc)}
+    except Exception as exc:
+        logger.error("distinct_values error: %s", exc)
+        return {"error": str(exc)}
+
+
+@_SERVER.tool(
+    "estimate_query",
+    title="Estimate query size",
+    description="Estimate rows/bytes and return a tiny preview for the given knobs.",
+)
+async def estimate_query(
+    year: int,
+    source_type: str,
+    columns: Optional[List[str]] = None,
+    filters: Optional[List[Dict[str, Any]]] = None,
+    group_by: Optional[List[str]] = None,
+    aggs: Optional[List[Dict[str, str]]] = None,
+    distinct: bool = False,
+) -> Dict[str, Any]:
+    try:
+        _sync_core_data_dir()
+        if core_scan_dataset is None or core_build_lazy_query is None or core_estimate_result_size is None:
+            return {"error": "core query module not available"}
+        lf = core_scan_dataset(int(year), str(source_type))
+        plan = core_build_lazy_query(
+            lf,
+            columns=columns,
+            filters=filters,
+            group_by=group_by,
+            aggs=aggs,
+            distinct=bool(distinct),
+        )
+        est = core_estimate_result_size(plan)
+        preview = plan.limit(5).collect().to_dicts()
+        return {
+            "row_estimate": est.get("row_estimate", 0),
+            "byte_estimate": est.get("byte_estimate", 0),
+            "preview": preview,
+            "suggested_caps": {"max_rows": 5000, "max_bytes": 2_000_000},
+            "warnings": [],
+        }
+    except FileNotFoundError as exc:
+        return {"error": str(exc)}
+    except Exception as exc:
+        logger.error("estimate_query error: %s", exc)
+        return {"error": str(exc)}
+
+
+@_SERVER.tool(
+    "query_data",
+    title="Query data",
+    description="Execute a knobs-based query with limits and return data inline or as a file.",
+)
+async def query_data(
+    year: int,
+    source_type: str,
+    columns: Optional[List[str]] = None,
+    filters: Optional[List[Dict[str, Any]]] = None,
+    group_by: Optional[List[str]] = None,
+    aggs: Optional[List[Dict[str, str]]] = None,
+    distinct: bool = False,
+    order_by: Optional[List[Dict[str, Any]]] = None,
+    limit: Optional[int] = None,
+    offset: int = 0,
+    output_format: str = "json",
+    max_rows: int = 5000,
+    max_bytes: int = 2_000_000,
+) -> Dict[str, Any]:
+    try:
+        _sync_core_data_dir()
+        if core_scan_dataset is None or core_build_lazy_query is None:
+            return {"error": "core query module not available"}
+        lf = core_scan_dataset(int(year), str(source_type))
+        plan = core_build_lazy_query(
+            lf,
+            columns=columns,
+            filters=filters,
+            group_by=group_by,
+            aggs=aggs,
+            distinct=bool(distinct),
+            order_by=order_by,
+        )
+
+        if offset:
+            plan = plan.slice(int(offset), None)
+        if limit:
+            plan = plan.limit(int(limit))
+
+        df = plan.collect()
+        if output_format == "json":
+            data = df.to_dicts()
+            s = json.dumps({"data": data}, ensure_ascii=False)
+            if len(s.encode("utf-8")) <= int(max_bytes) and len(data) <= int(max_rows):
+                return {
+                    "method": "direct",
+                    "data": data,
+                    "row_count": int(df.height),
+                    "page_info": {
+                        "offset": int(offset),
+                        "size": int(len(data)),
+                        "has_more": False,
+                    },
+                }
+            # too large → write to file (parquet preferred)
+            tmp = _save_temp_polars(df, file_format="parquet")
+            return {
+                "method": "file",
+                "file_path": str(tmp),
+                "format": "parquet" if str(tmp).endswith(".parquet") else "csv",
+                "row_count": int(df.height),
+                "preview": df.head(10).to_dicts(),
+            }
+        elif output_format in {"csv", "parquet"}:
+            tmp = _save_temp_polars(df, file_format=str(output_format))
+            return {
+                "method": "file",
+                "file_path": str(tmp),
+                "format": "parquet" if str(tmp).endswith(".parquet") else "csv",
+                "row_count": int(df.height),
+                "preview": df.head(10).to_dicts(),
+            }
+        else:
+            return {"error": f"Unsupported format: {output_format}"}
+    except FileNotFoundError as exc:
+        return {"error": str(exc)}
+    except Exception as exc:
+        logger.error("query_data error: %s", exc)
+        return {"error": str(exc)}
 
 
 @_SERVER.tool(

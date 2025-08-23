@@ -1,3 +1,4 @@
+-e .
 pandas
 openpyxl
 numpy
@@ -9,3 +10,5 @@ colorlog
 mcp
 rapidfuzz
 pyyaml
+polars
+pyarrow

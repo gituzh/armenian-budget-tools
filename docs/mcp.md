@@ -66,6 +66,25 @@ All resources return CSV text (MIME `text/csv`).
 - `get_data_schema(year, source_type)` → Columns, dtypes, shape, sample
 - `filter_budget_data_enhanced(year, source_type, force_file_output=False, max_rows=None, **filters)` → Returns inline `data` for small results or a temp CSV `file_path` for large ones
   - Deprecation: `filter_budget_data(...)` still exists for compatibility but will be removed; prefer `filter_budget_data_enhanced`
+
+## New query tools (safe-by-default)
+
+- `get_catalog(years?=null, source_types?=null)`
+  - Returns: `datasets[{year, source_type, path, row_count_approx, file_size_bytes}]`, `total`
+
+- `get_schema(year, source_type)`
+  - Returns: `columns`, `dtypes`, `roles`, `shape`, `sample_rows`, `schema_uri?`, `file_path?`
+
+- `distinct_values(year, source_type, column, limit=100, min_count=1)`
+  - Returns: `values[{value, count}]` sorted by `count` desc
+
+- `estimate_query(year, source_type, columns?, filters?, group_by?, aggs?, distinct?)`
+  - Returns: `row_estimate`, `byte_estimate`, `preview (<=5)`, `suggested_caps`, `warnings[]`
+
+- `query_data(year, source_type, columns?, filters?, group_by?, aggs?, distinct?, order_by?, limit?, offset?, output_format='json'|'csv'|'parquet', max_rows?, max_bytes?)`
+  - Inline small results: `{method:'direct', data, row_count, page_info}`
+  - Large results: `{method:'file', file_path, format:'parquet'|'csv', row_count, preview}`
+  - Notes: JSON is for previews/small results only; large outputs go to `data/processed/tmp/` as Parquet (CSV fallback)
 - `get_ministry_spending_summary(year, ministry)` → Aggregates for a ministry using the best available source for the year
 - `get_dataset_overall(year?=None, source_type?=None)` → Aggregated totals from `*_overall.json` files
   - Returns: `{ "overalls": { "2019": { "BUDGET_LAW": {...}, "SPENDING_Q12": {...} } }, "years": [2019], "source_types": ["BUDGET_LAW","SPENDING_Q12"], "count": 2 }`
@@ -85,6 +104,18 @@ All resources return CSV text (MIME `text/csv`).
   - `view_type`: `state-bodies` or `programs`
   - `output_format`: `json` or `csv`
   - Returns JSON records or `csv_content` for the chosen view
+
+### Examples (new query flow)
+
+Estimate and then query a small slice:
+
+```json
+{"tool":"estimate_query","params":{"year":2019,"source_type":"BUDGET_LAW","columns":["state_body","program_code","program_name","subprogram_total"],"filters":[{"col":"state_body","op":"contains","value":"կրթ"}],"group_by":null,"aggs":null,"distinct":true}}
+```
+
+```json
+{"tool":"query_data","params":{"year":2019,"source_type":"BUDGET_LAW","columns":["state_body","program_code","program_name","subprogram_total"],"filters":[{"col":"state_body","op":"contains","value":"կրթ"}],"distinct":true,"order_by":[{"col":"program_code"}],"limit":200,"output_format":"json"}}
+```
 
 Example enhanced filtering call (with payload safeguards):
 
@@ -141,7 +172,7 @@ Measure columns by source type (common cases):
 ## Filesystem considerations
 
 - The server detects read-only filesystems and will return data directly in-memory
-- When writable and large outputs are produced, temp CSVs are saved under `data/processed/tmp/`
+- When writable and large outputs are produced, temp files are saved under `data/processed/tmp/` as Parquet by default (CSV fallback)
 
 ## Typical URIs and calls
 

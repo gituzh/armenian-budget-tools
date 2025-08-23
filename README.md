@@ -111,7 +111,7 @@ pip install -U -e .
 
 1. Claude Desktop (local stdio) — add a server configuration.
 
-Create or edit `~/Library/Application Support/Claude/claude_desktop_config.json` with absolute paths:
+Create or edit `"~/Library/Application Support/Claude/claude_desktop_config.json"` with absolute paths:
 
 ```json
 {
@@ -138,6 +138,23 @@ armenian-budget mcp-server --data-path ./data/processed
 ```
 
 - More: see `docs/mcp.md` for resources, tools, and HTTP/HTTPS options.
+
+#### New query tooling (safe-by-default)
+
+- Use these tools to explore and query without overwhelming the LLM context:
+  - `get_catalog(years?, source_types?)` → inventory with approximate row counts and file sizes
+  - `get_schema(year, source_type)` → columns, dtypes, roles, shape, and sample rows
+  - `distinct_values(year, source_type, column, limit?, min_count?)` → frequent values for building filters
+  - `estimate_query(year, source_type, columns?, filters?, group_by?, aggs?, distinct?)` → row/byte estimate and tiny preview
+  - `query_data(year, source_type, ..., output_format='json'|'csv'|'parquet', limit?, offset?, max_rows?, max_bytes?)` → inline JSON for small results; otherwise a temp file path (Parquet preferred, CSV fallback)
+
+- Size/format policy:
+  - JSON is only for previews and small results (caps enforced).
+  - Large results are written to `data/processed/tmp` as Parquet by default (CSV fallback) and returned as a file path.
+  - Pagination/handles will be added in a later phase; for now, use `limit`/`offset`.
+
+- Deprecations:
+  - Heavy tools that previously streamed large JSON may be internally routed through the new estimator and capped; prefer the new query tools.
 - More integration details and HTTPS setup: see [Further reading](#further-reading).
 
 ## Installation
