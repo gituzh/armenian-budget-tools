@@ -177,3 +177,21 @@ checksums:
   checksum: ea2497f9d0320bff20ceb342e9e925dd94fc2a2e183df3b0428ff7ce48dbfb52
   checksum_updated_at: '2025-08-10T14:36:05.178433+00:00'
   path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2024/Q123/3ec82128.rar
+- name: 2024_spending_q1234
+  year: 2024
+  source_type: spending_q1234
+  url: https://minfin.am/website/images/files/2024 հաշվետվություն.rar
+  checksum: f56d55d056a861affe39adc394c613578c273f63ab0b20e282467ca82f59943f
+  checksum_updated_at: '2025-09-13T02:17:40.065321+00:00'
+- name: 2025_spending_q1
+  year: 2025
+  source_type: spending_q1
+  url: https://minfin.am/website/images/files/2025_I եռամսյակ_հաշվետվություն.rar
+  checksum: e59b1668085595c9d2a9f8770ce9b04094db0006a32b1cdf27beb9041f9a19f3
+  checksum_updated_at: '2025-09-13T02:18:59.562590+00:00'
+- name: 2025_spending_q12
+  year: 2025
+  source_type: spending_q12
+  url: https://minfin.am/website/images/files/2025_I կիսամյակ_հաշվետվություն.rar
+  checksum: 6bcf76d0960efbfdd3f17436579737db80a6e862f25aa2698b24eb7154f1323d
+  checksum_updated_at: '2025-09-13T02:20:14.080701+00:00'

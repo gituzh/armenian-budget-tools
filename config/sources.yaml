@@ -174,4 +174,23 @@ sources:
     file_format: "rar"
     description: "2024 Q1-Q3 Spending Report"
 
+  - name: "2024_spending_q1234"
+    year: 2024
+    source_type: "spending_q1234"
+    url: "https://minfin.am/website/images/files/2024 հաշվետվություն.rar"
+    file_format: "rar"
+    description: "2024 Q1-Q4 Spending Report"
 
+  - name: "2025_spending_q1"
+    year: 2025
+    source_type: "spending_q1"
+    url: "https://minfin.am/website/images/files/2025_I եռամսյակ_հաշվետվություն.rar"
+    file_format: "rar"
+    description: "2025 Q1 Spending Report"
+
+  - name: "2025_spending_q12"
+    year: 2025
+    source_type: "spending_q12"
+    url: "https://minfin.am/website/images/files/2025_I կիսամյակ_հաշվետվություն.rar"
+    file_format: "rar"
+    description: "2025 Q1-Q2 Spending Report"
