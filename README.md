@@ -27,6 +27,9 @@ Parse, validate, and analyze Armenian state budget laws and spending reports. Ou
     - [Discover input programmatically (optional)](#discover-input-programmatically-optional)
   - [Configuration](#configuration)
   - [Data locations and column roles](#data-locations-and-column-roles)
+    - [Quick Reference](#quick-reference)
+  - [Complete column reference](#complete-column-reference)
+    - [Quick Column Overview](#quick-column-overview)
   - [Troubleshooting](#troubleshooting)
   - [Known issues](#known-issues)
   - [Contributing](#contributing)
@@ -93,6 +96,7 @@ from armenian_budget.ingestion.parsers import (
 df, overall, *_ = flatten_budget_excel_2019_2024(
     "./data/extracted/budget_laws/2023/file.xlsx", SourceType.BUDGET_LAW
 )
+# overall contains total budget amount (float)
 ```
 
 - More examples: see [Usage — Python API](#usage--python-api).
@@ -287,8 +291,9 @@ df, overall, rowtype_stats, statetrans_stats = flatten_budget_excel_2019_2024(
 )
 
 # df: flattened subprogram-level DataFrame
-# overall: dict with overall totals (e.g., {"overall_total": 123.45})
+# overall: summary totals from Excel (float for budget, dict for spending)
 # rowtype_stats/statetrans_stats: parsing diagnostics
+# See docs/data_schemas.md for detailed overall totals documentation
 ```
 
 ### Parse spending report
@@ -299,6 +304,7 @@ from armenian_budget.ingestion.parsers import flatten_budget_excel_2019_2024, So
 df, overall, *_ = flatten_budget_excel_2019_2024(
     "./data/extracted/spending_reports/2019/Q1/file.xlsx", SourceType.SPENDING_Q1
 )
+# overall contains summary totals (annual plan, actual, execution rates)
 ```
 
 ### Parse budget law (2025)
@@ -309,6 +315,7 @@ from armenian_budget.ingestion.parsers import flatten_budget_excel_2025
 df, overall, *_ = flatten_budget_excel_2025(
     "./data/extracted/budget_laws/2025/file.xlsx"
 )
+# overall contains total budget amount (float)
 ```
 
 ### Discover input programmatically (optional)
@@ -319,6 +326,7 @@ from armenian_budget.ingestion.parsers import flatten_budget_excel_2019_2024, So
 
 best = discover_best_file(year=2023, source_type=SourceType.BUDGET_LAW)
 df, overall, *_ = flatten_budget_excel_2019_2024(best.path, SourceType.BUDGET_LAW)
+# overall contains total budget amount (float)
 ```
 
 For column roles and structures by source type, see [Data locations and column roles](#data-locations-and-column-roles).
@@ -337,32 +345,57 @@ For column roles and structures by source type, see [Data locations and column r
 
 ## Data locations and column roles
 
-Data roots:
+For comprehensive information about data sources, schemas, and processing, see [`docs/data_schemas.md`](docs/data_schemas.md).
 
-- `data/original`: downloaded files
-- `data/extracted`: unarchived workbooks
+### Quick Reference
+
+**Data roots:**
+
+- `data/original`: downloaded archives
+- `data/extracted`: unarchived source files
 - `data/processed/csv`: processed outputs
 
-Dataset types (source types):
+**Dataset types:**
 
-- `BUDGET_LAW`: Annual appropriations from the official budget law. Represents planned allocations for the full fiscal year at subprogram level (the legal baseline before any in‑year revisions).
-- `SPENDING_Q1`: Year‑to‑date execution after the first quarter (Q1). Includes the original plan, any in‑year revised plan as of Q1, and actual execution to date.
-- `SPENDING_Q12`: Year‑to‑date execution after the second quarter (Q1–Q2, half‑year).
-- `SPENDING_Q123`: Year‑to‑date execution after the third quarter (Q1–Q3).
-- `SPENDING_Q1234`: Final year‑end execution (Q1–Q4). Often reflects the final revised plan and the actuals for the full year.
+- `BUDGET_LAW`: Annual budget allocations (currently parses program summary)
+- `SPENDING_Q1/Q12/Q123/Q1234`: Quarterly/half-year/annual spending reports
 
-Column roles by source type (subprogram grain):
+**Data structure:**
+Each row represents one **subprogram** with aggregated totals from parent levels (program → state body) in a flattened structure for easy analysis.
 
-- BUDGET_LAW: allocated → `subprogram_total`
-- SPENDING_Q1, SPENDING_Q12, SPENDING_Q123:
-  - allocated → `subprogram_annual_plan`
-  - revised → `subprogram_rev_annual_plan`
-  - actual → `subprogram_actual`
-  - execution_rate → `subprogram_actual_vs_rev_annual_plan`
-- SPENDING_Q1234:
-  - allocated → `subprogram_annual_plan`
-  - revised → `subprogram_rev_annual_plan`
-  - actual → `subprogram_actual`
+**Key columns by source type:**
+
+**BUDGET_LAW:**
+
+- `subprogram_total`: allocated amount for subprogram
+- `program_total`: total for program
+- `state_body_total`: total for state body
+
+**SPENDING reports:**
+
+- `*_annual_plan`: original annual allocation
+- `*_rev_annual_plan`: revised annual plan
+- `*_actual`: actual spending year-to-date
+- `*_actual_vs_rev_annual_plan`: execution rate vs revised annual plan (%)
+
+*Note: `*` represents `state_body_`, `program_`, or `subprogram_` prefixes. For complete column reference and detailed schemas, see [`docs/data_schemas.md`](docs/data_schemas.md).*"
+
+## Complete column reference
+
+For the complete column reference with detailed schemas, examples, and year-specific variations, see [`docs/data_schemas.md`](docs/data_schemas.md).
+
+### Quick Column Overview
+
+**Common columns (all source types):**
+`state_body`, `program_code`, `program_name`, `program_goal`, `program_result_desc`, `subprogram_code`, `subprogram_name`, `subprogram_desc`, `subprogram_type`
+
+**BUDGET_LAW key columns:**
+`state_body_total`, `program_total`, `subprogram_total`
+
+**SPENDING reports key columns:**
+`*_annual_plan`, `*_rev_annual_plan`, `*_actual`, `*_actual_vs_rev_annual_plan`
+
+*Note: Detailed CSV schemas and complete column definitions are available in [`docs/data_schemas.md`](docs/data_schemas.md).*
 
 ## Troubleshooting
 

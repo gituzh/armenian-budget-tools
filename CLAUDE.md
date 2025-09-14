@@ -209,6 +209,7 @@ Different source types have different column meanings:
 - Architecture: `docs/architecture.md`
 - Roadmap: `docs/roadmap.md`
 - MCP server: `docs/mcp.md`
+- Data schemas: `docs/data_schemas.md`
 
 ### Impact → required documentation updates
 
@@ -226,7 +227,7 @@ Different source types have different column meanings:
 
 - **Output schema or column roles** (names added/removed/renamed, role mapping changes)
   - Impacted paths: `ingestion/parsers/**`, `core/query/**`, `validation/**`
-  - Update: README "Data locations and column roles" and "Complete column reference"
+  - Update: README "Data locations and column roles" and "Complete column reference"; `docs/data_schemas.md` (column definitions, data structures, validation rules)
 
 - **Data locations, filenames, directory layout**
   - Impacted paths: storage/output code, file naming conventions, `data/**`, `processed/**`
@@ -249,7 +250,8 @@ Different source types have different column meanings:
 - When making any impacted code change, produce matching documentation edits in the same PR
 - If a change touches multiple areas (e.g., CLI + schema), update all relevant docs
 - When modifying MCP tools, update both `docs/mcp.md` (detailed) and README (quickstart) consistently
-- If columns or roles change, regenerate README column reference snippets
+- If columns or roles change, regenerate README column reference snippets and update `docs/data_schemas.md`
+- When changing data schemas, validation rules, or processing logic, update `docs/data_schemas.md` comprehensively
 
 ### Authoring and style rules
 

@@ -9,6 +9,7 @@ These rules guide assistants and contributors working in this repository to keep
 - Architecture: `docs/architecture.md`
 - Roadmap: `docs/roadmap.md`
 - MCP server: `docs/mcp.md`
+- Data schemas: `docs/data_schemas.md`
 
 ## Impact → required documentation updates
 
@@ -26,7 +27,7 @@ These rules guide assistants and contributors working in this repository to keep
 
 - Output schema or column roles change (names added/removed/renamed, role mapping changes, new source types/years)
   - Impacted paths: `ingestion/parsers/**`, `core/query/**`, `validation/**`, any transformation altering outputs
-  - Update: README “Data locations and column roles” and “Complete column reference”; call out 2025-specific fields, roles, and differences; adjust notes and examples
+  - Update: README "Data locations and column roles" and "Complete column reference"; `docs/data_schemas.md` (column definitions, data structures, validation rules); call out 2025-specific fields, roles, and differences; adjust notes and examples
 
 - Data locations, filenames, directory layout, temp/output policy, naming conventions
   - Impacted paths: storage/output code, file naming conventions, `data/**`, `processed/**`, temp directory policies
@@ -62,12 +63,13 @@ These rules guide assistants and contributors working in this repository to keep
 
 - When making any impacted code change, produce matching documentation edits in the same PR. Do not defer doc updates.
 - If a change touches multiple areas (e.g., CLI + schema), update all relevant docs listed above.
-- When modifying MCP tools, update both `docs/mcp.md` (detailed) and the README (quickstart) consistently.
-- If columns or roles change, regenerate the README column reference snippets and adjust notes for per-year differences.
+- When modifying MCP tools, update both `docs/mcp.md` (detailed) and README (quickstart) consistently.
+- If columns or roles change, regenerate README column reference snippets and update `docs/data_schemas.md`.
+- When changing data schemas, validation rules, or processing logic, update `docs/data_schemas.md` comprehensively.
 
 ## PR body and review checklist (enforced culturally; see template)
 
-- Confirm which of the five docs were updated and why.
+- Confirm which of the six docs were updated and why.
 - Call out breaking changes in CLI/API/MCP and link to updated sections.
 - Note any migration steps users must take (paths, config keys, flags).
 - Ensure examples use relative paths and editable installs; validate commands in the project venv.

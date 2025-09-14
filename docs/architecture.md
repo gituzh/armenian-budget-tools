@@ -1,4 +1,4 @@
-# Armenian Budget Analysis Tool - Revised Architecture & Roadmap
+# Armenian Budget Analysis Tool - Revised Architecture
 
 ## 1. Enhanced Repository Structure
 
@@ -597,5 +597,3 @@ armenian-budget migrate-from-old-structure  # One-time migration script
 - Keep data lineage (original → extracted → processed)
 - Configuration-driven approach for flexibility
 - Progressive MCP tool enhancement
-
-Would you like me to detail the implementation of any specific component, or shall we start with the migration script to move your current files into the new structure?
