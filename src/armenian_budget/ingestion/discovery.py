@@ -262,7 +262,9 @@ def _is_entry_still_valid(entry: Dict[str, Any], *, extracted_root: Path) -> boo
 def _validate_with_parser(candidate: Path, year: int, source_type: str) -> bool:
     try:
         if int(year) == 2025:
-            df, _overall, _, _ = flatten_budget_excel_2025(str(candidate))
+            df, _overall, _, _ = flatten_budget_excel_2025(
+                str(candidate), source_type=SourceType[source_type]
+            )
         else:
             df, _overall, _, _ = flatten_budget_excel_2019_2024(
                 str(candidate), source_type=SourceType[source_type], year=int(year)
@@ -319,7 +321,11 @@ def discover_best_file(
         and not force_discover
         and _is_entry_still_valid(existing, extracted_root=extracted_root)
     ):
-        return Path(existing["path"]).resolve()
+        # Resolve cached relative paths against extracted_root
+        raw = Path(existing.get("path", ""))
+        if raw.is_absolute():
+            return raw.resolve()
+        return (extracted_root / raw).resolve()
 
     cfg = _load_parsers_config(parsers_config_path)
     quarter = _quarter_label_for_source_type(source_type)

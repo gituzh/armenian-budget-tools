@@ -221,8 +221,11 @@ def cmd_process(args: argparse.Namespace) -> int:
 
             # Run appropriate parser
             try:
-                if year == 2025 and st_enum == SourceType.BUDGET_LAW:
-                    df, overall, _, _ = flatten_budget_excel_2025(str(input_path))
+                if year == 2025:
+                    # Use 2025 parser for all 2025 sources, passing source_type for spending
+                    df, overall, _, _ = flatten_budget_excel_2025(
+                        str(input_path), source_type=st_enum
+                    )
                 else:
                     df, overall, _, _ = flatten_budget_excel_2019_2024(
                         str(input_path), source_type=st_enum, year=int(year)
