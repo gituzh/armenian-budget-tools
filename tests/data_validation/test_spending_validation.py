@@ -114,57 +114,29 @@ def test_spending_percentage_calculations(spending_data):
 
             significant_diffs = differences > tolerance
             if significant_diffs.any():
-                problem_rows = df[significant_diffs].copy()
-                problem_rows = problem_rows.assign(
-                    expected_pct=expected_pct[significant_diffs],
-                    abs_diff=differences[significant_diffs],
+                count = int(significant_diffs.sum())
+                max_show = 50
+                rows = df.index[significant_diffs].tolist()
+                rows_shown = ", ".join([str(r) for r in rows[:max_show]])
+                rows_suffix = (
+                    f", +{len(rows) - max_show} more" if len(rows) > max_show else ""
                 )
-
-                # Build an informative message with key identifiers and numbers
-                lines = [
-                    f"{spending_data.year}/{spending_data.source_type}: "
-                    f"Found {len(problem_rows)} rows with incorrect percentage calculations "
-                    f"for actual_vs_rev_annual_plan (tolerance={tolerance}).",
-                ]
-
-                max_show = 20
-                for _, row in problem_rows.head(max_show).iterrows():
-                    sb = row.get("state_body", "<state_body>")
-                    pc = row.get("program_code", "<program_code>")
-                    pn = row.get("program_name", "")
-                    spc = row.get("subprogram_code", "<subprogram_code>")
-                    spn = row.get("subprogram_name", "")
-                    actual = row.get("subprogram_actual")
-                    rev_ann = row.get("subprogram_rev_annual_plan")
-                    stored = row.get("subprogram_actual_vs_rev_annual_plan")
-                    expected = row.get("expected_pct")
-                    diff = row.get("abs_diff")
-
-                    # Reason hints (division by zero, infinities, etc.)
-                    if pd.isna(rev_ann) or rev_ann == 0:
-                        reason = "division by zero (rev_annual_plan=0)"
-                    elif pd.isna(actual) or pd.isna(stored) or pd.isna(expected):
-                        reason = "missing value(s)"
-                    elif not isinstance(stored, (int, float)) or not isinstance(
-                        expected, (int, float)
-                    ):
-                        reason = "non-numeric percent value"
-                    else:
-                        reason = "mismatch beyond tolerance"
-
-                    lines.append(
-                        " - "
-                        f"{sb} | Program {pc} {pn} | Subprogram {spc} {spn}\n"
-                        f"   actual={actual:.6f}, rev_annual={rev_ann:.6f}, "
-                        f"stored_pct={stored:.6f}, expected_pct={expected:.6f}, "
-                        f"abs_diff={diff:.6f} | {reason}"
+                codes_part = ""
+                if "program_code" in df.columns and "subprogram_code" in df.columns:
+                    pairs = list(
+                        zip(
+                            df.loc[significant_diffs, "program_code"].astype(str).tolist(),
+                            df.loc[significant_diffs, "subprogram_code"].astype(str).tolist(),
+                        )
                     )
-
-                remaining = len(problem_rows) - min(len(problem_rows), max_show)
-                if remaining > 0:
-                    lines.append(f" ... and {remaining} more rows")
-
-                pytest.fail("\n".join(lines))
+                    codes_shown = ", ".join([f"({p},{s})" for p, s in pairs[:max_show]])
+                    codes_suffix = (
+                        f", +{len(pairs) - max_show} more" if len(pairs) > max_show else ""
+                    )
+                    codes_part = f"; codes=[{codes_shown}]{codes_suffix}"
+                pytest.fail(
+                    f"{spending_data.year}/{spending_data.source_type}: subprogram_actual_vs_rev_annual_plan calc mismatch; count={count}; rows=[{rows_shown}]{rows_suffix}{codes_part}"
+                )
 
 
 def test_spending_no_negative_percentages(spending_data):
@@ -179,11 +151,31 @@ def test_spending_no_negative_percentages(spending_data):
 
     for col in all_pct_cols:
         if col in df.columns:
-            negative_count = (df[col] < 0).sum()
-            assert negative_count == 0, (
-                f"{spending_data.year}/{spending_data.source_type}: "
-                f"Found {negative_count} negative values in percentage column {col}"
-            )
+            negative_mask = df[col] < 0
+            negative_count = int(negative_mask.sum())
+            if negative_count > 0:
+                max_show = 50
+                rows = df.index[negative_mask].tolist()
+                rows_shown = ", ".join([str(r) for r in rows[:max_show]])
+                rows_suffix = (
+                    f", +{len(rows) - max_show} more" if len(rows) > max_show else ""
+                )
+                codes_part = ""
+                if "program_code" in df.columns and "subprogram_code" in df.columns:
+                    pairs = list(
+                        zip(
+                            df.loc[negative_mask, "program_code"].astype(str).tolist(),
+                            df.loc[negative_mask, "subprogram_code"].astype(str).tolist(),
+                        )
+                    )
+                    codes_shown = ", ".join([f"({p},{s})" for p, s in pairs[:max_show]])
+                    codes_suffix = (
+                        f", +{len(pairs) - max_show} more" if len(pairs) > max_show else ""
+                    )
+                    codes_part = f"; codes=[{codes_shown}]{codes_suffix}"
+                pytest.fail(
+                    f"{spending_data.year}/{spending_data.source_type}: {col} has {negative_count} negatives; rows=[{rows_shown}]{rows_suffix}{codes_part}"
+                )
 
 
 def test_spending_revised_vs_original_plans(spending_data):
@@ -223,7 +215,10 @@ def test_spending_actual_vs_plans_reasonableness(spending_data):
         valid_data = df[df["subprogram_rev_annual_plan"] > 0]
 
         if not valid_data.empty:
-            ratio = valid_data["subprogram_actual"] / valid_data["subprogram_rev_annual_plan"]
+            ratio = (
+                valid_data["subprogram_actual"]
+                / valid_data["subprogram_rev_annual_plan"]
+            )
             excessive_spending = ratio > 1.1  # More than 110% of revised plan
 
             if excessive_spending.any():
@@ -266,7 +261,10 @@ def test_spending_quarterly_progression(spending_data):
             valid_data = df[df["subprogram_period_plan"] > 0]
 
             if not valid_data.empty:
-                ratio = valid_data["subprogram_actual"] / valid_data["subprogram_period_plan"]
+                ratio = (
+                    valid_data["subprogram_actual"]
+                    / valid_data["subprogram_period_plan"]
+                )
                 mask = ratio > 2.0  # More than 200% of period plan
                 excessive_count = int(mask.sum())
 
@@ -295,7 +293,9 @@ def test_spending_quarterly_progression(spending_data):
 
 
 # Precompute spending parameter sets and stable IDs
-_SPENDING_PARAMS = [(y, t) for (y, t) in get_all_available_data() if str(t).startswith("SPENDING_")]
+_SPENDING_PARAMS = [
+    (y, t) for (y, t) in get_all_available_data() if str(t).startswith("SPENDING_")
+]
 _SPENDING_IDS = [f"{y}_{t}" for (y, t) in _SPENDING_PARAMS]
 
 
@@ -319,57 +319,163 @@ def test_spending_overall_matches_csv(year: int, source_type: str) -> None:
         _ov = round(float(overall["overall_annual_plan"]), 2)
         _sum = round(sum_sub("subprogram_annual_plan"), 2)
         _diff = round(_ov - _sum, 2)
-        assert abs(_ov - _sum) <= SPENDING_ABS_TOL, (
-            f"{year}/{source_type}: overall_annual_plan mismatch: "
-            f"overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}"
-        )
+        if abs(_ov - _sum) > SPENDING_ABS_TOL:
+            lines = [
+                f"{year}/{source_type}: overall_annual_plan mismatch: overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}",
+            ]
+            col = "subprogram_annual_plan"
+            if col in df.columns:
+                nulls = int(df[col].isnull().sum())
+                non_numeric = int(
+                    (~pd.to_numeric(df[col], errors="coerce").notnull()).sum()
+                )
+                lines.append(f"  {col}: nulls={nulls}, non_numeric={non_numeric}")
+                show_cols = [
+                    "state_body",
+                    "program_code",
+                    "program_name",
+                    "subprogram_code",
+                    "subprogram_name",
+                    col,
+                ]
+                show_cols = [c for c in show_cols if c in df.columns]
+                sample = df[show_cols].sort_values(col, ascending=False).head(20)
+                lines.append("  Top rows contributing to sum:")
+                lines.append(sample.to_string(index=False))
+            pytest.fail("\n".join(lines))
     if "overall_rev_annual_plan" in overall:
         _ov = round(float(overall["overall_rev_annual_plan"]), 2)
         _sum = round(sum_sub("subprogram_rev_annual_plan"), 2)
         _diff = round(_ov - _sum, 2)
-        assert abs(_ov - _sum) <= SPENDING_ABS_TOL, (
-            f"{year}/{source_type}: overall_rev_annual_plan mismatch: "
-            f"overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}"
-        )
+        if abs(_ov - _sum) > SPENDING_ABS_TOL:
+            lines = [
+                f"{year}/{source_type}: overall_rev_annual_plan mismatch: overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}",
+            ]
+            col = "subprogram_rev_annual_plan"
+            if col in df.columns:
+                nulls = int(df[col].isnull().sum())
+                non_numeric = int(
+                    (~pd.to_numeric(df[col], errors="coerce").notnull()).sum()
+                )
+                lines.append(f"  {col}: nulls={nulls}, non_numeric={non_numeric}")
+                show_cols = [
+                    "state_body",
+                    "program_code",
+                    "program_name",
+                    "subprogram_code",
+                    "subprogram_name",
+                    col,
+                ]
+                show_cols = [c for c in show_cols if c in df.columns]
+                sample = df[show_cols].sort_values(col, ascending=False).head(20)
+                lines.append("  Top rows contributing to sum:")
+                lines.append(sample.to_string(index=False))
+            pytest.fail("\n".join(lines))
     # Period totals for quarterly reports
     if source_type in ("SPENDING_Q1", "SPENDING_Q12", "SPENDING_Q123"):
         if "overall_period_plan" in overall:
             _ov = round(float(overall["overall_period_plan"]), 2)
             _sum = round(sum_sub("subprogram_period_plan"), 2)
             _diff = round(_ov - _sum, 2)
-            assert abs(_ov - _sum) <= SPENDING_ABS_TOL, (
-                f"{year}/{source_type}: overall_period_plan mismatch: "
-                f"overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}"
-            )
+            if abs(_ov - _sum) > SPENDING_ABS_TOL:
+                lines = [
+                    f"{year}/{source_type}: overall_period_plan mismatch: overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}",
+                ]
+                col = "subprogram_period_plan"
+                if col in df.columns:
+                    nulls = int(df[col].isnull().sum())
+                    non_numeric = int(
+                        (~pd.to_numeric(df[col], errors="coerce").notnull()).sum()
+                    )
+                    lines.append(f"  {col}: nulls={nulls}, non_numeric={non_numeric}")
+                    show_cols = [
+                        "state_body",
+                        "program_code",
+                        "program_name",
+                        "subprogram_code",
+                        "subprogram_name",
+                        col,
+                    ]
+                    show_cols = [c for c in show_cols if c in df.columns]
+                    sample = df[show_cols].sort_values(col, ascending=False).head(20)
+                    lines.append("  Top rows contributing to sum:")
+                    lines.append(sample.to_string(index=False))
+                pytest.fail("\n".join(lines))
         if "overall_rev_period_plan" in overall:
             _ov = round(float(overall["overall_rev_period_plan"]), 2)
             _sum = round(sum_sub("subprogram_rev_period_plan"), 2)
             _diff = round(_ov - _sum, 2)
-            assert abs(_ov - _sum) <= SPENDING_ABS_TOL, (
-                f"{year}/{source_type}: overall_rev_period_plan mismatch: "
-                f"overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}"
-            )
+            if abs(_ov - _sum) > SPENDING_ABS_TOL:
+                lines = [
+                    f"{year}/{source_type}: overall_rev_period_plan mismatch: overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}",
+                ]
+                col = "subprogram_rev_period_plan"
+                if col in df.columns:
+                    nulls = int(df[col].isnull().sum())
+                    non_numeric = int(
+                        (~pd.to_numeric(df[col], errors="coerce").notnull()).sum()
+                    )
+                    lines.append(f"  {col}: nulls={nulls}, non_numeric={non_numeric}")
+                    show_cols = [
+                        "state_body",
+                        "program_code",
+                        "program_name",
+                        "subprogram_code",
+                        "subprogram_name",
+                        col,
+                    ]
+                    show_cols = [c for c in show_cols if c in df.columns]
+                    sample = df[show_cols].sort_values(col, ascending=False).head(20)
+                    lines.append("  Top rows contributing to sum:")
+                    lines.append(sample.to_string(index=False))
+                pytest.fail("\n".join(lines))
     # Actual totals
     if "overall_actual" in overall:
         _ov = round(float(overall["overall_actual"]), 2)
         _sum = round(sum_sub("subprogram_actual"), 2)
         _diff = round(_ov - _sum, 2)
-        assert abs(_ov - _sum) <= SPENDING_ABS_TOL, (
-            f"{year}/{source_type}: overall_actual mismatch: "
-            f"overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}"
-        )
+        if abs(_ov - _sum) > SPENDING_ABS_TOL:
+            lines = [
+                f"{year}/{source_type}: overall_actual mismatch: overall={_ov}, sum={_sum}, diff={_diff}, tol={SPENDING_ABS_TOL}",
+            ]
+            col = "subprogram_actual"
+            if col in df.columns:
+                nulls = int(df[col].isnull().sum())
+                non_numeric = int(
+                    (~pd.to_numeric(df[col], errors="coerce").notnull()).sum()
+                )
+                lines.append(f"  {col}: nulls={nulls}, non_numeric={non_numeric}")
+                show_cols = [
+                    "state_body",
+                    "program_code",
+                    "program_name",
+                    "subprogram_code",
+                    "subprogram_name",
+                    col,
+                ]
+                show_cols = [c for c in show_cols if c in df.columns]
+                sample = df[show_cols].sort_values(col, ascending=False).head(20)
+                lines.append("  Top rows contributing to sum:")
+                lines.append(sample.to_string(index=False))
+            pytest.fail("\n".join(lines))
     # Ratios (check math, allow tiny float error)
     if overall.get("overall_rev_annual_plan"):
-        exp = float(overall.get("overall_actual", 0.0)) / float(overall["overall_rev_annual_plan"])
+        exp = float(overall.get("overall_actual", 0.0)) / float(
+            overall["overall_rev_annual_plan"]
+        )
         if "overall_actual_vs_rev_annual_plan" in overall:
             assert (
-                abs(float(overall["overall_actual_vs_rev_annual_plan"]) - exp) <= SPENDING_FRAC_TOL
+                abs(float(overall["overall_actual_vs_rev_annual_plan"]) - exp)
+                <= SPENDING_FRAC_TOL
             )
     if source_type in ("SPENDING_Q1", "SPENDING_Q12", "SPENDING_Q123") and overall.get(
         "overall_rev_period_plan"
     ):
-        exp = float(overall.get("overall_actual", 0.0)) / float(overall["overall_rev_period_plan"])
+        exp = float(overall.get("overall_actual", 0.0)) / float(
+            overall["overall_rev_period_plan"]
+        )
         if "overall_actual_vs_rev_period_plan" in overall:
             assert (
-                abs(float(overall["overall_actual_vs_rev_period_plan"]) - exp) <= SPENDING_FRAC_TOL
+                abs(float(overall["overall_actual_vs_rev_period_plan"]) - exp)
+                <= SPENDING_FRAC_TOL
             )

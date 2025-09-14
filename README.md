@@ -19,7 +19,6 @@ Parse, validate, and analyze Armenian state budget laws and spending reports. Ou
     - [Validate outputs](#validate-outputs)
     - [Defaults and behavior](#defaults-and-behavior)
     - [Logging filters (optional)](#logging-filters-optional)
-    - [Legacy script (optional)](#legacy-script-optional)
     - [Provenance and integrity](#provenance-and-integrity)
   - [Usage — Python API](#usage--python-api)
     - [Parse budget law (2019–2024)](#parse-budget-law-20192024)
@@ -55,8 +54,7 @@ Parse, validate, and analyze Armenian state budget laws and spending reports. Ou
 
 ### Analysts (Excel/BI)
 
-- Open processed CSVs directly in your tool of choice.
-
+- Open [processed CSVs](./data/processed/csv/) directly in your tool of choice.
 - Example paths: `./data/processed/csv/2023_BUDGET_LAW.csv`, `./data/processed/csv/2021_SPENDING_Q12.csv`
 - For schema/columns, see [Data locations and column roles](#data-locations-and-column-roles).
 
@@ -223,13 +221,15 @@ sudo pacman -S unar
 ```bash
 # Download and extract for a range of years
 armenian-budget download --years 2019-2024 --extract
+# With explicit roots
+armenian-budget download --years 2019-2024 --original-root ./data/original --extracted-root ./data/extracted --extract
 
 # Extract only (if files already exist under data/original)
 armenian-budget extract --years 2019-2024
 armenian-budget extract  # auto-detect available years
 
 # Build/refresh discovery index (maps year/source → best workbook)
-armenian-budget discover --years 2019-2024 --dest-root ./data --parsers-config ./config/parsers.yaml
+armenian-budget discover --years 2019-2024 --extracted-root ./data/extracted --parsers-config ./config/parsers.yaml
 ```
 
 ### Process datasets
@@ -245,13 +245,15 @@ armenian-budget process --year 2019 --source-type BUDGET_LAW
 armenian-budget process --years 2019,2020,2021
 armenian-budget process --years 2019-2021
 
-# Explicit input (requires single --year and --source-type)
+# Explicit input (requires single --year and --source-type). When --input is provided,
+# discovery is bypassed and --extracted-root is ignored.
 armenian-budget process --year 2023 --source-type BUDGET_LAW \
   --input ./data/extracted/budget_laws/2023/file.xlsx
 
 # Advanced discovery knobs
 armenian-budget process --year 2023 --source-type BUDGET_LAW \
-  --deep-validate --dest-root ./data --parsers-config ./config/parsers.yaml
+  --deep-validate --extracted-root ./data/extracted --parsers-config ./config/parsers.yaml \
+  --processed-root ./data/processed
 ```
 
 ### Validate outputs
@@ -265,9 +267,10 @@ Note: Validation via the CLI is currently minimal and not fully implemented. For
 
 ### Defaults and behavior
 
-- Output directory default: `./data/processed/csv` (override with `--out`)
+- Processed outputs default root: `./data/processed` (CSV under `csv/`). Override with `--processed-root`.
 - When `--source-type` is omitted, all supported source types are processed
-- When `--input` is omitted, discovery is automatic
+- When `--input` is omitted, discovery is automatic (uses `--extracted-root`, default `./data/extracted`).
+- When `--input` is provided, `--extracted-root` is ignored for discovery.
 - `--auto` is deprecated; do not use (kept for backward compatibility)
 - End-of-run report: prints statuses; save with `--report-json <path>`
 
@@ -278,15 +281,9 @@ armenian-budget --warnings-only process --year 2023
 armenian-budget --errors-only process --year 2023
 ```
 
-### Legacy script (optional)
-
-```bash
-python extract_budget_articles.py
-```
-
 ### Provenance and integrity
 
-- Discovery index: `./data/extracted/discovery_index.json` (maps year/source → input path)
+- Discovery index: `<extracted-root>/discovery_index.json` (maps year/source → input path)
 - Checksums: recorded in `./config/checksums.yaml` after downloads
 - End-of-run processing report (optional): `--report-json ./data/processed/processing_report.json`
 
@@ -362,6 +359,14 @@ Data roots:
 - `data/original`: downloaded files
 - `data/extracted`: unarchived workbooks
 - `data/processed/csv`: processed outputs
+
+Dataset types (source types):
+
+- `BUDGET_LAW`: Annual appropriations from the official budget law. Represents planned allocations for the full fiscal year at subprogram level (the legal baseline before any in‑year revisions).
+- `SPENDING_Q1`: Year‑to‑date execution after the first quarter (Q1). Includes the original plan, any in‑year revised plan as of Q1, and actual execution to date.
+- `SPENDING_Q12`: Year‑to‑date execution after the second quarter (Q1–Q2, half‑year).
+- `SPENDING_Q123`: Year‑to‑date execution after the third quarter (Q1–Q3).
+- `SPENDING_Q1234`: Final year‑end execution (Q1–Q4). Often reflects the final revised plan and the actuals for the full year.
 
 Column roles by source type (subprogram grain):
 

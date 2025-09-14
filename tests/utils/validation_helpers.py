@@ -240,11 +240,30 @@ def validate_percentage_ranges(data: BudgetDataInfo) -> List[str]:
     for col in all_pct_cols:
         if col in df.columns:
             # Negative percentages are errors
-            neg_count = int((df[col] < 0).sum())
+            neg_mask = df[col] < 0
+            neg_count = int(neg_mask.sum())
             if neg_count > 0:
+                max_show = 50
+                rows = df.index[neg_mask].tolist()
+                rows_shown = ", ".join([str(r) for r in rows[:max_show]])
+                rows_suffix = (
+                    f", +{len(rows) - max_show} more" if len(rows) > max_show else ""
+                )
+                codes_part = ""
+                if "program_code" in df.columns and "subprogram_code" in df.columns:
+                    pairs = list(
+                        zip(
+                            df.loc[neg_mask, "program_code"].astype(str).tolist(),
+                            df.loc[neg_mask, "subprogram_code"].astype(str).tolist(),
+                        )
+                    )
+                    codes_shown = ", ".join([f"({p},{s})" for p, s in pairs[:max_show]])
+                    codes_suffix = (
+                        f", +{len(pairs) - max_show} more" if len(pairs) > max_show else ""
+                    )
+                    codes_part = f"; codes=[{codes_shown}]{codes_suffix}"
                 errors.append(
-                    f"{data.year}/{data.source_type}: {neg_count} "
-                    f"negative percentage values in {col}"
+                    f"{data.year}/{data.source_type}: {col} has {neg_count} negatives; rows=[{rows_shown}]{rows_suffix}{codes_part}"
                 )
 
             # Percentages above 1 (overspend) are allowed but should warn
@@ -329,9 +348,27 @@ def validate_logical_relationships_spending(data: BudgetDataInfo) -> List[str]:
             warn_count = int(warn_mask.sum())
 
             if strict_count > 0:
+                max_show = 50
+                rows = df.index[strict_mask].tolist()
+                rows_shown = ", ".join([str(r) for r in rows[:max_show]])
+                rows_suffix = (
+                    f", +{len(rows) - max_show} more" if len(rows) > max_show else ""
+                )
+                codes_part = ""
+                if "program_code" in df.columns and "subprogram_code" in df.columns:
+                    pairs = list(
+                        zip(
+                            df.loc[strict_mask, "program_code"].astype(str).tolist(),
+                            df.loc[strict_mask, "subprogram_code"].astype(str).tolist(),
+                        )
+                    )
+                    codes_shown = ", ".join([f"({p},{s})" for p, s in pairs[:max_show]])
+                    codes_suffix = (
+                        f", +{len(pairs) - max_show} more" if len(pairs) > max_show else ""
+                    )
+                    codes_part = f"; codes=[{codes_shown}]{codes_suffix}"
                 errors.append(
-                    f"{data.year}/{data.source_type}: {strict_count} violations where "
-                    f"{level} period_plan > annual_plan"
+                    f"{data.year}/{data.source_type}: {level} period_plan > annual_plan; count={strict_count}; rows=[{rows_shown}]{rows_suffix}{codes_part}"
                 )
             if warn_count > 0:
                 # Split reasons for better guidance
@@ -375,11 +412,30 @@ def validate_logical_relationships_spending(data: BudgetDataInfo) -> List[str]:
             rannual_col = level_cols["rev_annual_plan"]
 
             mask_nonneg = (df[rperiod_col] >= 0) & (df[rannual_col] >= 0)
-            strict_viol = df[mask_nonneg & (df[rperiod_col] > df[rannual_col])]
+            strict_mask = mask_nonneg & (df[rperiod_col] > df[rannual_col])
+            strict_viol = df[strict_mask]
             if not strict_viol.empty:
+                max_show = 50
+                rows = df.index[strict_mask].tolist()
+                rows_shown = ", ".join([str(r) for r in rows[:max_show]])
+                rows_suffix = (
+                    f", +{len(rows) - max_show} more" if len(rows) > max_show else ""
+                )
+                codes_part = ""
+                if "program_code" in df.columns and "subprogram_code" in df.columns:
+                    pairs = list(
+                        zip(
+                            df.loc[strict_mask, "program_code"].astype(str).tolist(),
+                            df.loc[strict_mask, "subprogram_code"].astype(str).tolist(),
+                        )
+                    )
+                    codes_shown = ", ".join([f"({p},{s})" for p, s in pairs[:max_show]])
+                    codes_suffix = (
+                        f", +{len(pairs) - max_show} more" if len(pairs) > max_show else ""
+                    )
+                    codes_part = f"; codes=[{codes_shown}]{codes_suffix}"
                 errors.append(
-                    f"{data.year}/{data.source_type}: {len(strict_viol)} violations where "
-                    f"{level} rev_period_plan > rev_annual_plan"
+                    f"{data.year}/{data.source_type}: {level} rev_period_plan > rev_annual_plan; count={len(strict_viol)}; rows=[{rows_shown}]{rows_suffix}{codes_part}"
                 )
 
             mask_has_neg = ~mask_nonneg
