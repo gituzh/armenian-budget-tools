@@ -85,6 +85,15 @@ All resources return CSV text (MIME `text/csv`).
   - Inline small results: `{method:'direct', data, row_count, page_info}`
   - Large results: `{method:'file', file_path, format:'parquet'|'csv', row_count, preview}`
   - Notes: JSON is for previews/small results only; large outputs go to `data/processed/tmp/` as Parquet (CSV fallback)
+
+- Size/format policy:
+  - JSON is only for previews and small results (caps enforced)
+  - Large results are written to `data/processed/tmp` as Parquet by default (CSV fallback) and returned as a file path
+  - Pagination/handles will be added in a later phase; for now, use `limit`/`offset`
+
+- Deprecations:
+  - Heavy tools that previously streamed large JSON may be internally routed through the new estimator and capped; prefer the new query tools
+
 - `get_ministry_spending_summary(year, ministry)` → Aggregates for a ministry using the best available source for the year
 - `get_dataset_overall(year?=None, source_type?=None)` → Aggregated totals from `*_overall.json` files
   - Returns: `{ "overalls": { "2019": { "BUDGET_LAW": {...}, "SPENDING_Q12": {...} } }, "years": [2019], "source_types": ["BUDGET_LAW","SPENDING_Q12"], "count": 2 }`

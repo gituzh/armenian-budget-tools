@@ -1,11 +1,13 @@
-### Goals and constraints
+# MCP Redesign
+
+## Goals and constraints
 
 - Reduce LLM context pressure while keeping workflows powerful and safe.
 - Prefer thin, composable MCP server aligned with latest spec design principles: easy to build, composable, isolated, progressive feature negotiation.
 - Default to small, schema- and intent-first interactions; escalate to large data only with explicit confirmation and pagination/handles.
 - Use Polars Lazy API for performance, projection/filter pushdown, and vectorized operations.
 
-### Target architecture (from the ground up)
+## Target architecture (from the ground up)
 
 - • Core execution
   - **Scan layer**: Polars `scan_csv` over `data/processed/csv`, optional schema hints to avoid expensive inference.
@@ -30,7 +32,7 @@
 - • Observability
   - Structured logs with request IDs, estimations, execution plans, and truncation decisions.
 
-### Capability surface (tools/resources/prompts)
+## Capability surface (tools/resources/prompts)
 
 - • Tools (LLM-friendly knobs first, expression second)
   - `get_catalog`:
@@ -71,7 +73,7 @@
   - `pattern_disambiguation_guidelines`: How to ask before including/excluding ambiguous Armenian terms.
   - `size_management_guidelines`: When to estimate, paginate, or switch formats.
 
-### Design choices for your points (challenged and refined)
+## Design choices for your points (challenged and refined)
 
 - • “Know what data is available”: Yes; via `get_catalog` and resource catalog URIs with filters. Include approximate row counts and last update.
 - • “Know fields per data type (maybe without a tool)”: Agree; ship schema via MCP Prompts for baseline, plus `get_schema` for on-demand verification/samples.
@@ -80,20 +82,20 @@
 - • “Pagination/limits”: Mandatory preflight `estimate_query`, required confirmation if above threshold, and result handles with paging.
 - • “Pattern filtering and Armenian ambiguity”: Use `pattern_filter` with normalized matching and an elicitation loop; server proposes candidate sets and asks the user to confirm.
 
-### Size-control and context protection
+## Size-control and context protection
 
 - Preflight on every non-trivial query: return `row_estimate`, `byte_estimate`, `sample_preview`, and “safe mode” alternatives (e.g., aggregated view).
 - Auto-caps with deterministic behavior; exact serialization caps (e.g., 150k cells or 2 MB) before inline response; beyond that, file/handle only.
 - Prefer Arrow IPC for binary paging; JSON only for previews/summaries.
 - Distinct exploration tools to help the LLM narrow first, then query.
 
-### Validation and safety
+## Validation and safety
 
 - Schema-aware validation of requested columns and functions.
 - Safe subset for `polars_expr`: deny filesystem/network, restrict to expression building, timeouts, execution quotas.
 - Clarifying elicitation for: broad patterns, unexpected cartesian expansions, high cardinality groupings, and lossy dedup/group operations.
 
-### Module structure (replace monolith)
+## Module structure (replace monolith)
 
 - `interfaces/mcp/server_app.py` (bootstrap, transport, registry)
 - `data/catalog.py` (inventory, schema cards, caching)
@@ -107,7 +109,7 @@
 - `io/handles.py` (result handle registry with TTL)
 - `observability/logs.py` (structured logging)
 
-### Typical flows
+## Typical flows
 
 - • Discover and narrow
   1) `get_catalog` → 2) `get_schema` → 3) `distinct_values` → 4) `estimate_query` → 5) confirm if big → 6) `query_data` first page.
@@ -116,7 +118,7 @@
 - • Ambiguous R&D request
   1) `pattern_filter` returns candidate lists → 2) elicitation to the user → 3) confirmed filter set → 4) `aggregate` or `query_data` with confirmed filters.
 
-### Options and trade-offs
+## Options and trade-offs
 
 - • Results format
   - JSON: human/LLM-friendly previews only.
@@ -132,16 +134,32 @@
   - Stdio by default (Claude Desktop).
   - Optional HTTP/HTTPS for local apps; same tools/resources. HTTP is Phase 6 with auth, rate-limits, and download endpoints; MCP is not a BI protocol—provide an HTTP facade for BI integrations.
 
-### Migration strategy (incremental)
+## Dataframe library policy (Polars-first)
+
+- Use Polars Lazy for all scanning, filtering, grouping, and materialization paths.
+- Prefer Polars for output formats (write_csv, write_parquet). Keep pandas only for legacy utilities temporarily.
+- Deprecation path: replace pandas-based tools with Polars equivalents for non-legacy utilities by Phase 3.1; avoid pandas in new code.
+
+## Migration strategy (incremental)
 
 - Phase 1: Introduce new modules; add `get_catalog`, `get_schema`, `distinct_values`; enforce preflight estimation and caps on legacy heavy tools.
 - Phase 2: Implement `estimate_query` and `query_data` (knobs-based planner), with strict size caps; previews as JSON only. No Arrow IPC.
 - Phase 3: Add `pattern_filter` with elicitation loop and Armenian normalization; migrate YAML patterns into `engine/patterns.py` conventions.
+- Phase 3.1: Spec catch-up and compatibility bridge
+  - Do NOT introduce result handles yet (reserved for Phase 4).
+  - Add optional resource URIs for large outputs (alongside temporary `file_path` for compatibility).
+  - Implement `pattern_filter` confirmed mode returning a `filter_token` consumable by the planner.
+  - Extend planner with `normalized_contains` and token-based matching helpers.
+  - Add `aggregate` tool (group_by/aggs shortcut) with the same size knobs and outputs as `query_data`.
+  - Enforce preflight policy on large queries; return elicitation prompts when over caps.
+  - Expose `budget://{year}/{source_type}/catalog|schema|summary` resources.
+  - Populate `last_modified_iso` in catalog entries.
+  - Add structured logs with request IDs and decision breadcrumbs (estimate, caps, truncation).
 - Phase 4: Introduce short-lived result handles + `query_next_page`; file outputs default Parquet (CSV fallback). Deprecate legacy heavy endpoints.
 - Phase 5: Add `advanced_query` (validated Polars subset) for complex pipelines.
 - Phase 6: Add HTTP/HTTPS façade with auth, rate-limits, and download endpoints; keep stdio as first-class.
 
-### Decisions from Q/A
+## Decisions from Q/A
 
 - Clients: Claude Desktop now; HTTP/HTTPS in Phase 6 as an auth‑enabled facade (not BI over MCP).
 - Formats: Parquet preferred for large results; CSV fallback; Arrow IPC optional and off by default.
@@ -152,11 +170,11 @@
 - Security (future public server): TLS, JWT/OIDC, RBAC, rate‑limits, CORS allow‑list, timeouts, audit logs.
 - Schema cards: Persist `{dataset}.schema.json`; CLI will emit/validate cards during processing.
 
-### Short summary
+## Short summary
 
 - Proposed an MCP-aligned, thin, composable server with a catalog, schema cards, a knob-based query planner over Polars Lazy, strict preflight estimation, result handles with paging, and elicitation for ambiguous Armenian pattern filters. Heavy outputs default to Arrow/Parquet or paged handles; JSON is for previews and summaries. Provides both simple aggregation and optional validated Polars expressions. Outlined modules, flows, options, and a phased migration path.
 
-### API surface contract (tools/resources)
+## API surface contract (tools/resources)
 
 - get_catalog
   - Inputs: `years?: List[int]`, `source_types?: List[str]`
@@ -178,7 +196,7 @@
   - Inputs: all `estimate_query` inputs plus `order_by?: [{col:str, desc?:bool}]`, `limit?:int`, `offset?:int`, `deduplicate?:bool`, `null_policy?: 'drop'|'keep'`, `output_format?: 'json'|'csv'|'parquet'`, `max_rows?:int`, `max_bytes?:int`
   - Output (one of):
     - Direct: `{method:'direct', data: List[Record] (<= limit and caps), row_count:int, page_info?: {offset:int, size:int, has_more:bool}, warnings?:[]}`
-    - File: `{method:'file', file_path:str, row_count:int, format:'csv'|'parquet', preview: List[Record] (<=10)}`
+    - File: `{method:'file', resource_uri:str, row_count:int, format:'csv'|'parquet', preview: List[Record] (<=10), file_path?:str}`
     - Handle: `{method:'handle', result_handle:str, page_info:{page_token:str, size:int, has_more:bool}, preview: List[Record]}`
 
 - query_next_page
@@ -213,7 +231,7 @@ Common behaviors
 - Result handles: short-lived (TTL, e.g., 10–30 minutes), evicted LRU; deterministic paging over a consistent snapshot.
 - Formats: JSON for previews/summaries; Parquet preferred for files; CSV as fallback; Arrow IPC optional/disabled by default.
 
-### Large result delivery options (and IPC stance)
+## Large result delivery options (and IPC stance)
 
 - JSON: previews only (small slices, summaries). Never used for large tables.
 - Parquet: default for file outputs and handles; compact, columnar, fast to page/scan.
@@ -221,7 +239,24 @@ Common behaviors
 - Arrow IPC: optional and off by default given prior issues; can be enabled per-deployment if needed.
 - Pagination: heavy queries return a `result_handle` plus `page_token`; clients fetch pages via `query_next_page` or `budget://handle/{id}/{page}`.
 
-### Armenian pattern disambiguation modes
+## MCP compliance policy (spec-aligned outputs)
+
+- Tools must return plain JSON; for large results, prefer returning a resource URI or a result handle instead of raw file paths.
+- Resource-first: expose `budget://...` URIs for downloadable artifacts and paged results. Include small `preview` inline.
+- Compatibility window:
+  - Phase 3.1: allow both `resource_uri` (preferred) and `file_path` (legacy).
+  - Phase 4: introduce result handles; keep `resource_uri` and handles; start deprecating `file_path`.
+  - Phase 5+: remove `file_path` from new outputs.
+- Preflight is a server policy (not required by MCP): enforce estimator + elicitation for potentially large queries.
+- Prompts should provide minimal startup context (schema cards overview, query examples, size guidelines) without requiring an initial tool call.
+
+## Error handling policy
+
+- Expected errors: return structured JSON with fields `error` (string), `code` (stable identifier), `hint` (optional), `diagnostics` (optional small object). Example codes: `dataset_not_found`, `invalid_column`, `oversize_result`, `unsupported_format`.
+- Unexpected/internal errors: raise exceptions; let the MCP framework surface them as tool errors while logging details server-side.
+- All tools should avoid partial successes without explicit warnings; include `warnings: []` for non-fatal notices.
+
+## Armenian pattern disambiguation modes
 
 - Strict
   - Whole-word + normalized matching; excludes broad stems; high precision, lower recall.
@@ -232,6 +267,51 @@ Common behaviors
 - Permissive
   - Substring matching; maximal recall; elicit only when match set is extremely broad.
 
-### Notes on catalog/schema sizing fields
+## Notes on catalog/schema sizing fields
 
 - `get_catalog` should include `row_count_approx` and `file_size_bytes`. Character counts are not necessary; for very wide columns, `estimate_query` returns `byte_estimate` computed from selected columns.
+
+## Legacy tools/resources migration plan
+
+- Keep (core, first-class): `get_catalog`, `get_schema`, `distinct_values`, `estimate_query`, `query_data`, `pattern_filter`, `get_dataset_overall`.
+- Add (new core): `aggregate`, `query_next_page`.
+- Refactor for core alignment:
+  - `bulk_filter_multiple_datasets`: reimplement via planner, return resource URI/handle for large results.
+  - Resources `budget://{year}/state-bodies-summary`, `budget://{year}/programs-summary`: keep as curated summaries; consider aliasing under `budget://{year}/summary/*`.
+  - Resource `budget://{year}/full-data`: keep for now, but document risks; consider renaming to `budget://{year}/{source_type}/full` and enforcing caps/handles for delivery.
+- Deprecate in favor of `aggregate` once available (announce deprecation window):
+  - `get_budget_visualization_data`, `get_budget_distribution`.
+- Move to "analysis" plugin/server (Phase 6) or keep as optional tools, refactored to reuse core scan/plan:
+  - `get_ministry_comparison`, `find_program_across_years_robust`, `search_programs_by_similarity`, `trace_program_lineage`, `detect_program_patterns`.
+  - If kept in this server, update outputs to use resource URIs/handles for large payloads.
+- Admin/config tools (keep, with improved error handling):
+  - `register_program_equivalency`, `get_program_equivalencies`.
+
+Open questions to resolve in Phase 3.D (decision checkpoint):
+
+- Should analysis tools live in a separate MCP server for composability and minimal surface, or remain here behind an "analysis" capability flag?
+- Do we retain `budget://{year}/full-data` as a resource long-term, or gate it strictly behind handles/paging only?
+- What is the exact retention/TTL for result handles given typical client workflows?
+
+## Server metadata and versions
+
+- Surface server name/version and MCP spec version via FastMCP metadata (tooling typically reads this on connect). If needed, add a lightweight `get_server_info` tool returning `{name, version, spec_version, capabilities}` for clients lacking metadata access.
+- Use capability flags for optional surfaces (e.g., `analysis_tools`, `handles_available`). Toggle as phases progress.
+
+### Migration schedule by phase
+
+- Phase 3.1
+  - Refactor `bulk_filter_multiple_datasets` to planner; return `resource_uri` for large results (keep `file_path`).
+  - Keep summaries resources; add `budget://{year}/{source_type}/catalog|schema` resources.
+  - Begin deprecating `get_budget_visualization_data`/`get_budget_distribution` (announce).
+- Phase 4
+  - Introduce handles + `query_next_page`. Add `budget://handle/{id}/{page}` resources.
+  - Switch all large outputs to `resource_uri`/handles. Mark `file_path` as deprecated.
+  - Decide whether to move analysis tools to a separate server; if staying, update outputs to resource/handle.
+- Phase 5
+  - Remove `file_path` from new outputs. Implement `advanced_query`.
+  - Finalize analysis tools placement and capability flags.
+
+## TODOs
+
+Ask "are there any other action items in the redesign plan that seem to be skipped in the phases?"
