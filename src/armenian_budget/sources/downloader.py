@@ -34,7 +34,8 @@ def _safe_file_name(url: str, default_ext: Optional[str]) -> str:
         filename = unquote(filename)
         if "." in filename:
             return filename
-    except Exception:
+    except (ValueError, IndexError, TypeError):
+        # Fall back to a stable hashed file name
         pass
     digest = hashlib.sha256(url.encode("utf-8")).hexdigest()[:16]
     # If no default extension, just use .bin
@@ -59,38 +60,38 @@ def _quarter_dir(source_type: str) -> str:
 
 
 def _category_and_subdir(
-    dest_root: Path, year: int, source_type: str
+    original_root: Path, year: int, source_type: str
 ) -> tuple[Path, Optional[str]]:
-    """Return destination subdir under original/ and the quarter label if applicable.
+    """Resolve target subdirectory under the given original_root.
 
-    Spending sources → original/spending_reports/{year}/Q*
-    Budget law → original/budget_laws/{year}
-    Others → original/other/{year}
+    Spending sources → {original_root}/spending_reports/{year}/Q*
+    Budget law → {original_root}/budget_laws/{year}
+    Others → {original_root}/other/{year}
     """
     st = (source_type or "").lower()
     if st.startswith("spending_"):
         q = _quarter_dir(st)
-        return dest_root / "original" / "spending_reports" / str(year) / q, q
+        return original_root / "spending_reports" / str(year) / q, q
     if st == "budget_law":
-        return dest_root / "original" / "budget_laws" / str(year), None
-    return dest_root / "original" / "other" / str(year), None
+        return original_root / "budget_laws" / str(year), None
+    return original_root / "other" / str(year), None
 
 
 def download_sources(
     sources: Iterable[SourceDefinition],
-    dest_root: Path,
+    original_root: Path,
     timeout_sec: float = 60.0,
     skip_existing: bool = True,
     overwrite_existing: bool = False,
 ) -> List[DownloadResult]:
-    """Download source files into data/original structure.
+    """Download source files into the given original_root structure.
 
-    - Saves to: {dest_root}/original/spending_reports/{year}/<file>
+    - Saves to: {original_root}/spending_reports/{year}/<file>
     - Skips when URL is empty.
     - If file already exists, re-download to a temporary file and replace only when size differs.
     """
     logger = logging.getLogger(__name__)
-    dest_root.mkdir(parents=True, exist_ok=True)
+    original_root.mkdir(parents=True, exist_ok=True)
 
     results: List[DownloadResult] = []
     # Use browser-like headers to avoid server blocking
@@ -125,14 +126,14 @@ def download_sources(
                         name=s.name,
                         year=s.year,
                         url=s.url,
-                        output_path=dest_root,
+                        output_path=original_root,
                         ok=False,
                         reason="missing_url",
                     )
                 )
                 continue
 
-            subdir, quarter = _category_and_subdir(dest_root, s.year, s.source_type)
+            subdir, quarter = _category_and_subdir(original_root, s.year, s.source_type)
             subdir.mkdir(parents=True, exist_ok=True)
             # If override format is provided, force the extension; otherwise infer from URL
             file_name = _safe_file_name(s.url, s.file_format)
@@ -190,8 +191,8 @@ def download_sources(
                 # Optional checksum verification if provided
                 if getattr(s, "checksum", None):
                     sha = hashlib.sha256()
-                    with open(tmp_path, "rb") as rf:
-                        for block in iter(lambda: rf.read(1024 * 1024), b""):
+                    with open(tmp_path, "rb") as checksum_file:
+                        for block in iter(lambda: checksum_file.read(1024 * 1024), b""):
                             sha.update(block)
                     digest = sha.hexdigest()
                     if digest.lower() != str(s.checksum).lower():
@@ -249,7 +250,7 @@ def download_sources(
                         quarter=quarter,
                     )
                 )
-            except Exception as e:  # noqa: BLE001
+            except (httpx.HTTPError, OSError, ValueError) as e:  # narrow exceptions
                 logger.error(
                     "Failed to download %s [%s %s] %s: %s",
                     s.name,
