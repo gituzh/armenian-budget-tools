@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional
 import json
 
 
@@ -95,5 +95,3 @@ def get_dataset_schema(year: int, source_type: str) -> Dict:
         "shape": None,
         "sample_rows": None,
     }
-
-

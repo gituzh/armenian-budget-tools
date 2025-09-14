@@ -40,6 +40,8 @@ try:
         build_lazy_query as core_build_lazy_query,
         estimate_result_size as core_estimate_result_size,
         distinct_values as core_distinct_values,
+        build_pattern_candidates as core_build_pattern_candidates,
+        normalize_armenian_text as core_normalize_text,
     )
 except Exception:
     # Fallbacks: if core not available yet, keep server importable; tools will error when called
@@ -50,6 +52,8 @@ except Exception:
     core_build_lazy_query = None  # type: ignore
     core_estimate_result_size = None  # type: ignore
     core_distinct_values = None  # type: ignore
+    core_build_pattern_candidates = None  # type: ignore
+    core_normalize_text = None  # type: ignore
 
 try:
     from mcp.server.fastmcp import FastMCP
@@ -184,7 +188,9 @@ def _compute_state_body_summary_df(year: int) -> pd.DataFrame:
     """
     csv_path = _resolve_csv_path(year, "BUDGET_LAW")
     df = pd.read_csv(csv_path, usecols=["state_body", "state_body_total"])  # type: ignore[arg-type]
-    df["state_body_total"] = pd.to_numeric(df["state_body_total"], errors="coerce").fillna(0)
+    df["state_body_total"] = pd.to_numeric(
+        df["state_body_total"], errors="coerce"
+    ).fillna(0)
     summary = (
         df.groupby("state_body", as_index=False)["state_body_total"]
         .max()
@@ -204,7 +210,9 @@ def _compute_program_summary_df(year: int) -> pd.DataFrame:
     df = pd.read_csv(csv_path, usecols=cols)  # type: ignore[arg-type]
     df["program_total"] = pd.to_numeric(df["program_total"], errors="coerce").fillna(0)
     summary = (
-        df.groupby(["state_body", "program_code", "program_name"], as_index=False)["program_total"]
+        df.groupby(["state_body", "program_code", "program_name"], as_index=False)[
+            "program_total"
+        ]
         .max()
         .sort_values(["state_body", "program_code"])  # consistent ordering
     )
@@ -226,152 +234,6 @@ def generate_program_summary_csv(year: int) -> str:
 # -------------------------
 # MARK: Data Tools
 # -------------------------
-
-
-@_SERVER.tool(
-    "preview_dataset",
-    title="Preview dataset",
-    description=(
-        "Return sample rows, inferred schema, and basic stats for the requested dataset. "
-        "Parameters: year (int), source_type (e.g. BUDGET_LAW, SPENDING_Q1), sample_size (int)."
-    ),
-)
-async def preview_dataset(
-    year: int,
-    source_type: str,
-    sample_size: int = 10,
-) -> Dict[str, Any]:
-    """Return sample data and schema for quick preview."""
-    try:
-        csv_path = _resolve_csv_path(year, source_type)
-        df = pd.read_csv(csv_path)
-        sample = df.head(int(sample_size))
-        memory_mb = float(sample.memory_usage(deep=True).sum()) / float(1024**2)
-        return {
-            "sample_data": sample.to_dict(orient="records"),
-            "schema": {col: str(dtype) for col, dtype in sample.dtypes.items()},
-            "total_rows": int(len(df)),
-            "unique_state_bodies": int(df["state_body"].nunique())
-            if "state_body" in df.columns
-            else 0,
-            "date_range": str(year),
-            "memory_usage_mb": memory_mb,
-        }
-    except FileNotFoundError as e:
-        return {"error": str(e), "year": int(year), "source_type": str(source_type)}
-    except Exception as e:  # pragma: no cover - defensive
-        logger.error("Error in preview_dataset: %s", e)
-        return {"error": str(e)}
-
-
-def _apply_filters(df: pd.DataFrame, source_type: str, filters: Dict[str, Any]) -> pd.DataFrame:
-    """Vectorized filtering for common fields.
-
-    Supported filters:
-      - state_body: substring (case-insensitive)
-      - program_codes: list of ints
-      - min_amount: numeric threshold applied to an available amount column
-    """
-    if not filters:
-        return df
-
-    mask = pd.Series(True, index=df.index)
-
-    state_body_val = filters.get("state_body")
-    if state_body_val:
-        if "state_body" in df.columns:
-            mask &= (
-                df["state_body"].astype(str).str.contains(str(state_body_val), case=False, na=False)
-            )
-
-    program_codes = filters.get("program_codes")
-    if program_codes and "program_code" in df.columns:
-        mask &= df["program_code"].isin(program_codes)
-
-    min_amount = filters.get("min_amount")
-    if min_amount is not None:
-        measures = _get_measure_columns(source_type)
-        amount_col = measures.get("allocated") or measures.get("actual") or measures.get("revised")
-        if amount_col and amount_col in df.columns:
-            mask &= pd.to_numeric(df[amount_col], errors="coerce").fillna(0) >= float(min_amount)
-
-    return df.loc[mask]
-
-
-@_SERVER.tool(
-    "stream_budget_data",
-    title="Stream dataset rows",
-    description=(
-        "Stream rows in chunks with optional filters. "
-        "Parameters: year (int), chunk_size (int), offset (int), filters (dict)."
-    ),
-)
-async def stream_budget_data(
-    year: int,
-    chunk_size: int = 1000,
-    offset: int = 0,
-    filters: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
-    """Stream large datasets in manageable chunks with optional filters."""
-    try:
-        source_type = "BUDGET_LAW"
-        csv_path = _resolve_csv_path(year, source_type)
-
-        # Determine total rows quickly
-        with open(csv_path, "r", encoding="utf-8") as f:
-            total_rows = max(0, sum(1 for _ in f) - 1)
-
-        # If no filters, use skiprows/nrows for efficiency
-        if not filters:
-            df = pd.read_csv(
-                csv_path,
-                skiprows=range(1, 1 + int(offset)) if int(offset) > 0 else None,
-                nrows=int(chunk_size),
-            )
-            payload = df.to_dict(orient="records")
-            has_more = int(offset) + int(chunk_size) < total_rows
-            return {
-                "data": payload,
-                "chunk_info": {
-                    "offset": int(offset),
-                    "size": int(len(df)),
-                    "total_rows": int(total_rows),
-                    "has_more": bool(has_more),
-                },
-            }
-
-        # With filters: stream through chunks and collect after offset
-        collected: List[Dict[str, Any]] = []
-        passed = 0
-        for chunk in pd.read_csv(csv_path, chunksize=min(10000, max(1000, int(chunk_size) * 2))):
-            filtered = _apply_filters(chunk, source_type, filters or {})
-            if filtered.empty:
-                continue
-            if passed + len(filtered) <= int(offset):
-                passed += len(filtered)
-                continue
-            start = max(0, int(offset) - passed)
-            rows = filtered.iloc[start : start + (int(chunk_size) - len(collected))]
-            collected.extend(rows.to_dict(orient="records"))
-            passed += len(filtered)
-            if len(collected) >= int(chunk_size):
-                break
-
-        has_more = len(collected) >= int(chunk_size)
-        return {
-            "data": collected,
-            "chunk_info": {
-                "offset": int(offset),
-                "size": int(len(collected)),
-                "total_rows": int(total_rows),  # unfiltered total
-                "has_more": bool(has_more),
-            },
-        }
-    except FileNotFoundError as e:
-        return {"error": str(e), "year": int(year)}
-    except Exception as e:  # pragma: no cover - defensive
-        logger.error("Error in stream_budget_data: %s", e)
-        return {"error": str(e)}
 
 
 @_SERVER.resource(
@@ -444,7 +306,9 @@ async def get_budget_visualization_data(
                 }
             else:
                 total_budget = (
-                    float(summary["state_body_total"].sum()) if not summary.empty else 0.0
+                    float(summary["state_body_total"].sum())
+                    if not summary.empty
+                    else 0.0
                 )
                 return {
                     "data": summary.to_dict(orient="records"),
@@ -481,7 +345,9 @@ async def get_budget_visualization_data(
 # -------------------------
 
 
-def _calculate_trends(year_to_metrics: Dict[str, Optional[Dict[str, Any]]]) -> Dict[str, Any]:
+def _calculate_trends(
+    year_to_metrics: Dict[str, Optional[Dict[str, Any]]],
+) -> Dict[str, Any]:
     """Compute simple trend deltas between consecutive years for allocated/actual."""
     years_sorted = sorted([int(y) for y in year_to_metrics.keys()])
     deltas: List[Dict[str, Any]] = []
@@ -492,8 +358,10 @@ def _calculate_trends(year_to_metrics: Dict[str, Optional[Dict[str, Any]]]) -> D
             deltas.append(
                 {
                     "year": y,
-                    "allocated_delta": (curr.get("allocated") or 0) - (prev.get("allocated") or 0),
-                    "actual_delta": (curr.get("actual") or 0) - (prev.get("actual") or 0),
+                    "allocated_delta": (curr.get("allocated") or 0)
+                    - (prev.get("allocated") or 0),
+                    "actual_delta": (curr.get("actual") or 0)
+                    - (prev.get("actual") or 0),
                 }
             )
         prev = curr
@@ -522,9 +390,9 @@ async def get_ministry_comparison(
             if "error" in summary:
                 results[str(year)] = None
             else:
-                results[str(year)] = {k: summary.get(f"total_{k}", 0) for k in metrics} | {
-                    "execution_rate": summary.get("execution_rate", 0)
-                }
+                results[str(year)] = {
+                    k: summary.get(f"total_{k}", 0) for k in metrics
+                } | {"execution_rate": summary.get("execution_rate", 0)}
         except Exception:  # pragma: no cover - defensive
             results[str(year)] = None
 
@@ -554,16 +422,22 @@ async def get_budget_distribution(
         return {"error": f"Unsupported groupby: {groupby}"}
 
     summary = _compute_state_body_summary_df(year)
-    summary_sorted = summary.sort_values("state_body_total", ascending=False).head(int(top_n))
+    summary_sorted = summary.sort_values("state_body_total", ascending=False).head(
+        int(top_n)
+    )
     total_budget = (
-        float(summary_sorted["state_body_total"].sum()) if not summary_sorted.empty else 0.0
+        float(summary_sorted["state_body_total"].sum())
+        if not summary_sorted.empty
+        else 0.0
     )
 
     pie = [
         {
             "name": str(row["state_body"]),
             "value": int(row["state_body_total"]),
-            "percentage": round((float(row["state_body_total"]) / total_budget * 100.0), 1)
+            "percentage": round(
+                (float(row["state_body_total"]) / total_budget * 100.0), 1
+            )
             if total_budget > 0
             else 0.0,
         }
@@ -637,7 +511,7 @@ def _sync_core_data_dir() -> None:
 
 
 # -------------------------
-# MARK: New Query Tools (Phase 1-2)
+# MARK: New Query Tools (Phase 1-3)
 # -------------------------
 
 
@@ -646,7 +520,9 @@ def _sync_core_data_dir() -> None:
     title="Get dataset catalog",
     description="List available datasets with approximate sizes; supports filtering by years and source types.",
 )
-async def get_catalog(years: Optional[List[int]] = None, source_types: Optional[List[str]] = None) -> Dict[str, Any]:
+async def get_catalog(
+    years: Optional[List[int]] = None, source_types: Optional[List[str]] = None
+) -> Dict[str, Any]:
     try:
         _sync_core_data_dir()
         if core_list_datasets is None:
@@ -657,8 +533,12 @@ async def get_catalog(years: Optional[List[int]] = None, source_types: Optional[
                 "year": int(e.year),
                 "source_type": str(e.source_type),
                 "path": str(e.path),
-                "row_count_approx": int(e.row_count_approx) if e.row_count_approx is not None else None,
-                "file_size_bytes": int(e.file_size_bytes) if e.file_size_bytes is not None else None,
+                "row_count_approx": int(e.row_count_approx)
+                if e.row_count_approx is not None
+                else None,
+                "file_size_bytes": int(e.file_size_bytes)
+                if e.file_size_bytes is not None
+                else None,
                 "last_modified_iso": e.last_modified_iso,
             }
             for e in entries
@@ -689,7 +569,9 @@ async def get_schema(year: int, source_type: str) -> Dict[str, Any]:
             columns = list(lf.columns)
             dtypes = {c: str(lf.schema[c]) for c in columns}
             # Approximate total rows from file line count (cheap)
-            csv_path = _processed_csv_dir() / f"{int(year)}_{str(source_type).upper()}.csv"
+            csv_path = (
+                _processed_csv_dir() / f"{int(year)}_{str(source_type).upper()}.csv"
+            )
             try:
                 with open(csv_path, "r", encoding="utf-8") as f:
                     total_rows = max(0, sum(1 for _ in f) - 1)
@@ -701,7 +583,9 @@ async def get_schema(year: int, source_type: str) -> Dict[str, Any]:
                     "columns": columns,
                     "dtypes": dtypes,
                     "roles": roles,
-                    "shape": [total_rows, len(columns)] if total_rows is not None else ["approx", len(columns)],
+                    "shape": [total_rows, len(columns)]
+                    if total_rows is not None
+                    else ["approx", len(columns)],
                     "sample_rows": sample_rows,
                 }
             )
@@ -719,7 +603,9 @@ async def get_schema(year: int, source_type: str) -> Dict[str, Any]:
     title="Get distinct values",
     description="Return most frequent distinct values for a column to aid exploration.",
 )
-async def tool_distinct_values(year: int, source_type: str, column: str, limit: int = 100, min_count: int = 1) -> Dict[str, Any]:
+async def tool_distinct_values(
+    year: int, source_type: str, column: str, limit: int = 100, min_count: int = 1
+) -> Dict[str, Any]:
     try:
         _sync_core_data_dir()
         if core_scan_dataset is None or core_distinct_values is None:
@@ -727,8 +613,15 @@ async def tool_distinct_values(year: int, source_type: str, column: str, limit: 
         lf = core_scan_dataset(int(year), str(source_type))
         if column not in lf.columns:
             return {"error": f"Unknown column: {column}", "columns": lf.columns}
-        vals = core_distinct_values(lf, column, limit=int(limit), min_count=int(min_count))
-        return {"values": vals, "column": column, "year": int(year), "source_type": str(source_type)}
+        vals = core_distinct_values(
+            lf, column, limit=int(limit), min_count=int(min_count)
+        )
+        return {
+            "values": vals,
+            "column": column,
+            "year": int(year),
+            "source_type": str(source_type),
+        }
     except FileNotFoundError as exc:
         return {"error": str(exc)}
     except Exception as exc:
@@ -752,7 +645,11 @@ async def estimate_query(
 ) -> Dict[str, Any]:
     try:
         _sync_core_data_dir()
-        if core_scan_dataset is None or core_build_lazy_query is None or core_estimate_result_size is None:
+        if (
+            core_scan_dataset is None
+            or core_build_lazy_query is None
+            or core_estimate_result_size is None
+        ):
             return {"error": "core query module not available"}
         lf = core_scan_dataset(int(year), str(source_type))
         plan = core_build_lazy_query(
@@ -862,102 +759,58 @@ async def query_data(
 
 
 @_SERVER.tool(
-    "filter_budget_data_enhanced",
-    title="Filter dataset (enhanced)",
+    "pattern_filter",
+    title="Pattern-based filter (Armenian-aware)",
     description=(
-        "Filter by state_body/program_codes/min_amount; returns data directly "
-        "for small results or a temp file path for large ones. "
-        "Parameters: year (int), source_type (str), force_file_output (bool=False), "
-        "max_rows (int|None), filters via keyword args."
+        "Propose include/exclude candidate values for a field given patterns and mode. "
+        "Modes: strict|balanced|permissive. Returns an elicitation payload."
     ),
 )
-async def filter_budget_data_enhanced(
+async def pattern_filter(
     year: int,
     source_type: str,
-    force_file_output: bool = False,
-    max_rows: Optional[int] = None,
-    max_inline_bytes: int = 200_000,
-    columns: Optional[List[str]] = None,
-    exclude_columns: Optional[List[str]] = None,
-    text_truncate_len: Optional[int] = None,
-    **filters: Any,
+    field: str,
+    patterns: List[str],
+    mode: str = "balanced",
+    exclude: Optional[List[str]] = None,
+    limit_values: int = 2000,
 ) -> Dict[str, Any]:
-    """Enhanced filtering with multiple return options (direct or temp file).
-
-    Args:
-        year: Dataset year
-        source_type: Dataset type (e.g., BUDGET_LAW)
-        force_file_output: If True and filesystem is writable, always write
-            filtered results to a temp CSV
-        max_rows: If provided, truncate filtered results to at most this many rows
-    """
     try:
-        csv_path = _resolve_csv_path(year, source_type)
-        df = pd.read_csv(csv_path)
-        filtered_df = _apply_filters(df, source_type, dict(filters))
-
-        # Optional column selection
-        if columns:
-            keep = [c for c in columns if c in filtered_df.columns]
-            if keep:
-                filtered_df = filtered_df[keep]
-        elif exclude_columns:
-            drop = [c for c in exclude_columns if c in filtered_df.columns]
-            if drop:
-                filtered_df = filtered_df.drop(columns=drop, errors="ignore")
-
-        # Optional truncation of long text fields to reduce payload
-        if text_truncate_len is not None and text_truncate_len > 0:
-            for col in filtered_df.select_dtypes(include=["object"]).columns:
-                try:
-                    filtered_df[col] = (
-                        filtered_df[col].astype(str).str.slice(0, int(text_truncate_len))
-                    )
-                except Exception:
-                    pass
-
-        # Apply explicit row cap if requested
-        if max_rows is not None and len(filtered_df) > int(max_rows):
-            filtered_df = filtered_df.head(int(max_rows))
-
-        can_write = _handle_readonly_filesystem()
-        if can_write and (force_file_output or len(filtered_df) > 1000):
-            temp_path = _save_temp_file(filtered_df)
-            return {
-                "method": "file",
-                "file_path": str(temp_path),
-                "row_count": int(len(filtered_df)),
-                "data_preview": filtered_df.head(10).to_dict(orient="records"),
-            }
-
-        # Try inline, but protect against very large JSON responses
-        data_records = filtered_df.to_dict(orient="records")
-        payload = {
-            "method": "direct",
-            "data": data_records,
-            "row_count": int(len(filtered_df)),
-            "csv_content": filtered_df.to_csv(index=False) if len(filtered_df) < 500 else None,
+        _sync_core_data_dir()
+        if core_scan_dataset is None or core_build_pattern_candidates is None:
+            return {"error": "core query module not available"}
+        lf = core_scan_dataset(int(year), str(source_type))
+        if field not in lf.columns:
+            return {"error": f"Unknown field: {field}", "columns": lf.columns}
+        # collect distinct values of the field (bounded)
+        vals_df = lf.select([field]).unique().limit(int(limit_values)).collect()
+        values = [str(v) for v in vals_df.get_column(field).to_list()]
+        include, exc = core_build_pattern_candidates(
+            values, patterns, mode=str(mode), exclude=exclude or []
+        )
+        # If ambiguity detected (large include or overlap), ask for confirmation
+        needs_confirmation = True
+        notes = None
+        if not include:
+            notes = "No matches found. Consider adjusting patterns or mode."
+        candidates = {
+            "include": include[:200],
+            "exclude": exc[:200],
         }
-        try:
-            serialized = json.dumps(payload, ensure_ascii=False)
-        except Exception:
-            serialized = "{}"
+        return {
+            "status": "needs_confirmation",
+            "candidates": candidates,
+            "question": f"Confirm which '{field}' values to include/exclude? (mode={mode})",
+            "notes": notes,
+        }
+    except FileNotFoundError as exc:
+        return {"error": str(exc)}
+    except Exception as exc:
+        logger.error("pattern_filter error: %s", exc)
+        return {"error": str(exc)}
 
-        if can_write and (force_file_output or len(serialized) > int(max_inline_bytes)):
-            temp_path = _save_temp_file(filtered_df)
-            return {
-                "method": "file",
-                "file_path": str(temp_path),
-                "row_count": int(len(filtered_df)),
-                "data_preview": filtered_df.head(10).to_dict(orient="records"),
-            }
 
-        return payload
-    except FileNotFoundError as e:
-        return {"error": str(e), "year": int(year), "source_type": str(source_type)}
-    except Exception as e:  # pragma: no cover - defensive
-        logger.error("Error in filter_budget_data_enhanced: %s", e)
-        return {"error": str(e)}
+# (legacy filter_budget_data_enhanced removed; use query_data with filters)
 
 
 # -------------------------
@@ -1001,7 +854,9 @@ async def get_dataset_overall(
         }
 
     filter_year: Optional[int] = int(year) if year is not None else None
-    filter_source: Optional[str] = str(source_type).upper() if source_type is not None else None
+    filter_source: Optional[str] = (
+        str(source_type).upper() if source_type is not None else None
+    )
 
     temp_result: Dict[int, Dict[str, Any]] = {}
     source_set: set[str] = set()
@@ -1043,7 +898,9 @@ async def get_dataset_overall(
 
     # Sort years ascending for stable output
     years_sorted = sorted(temp_result.keys())
-    overalls_sorted: Dict[str, Dict[str, Any]] = {str(y): temp_result[y] for y in years_sorted}
+    overalls_sorted: Dict[str, Dict[str, Any]] = {
+        str(y): temp_result[y] for y in years_sorted
+    }
 
     return {
         "overalls": overalls_sorted,
@@ -1062,35 +919,71 @@ async def get_dataset_overall(
     "get_tool_capabilities",
     title="List tool capabilities",
     description=(
-        "Summarize available tools/resources with key parameters for "
-        "discovery/autocomplete."
+        "Summarize available tools/resources with key parameters for discovery/autocomplete."
     ),
 )
 async def get_tool_capabilities() -> Dict[str, Any]:
     """Return metadata about available tools for discovery/autocomplete."""
     return {
         "data_access_tools": [
-            {"name": "list_available_data", "output": "inventory", "parameters": []},
-            {"name": "get_data_schema", "output": "schema", "parameters": ["year", "source_type"]},
             {
-                "name": "preview_dataset",
-                "output": "sample_data",
-                "parameters": ["year", "source_type", "sample_size"],
+                "name": "get_catalog",
+                "output": "datasets",
+                "parameters": ["years?", "source_types?"],
             },
             {
-                "name": "stream_budget_data",
-                "output": "data",
-                "parameters": ["year", "chunk_size", "offset", "filters"],
+                "name": "get_schema",
+                "output": "schema",
+                "parameters": ["year", "source_type"],
             },
             {
-                "name": "filter_budget_data_enhanced",
-                "output": "data|file",
+                "name": "distinct_values",
+                "output": "values",
+                "parameters": ["year", "source_type", "column", "limit?", "min_count?"],
+            },
+            {
+                "name": "estimate_query",
+                "output": "row_estimate|byte_estimate|preview",
                 "parameters": [
                     "year",
                     "source_type",
-                    "force_file_output",
-                    "max_rows",
-                    "filters...",
+                    "columns?",
+                    "filters?",
+                    "group_by?",
+                    "aggs?",
+                    "distinct?",
+                ],
+            },
+            {
+                "name": "query_data",
+                "output": "direct|file",
+                "parameters": [
+                    "year",
+                    "source_type",
+                    "columns?",
+                    "filters?",
+                    "group_by?",
+                    "aggs?",
+                    "distinct?",
+                    "order_by?",
+                    "limit?",
+                    "offset?",
+                    "output_format?",
+                    "max_rows?",
+                    "max_bytes?",
+                ],
+            },
+            {
+                "name": "pattern_filter",
+                "output": "needs_confirmation",
+                "parameters": [
+                    "year",
+                    "source_type",
+                    "field",
+                    "patterns",
+                    "mode?",
+                    "exclude?",
+                    "limit_values?",
                 ],
             },
             {
@@ -1107,20 +1000,6 @@ async def get_tool_capabilities() -> Dict[str, Any]:
                 "name": "get_ministry_spending_summary",
                 "output": "summary",
                 "parameters": ["year", "ministry"],
-            },
-            {
-                "name": "filter_budget_data",
-                "output": "file_path",
-                "parameters": [
-                    "year",
-                    "source_type",
-                    "state_body",
-                    "program_codes",
-                    "min_amount",
-                    "max_rows",
-                ],
-                "deprecated": True,
-                "replacement": "filter_budget_data_enhanced",
             },
         ],
         "visualization_tools": [
@@ -1166,12 +1045,21 @@ async def get_tool_capabilities() -> Dict[str, Any]:
             {
                 "name": "trace_program_lineage",
                 "output": "timeline",
-                "parameters": ["starting_program", "search_years", "confidence_threshold"],
+                "parameters": [
+                    "starting_program",
+                    "search_years",
+                    "confidence_threshold",
+                ],
             },
             {
                 "name": "detect_program_patterns",
                 "output": "results",
-                "parameters": ["pattern_type", "years", "custom_keywords", "confidence_threshold"],
+                "parameters": [
+                    "pattern_type",
+                    "years",
+                    "custom_keywords",
+                    "confidence_threshold",
+                ],
             },
             {
                 "name": "extract_rd_budget_robust",
@@ -1188,7 +1076,11 @@ async def get_tool_capabilities() -> Dict[str, Any]:
                 "output": "success",
                 "parameters": ["equivalency_map", "description"],
             },
-            {"name": "get_program_equivalencies", "output": "equivalencies", "parameters": []},
+            {
+                "name": "get_program_equivalencies",
+                "output": "equivalencies",
+                "parameters": [],
+            },
         ],
         "resources": [
             {
@@ -1221,7 +1113,9 @@ def _program_patterns_path() -> Path:
     return Path("config/program_patterns.yaml")
 
 
-def _load_program_patterns(force_reload: bool = False) -> Dict[str, Dict[str, List[str]]]:
+def _load_program_patterns(
+    force_reload: bool = False,
+) -> Dict[str, Dict[str, List[str]]]:
     """Load program patterns from YAML only.
 
     YAML structure expected:
@@ -1265,166 +1159,13 @@ def _load_program_patterns(force_reload: bool = False) -> Dict[str, Dict[str, Li
     return patterns
 
 
-@_SERVER.tool("list_available_data")
-async def list_available_data() -> Dict[str, Any]:
-    """Return inventory of available datasets with diagnostics."""
-    try:
-        diagnostics = _validate_data_availability()
-        csv_dir = _processed_csv_dir()
-        csv_files = list(csv_dir.glob("*.csv")) if csv_dir.exists() else []
-
-        budget_years: List[int] = []
-        spending_by_year: Dict[int, List[str]] = {}
-
-        for csv_file in csv_files:
-            year, type_part = _extract_year_and_type(csv_file.name)
-            if year is None or type_part is None:
-                continue
-
-            if type_part == "BUDGET_LAW":
-                budget_years.append(year)
-            elif type_part.startswith("SPENDING_"):
-                quarter = type_part.replace("SPENDING_", "")
-                spending_by_year.setdefault(year, []).append(quarter)
-
-        # Remove duplicates and sort
-        for year in spending_by_year:
-            spending_by_year[year] = sorted(list(set(spending_by_year[year])))
-
-        last_updated = None
-        if csv_files:
-            latest_mtime = max(f.stat().st_mtime for f in csv_files)
-            last_updated = datetime.fromtimestamp(latest_mtime, tz=timezone.utc).isoformat()
-
-        return {
-            "budget_laws": sorted(budget_years),
-            "spending_reports": {str(k): v for k, v in spending_by_year.items()},
-            "formats": ["csv"],
-            "last_updated": last_updated,
-            "diagnostics": diagnostics,
-            "total_datasets": len(csv_files),
-        }
-
-    except Exception as e:
-        logger.error("Error in list_available_data: %s", e)
-        return {
-            "error": str(e),
-            "diagnostics": _validate_data_availability(),
-            "budget_laws": [],
-            "spending_reports": {},
-            "formats": [],
-            "total_datasets": 0,
-        }
+# (legacy list_available_data removed; use get_catalog)
 
 
-@_SERVER.tool("get_data_schema")
-async def get_data_schema(year: int, source_type: str) -> Dict[str, Any]:
-    """Return schema information for a specific dataset."""
-    try:
-        csv_dir = _processed_csv_dir()
-        filename = f"{year}_{source_type.upper()}.csv"
-        csv_path = csv_dir / filename
-
-        if not csv_path.exists():
-            available_files = [f.name for f in csv_dir.glob("*.csv")]
-            return {
-                "error": f"Dataset not found: {filename}",
-                "available_files": available_files[:10],
-                "csv_dir": str(csv_dir),
-            }
-
-        # Read just a sample for schema detection
-        df = pd.read_csv(csv_path, nrows=10)
-
-        # Get full row count efficiently
-        with open(csv_path, "r", encoding="utf-8") as f:
-            total_rows = sum(1 for _ in f) - 1  # Subtract header
-
-        # Get measure column mappings
-        measures = _get_measure_columns(source_type)
-
-        return {
-            "year": year,
-            "source_type": source_type,
-            "columns": list(df.columns),
-            "dtypes": {col: str(dtype) for col, dtype in df.dtypes.items()},
-            "shape": [total_rows, len(df.columns)],
-            "file_path": str(csv_path),
-            "measure_columns": measures,
-            "sample_data": df.head(3).to_dict(orient="records"),
-        }
-
-    except Exception as e:
-        logger.error("Error in get_data_schema: %s", e)
-        return {"error": str(e)}
+# (legacy get_data_schema removed; use get_schema)
 
 
-@_SERVER.tool("filter_budget_data")
-async def filter_budget_data(
-    year: int,
-    source_type: str,
-    state_body: Optional[str] = None,
-    program_codes: Optional[List[int]] = None,
-    min_amount: Optional[float] = None,
-    max_rows: Optional[int] = 1000,
-) -> str:
-    """Filter dataset and return path to temporary CSV."""
-    try:
-        # Deprecation notice: prefer filter_budget_data_enhanced
-        logger.warning(
-            "DEPRECATED: 'filter_budget_data' will be removed in a future release. "
-            "Use 'filter_budget_data_enhanced' with 'force_file_output' and 'max_rows' instead."
-        )
-        csv_dir = _processed_csv_dir()
-        filename = f"{year}_{source_type.upper()}.csv"
-        csv_path = csv_dir / filename
-
-        if not csv_path.exists():
-            raise FileNotFoundError(f"Dataset not found: {filename}")
-
-        df = pd.read_csv(csv_path)
-        logger.info("Loaded %d rows from %s", len(df), filename)
-
-        # Apply filters
-        mask = pd.Series(True, index=df.index)
-
-        if state_body:
-            mask &= df["state_body"].astype(str).str.contains(state_body, case=False, na=False)
-
-        if program_codes:
-            mask &= df["program_code"].isin(program_codes)
-
-        if min_amount is not None:
-            measures = _get_measure_columns(source_type)
-            amount_col = (
-                measures.get("allocated") or measures.get("actual") or measures.get("revised")
-            )
-            if amount_col and amount_col in df.columns:
-                numeric_col = pd.to_numeric(df[amount_col], errors="coerce").fillna(0)
-                mask &= numeric_col >= min_amount
-
-        filtered_df = df.loc[mask].copy()
-
-        # Limit rows if requested
-        if max_rows and len(filtered_df) > max_rows:
-            filtered_df = filtered_df.head(max_rows)
-            logger.info("Limited output to %d rows", max_rows)
-
-        # Save to temporary file
-        temp_dir = csv_dir.parent / "tmp"
-        temp_dir.mkdir(exist_ok=True)
-
-        temp_filename = f"filtered_{year}_{source_type}_{uuid4().hex[:8]}.csv"
-        temp_path = temp_dir / temp_filename
-
-        filtered_df.to_csv(temp_path, index=False)
-        logger.info("Saved %d filtered rows to %s", len(filtered_df), temp_path)
-
-        return str(temp_path)
-
-    except Exception as e:
-        logger.error("Error in filter_budget_data: %s", e)
-        raise
+# (legacy filter_budget_data removed; use query_data)
 
 
 @_SERVER.tool("find_program_across_years_robust")
@@ -1486,7 +1227,12 @@ async def find_program_across_years_robust(
         return {"reference_program": ref_data, "matches": matches, "summary": summary}
 
     except Exception as e:
-        return {"error": str(e), "reference_program": None, "matches": {}, "summary": {}}
+        return {
+            "error": str(e),
+            "reference_program": None,
+            "matches": {},
+            "summary": {},
+        }
 
 
 async def _find_program_matches_in_year(
@@ -1505,7 +1251,11 @@ async def _find_program_matches_in_year(
         if not exact.empty:
             for _, row in exact.iterrows():
                 exact_matches.append(
-                    {"program": row.to_dict(), "confidence": 1.0, "match_reason": "exact_code"}
+                    {
+                        "program": row.to_dict(),
+                        "confidence": 1.0,
+                        "match_reason": "exact_code",
+                    }
                 )
 
         # Fuzzy matching on name and description
@@ -1513,7 +1263,9 @@ async def _find_program_matches_in_year(
             if row.get("program_code") == ref_data.get("program_code"):
                 continue  # Already in exact matches
 
-            confidence = _calculate_program_similarity(ref_data, row.to_dict(), use_ministry)
+            confidence = _calculate_program_similarity(
+                ref_data, row.to_dict(), use_ministry
+            )
 
             if confidence >= threshold:
                 fuzzy_matches.append(
@@ -1530,14 +1282,22 @@ async def _find_program_matches_in_year(
         return {
             "exact_matches": exact_matches,
             "fuzzy_matches": fuzzy_matches[:5],  # Top 5 candidates
-            "no_matches": [] if exact_matches or fuzzy_matches else ["no_suitable_matches"],
+            "no_matches": []
+            if exact_matches or fuzzy_matches
+            else ["no_suitable_matches"],
         }
 
     except FileNotFoundError:
-        return {"exact_matches": [], "fuzzy_matches": [], "no_matches": ["file_not_found"]}
+        return {
+            "exact_matches": [],
+            "fuzzy_matches": [],
+            "no_matches": ["file_not_found"],
+        }
 
 
-def _calculate_program_similarity(ref: Dict, candidate: Dict, use_ministry: bool) -> float:
+def _calculate_program_similarity(
+    ref: Dict, candidate: Dict, use_ministry: bool
+) -> float:
     """Calculate similarity score between two programs using multiple signals."""
     scores: List[tuple[str, float, float]] = []
 
@@ -1622,7 +1382,9 @@ async def search_programs_by_similarity(
                     )
 
             # Sort by overall similarity and limit
-            year_matches.sort(key=lambda x: x["similarity_scores"]["overall"], reverse=True)
+            year_matches.sort(
+                key=lambda x: x["similarity_scores"]["overall"], reverse=True
+            )
             year_matches = year_matches[: int(max_per_year)]
 
             if year_matches:
@@ -1636,7 +1398,10 @@ async def search_programs_by_similarity(
     payload = {
         "query": {"name": target_name, "description": target_description},
         "results": results,
-        "summary": {"total_matches": total_matches, "years_with_matches": years_with_matches},
+        "summary": {
+            "total_matches": total_matches,
+            "years_with_matches": years_with_matches,
+        },
     }
 
     try:
@@ -1688,7 +1453,9 @@ def _calculate_text_similarities(
     if target_desc:
         desc_sim = max(
             _armenian_text_similarity(target_desc, str(row.get("program_goal", ""))),
-            _armenian_text_similarity(target_desc, str(row.get("program_result_desc", ""))),
+            _armenian_text_similarity(
+                target_desc, str(row.get("program_result_desc", ""))
+            ),
         )
 
     # Overall score (weighted average)
@@ -1721,7 +1488,9 @@ async def trace_program_lineage(
     ref_code = starting_program["code"]
 
     # Add starting point to timeline
-    timeline.append({"year": ref_year, "code": ref_code, "confidence": 1.0, "status": "reference"})
+    timeline.append(
+        {"year": ref_year, "code": ref_code, "confidence": 1.0, "status": "reference"}
+    )
 
     # Trace forward and backward from reference year
     all_years = sorted(search_years)
@@ -1761,7 +1530,9 @@ async def trace_program_lineage(
             elif status == "missing":
                 gaps.append(year)
             elif status == "uncertain":
-                recommendations.append(f"Manual review needed for {year} - multiple candidates")
+                recommendations.append(
+                    f"Manual review needed for {year} - multiple candidates"
+                )
 
         except Exception as e:  # pragma: no cover - defensive
             lineage[str(year)] = {
@@ -1791,7 +1562,9 @@ def _get_latest_confident_match(timeline: List[Dict], target_year: int) -> Dict:
         return timeline[0]  # Use original reference
 
     # Get closest year (prefer earlier years for forward tracing)
-    closest = min(confident_matches, key=lambda x: abs(int(x["year"]) - int(target_year)))
+    closest = min(
+        confident_matches, key=lambda x: abs(int(x["year"]) - int(target_year))
+    )
     return {"program_code": closest["code"], "year": closest["year"]}
 
 
@@ -1947,10 +1720,15 @@ async def detect_program_patterns(
         except FileNotFoundError:
             continue
 
-    avg_confidence = sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0
+    avg_confidence = (
+        sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0
+    )
 
     payload = {
-        "pattern": {"type": pattern_type, "keywords": pattern_config.get("keywords", [])},
+        "pattern": {
+            "type": pattern_type,
+            "keywords": pattern_config.get("keywords", []),
+        },
         "results": results,
         "summary": {
             "total_programs": total_programs,
@@ -2077,12 +1855,14 @@ async def bulk_filter_multiple_datasets(
 
                 if "min_amount" in filters:
                     # Find appropriate amount column
-                    amount_cols = [c for c in df.columns if ("total" in c) or ("actual" in c)]
+                    amount_cols = [
+                        c for c in df.columns if ("total" in c) or ("actual" in c)
+                    ]
                     if amount_cols:
                         primary_col = amount_cols[0]  # Use first available
-                        mask &= pd.to_numeric(df[primary_col], errors="coerce").fillna(0) >= float(
-                            filters["min_amount"]
-                        )
+                        mask &= pd.to_numeric(df[primary_col], errors="coerce").fillna(
+                            0
+                        ) >= float(filters["min_amount"])
 
                 # Add metadata columns
                 filtered_df = df.loc[mask].copy()
@@ -2147,7 +1927,9 @@ async def extract_rd_budget_robust(
             details[str(year)] = {"minescs_matches": [], "minhti_matches": []}
 
         # 1. Extract MinESCS R&D (Program 1162 and variants)
-        minescs_result = await _extract_minescs_rd(year, manual_mappings, confidence_threshold)
+        minescs_result = await _extract_minescs_rd(
+            year, manual_mappings, confidence_threshold
+        )
         year_data["minescs"] = minescs_result["summary"]
 
         if minescs_result["confidence"] < confidence_threshold:
@@ -2174,13 +1956,17 @@ async def extract_rd_budget_robust(
             details[str(year)]["minhti_matches"] = minhti_result["matches"]
 
         # 3. Calculate totals
-        year_data["total"] = year_data["minescs"]["budget"] + year_data["minhti"]["budget"]
+        year_data["total"] = (
+            year_data["minescs"]["budget"] + year_data["minhti"]["budget"]
+        )
 
         rd_summary[str(year)] = year_data
 
     # Calculate data quality metrics
     complete_years = sum(
-        1 for y in rd_summary.values() if y["minescs"]["budget"] > 0 and y["minhti"]["budget"] > 0
+        1
+        for y in rd_summary.values()
+        if y["minescs"]["budget"] > 0 and y["minhti"]["budget"] > 0
     )
     partial_years = sum(
         1
@@ -2205,14 +1991,17 @@ async def extract_rd_budget_robust(
     return result
 
 
-async def _extract_minescs_rd(year: int, manual_mappings: Dict, threshold: float) -> Dict:
+async def _extract_minescs_rd(
+    year: int, manual_mappings: Dict, threshold: float
+) -> Dict:
     """Extract MinESCS R&D budget for a specific year."""
     try:
         # Check manual mappings first
         for concept_id, mapping in manual_mappings.items():
             if "minescs" in concept_id.lower() or "research" in concept_id.lower():
                 year_mapping = next(
-                    (m for m in mapping.get("mappings", []) if m.get("year") == year), None
+                    (m for m in mapping.get("mappings", []) if m.get("year") == year),
+                    None,
                 )
                 if year_mapping:
                     csv_path = _resolve_csv_path(year, "BUDGET_LAW")
@@ -2240,7 +2029,9 @@ async def _extract_minescs_rd(year: int, manual_mappings: Dict, threshold: float
 
         # Filter to education ministry first
         edu_ministry = df[
-            df["state_body"].astype(str).str.contains("կրթություն", case=False, na=False)
+            df["state_body"]
+            .astype(str)
+            .str.contains("կրթություն", case=False, na=False)
         ]
 
         program_1162 = edu_ministry[edu_ministry["program_code"] == 1162]
@@ -2253,7 +2044,9 @@ async def _extract_minescs_rd(year: int, manual_mappings: Dict, threshold: float
                     "program_code": 1162,
                 },
                 "confidence": 1.0,
-                "matches": [{"source": "exact_match", "program": program_row.to_dict()}],
+                "matches": [
+                    {"source": "exact_match", "program": program_row.to_dict()}
+                ],
             }
 
         # Try fuzzy matching for R&D programs in education ministry
@@ -2263,7 +2056,9 @@ async def _extract_minescs_rd(year: int, manual_mappings: Dict, threshold: float
             goal = str(row.get("program_goal", "")).lower()
 
             rd_keywords = ["գիտական", "հետազոտ", "գիտատեխնիկական"]
-            keyword_matches = sum(1 for kw in rd_keywords if (kw in name) or (kw in goal))
+            keyword_matches = sum(
+                1 for kw in rd_keywords if (kw in name) or (kw in goal)
+            )
 
             if keyword_matches >= 2:  # Must match at least 2 R&D keywords
                 confidence = min(1.0, keyword_matches / len(rd_keywords) + 0.3)
@@ -2310,7 +2105,9 @@ async def _extract_minhti_rd(year: int, threshold: float) -> Dict:
 
         # Filter to high-tech ministry
         hti_ministry = df[
-            df["state_body"].astype(str).str.contains("բարձր տեխնոլոգիական", case=False, na=False)
+            df["state_body"]
+            .astype(str)
+            .str.contains("բարձր տեխնոլոգիական", case=False, na=False)
         ]
 
         rd_subprograms: List[Dict[str, Any]] = []
@@ -2329,7 +2126,10 @@ async def _extract_minhti_rd(year: int, threshold: float) -> Dict:
                     }
                 )
             # Check for partial matches
-            elif any(kw in subprog_name for kw in ["գիտահետազոտական", "փորձակոնստրուկտորական"]):
+            elif any(
+                kw in subprog_name
+                for kw in ["գիտահետազոտական", "փորձակոնստրուկտորական"]
+            ):
                 confidence = 0.7 if "գիտահետազոտական" in subprog_name else 0.5
                 rd_subprograms.append(
                     {
@@ -2348,11 +2148,12 @@ async def _extract_minhti_rd(year: int, threshold: float) -> Dict:
 
         if qualifying_subprograms:
             total_budget = sum(
-                int(sp["subprogram"].get("subprogram_total", 0)) for sp in qualifying_subprograms
+                int(sp["subprogram"].get("subprogram_total", 0))
+                for sp in qualifying_subprograms
             )
-            avg_confidence = sum(sp["confidence"] for sp in qualifying_subprograms) / len(
-                qualifying_subprograms
-            )
+            avg_confidence = sum(
+                sp["confidence"] for sp in qualifying_subprograms
+            ) / len(qualifying_subprograms)
 
         return {
             "summary": {
@@ -2496,7 +2297,10 @@ async def get_ministry_spending_summary(year: int, ministry: str) -> Dict[str, A
 
         if not selected_type:
             available = [f.name for f in csv_dir.glob(f"{year}_*.csv")]
-            return {"error": f"No data found for year {year}", "available_files": available}
+            return {
+                "error": f"No data found for year {year}",
+                "available_files": available,
+            }
 
         # Load and filter data
         csv_path = csv_dir / f"{year}_{selected_type}.csv"
@@ -2522,7 +2326,9 @@ async def get_ministry_spending_summary(year: int, ministry: str) -> Dict[str, A
         def safe_sum(col_name: str) -> float:
             if col_name in ministry_data.columns:
                 return float(
-                    pd.to_numeric(ministry_data[col_name], errors="coerce").fillna(0).sum()
+                    pd.to_numeric(ministry_data[col_name], errors="coerce")
+                    .fillna(0)
+                    .sum()
                 )
             return 0.0
 
@@ -2536,7 +2342,11 @@ async def get_ministry_spending_summary(year: int, ministry: str) -> Dict[str, A
 
         # Top programs
         top_programs = []
-        amount_col = measures.get("allocated") or measures.get("actual") or measures.get("revised")
+        amount_col = (
+            measures.get("allocated")
+            or measures.get("actual")
+            or measures.get("revised")
+        )
         if amount_col and amount_col in ministry_data.columns:
             program_totals = (
                 ministry_data.groupby(["program_code", "program_name"])[amount_col]
@@ -2603,7 +2413,9 @@ async def _run_http(host: str, port: int) -> None:
     await server.serve()
 
 
-def run_http(data_path: Optional[str] = None, *, host: str = "127.0.0.1", port: int = 8765) -> None:
+def run_http(
+    data_path: Optional[str] = None, *, host: str = "127.0.0.1", port: int = 8765
+) -> None:
     """Run MCP server over HTTP."""
     global _DATA_ROOT
     _DATA_ROOT = Path(data_path) if data_path else Path("data/processed")

@@ -10,6 +10,7 @@ from .roles import get_column_roles
 from .scan import scan_dataset
 from .plan import build_lazy_query
 from .materialize import estimate_result_size, materialize_result, distinct_values
+from .patterns import normalize_armenian_text, build_pattern_candidates
 
 __all__ = [
     "list_datasets",
@@ -20,6 +21,6 @@ __all__ = [
     "estimate_result_size",
     "materialize_result",
     "distinct_values",
+    "normalize_armenian_text",
+    "build_pattern_candidates",
 ]
-
-

@@ -5,7 +5,9 @@ from typing import Any, Dict, List, Optional
 import polars as pl
 
 
-def _apply_filters(lf: pl.LazyFrame, filters: Optional[List[Dict[str, Any]]]) -> pl.LazyFrame:
+def _apply_filters(
+    lf: pl.LazyFrame, filters: Optional[List[Dict[str, Any]]]
+) -> pl.LazyFrame:
     if not filters:
         return lf
     exprs = []
@@ -23,9 +25,17 @@ def _apply_filters(lf: pl.LazyFrame, filters: Optional[List[Dict[str, Any]]]) ->
         elif op == "in":
             exprs.append(c.is_in(val if isinstance(val, list) else [val]))
         elif op == "contains":
-            exprs.append(pl.col(col).cast(pl.Utf8, strict=False).str.contains(str(val), literal=True))
+            exprs.append(
+                pl.col(col)
+                .cast(pl.Utf8, strict=False)
+                .str.contains(str(val), literal=True)
+            )
         elif op == "regex":
-            exprs.append(pl.col(col).cast(pl.Utf8, strict=False).str.contains(str(val), literal=False))
+            exprs.append(
+                pl.col(col)
+                .cast(pl.Utf8, strict=False)
+                .str.contains(str(val), literal=False)
+            )
         elif op == "range":
             rng = val or {}
             mn = rng.get("min")
@@ -96,5 +106,3 @@ def build_lazy_query(
         lf = lf.sort(by_cols, descending=descending)
 
     return lf
-
-

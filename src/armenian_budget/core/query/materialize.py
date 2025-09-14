@@ -1,15 +1,17 @@
 from __future__ import annotations
-
 from typing import Any, Dict, List, Optional
-
 import polars as pl
 
 
 DEFAULT_MAX_ROWS = 5000
-DEFAULT_MAX_BYTES = 2_000_000  # ~2MB inline budget; server will switch to file/handle beyond
+DEFAULT_MAX_BYTES = (
+    2_000_000  # ~2MB inline budget; server will switch to file/handle beyond
+)
 
 
-def estimate_result_size(lf: pl.LazyFrame, *, sample_rows: int = 1000) -> Dict[str, int]:
+def estimate_result_size(
+    lf: pl.LazyFrame, *, sample_rows: int = 1000
+) -> Dict[str, int]:
     """Estimate row/byte size by sampling a small materialization.
 
     This is a simple estimator; can be improved with statistics later.
@@ -69,7 +71,9 @@ def materialize_result(
         raise ValueError(f"Unsupported format: {format}")
 
 
-def distinct_values(lf: pl.LazyFrame, column: str, *, limit: int = 100, min_count: int = 1) -> List[Dict[str, Any]]:
+def distinct_values(
+    lf: pl.LazyFrame, column: str, *, limit: int = 100, min_count: int = 1
+) -> List[Dict[str, Any]]:
     out = (
         lf.group_by(column)
         .agg(pl.len().alias("count"))
@@ -84,5 +88,3 @@ def distinct_values(lf: pl.LazyFrame, column: str, *, limit: int = 100, min_coun
         if row.get(column) is None:
             row[column] = None
     return out
-
-

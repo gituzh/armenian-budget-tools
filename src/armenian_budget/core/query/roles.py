@@ -25,5 +25,3 @@ def get_column_roles(source_type: str) -> Dict[str, str]:
             "actual": "subprogram_actual",
         }
     return {}
-
-
