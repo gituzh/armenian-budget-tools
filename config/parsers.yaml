@@ -15,3 +15,9 @@ parsers:
       by_year:
         "2019":
           regex: "(?i)(?=.*crag)(?=.*mij).*\\.(xlsx|xls)$"
+
+  mtep:
+    search:
+      global:
+        # Only require the Armenian substring for 'program' per instruction; Excel extensions only
+        regex: "(?i)(?=.*ծրագ).*\\.(xlsx|xls)$"
