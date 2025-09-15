@@ -402,14 +402,33 @@ def cmd_download(args: argparse.Namespace) -> int:
 
     years = _parse_years_arg(args.years)
     sources = registry.all() if years is None else registry.for_years(years)
-    # Keep budget laws, spending sources, and MTEP sources
-    sources = [
-        s
-        for s in sources
-        if s.source_type.startswith("spending_")
-        or s.source_type == "budget_law"
-        or s.source_type == "mtep"
-    ]
+
+    # Filter by source type if specified
+    if getattr(args, "source_type", None):
+        requested_type = args.source_type.lower()
+        type_mapping = {
+            "budget_law": "budget_law",
+            "spending_q1": "spending_q1",
+            "spending_q12": "spending_q12",
+            "spending_q123": "spending_q123",
+            "spending_q1234": "spending_q1234",
+            "mtep": "mtep",
+        }
+        if requested_type in type_mapping:
+            sources = [
+                s for s in sources if s.source_type == type_mapping[requested_type]
+            ]
+        else:
+            sources = []
+    else:
+        # Keep budget laws, spending sources, and MTEP sources
+        sources = [
+            s
+            for s in sources
+            if s.source_type.startswith("spending_")
+            or s.source_type == "budget_law"
+            or s.source_type == "mtep"
+        ]
     if not sources:
         logging.warning("No matching sources to download.")
         return 0
@@ -521,6 +540,12 @@ def cmd_download(args: argparse.Namespace) -> int:
             mtep_output_dir = extracted_root / "mtep" / str(y)
             extract_rar_files(mtep_input_dir, mtep_output_dir)
             extract_zip_files(mtep_input_dir, mtep_output_dir)
+
+            # Extract budget law files
+            budget_law_input_dir = original_root / "budget_laws" / str(y)
+            budget_law_output_dir = extracted_root / "budget_laws" / str(y)
+            extract_rar_files(budget_law_input_dir, budget_law_output_dir)
+            extract_zip_files(budget_law_input_dir, budget_law_output_dir)
 
     return 0 if fail == 0 else 1
 
@@ -806,6 +831,18 @@ def build_parser() -> argparse.ArgumentParser:
         "--overwrite",
         action="store_true",
         help="Overwrite existing files after successful download (even if same size)",
+    )
+    p_download.add_argument(
+        "--source-type",
+        choices=[
+            "budget_law",
+            "spending_q1",
+            "spending_q12",
+            "spending_q123",
+            "spending_q1234",
+            "mtep",
+        ],
+        help="Limit download to a specific source type (case insensitive)",
     )
     p_download.set_defaults(func=cmd_download)
 
