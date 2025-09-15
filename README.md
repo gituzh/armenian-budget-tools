@@ -45,7 +45,7 @@ Parse, validate, and analyze Armenian state budget laws and spending reports. Ou
   - Developers/data scientists using Python/Wolfram
   - Auditors who need source traceability
   - Users who prefer AI‑assisted analysis via the MCP server
-- What it does: Parses and validates Armenian state budget laws (2019–2025) and spending reports (Q1/Q12/Q123/Q1234, 2019–2024 when available), producing clean CSVs for analysis.
+- What it does: Parses and validates Armenian state budget laws (2019–2025), spending reports (Q1/Q12/Q123/Q1234, 2019–2024 when available), and MTEP (mid‑term expenditure program, 2024 format), producing clean CSVs for analysis.
 - Where outputs go:
   - `data/original` (downloaded)
   - `data/extracted` (unarchived)
@@ -228,6 +228,9 @@ armenian-budget process --year 2019
 # Single source type
 armenian-budget process --year 2019 --source-type BUDGET_LAW
 
+# MTEP (2024 format)
+armenian-budget process --year 2024 --source-type MTEP
+
 # Multiple years (comma-separated or range)
 armenian-budget process --years 2019,2020,2021
 armenian-budget process --years 2019-2021
@@ -378,7 +381,7 @@ Each row represents one **subprogram** with aggregated totals from parent levels
 - `*_actual`: actual spending year-to-date
 - `*_actual_vs_rev_annual_plan`: execution rate vs revised annual plan (%)
 
-*Note: `*` represents `state_body_`, `program_`, or `subprogram_` prefixes. For complete column reference and detailed schemas, see [`docs/data_schemas.md`](docs/data_schemas.md).*"
+_Note: `_`represents`state*body*`, `program*`, or `subprogram*` prefixes. For complete column reference and detailed schemas, see [`docs/data_schemas.md`](docs/data_schemas.md).\*"
 
 ## Complete column reference
 
@@ -395,7 +398,7 @@ For the complete column reference with detailed schemas, examples, and year-spec
 **SPENDING reports key columns:**
 `*_annual_plan`, `*_rev_annual_plan`, `*_actual`, `*_actual_vs_rev_annual_plan`
 
-*Note: Detailed CSV schemas and complete column definitions are available in [`docs/data_schemas.md`](docs/data_schemas.md).*
+_Note: Detailed CSV schemas and complete column definitions are available in [`docs/data_schemas.md`](docs/data_schemas.md)._
 
 ## Troubleshooting
 

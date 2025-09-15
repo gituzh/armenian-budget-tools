@@ -62,9 +62,14 @@ def _compile_pattern_for(
     year: int,
     quarter: Optional[str],
 ) -> Tuple[Optional[Pattern[str]], str]:
-    # Determine parser group: budget_law vs spending
+    # Determine parser group: budget_law vs spending vs mtep
     st = (source_type or "").lower()
-    group = "budget_law" if st == "budget_law" else "spending"
+    if st == "budget_law":
+        group = "budget_law"
+    elif st == "mtep":
+        group = "mtep"
+    else:
+        group = "spending"
     group_cfg = (cfg.get("parsers", {}).get(group, {}) or {}).get("search", {})
     # Precedence: exact year/quarter > year > global
     matched_by = ""
@@ -95,6 +100,8 @@ def _iter_search_roots(extracted_root: Path, year: int, source_type: str) -> Lis
     st = (source_type or "").lower()
     if st == "budget_law":
         return [extracted_root / "budget_laws" / str(year)]
+    if st == "mtep":
+        return [extracted_root / "mtep" / str(year)]
     if st.startswith("spending_"):
         base = extracted_root / "spending_reports" / str(year)
         q = _quarter_label_for_source_type(st)

@@ -195,3 +195,9 @@ checksums:
   url: https://minfin.am/website/images/files/2025_I կիսամյակ_հաշվետվություն.rar
   checksum: 6bcf76d0960efbfdd3f17436579737db80a6e862f25aa2698b24eb7154f1323d
   checksum_updated_at: '2025-09-13T02:20:14.080701+00:00'
+- name: 2025_mtep
+  year: 2024
+  source_type: mtep
+  url: https://minfin.am/website/images/website/637cb1feeb346546589329b6ac4a9320ba2c7db0a30054205ddaf02f2be116a4.rar
+  checksum: 1b1d49a05c7fd979be62aebb2d90755ecbaac48c72c851c605213128433548f6
+  checksum_updated_at: '2025-09-15T01:57:36.286620+00:00'

@@ -66,6 +66,7 @@ def _category_and_subdir(
 
     Spending sources → {original_root}/spending_reports/{year}/Q*
     Budget law → {original_root}/budget_laws/{year}
+    MTEP → {original_root}/mtep/{year}
     Others → {original_root}/other/{year}
     """
     st = (source_type or "").lower()
@@ -74,6 +75,8 @@ def _category_and_subdir(
         return original_root / "spending_reports" / str(year) / q, q
     if st == "budget_law":
         return original_root / "budget_laws" / str(year), None
+    if st == "mtep":
+        return original_root / "mtep" / str(year), None
     return original_root / "other" / str(year), None
 
 
