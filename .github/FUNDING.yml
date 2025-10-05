@@ -1,0 +1,4 @@
+# GitHub Sponsors configuration
+# This enables the "Sponsor" button at the top of the repository
+
+custom: ["https://gituzh.am/donate"]

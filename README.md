@@ -92,6 +92,32 @@ armenian-budget process --years 2019-2024
 
 ---
 
+## Citation & Attribution
+
+If you use this data or code in your research, publications, or projects, please cite:
+
+**BibTeX:**
+
+```bibtex
+@software{armenian_budget_tools,
+  title = {Armenian State Budget Tools},
+  author = {The Gituzh Initiative},
+  url = {https://github.com/gituzh/armenian-budget-tools},
+  year = {2025}
+}
+```
+
+**Plain text:**
+
+```text
+The Gituzh Initiative. (2025). Armenian State Budget Tools.
+https://github.com/gituzh/armenian-budget-tools
+```
+
+When using the parsed data, please acknowledge the source to help others discover this resource and support transparency in government data.
+
+---
+
 ## Documentation
 
 | Document | Purpose | Audience |
@@ -132,6 +158,15 @@ Official government sources:
 - **MTEP (Mid-Term Expenditures Program)**: https://minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/
 
 → See [config/sources.yaml](config/sources.yaml) for complete registry with URLs
+
+## Support This Project
+
+If you find this project valuable, consider supporting Gituzh's work on civic technology and open data:
+
+- **[Donate](https://gituzh.am/donate)** - Support our mission
+- **[Our Supporters](https://gituzh.am/en/supporters/)** - See who makes this work possible
+
+Your support helps maintain this project and enables us to build more tools for government transparency and civic engagement.
 
 ## License
 
