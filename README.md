@@ -1,5 +1,9 @@
 # Armenian State Budget Tools
 
+[![Donate](https://img.shields.io/badge/💝_Donate-Support_Gituzh-ff69b4)](https://gituzh.am/donate)
+[![Sponsors](https://img.shields.io/badge/🌟_Our-Supporters-orange)](https://gituzh.am/en/supporters/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **Clean, validated Armenian budget data** - Budget laws, spending reports, and mid-term expenditure program (MTEP) (2019-2025)
 
 > ⚠️ **Project Status:** Active development - APIs and data schemas may change
