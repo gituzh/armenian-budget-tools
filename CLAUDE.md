@@ -202,63 +202,99 @@ Different source types have different column meanings:
 
 ## Documentation Governance
 
-### Always-maintained docs
+### Documentation philosophy
 
-- README: `README.md`
-- Product requirements: `docs/prd.md`
-- Architecture: `docs/architecture.md`
-- Roadmap: `docs/roadmap.md`
-- MCP server: `docs/mcp.md`
-- Data schemas: `docs/data_schemas.md`
+All documentation should be:
+
+- **Succinct**: Keep docs short and focused on essentials
+- **Simple**: Trust the reader's expertise, avoid over-explaining basic concepts
+- **Purposeful**: Each doc serves its specific audience well in that short form
+- **Current**: Reference actual code files, don't duplicate implementations
+
+**Key principles:**
+
+- Point to actual code, don't copy implementations (e.g., "See `excel_mtep.py`" not full code listing)
+- Use real examples from the codebase (MTEP, not hypothetical scenarios)
+- Trust developers to understand fundamentals (no tutorials on vectorization, profiling, etc.)
+- Match actual project structure (verify with codebase, don't fabricate)
+
+### Core documentation structure
+
+The project maintains a simple, focused documentation structure designed to avoid redundancy and provide clear entry points for different audiences:
+
+**Core Documents (Always Maintained):**
+
+1. **`README.md`** - User quickstart and overview
+2. **`docs/prd.md`** - Product requirements and scope
+3. **`docs/architecture.md`** - System design (high-level only, no implementation details)
+4. **`docs/developer_guide.md`** - Implementation patterns, API reference, and code examples
+5. **`docs/data_schemas.md`** - Data formats and column specifications
+6. **`docs/mcp.md`** - MCP server integration guide
+7. **`docs/roadmap.md`** - Development milestones
+
+**Navigation Guide:**
+
+- **Users/Newcomers** → Start with `README.md`
+- **Architects/Tech Leads** → See `docs/architecture.md` for design decisions
+- **Contributors/Developers** → Use `docs/developer_guide.md` for implementation and API
+- **Data Analysts** → Refer to `docs/data_schemas.md` for schema details
+- **AI Integration** → Use `docs/mcp.md` for MCP server
+- **Product Team** → Review `docs/prd.md` for requirements
 
 ### Impact → required documentation updates
 
 - **CLI commands, flags, entrypoints**
   - Impacted paths: `src/armenian_budget/interfaces/cli/**`, `pyproject.toml` ([project.scripts])
-  - Update: README sections "Quickstart → CLI users", "Usage — CLI", "Installation", "Troubleshooting"
+  - Update: README "Quickstart" and "Usage" sections; `docs/developer_guide.md` CLI reference
 
 - **Python API** (public functions, parameters, return values, exceptions)
-  - Impacted paths: `src/armenian_budget/**` where exported/public APIs change, especially `ingestion/parsers/**`, `interfaces/api/**`, `__init__.py` exports
-  - Update: README "Usage — Python API" examples; add/remove imports and function signatures
+  - Impacted paths: `src/armenian_budget/**` where exported/public APIs change
+  - Update: README "Usage — Python API"; `docs/developer_guide.md` API reference and examples
 
 - **MCP server tools, resources, runtime**
   - Impacted paths: `src/armenian_budget/interfaces/mcp/**`
-  - Update: `docs/mcp.md` (tools list, parameters, return shapes) and README "MCP server" section
+  - Update: `docs/mcp.md` (tools list, parameters) and README "MCP server" section
 
 - **Output schema or column roles** (names added/removed/renamed, role mapping changes)
-  - Impacted paths: `ingestion/parsers/**`, `core/query/**`, `validation/**`
-  - Update: README "Data locations and column roles" and "Complete column reference"; `docs/data_schemas.md` (column definitions, data structures, validation rules)
+  - Impacted paths: `ingestion/parsers/**`, `validation/**`
+  - Update: README "Data locations" section; `docs/data_schemas.md` (comprehensive column reference)
 
 - **Data locations, filenames, directory layout**
-  - Impacted paths: storage/output code, file naming conventions, `data/**`, `processed/**`
-  - Update: README "At a glance" (Where outputs go), "Usage — CLI" output notes
+  - Impacted paths: storage/output code, file naming conventions, `data/**`
+  - Update: README "At a glance"; `docs/data_schemas.md` folder structure
 
 - **Configuration semantics** (YAML files, flags, precedence)
-  - Impacted paths: `config/*.yaml`, config loaders, discovery behavior
-  - Update: README "Configuration"; document new/changed keys and precedence
+  - Impacted paths: `config/*.yaml`, config loaders
+  - Update: `docs/developer_guide.md` Configuration Management section
 
 - **Validation rules/behavior and guarantees**
   - Impacted paths: `src/armenian_budget/validation/**`, tolerance changes
-  - Update: `docs/architecture.md` (validation modules) and README "Validate outputs" notes
+  - Update: `docs/developer_guide.md` Validation Framework section
+
+- **Implementation patterns and code structure**
+  - Impacted: parser patterns, testing strategies, development workflows
+  - Update: `docs/developer_guide.md` only (architecture.md is design-only)
 
 - **Architectural structure and responsibilities**
-  - Impacted: module moves/renames, new subsystems, interface boundaries
-  - Update: `docs/architecture.md` diagrams/sections and cross-links from README
+  - Impacted: module boundaries, design patterns, component responsibilities
+  - Update: `docs/architecture.md` (design decisions); `docs/developer_guide.md` (code organization)
 
 ### Assistant workflow expectations
 
-- When making any impacted code change, produce matching documentation edits in the same PR
+- When making code changes, update matching documentation in the same PR
 - If a change touches multiple areas (e.g., CLI + schema), update all relevant docs
-- When modifying MCP tools, update both `docs/mcp.md` (detailed) and README (quickstart) consistently
-- If columns or roles change, regenerate README column reference snippets and update `docs/data_schemas.md`
-- When changing data schemas, validation rules, or processing logic, update `docs/data_schemas.md` comprehensively
+- When modifying MCP tools, update both `docs/mcp.md` and README consistently
+- When changing schemas or columns, update both README and `docs/data_schemas.md`
+- Implementation details go in `developer_guide.md`; design decisions go in `architecture.md`
+- Keep documentation DRY: avoid duplicating content across multiple files
 
 ### Authoring and style rules
 
 - Prefer relative paths in docs and examples (avoid absolute local paths)
 - Use editable installation in examples: `pip install -U -e .` and explicitly activate the project venv
-- Keep names consistent: repository `budget-am`, package `armenian-budget-tools`, import namespace `armenian_budget`, CLI entrypoint `armenian-budget`
+- Keep names consistent: repository `armenian-budget-tools`, package `armenian-budget-tools`, import namespace `armenian_budget`, CLI entrypoint `armenian-budget`
 - Keep examples runnable; validate CLI examples against current flags
+- Add "When to read this" guidance at the top of specialized docs
 
 ## Release Process
 

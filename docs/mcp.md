@@ -7,6 +7,53 @@ The server offers:
 - Addressable resources via URI templates that return CSV content directly
 - Tools for schema/query/aggregation/analysis, returning JSON or CSV text
 
+## Quick Setup
+
+### Option 1: Claude Desktop (Recommended)
+
+1. **Clone and setup:**
+
+   ```bash
+   git clone https://github.com/gituzh/armenian-budget-tools.git
+   cd armenian-budget-tools
+   python -m venv venv && source venv/bin/activate  # Windows: venv\Scripts\activate
+   pip install -U -e .
+   ```
+
+2. **Download and process data:**
+
+   ```bash
+   armenian-budget download --years 2019-2024 --extract
+   armenian-budget process --years 2019-2024
+   ```
+
+3. **Add to Claude Desktop config:**
+
+   **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+   **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+   ```json
+   {
+     "mcpServers": {
+       "armenian-budget": {
+         "command": "python",
+         "args": ["-m", "armenian_budget.interfaces.mcp.server"],
+         "cwd": "/absolute/path/to/armenian-budget-tools",
+         "env": {
+           "ARMENIAN_BUDGET_DATA_PATH": "/absolute/path/to/armenian-budget-tools/data/processed"
+         }
+       }
+     }
+   }
+   ```
+
+   **Note**: Use absolute paths for both `cwd` and `ARMENIAN_BUDGET_DATA_PATH`
+
+4. **Restart Claude Desktop** - Server will start automatically
+
+### Option 2: Command Line (Testing)
+
 ## Protocol and runtime
 
 - Transport: stdio (default), HTTP, or HTTPS
