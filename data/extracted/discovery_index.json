@@ -328,5 +328,15 @@
     "size": 219014,
     "checksum": "sha256:0f466c2bbaaea29515a6f3153dd1aa4e4b5d0b6b76af4bc602177b52095ba6c7",
     "discovered_at": "2025-09-13T02:22:05Z"
+  },
+  "2024/mtep": {
+    "key": "2024/mtep",
+    "path": "mtep/2024/637cb1feeb346546589329b6ac4a9320ba2c7db0a30054205ddaf02f2be116a4/2024-2026 HAVELVACNER/1. Հավելված N1_ԲԳԿ.Ծրագիր.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ).*\\.(xlsx|xls)$",
+    "mtime": 1686858716.0,
+    "size": 63343,
+    "checksum": "sha256:eab514657e1e91f97f8486d39014e31fe43048fc5de0f591b49b94ef43058ff2",
+    "discovered_at": "2025-09-15T01:58:02Z"
   }
 }

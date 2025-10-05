@@ -88,6 +88,7 @@ def cmd_process(args: argparse.Namespace) -> int:
     # Predeclare for linters
     flatten_budget_excel_2019_2024 = None  # type: ignore[assignment]
     flatten_budget_excel_2025 = None  # type: ignore[assignment]
+    flatten_mtep_excel = None  # type: ignore[assignment]
     SourceType = None  # type: ignore[assignment]
     try:
         parsers_pkg = importlib.import_module("armenian_budget.ingestion.parsers")
@@ -95,6 +96,7 @@ def cmd_process(args: argparse.Namespace) -> int:
             parsers_pkg, "flatten_budget_excel_2019_2024"
         )
         flatten_budget_excel_2025 = getattr(parsers_pkg, "flatten_budget_excel_2025")
+        flatten_mtep_excel = getattr(parsers_pkg, "flatten_mtep_excel")
         SourceType = getattr(parsers_pkg, "SourceType")
     except (ModuleNotFoundError, AttributeError, ImportError) as e:
         logging.error("Failed to import parsers: %s", e)
@@ -122,6 +124,7 @@ def cmd_process(args: argparse.Namespace) -> int:
             "SPENDING_Q12",
             "SPENDING_Q123",
             "SPENDING_Q1234",
+            "MTEP",
         ]
 
     # If user provided a single explicit input, require a single source type
@@ -221,7 +224,11 @@ def cmd_process(args: argparse.Namespace) -> int:
 
             # Run appropriate parser
             try:
-                if year == 2025:
+                if st_enum.name == "MTEP":
+                    df, overall, _, _ = flatten_mtep_excel(
+                        str(input_path), year=int(year)
+                    )
+                elif year == 2025:
                     # Use 2025 parser for all 2025 sources, passing source_type for spending
                     df, overall, _, _ = flatten_budget_excel_2025(
                         str(input_path), source_type=st_enum
@@ -395,12 +402,33 @@ def cmd_download(args: argparse.Namespace) -> int:
 
     years = _parse_years_arg(args.years)
     sources = registry.all() if years is None else registry.for_years(years)
-    # Keep budget laws and spending sources
-    sources = [
-        s
-        for s in sources
-        if s.source_type.startswith("spending_") or s.source_type == "budget_law"
-    ]
+
+    # Filter by source type if specified
+    if getattr(args, "source_type", None):
+        requested_type = args.source_type.lower()
+        type_mapping = {
+            "budget_law": "budget_law",
+            "spending_q1": "spending_q1",
+            "spending_q12": "spending_q12",
+            "spending_q123": "spending_q123",
+            "spending_q1234": "spending_q1234",
+            "mtep": "mtep",
+        }
+        if requested_type in type_mapping:
+            sources = [
+                s for s in sources if s.source_type == type_mapping[requested_type]
+            ]
+        else:
+            sources = []
+    else:
+        # Keep budget laws, spending sources, and MTEP sources
+        sources = [
+            s
+            for s in sources
+            if s.source_type.startswith("spending_")
+            or s.source_type == "budget_law"
+            or s.source_type == "mtep"
+        ]
     if not sources:
         logging.warning("No matching sources to download.")
         return 0
@@ -501,10 +529,23 @@ def cmd_download(args: argparse.Namespace) -> int:
     if args.extract:
         years_to_extract = sorted({r.year for r in results if r.ok})
         for y in years_to_extract:
+            # Extract spending reports
             input_dir = original_root / "spending_reports" / str(y)
             output_dir = extracted_root / "spending_reports" / str(y)
             extract_rar_files(input_dir, output_dir)
             extract_zip_files(input_dir, output_dir)
+
+            # Extract MTEP files
+            mtep_input_dir = original_root / "mtep" / str(y)
+            mtep_output_dir = extracted_root / "mtep" / str(y)
+            extract_rar_files(mtep_input_dir, mtep_output_dir)
+            extract_zip_files(mtep_input_dir, mtep_output_dir)
+
+            # Extract budget law files
+            budget_law_input_dir = original_root / "budget_laws" / str(y)
+            budget_law_output_dir = extracted_root / "budget_laws" / str(y)
+            extract_rar_files(budget_law_input_dir, budget_law_output_dir)
+            extract_zip_files(budget_law_input_dir, budget_law_output_dir)
 
     return 0 if fail == 0 else 1
 
@@ -695,6 +736,7 @@ def build_parser() -> argparse.ArgumentParser:
             "SPENDING_Q12",
             "SPENDING_Q123",
             "SPENDING_Q1234",
+            "MTEP",
         ],
         help=(
             "Source type. If omitted, all supported source types for the year will be processed."
@@ -790,6 +832,18 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Overwrite existing files after successful download (even if same size)",
     )
+    p_download.add_argument(
+        "--source-type",
+        choices=[
+            "budget_law",
+            "spending_q1",
+            "spending_q12",
+            "spending_q123",
+            "spending_q1234",
+            "mtep",
+        ],
+        help="Limit download to a specific source type (case insensitive)",
+    )
     p_download.set_defaults(func=cmd_download)
 
     p_extract = sub.add_parser(
@@ -859,6 +913,7 @@ def build_parser() -> argparse.ArgumentParser:
             "SPENDING_Q12",
             "SPENDING_Q123",
             "SPENDING_Q1234",
+            "MTEP",
         ],
         help="Limit discovery to a specific source type",
     )

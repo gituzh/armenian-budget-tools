@@ -58,7 +58,7 @@ data/
 - **Archives**: Original filenames from minfin.am (e.g., `Orenqi havelvacner_Excel.rar`, hash-based names)
 - **Extracted Folders**: Varies by archive structure (may preserve archive name or use internal folder names)
 - **Processed CSVs**: `{year}_{SOURCE_TYPE}.csv` (e.g., `2023_BUDGET_LAW.csv`)
-- **Source Types**: `BUDGET_LAW`, `SPENDING_Q1`, `SPENDING_Q12`, `SPENDING_Q123`, `SPENDING_Q1234`
+- **Source Types**: `BUDGET_LAW`, `SPENDING_Q1`, `SPENDING_Q12`, `SPENDING_Q123`, `SPENDING_Q1234`, `MTEP`
 
 ## 3. Original Data Archives
 
@@ -331,6 +331,41 @@ For SPENDING files, `overall_values` is a dictionary containing multiple aggrega
 Same as SPENDING_Q1/Q12/Q123 (2019-2024) but with added:
 
 - `program_code_ext`: Extended program code field
+
+### MTEP Columns (2024 format)
+
+Two-level hierarchy (state body → program). Subprogram fields are retained for schema compatibility and left empty. Amounts are provided for three consecutive plan years, exposed as `y0` (base year), `y1`, and `y2`.
+
+| Column | Description | Type |
+|--------|-------------|------|
+| `state_body` | State body/ministry/agency name | string |
+| `program_code` | Program identifier | string |
+| `program_name` | Program name | string |
+| `program_goal` | Program goal description (optional) | string |
+| `program_result_desc` | Program result description (optional) | string |
+| `state_body_total_y0` | State body total (base year) | numeric |
+| `state_body_total_y1` | State body total (base year + 1) | numeric |
+| `state_body_total_y2` | State body total (base year + 2) | numeric |
+| `program_total_y0` | Program total (base year) | numeric |
+| `program_total_y1` | Program total (base year + 1) | numeric |
+| `program_total_y2` | Program total (base year + 2) | numeric |
+
+#### MTEP Overall JSON
+
+Saved as `{year}_MTEP_overall.json` with calendar years and totals by horizon:
+
+```json
+{
+  "plan_years": [2024, 2025, 2026],
+  "overall_total_y0": 1234567890.0,
+  "overall_total_y1": 1250000000.0,
+  "overall_total_y2": 1300000000.0
+}
+```
+
+Validation checks ensure per-year rollups: for each of `y0/y1/y2`, the sum of
+`program_total_yk` per state body equals `state_body_total_yk`, and the sum of
+`state_body_total_yk` across state bodies equals `overall_total_yk`.
 
 ## 8. Data Quality and Validation
 

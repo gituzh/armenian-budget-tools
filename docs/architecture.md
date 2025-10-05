@@ -327,6 +327,7 @@ The `SourceType` enum defines the different categories of budget data supported:
 
 - **BUDGET_LAW**: Annual budget allocations (currently parses program summary)
 - **SPENDING_Q1/Q12/Q123/Q1234**: Quarterly spending reports with different period scopes
+- **MTEP**: Mid‑term expenditure program (three‑year plan, two‑level hierarchy: state body → program). Initial support targets 2024 format.
 
 Each source type has distinct column structures and validation rules. For detailed schemas, see [`docs/data_schemas.md`](../data_schemas.md).
 

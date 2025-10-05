@@ -23,6 +23,7 @@ from .excel_2019_2024 import (
     _parse_fraction,
 )
 from .excel_2025 import flatten_budget_excel_2025, _detect_row_type_2025
+from .excel_mtep import flatten_mtep_excel
 
 __all__ = [
     # 2019–2024
@@ -39,4 +40,6 @@ __all__ = [
     # 2025
     "flatten_budget_excel_2025",
     "_detect_row_type_2025",
+    # MTEP
+    "flatten_mtep_excel",
 ]
