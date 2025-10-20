@@ -47,13 +47,23 @@ This project:
 
 **Easiest setup (Claude Desktop):**
 
-1. Download or clone this repo:
-   - **Download**: [Latest release](https://github.com/gituzh/armenian-budget-tools/releases/latest) or [current branch archive](https://github.com/gituzh/armenian-budget-tools/archive/refs/heads/main.zip) → extract the ZIP
-   - **Clone**: `git clone https://github.com/gituzh/armenian-budget-tools.git`
-   - Then install and process data (see "Run the Pipeline Yourself" below)
-2. Add to your Claude Desktop config:
-   - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+#### 1. Download or clone this repo
+
+- **Download**: [Latest release](https://github.com/gituzh/armenian-budget-tools/releases/latest) or [current branch archive](https://github.com/gituzh/armenian-budget-tools/archive/refs/heads/main.zip) → extract the ZIP
+- **Clone**: `git clone https://github.com/gituzh/armenian-budget-tools.git`
+
+#### 2. Install
+
+```bash
+cd armenian-budget-tools
+python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -U -e .
+```
+
+#### 3. Add to your Claude Desktop config
+
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -70,18 +80,19 @@ This project:
 }
 ```
 
-3. Restart Claude Desktop
+#### 4. Restart Claude Desktop
 
 → See [mcp.md](docs/mcp.md) for detailed setup and available tools
 
-### 🛠️ Run the Pipeline Yourself
+### 🛠️ Run the Data Processing Pipeline Yourself
+
+> **Note:** Processed data is already included in this repo. This section shows how to regenerate it from scratch.
+
+#### 1. Download/clone and install (see steps 1-2 in "AI-Assisted Analysis" above)
+
+#### 2. Run the pipeline
 
 ```bash
-# Install
-python -m venv venv && source venv/bin/activate
-pip install -U -e .
-
-# Download, extract, process
 armenian-budget download --years 2019-2024 --extract
 armenian-budget process --years 2019-2024
 
@@ -96,8 +107,6 @@ armenian-budget process --years 2019-2024
 - **System design** → [architecture.md](docs/architecture.md)
 - **Implementation details** → [developer_guide.md](docs/developer_guide.md)
 - **Data formats** → [data_schemas.md](docs/data_schemas.md)
-
----
 
 ## Citation & Attribution
 
@@ -123,26 +132,12 @@ https://github.com/gituzh/armenian-budget-tools
 
 When using the parsed data, please acknowledge the source to help others discover this resource and support transparency in government data.
 
----
-
-## Installation
-
-```bash
-# Clone and install
-git clone https://github.com/gituzh/armenian-budget-tools.git
-cd armenian-budget-tools
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -U -e .
-
-# Verify
-armenian-budget --help
-```
-
-**Requirements:**
+## Requirements
 
 - Python 3.10+
 - `unar` or `unrar` for RAR extraction
+
+For installation steps, see [AI-Assisted Analysis](#-ai-assisted-analysis-mcp-server) above.
 
 Need help? See [developer_guide.md](docs/developer_guide.md#common-development-tasks)
 
@@ -155,6 +150,8 @@ Official government sources:
 - **MTEP (Mid-Term Expenditures Program)**: [minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/](https://minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/)
 
 → See [config/sources.yaml](config/sources.yaml) for complete registry with URLs
+
+→ See [data_schemas.md](docs/data_schemas.md) for data formats and column details
 
 ## Support This Project
 

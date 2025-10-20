@@ -298,7 +298,7 @@ The project maintains a simple, focused documentation structure designed to avoi
 ### Authoring and style rules
 
 - Prefer relative paths in docs and examples (avoid absolute local paths)
-- Use editable installation in examples: `pip install -U -e .` and explicitly activate the project venv
+- Use editable installation in examples: `pip install -U -e .` and explicitly activate the project .venv
 - Keep names consistent: repository `armenian-budget-tools`, package `armenian-budget-tools`, import namespace `armenian_budget`, CLI entrypoint `armenian-budget`
 - Keep examples runnable; validate CLI examples against current flags
 - Add "When to read this" guidance at the top of specialized docs

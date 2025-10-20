@@ -9,7 +9,7 @@
 ```bash
 git clone https://github.com/gituzh/armenian-budget-tools.git
 cd armenian-budget-tools
-python -m venv venv && source venv/bin/activate
+python -m venv .venv && source .venv/bin/activate
 pip install -U -e .
 pytest -q  # Verify setup
 ```
@@ -249,19 +249,6 @@ print("State transitions:", statetrans_stats)
 - Label mismatch → Adjust tolerance in `config/parsers.yaml`
 - Missing columns → Check source type and year
 - Hierarchical totals fail → Inspect `overall` vs row sums
-
-### Performance
-
-Use pandas vectorization:
-
-```python
-# Good
-df['execution_rate'] = df['actual'] / df['planned']
-totals = df.groupby('state_body')['total'].sum()
-
-# Avoid
-for idx, row in df.iterrows():  # Slow
-```
 
 ## Code Quality
 

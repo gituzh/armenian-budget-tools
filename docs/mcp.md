@@ -16,7 +16,7 @@ The server offers:
    ```bash
    git clone https://github.com/gituzh/armenian-budget-tools.git
    cd armenian-budget-tools
-   python -m venv venv && source venv/bin/activate  # Windows: venv\Scripts\activate
+   python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
    pip install -U -e .
    ```
 

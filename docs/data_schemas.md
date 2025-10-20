@@ -2,19 +2,7 @@
 
 ## 1. Data Pipeline Overview
 
-The Armenian Budget Tools processes official government budget data through a multi-stage pipeline:
-
-```text
-Original Archives (.rar/.zip)
-        ↓
-   Download & Extract
-        ↓
-Intermediate Files (.xlsx/.xls)
-        ↓
-      Parse & Normalize
-        ↓
-   Processed CSVs + Metadata
-```
+The Armenian Budget Tools processes official government budget data through a multi-stage pipeline. For the complete data flow diagram, see [architecture.md](architecture.md#4-data-flow).
 
 **Key Characteristics:**
 
