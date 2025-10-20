@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-Armenian Budget Tools is an open-source toolkit to fetch, parse, normalize, validate, store, and analyze Armenian state budget laws and spending reports. It exposes a clean Python API, a user-friendly CLI, and an MCP server to enable AI-assisted queries.
+Armenian Budget Tools is an open-source toolkit to fetch, parse, normalize, validate, store, and analyze Armenian state budget laws and spending reports. It exposes a user-friendly CLI and an MCP server to enable AI-assisted queries.
 
 - **Repository**: `budget-am`
 - **Python package (proposed)**: `armenian-budget-tools`
@@ -14,7 +14,7 @@ Armenian Budget Tools is an open-source toolkit to fetch, parse, normalize, vali
   - Robustly parse 2019–2025 budget laws and spending Excel reports; provide a column registry utility for cross-dataset analysis without forcing a single schema.
   - Provide reusable validations for hierarchical totals, percentage ranges, and spending logic.
   - Offer both CSV and Parquet outputs with metadata and lineage.
-  - Simple CLI and Python API for processing and validation.
+  - Simple CLI for processing and validation.
   - Basic MCP server tools for AI access to processed data (inventory, schema, filter, summaries).
 
 - **Non-goals (v1)**
@@ -24,9 +24,9 @@ Armenian Budget Tools is an open-source toolkit to fetch, parse, normalize, vali
 
 ## 3. Users and Use Cases
 
-- **Data analysts / researchers**: Batch processing, validate data integrity, export Parquet for analysis.
+- **Data analysts / researchers**: Batch processing via CLI, validate data integrity, export Parquet for analysis.
 - **Journalists / civic tech**: Inspect specific ministries/programs across years; validate claims.
-- **Developers**: Integrate via Python API into pipelines; programmatic filters.
+- **Developers**: Extend functionality, contribute parsers, improve validation rules.
 - **AI agents (MCP)**: List datasets, inspect schemas, filter by criteria, summarize a ministry.
 
 ### Primary Use Cases
@@ -46,10 +46,9 @@ Armenian Budget Tools is an open-source toolkit to fetch, parse, normalize, vali
   - Cross-source: spending annual plans match budget law totals (same year).
   - Cross-year: structural checks (names/codes drift warnings).
 - **Storage**: CSV and Parquet; write processing metadata (checksums, version, timestamps).
-- **Interfaces**:
-  - CLI: `process`, `validate`, `export`, `status`.
-  - Python API: module functions mirroring CLI operations.
-  - MCP (phase 2 minimal): dataset inventory, schema, filter, ministry summary.
+- **Public Interfaces**:
+  - CLI: `download`, `extract`, `discover`, `process`, `validate`, `mcp-server`.
+  - MCP server: dataset inventory, schema, filter, ministry summary.
 
 ## 5. Non-functional Requirements
 
@@ -94,16 +93,20 @@ We maintain all original source columns. For convenience, a column registry util
   - Write CSV and Parquet in `data/processed/{csv,parquet}`; maintain `metadata.json` with provenance.
 
 - **CLI**
-  - `process --year 2023 --source-type budget_law --input path.xlsx --out data/processed [--strict]`
-  - `validate --year 2023 --source-type budget_law [--report out.json]`
-  - `export --format parquet --years 2019-2025 [--filter state_body=...]`
-  - `status` shows available processed datasets and last updated times.
+  - `download --years 2019-2024 [--extract]` - Download official sources from minfin.am
+  - `extract --years 2019-2024` - Unarchive downloaded files
+  - `discover --years 2019-2024` - Build discovery index for file matching
+  - `process --year 2023 --source-type budget_law` - Parse and validate data
+  - `validate --year 2023 --source-type budget_law [--report out.json]` - Run validation rules
+  - `mcp-server --data-path ./data/processed` - Start MCP server
 
-- **Python API**
-  - `process_file(...)`, `validate_dataset(...)`, `export_datasets(...)`, `list_available_data(...)`.
+- **MCP Server**
+  - Tools: `list_available_data`, `get_data_schema`, `filter_budget_data`, `get_ministry_spending_summary`
+  - Resources: State bodies, programs, subprograms by year and source type
 
-- **MCP (Phase 2)**
-  - Tools: `list_available_data`, `get_data_schema`, `filter_budget_data`, `get_ministry_spending_summary`.
+- **Internal Python API** (not a public interface)
+  - Type-hinted functions for CLI and MCP implementations
+  - See `docs/developer_guide.md` for internal API reference
 
 ## 8. Error Handling & Exit Codes
 

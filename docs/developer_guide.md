@@ -180,6 +180,8 @@ armenian-budget mcp-server --data-path ./data/processed
 
 ## Python API Reference
 
+> **Note:** The Python API is for internal library use only. The public interfaces are CLI and MCP server. This section documents internal functions for contributors and developers extending the system.
+
 ### Parsing
 
 ```python

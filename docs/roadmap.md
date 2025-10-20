@@ -87,7 +87,6 @@ armenian-budget validate --year 2024 --source-type MTEP
 
 - MCP server supports all previous use cases with fewer, more powerful tools
 - Query performance improved (benchmarked)
-- Clear migration guide from v0.3/v0.4 MCP tools
 - Example notebooks demonstrate new capabilities
 
 ### API Examples
