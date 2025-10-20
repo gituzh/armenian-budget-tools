@@ -152,7 +152,12 @@ armenian-budget analyze --year 2023 --metric budget-efficiency \
 
 **Data Sources:**
 
-- Budget draft support (government draft, NA 1st reading draft, etc.)
+- Budget draft support with version tagging system
+  - Optional version tag in `config/sources.yaml` (e.g., `version: "draft"`, `version: "first_reading"`)
+  - Missing version tag defaults to "final"
+  - Version suffix in output files: `{year}_{SOURCE_TYPE}_{version}.csv` (e.g., `2026_BUDGET_LAW_draft.csv`)
+  - Supports multiple versions per year (draft, first reading, second reading, final)
+  - Backup archive URLs for versions that may be deleted from minfin.am after final adoption
 - PDF parsing for historical years (2017-2018)
 - OCR integration with quality scoring
 - Additional data types (procurement, grants, debt)
@@ -177,7 +182,8 @@ armenian-budget analyze --year 2023 --metric budget-efficiency \
 
 **Documentation:**
 
-- Add documentation in Armenian
+- Armenian README translation (README.hy.md)
+- Consider translating key user-facing docs (data_schemas.md, mcp.md)
 
 ## Risks & Mitigations
 
