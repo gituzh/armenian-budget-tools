@@ -57,8 +57,8 @@ These rules guide assistants and contributors working in this repository to keep
 ## Authoring and style rules
 
 - Prefer relative paths in docs and examples (avoid absolute local paths).
-- Use editable installation in examples: `pip install -U -e .` and explicitly activate the project venv before Python commands.
-- Keep names consistent: repository `budget-am`, package `armenian-budget-tools`, import namespace `armenian_budget`, CLI entrypoint `armenian-budget`.
+- Use editable installation in examples: `pip install -U -e ".[dev]"` for development (includes pytest, pytest-cov, jupyter) or `pip install -U -e .` for end-users (MCP server only). Explicitly activate the project venv before Python commands.
+- Keep names consistent: repository `armenian-budget-tools`, package `armenian-budget-tools`, import namespace `armenian_budget`, CLI entrypoint `armenian-budget`.
 - Verify that README ToC anchors remain valid after section edits.
 - Keep examples runnable; validate CLI examples against current flags.
 - Use Google Python Style Guide for docstrings in code examples/snippets.

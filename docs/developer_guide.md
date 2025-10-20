@@ -10,7 +10,7 @@
 git clone https://github.com/gituzh/armenian-budget-tools.git
 cd armenian-budget-tools
 python -m venv .venv && source .venv/bin/activate
-pip install -U -e .
+pip install -U -e ".[dev]"  # Installs package + pytest, pytest-cov, jupyter
 pytest -q  # Verify setup
 ```
 

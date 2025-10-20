@@ -23,6 +23,13 @@ armenian-budget = "armenian_budget.interfaces.cli.main:main"
 [tool.setuptools]
 package-dir = {"" = "src"}
 
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "jupyter",
+]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["armenian_budget*"]

@@ -11,8 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .\.venv\Scripts\activate
 
-# Install in editable mode
-pip install -U -e .
+# Install in editable mode with dev dependencies
+pip install -U -e ".[dev]"
 
 # Verify installation
 armenian-budget --help
