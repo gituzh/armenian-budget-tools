@@ -26,7 +26,9 @@ def setup_logging(
     logger = logging.getLogger()
     for h in list(logger.handlers):
         logger.removeHandler(h)
-    log_format = "%(asctime)s:%(levelname)s:%(name)s in %(filename)s:%(funcName)s:%(lineno)d: %(message)s"
+    log_format = (
+        "%(asctime)s:%(levelname)s:%(name)s in %(filename)s:%(funcName)s:%(lineno)d: %(message)s"
+    )
     log_colors = {
         "DEBUG": "cyan",
         "INFO": "green",
@@ -35,9 +37,7 @@ def setup_logging(
         "CRITICAL": "bold_red",
     }
     stream_handler = colorlog.StreamHandler()
-    formatter = colorlog.ColoredFormatter(
-        f"%(log_color)s{log_format}", log_colors=log_colors
-    )
+    formatter = colorlog.ColoredFormatter(f"%(log_color)s{log_format}", log_colors=log_colors)
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
     if errors_only:
@@ -63,17 +63,10 @@ def cmd_process(args: argparse.Namespace) -> int:
     # When discovery is used, extracted_root must exist; if explicitly provided, processed_root must be provided too
     if not input_provided:
         if not extracted_root.exists() or not extracted_root.is_dir():
-            logging.error(
-                "Extracted root not found or not a directory: %s", extracted_root
-            )
+            logging.error("Extracted root not found or not a directory: %s", extracted_root)
             return 2
-        if (
-            getattr(args, "extracted_root", None) is not None
-            and processed_root_arg is None
-        ):
-            logging.error(
-                "--processed-root is required when --extracted-root is provided"
-            )
+        if getattr(args, "extracted_root", None) is not None and processed_root_arg is None:
+            logging.error("--processed-root is required when --extracted-root is provided")
             return 2
     # Determine processed output directory (csv is written under this root)
     if processed_root_arg is not None:
@@ -92,9 +85,7 @@ def cmd_process(args: argparse.Namespace) -> int:
     SourceType = None  # type: ignore[assignment]
     try:
         parsers_pkg = importlib.import_module("armenian_budget.ingestion.parsers")
-        flatten_budget_excel_2019_2024 = getattr(
-            parsers_pkg, "flatten_budget_excel_2019_2024"
-        )
+        flatten_budget_excel_2019_2024 = getattr(parsers_pkg, "flatten_budget_excel_2019_2024")
         flatten_budget_excel_2025 = getattr(parsers_pkg, "flatten_budget_excel_2025")
         flatten_mtep_excel = getattr(parsers_pkg, "flatten_mtep_excel")
         SourceType = getattr(parsers_pkg, "SourceType")
@@ -129,9 +120,7 @@ def cmd_process(args: argparse.Namespace) -> int:
 
     # If user provided a single explicit input, require a single source type
     if getattr(args, "input", None) and len(source_types) > 1:
-        logging.error(
-            "When --input is provided, --source-type must be specified to disambiguate."
-        )
+        logging.error("When --input is provided, --source-type must be specified to disambiguate.")
         return 2
 
     # If user provided --input and multiple years, reject as ambiguous
@@ -225,9 +214,7 @@ def cmd_process(args: argparse.Namespace) -> int:
             # Run appropriate parser
             try:
                 if st_enum.name == "MTEP":
-                    df, overall, _, _ = flatten_mtep_excel(
-                        str(input_path), year=int(year)
-                    )
+                    df, overall, _, _ = flatten_mtep_excel(str(input_path), year=int(year))
                 elif year == 2025:
                     # Use 2025 parser for all 2025 sources, passing source_type for spending
                     df, overall, _, _ = flatten_budget_excel_2025(
@@ -294,9 +281,7 @@ def cmd_process(args: argparse.Namespace) -> int:
             logging.info("Saved overall JSON: %s", out_dir / overall_name)
             year_successes += 1
             total_successes += 1
-            report_entries.append(
-                {"year": year, "source": st_name, "status": "OK", "reason": ""}
-            )
+            report_entries.append({"year": year, "source": st_name, "status": "OK", "reason": ""})
 
         if year_successes == 0:
             logging.warning("No datasets processed for year %s.", year)
@@ -309,9 +294,7 @@ def cmd_process(args: argparse.Namespace) -> int:
             try:
                 import json
 
-                ordered = sorted(
-                    report_entries, key=lambda r: (int(r["year"]), str(r["source"]))
-                )
+                ordered = sorted(report_entries, key=lambda r: (int(r["year"]), str(r["source"])))
                 with open(report_path, "w", encoding="utf-8") as f:
                     json.dump(ordered, f, ensure_ascii=False, indent=2)
                 logging.info("Saved processing report JSON: %s", report_path)
@@ -320,9 +303,7 @@ def cmd_process(args: argparse.Namespace) -> int:
 
         logging.info("Processing report:")
         # Stable order: by year, then by source name
-        for entry in sorted(
-            report_entries, key=lambda r: (int(r["year"]), str(r["source"]))
-        ):
+        for entry in sorted(report_entries, key=lambda r: (int(r["year"]), str(r["source"]))):
             if entry["status"] == "OK":
                 logging.info("%s %s: OK", entry["year"], entry["source"])
             else:
@@ -415,9 +396,7 @@ def cmd_download(args: argparse.Namespace) -> int:
             "mtep": "mtep",
         }
         if requested_type in type_mapping:
-            sources = [
-                s for s in sources if s.source_type == type_mapping[requested_type]
-            ]
+            sources = [s for s in sources if s.source_type == type_mapping[requested_type]]
         else:
             sources = []
     else:
@@ -522,9 +501,7 @@ def cmd_download(args: argparse.Namespace) -> int:
             q,
             r.output_path,
         )
-    logging.info(
-        "Downloads: %d ok, %d failed, %d checksums recorded", ok, fail, recorded
-    )
+    logging.info("Downloads: %d ok, %d failed, %d checksums recorded", ok, fail, recorded)
 
     if args.extract:
         years_to_extract = sorted({r.year for r in results if r.ok})
@@ -563,9 +540,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
         # Auto-detect years from data/original/spending_reports/*
         base = original_root / "spending_reports"
         if base.exists():
-            years = sorted(
-                int(p.name) for p in base.iterdir() if p.is_dir() and p.name.isdigit()
-            )
+            years = sorted(int(p.name) for p in base.iterdir() if p.is_dir() and p.name.isdigit())
         else:
             logging.warning("No original spending_reports directory found: %s", base)
             return 0
@@ -715,89 +690,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub = p.add_subparsers(dest="command", required=True)
 
-    p_process = sub.add_parser(
-        "process", help="Process one or more source Excels and write CSV"
-    )
-    p_process.add_argument("--year", required=False, help="Year, e.g., 2023")
-    p_process.add_argument(
-        "--years",
-        required=False,
-        help=(
-            "Comma-separated years (e.g. 2019,2020) or range (2019-2024). "
-            "When provided, processes all listed years."
-        ),
-    )
-    p_process.add_argument(
-        "--source-type",
-        required=False,
-        choices=[
-            "BUDGET_LAW",
-            "SPENDING_Q1",
-            "SPENDING_Q12",
-            "SPENDING_Q123",
-            "SPENDING_Q1234",
-            "MTEP",
-        ],
-        help=(
-            "Source type. If omitted, all supported source types for the year will be processed."
-        ),
-    )
-    p_process.add_argument(
-        "--input",
-        required=False,
-        help="Path to source Excel file (when provided, discovery is bypassed and --extracted-root is ignored)",
-    )
-    p_process.add_argument(
-        "--processed-root",
-        required=False,
-        default=None,
-        help="Processed outputs root (CSV written under <processed-root>/csv). Defaults to ./data/processed",
-    )
-    p_process.add_argument(
-        "--auto",
-        action="store_true",
-        help=(
-            "Deprecated: discovery now runs automatically when --input is not provided."
-        ),
-    )
-    p_process.add_argument(
-        "--force-discover",
-        action="store_true",
-        help="Force re-discovery even if a cached mapping exists",
-    )
-    p_process.add_argument(
-        "--deep-validate",
-        action="store_true",
-        help="Probe-parse candidates during discovery to validate content (slower)",
-    )
-    p_process.add_argument(
-        "--parsers-config",
-        default=None,
-        help="Path to parsers.yaml (defaults to config/parsers.yaml)",
-    )
-    p_process.add_argument(
-        "--report-json",
-        default=None,
-        help="Write end-of-run processing report to this JSON file",
-    )
-    p_process.add_argument(
-        "--extracted-root",
-        default=None,
-        help="Extracted data root (defaults to ./data/extracted). Required if discovery is used and you provide a non-default location.",
-    )
-    p_process.set_defaults(func=cmd_process)
-
-    p_validate = sub.add_parser(
-        "validate", help="Validate a processed CSV (minimal checks)"
-    )
-    p_validate.add_argument(
-        "--csv", required=True, help="Path to CSV produced by process"
-    )
-    p_validate.set_defaults(func=cmd_validate)
-
-    p_download = sub.add_parser(
-        "download", help="Download spending reports from sources.yaml"
-    )
+    p_download = sub.add_parser("download", help="Download spending reports from sources.yaml")
     p_download.add_argument(
         "--years",
         help="Comma-separated years (e.g. 2019,2020) or range (2019-2024). Defaults to all in YAML.",
@@ -846,9 +739,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_download.set_defaults(func=cmd_download)
 
-    p_extract = sub.add_parser(
-        "extract", help="Extract already downloaded spending archives"
-    )
+    p_extract = sub.add_parser("extract", help="Extract already downloaded spending archives")
     p_extract.add_argument(
         "--years",
         help="Comma-separated years (e.g. 2019,2020) or range (2019-2024). If omitted, auto-detect from data/original.",
@@ -864,37 +755,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Extracted data root (defaults to ./data/extracted)",
     )
     p_extract.set_defaults(func=cmd_extract)
-
-    p_mcp = sub.add_parser("mcp-server", help="Run minimal MCP server (stdio or HTTP)")
-    p_mcp.add_argument(
-        "--data-path",
-        default=None,
-        help="Path to data/processed directory (defaults to ./data/processed)",
-    )
-    p_mcp.add_argument(
-        "--port",
-        default=None,
-        help="If set, run HTTP/HTTPS transport on the given port",
-    )
-    p_mcp.add_argument(
-        "--host",
-        default=None,
-        help="Host to bind for HTTP transport (default 127.0.0.1)",
-    )
-    p_mcp.add_argument(
-        "--https", action="store_true", help="Enable HTTPS (requires cert and key)"
-    )
-    p_mcp.add_argument(
-        "--certfile",
-        default=None,
-        help="Path to TLS cert PEM (default config/certs/localhost.pem)",
-    )
-    p_mcp.add_argument(
-        "--keyfile",
-        default=None,
-        help="Path to TLS key PEM (default config/certs/localhost-key.pem)",
-    )
-    p_mcp.set_defaults(func=cmd_mcp_server)
 
     p_discover = sub.add_parser(
         "discover",
@@ -938,6 +798,107 @@ def build_parser() -> argparse.ArgumentParser:
         help="Probe-parse candidates during discovery to validate content (slower)",
     )
     p_discover.set_defaults(func=cmd_discover)
+
+    p_process = sub.add_parser("process", help="Process one or more source Excels and write CSV")
+    p_process.add_argument("--year", required=False, help="Year, e.g., 2023")
+    p_process.add_argument(
+        "--years",
+        required=False,
+        help=(
+            "Comma-separated years (e.g. 2019,2020) or range (2019-2024). "
+            "When provided, processes all listed years."
+        ),
+    )
+    p_process.add_argument(
+        "--source-type",
+        required=False,
+        choices=[
+            "BUDGET_LAW",
+            "SPENDING_Q1",
+            "SPENDING_Q12",
+            "SPENDING_Q123",
+            "SPENDING_Q1234",
+            "MTEP",
+        ],
+        help=(
+            "Source type. If omitted, all supported source types for the year will be processed."
+        ),
+    )
+    p_process.add_argument(
+        "--input",
+        required=False,
+        help="Path to source Excel file (when provided, discovery is bypassed and --extracted-root is ignored)",
+    )
+    p_process.add_argument(
+        "--processed-root",
+        required=False,
+        default=None,
+        help="Processed outputs root (CSV written under <processed-root>/csv). Defaults to ./data/processed",
+    )
+    p_process.add_argument(
+        "--auto",
+        action="store_true",
+        help=("Deprecated: discovery now runs automatically when --input is not provided."),
+    )
+    p_process.add_argument(
+        "--force-discover",
+        action="store_true",
+        help="Force re-discovery even if a cached mapping exists",
+    )
+    p_process.add_argument(
+        "--deep-validate",
+        action="store_true",
+        help="Probe-parse candidates during discovery to validate content (slower)",
+    )
+    p_process.add_argument(
+        "--parsers-config",
+        default=None,
+        help="Path to parsers.yaml (defaults to config/parsers.yaml)",
+    )
+    p_process.add_argument(
+        "--report-json",
+        default=None,
+        help="Write end-of-run processing report to this JSON file",
+    )
+    p_process.add_argument(
+        "--extracted-root",
+        default=None,
+        help="Extracted data root (defaults to ./data/extracted). Required if discovery is used and you provide a non-default location.",
+    )
+    p_process.set_defaults(func=cmd_process)
+
+    p_validate = sub.add_parser("validate", help="Validate a processed CSV (minimal checks)")
+    p_validate.add_argument("--csv", required=True, help="Path to CSV produced by process")
+    p_validate.set_defaults(func=cmd_validate)
+
+    p_mcp = sub.add_parser("mcp-server", help="Run minimal MCP server (stdio or HTTP)")
+    p_mcp.add_argument(
+        "--data-path",
+        default=None,
+        help="Path to data/processed directory (defaults to ./data/processed)",
+    )
+    p_mcp.add_argument(
+        "--port",
+        default=None,
+        help="If set, run HTTP/HTTPS transport on the given port",
+    )
+    p_mcp.add_argument(
+        "--host",
+        default=None,
+        help="Host to bind for HTTP transport (default 127.0.0.1)",
+    )
+    p_mcp.add_argument("--https", action="store_true", help="Enable HTTPS (requires cert and key)")
+    p_mcp.add_argument(
+        "--certfile",
+        default=None,
+        help="Path to TLS cert PEM (default config/certs/localhost.pem)",
+    )
+    p_mcp.add_argument(
+        "--keyfile",
+        default=None,
+        help="Path to TLS key PEM (default config/certs/localhost-key.pem)",
+    )
+    p_mcp.set_defaults(func=cmd_mcp_server)
 
     return p
 

@@ -2,19 +2,7 @@
 
 ## 1. Data Pipeline Overview
 
-The Armenian Budget Tools processes official government budget data through a multi-stage pipeline:
-
-```text
-Original Archives (.rar/.zip)
-        ↓
-   Download & Extract
-        ↓
-Intermediate Files (.xlsx/.xls)
-        ↓
-      Parse & Normalize
-        ↓
-   Processed CSVs + Metadata
-```
+The Armenian Budget Tools processes official government budget data through a multi-stage pipeline. For the complete data flow diagram, see [architecture.md](architecture.md#4-data-flow).
 
 **Key Characteristics:**
 
@@ -79,6 +67,13 @@ data/
 - **Years Available**: 2019-2025
 - **Quarters**: Q1, Q12, Q123, Q1234
 - **Format**: RAR/ZIP archives with nested folder structures
+
+**MTEP Archives:**
+
+- **Source Page**: [Mid-Term Expenditure Program](https://minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/) - "Պետական միջնաժամկետ ծախսերի ծրագրե"
+- **Years Available**: 2024+
+- **Format**: RAR/ZIP archives
+- **Purpose**: Multi-year budget projections (3-year horizon)
 
 ### 3.2 Data Source Registry
 
@@ -177,7 +172,35 @@ ORENQI HAVELVACNER/
 
 *[Screenshot needed: Spending report table showing plan vs actual columns]*
 
-### 4.3 Data Organization Notes
+### 4.3 MTEP Tables (Mid-Term Expenditure Program)
+
+**Discovery Pattern:** Files are discovered using Armenian pattern "միջնաժամկետ.*ծախսերի.*ծրագիր" from `config/parsers.yaml`
+
+**Purpose:** Multi-year budget projections (3-year horizon) for medium-term fiscal planning
+
+**Structure:** 2-level organizational hierarchy (State Body → Program only)
+
+**Table Structure:**
+
+- **State Body** (Պետական մարմին): State body, ministry or agency name
+- **Program** (Ծրագիր): Budget program with code and description
+- **Goal** (Նպատակ): Program objective (optional)
+- **Result** (Արդյունք): Expected outcomes (optional)
+- **Year 0 Amount**: Base year allocation
+- **Year 1 Amount**: First projection year
+- **Year 2 Amount**: Second projection year
+
+**Key Characteristics:**
+
+- **Hierarchy**: 2-level structure (State Body → Program) - **no subprograms**
+- Different column structure from budget laws and spending reports
+- Multi-year allocations with year-specific columns (y0, y1, y2 suffixes)
+- Overall JSON contains `plan_years` array with calendar years (e.g., [2024, 2025, 2026])
+- Available starting from 2024 format
+
+*[Screenshot needed: MTEP table showing multi-year projections]*
+
+### 4.4 Data Organization Notes
 
 - **Language**: All tables use Armenian headers and content
 - **Year Variations**: 2017-2018 are PDF-only; 2019+ are Excel-based
@@ -222,16 +245,26 @@ ORENQI HAVELVACNER/
 
 ### 6.2 Data Structure
 
+**Standard 3-level sources (BUDGET_LAW, SPENDING):**
+
 Each row represents one **subprogram** with aggregated totals from parent levels:
 
 ```text
 state_body | program_code | program_name | subprogram_code | subprogram_total | program_total | state_body_total
 ```
 
+**MTEP (2-level source):**
+
+Each row represents one **program** (no subprograms). Subprogram columns are retained for schema compatibility but left empty. Instead of single `*_total` columns, MTEP has `*_total_y0`, `*_total_y1`, `*_total_y2` for multi-year projections:
+
+```text
+state_body | program_code | program_name | program_total_y0 | program_total_y1 | program_total_y2 | state_body_total_y0 | ...
+```
+
 **Benefits of Flattened Structure:**
 
 - No complex joins needed for hierarchical analysis
-- Consistent schema across all source types and years
+- Consistent schema approach across all source types and years
 - Easy filtering by any level (state body, program, or subprogram)
 - Compatible with Excel, BI tools, and data analysis software
 

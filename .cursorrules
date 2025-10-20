@@ -1,5 +1,7 @@
 # Cursor Rules — Documentation Sync and Governance
 
+**Philosophy:** Documentation is minimal and purposeful—it provides context for humans and AI agents to understand, extend, and audit the system. Document only what cannot be understood from reading the code itself.
+
 These rules guide assistants and contributors working in this repository to keep user-facing documentation accurate and in sync with code changes. Follow the triggers and required updates below in the same change (commit/PR) whenever applicable.
 
 ## Always-maintained docs
@@ -7,9 +9,10 @@ These rules guide assistants and contributors working in this repository to keep
 - README: `README.md`
 - Product requirements: `docs/prd.md`
 - Architecture: `docs/architecture.md`
-- Roadmap: `docs/roadmap.md`
-- MCP server: `docs/mcp.md`
+- Developer guide: `docs/developer_guide.md`
 - Data schemas: `docs/data_schemas.md`
+- MCP server: `docs/mcp.md`
+- Roadmap: `docs/roadmap.md`
 
 ## Impact → required documentation updates
 
@@ -17,9 +20,10 @@ These rules guide assistants and contributors working in this repository to keep
   - Impacted paths: `src/armenian_budget/interfaces/cli/**`, `src/armenian_budget/**/cli/**`, `pyproject.toml` ([project.scripts]), packaging/entrypoint changes
   - Update: README sections “Quickstart → CLI users”, “Usage — CLI” (all examples and flags), “Installation” (entrypoint), “Troubleshooting” if behavior shifts
 
-- Python API (public functions, parameters, return values, exceptions)
-  - Impacted paths: `src/armenian_budget/**` where exported/public APIs change, especially `ingestion/parsers/**`, `interfaces/api/**`, `__init__.py` exports
-  - Update: README “Usage — Python API” examples; add/remove imports and function signatures; reflect diagnostics/return tuple changes
+- Internal Python API (internal functions, parameters, return values, exceptions)
+  - Impacted paths: `src/armenian_budget/**` where internal library APIs change
+  - Update: `docs/developer_guide.md` API reference and examples
+  - Note: Python API is for internal use only; public interfaces are CLI and MCP server
 
 - MCP server tools, resources, runtime
   - Impacted paths: `src/armenian_budget/interfaces/mcp/**`

@@ -28,3 +28,8 @@ data/extracted/*
 !data/extracted/discovery_index.json
 data/processed/tmp
 data/processed/processing_report.json
+
+docs/__*
+scripts/_*
+chats/
+build/
