@@ -1,6 +1,8 @@
 # Armenian Budget Tools - Architecture
 
 > **When to read this:** System architects, technical leads, and developers who need to understand high-level design decisions and system organization. For implementation details and code examples, see [`developer_guide.md`](developer_guide.md).
+>
+> **Documentation Philosophy:** This document is kept minimal and purposeful—documenting only design decisions that cannot be understood from reading the code itself.
 
 ## Table of Contents
 

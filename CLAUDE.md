@@ -8,8 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .\.venv\Scripts\activate
 
 # Install in editable mode
 pip install -U -e .
@@ -88,10 +88,14 @@ armenian-budget mcp-server --port 8000 --data-path ./data/processed
 
 ### Data Flow
 
-1. **Original sources** (`data/original/`) - Downloaded files from official sources
-2. **Extracted data** (`data/extracted/`) - Unarchived Excel files ready for parsing
-3. **Processed data** (`data/processed/csv/`) - Clean CSVs produced by parsers
-4. **Discovery index** (`data/extracted/discovery_index.json`) - Maps year/source to best file
+The processing pipeline follows 6 steps:
+
+1. **Download** - Fetch official sources from minfin.am with checksum verification → `data/original/`
+2. **Extract** - Unarchive RAR/ZIP files → `data/extracted/`
+3. **Discover** - Build discovery index matching year/source to best file → `discovery_index.json`
+4. **Parse** - State-machine parsing with Armenian text detection
+5. **Validate** - Business rule checks with tolerance handling
+6. **Persist** - Write clean CSVs with metadata → `data/processed/csv/`
 
 ### Source Types
 
@@ -204,6 +208,8 @@ Different source types have different column meanings:
 
 ### Documentation philosophy
 
+**Purpose:** Documentation exists to provide context for humans and AI agents to understand, extend, and audit the system efficiently. Keep it minimal—only document what can't be understood from reading the code itself.
+
 All documentation should be:
 
 - **Succinct**: Keep docs short and focused on essentials
@@ -247,9 +253,10 @@ The project maintains a simple, focused documentation structure designed to avoi
   - Impacted paths: `src/armenian_budget/interfaces/cli/**`, `pyproject.toml` ([project.scripts])
   - Update: README "Quickstart" and "Usage" sections; `docs/developer_guide.md` CLI reference
 
-- **Python API** (public functions, parameters, return values, exceptions)
-  - Impacted paths: `src/armenian_budget/**` where exported/public APIs change
-  - Update: README "Usage — Python API"; `docs/developer_guide.md` API reference and examples
+- **Internal Python API** (internal functions, parameters, return values, exceptions)
+  - Impacted paths: `src/armenian_budget/**` where internal library APIs change
+  - Update: `docs/developer_guide.md` API reference and examples
+  - Note: Python API is for internal use only; public interfaces are CLI and MCP server
 
 - **MCP server tools, resources, runtime**
   - Impacted paths: `src/armenian_budget/interfaces/mcp/**`

@@ -90,8 +90,11 @@ armenian-budget process --years 2019-2024
 
 ### 👩‍💻 For Developers & Contributors
 
-- **Implementation details** → [developer_guide.md](docs/developer_guide.md)
+**Documentation Philosophy:** We keep docs minimal and purposeful. They serve humans and AI agents who need context to understand, extend, and audit the system. Only document what cannot be understood from code alone.
+
+- **User expectations** → [prd.md](docs/prd.md)
 - **System design** → [architecture.md](docs/architecture.md)
+- **Implementation details** → [developer_guide.md](docs/developer_guide.md)
 - **Data formats** → [data_schemas.md](docs/data_schemas.md)
 
 ---
@@ -122,16 +125,6 @@ When using the parsed data, please acknowledge the source to help others discove
 
 ---
 
-## Documentation
-
-| Document | Purpose | Audience |
-|----------|---------|----------|
-| [README.md](README.md) | Quick start guide | All users |
-| [docs/data_schemas.md](docs/data_schemas.md) | Data formats & columns | Data analysts |
-| [docs/developer_guide.md](docs/developer_guide.md) | Implementation & API | Developers |
-| [docs/mcp.md](docs/mcp.md) | MCP server integration | AI developers |
-| [docs/architecture.md](docs/architecture.md) | System design | Architects |
-
 ## Installation
 
 ```bash
@@ -157,9 +150,9 @@ Need help? See [developer_guide.md](docs/developer_guide.md#common-development-t
 
 Official government sources:
 
-- **Budget Laws**: https://minfin.am/hy/page/petakan_byuj/
-- **Spending Reports**: https://minfin.am/hy/page/hy_hashvetvutyunner/
-- **MTEP (Mid-Term Expenditures Program)**: https://minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/
+- **Budget Laws**: [minfin.am/hy/page/petakan_byuj/](https://minfin.am/hy/page/petakan_byuj/)
+- **Spending Reports**: [minfin.am/hy/page/hy_hashvetvutyunner/](https://minfin.am/hy/page/hy_hashvetvutyunner/)
+- **MTEP (Mid-Term Expenditures Program)**: [minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/](https://minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/)
 
 → See [config/sources.yaml](config/sources.yaml) for complete registry with URLs
 

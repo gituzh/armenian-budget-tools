@@ -1,6 +1,8 @@
 # Developer Guide
 
 > **When to read this:** Contributors and AI agents working with this codebase. This guide provides essential patterns, references to actual code, and API signatures.
+>
+> **Documentation Philosophy:** This guide is minimal and purposeful—covering only patterns and context that cannot be understood from reading the code alone. For design decisions, see `architecture.md`.
 
 ## Quick Setup
 
