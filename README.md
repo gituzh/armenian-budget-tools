@@ -1,6 +1,6 @@
 # Armenian State Budget Tools
 
-[![Donate](https://img.shields.io/badge/💝_Donate-Support_Gituzh-ff69b4)](https://gituzh.am/donate)
+[![Donate](https://img.shields.io/badge/💝_Donate-Support_Gituzh-ff69b4)](https://gituzh.am/donate?utm_id=gh-abt)
 [![Sponsors](https://img.shields.io/badge/🌟_Our-Supporters-orange)](https://gituzh.am/en/supporters/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
