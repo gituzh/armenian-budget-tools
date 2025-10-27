@@ -15,6 +15,7 @@ This roadmap is pragmatic and incremental. Each milestone should be shippable an
   - Multi-year planning horizon (y0, y1, y2 columns)
   - JSON overall format with `plan_years` array
   - Validation rules specific to MTEP structure
+  - Update `config/sources.yaml` with complete MTEP URLs
 
 - **Validation/Tests separation**: Move production validation logic out of `tests/` into `validation/`
   - Extract reusable validation functions from test utilities
@@ -28,12 +29,6 @@ This roadmap is pragmatic and incremental. Each milestone should be shippable an
   - Update `data_schemas.md` with MTEP column specifications
   - Ensure all docs reflect actual codebase structure
 
-- **Source management polish**:
-  - Complete `download`, `extract`, `discover` command integration
-  - Improve error handling for missing/corrupted archives
-  - Add progress reporting for downloads
-  - Update `config/sources.yaml` with complete MTEP URLs
-
 ### Exit Criteria
 
 - MTEP data processes end-to-end with validation
@@ -44,14 +39,17 @@ This roadmap is pragmatic and incremental. Each milestone should be shippable an
 ### CLI Examples
 
 ```bash
-# Process MTEP data
-armenian-budget process --year 2024 --source-type MTEP
+# Download MTEP sources
+armenian-budget download --years 2024 --source-type mtep
 
-# Download and extract MTEP sources
-armenian-budget download --year 2024 --source-type MTEP --extract
+# Extract archives
+armenian-budget extract --years 2024 --source-type mtep
 
-# Validate MTEP data with custom rules
-armenian-budget validate --year 2024 --source-type MTEP
+# Parse MTEP data
+armenian-budget parse --years 2024 --source-type MTEP
+
+# Validate MTEP output
+armenian-budget validate --csv data/processed/csv/2024_MTEP.csv
 ```
 
 ## Milestone v0.5.0 — MCP Server Redesign
@@ -120,7 +118,7 @@ mcp_client.query(
   - Support multi-year target tracking
 
 - **Integration**:
-  - Add to existing pipeline (`process`, `validate`, `download`)
+  - Add to existing pipeline (`parse`, `validate`, `download`)
   - Cross-reference with budget allocations
   - Enable budget vs performance analysis
 
@@ -140,12 +138,65 @@ mcp_client.query(
 ### Use Cases
 
 ```bash
-# Process government targets
-armenian-budget process --year 2023 --source-type GOVERNMENT_TARGETS
+# Parse government targets
+armenian-budget parse --year 2023 --source-type GOVERNMENT_TARGETS
 
 # Analyze budget efficiency
 armenian-budget analyze --year 2023 --metric budget-efficiency \
   --compare BUDGET_LAW GOVERNMENT_TARGETS
+```
+
+## Milestone v0.7.0 — CLI Redesign
+
+**Focus:** Clean Unix philosophy with single-responsibility commands + convenient meta-command
+
+### Features
+
+- **Pure Unix-style individual commands**:
+  - Rename `process` → `parse` (clearer naming for the parsing step)
+  - Remove `--extract` flag from `download` command
+  - Each command does one thing well: `download`, `extract`, `discover`, `parse`, `validate`
+  - Clear separation of concerns with no flag proliferation
+
+- **Meta-command for full pipeline**:
+  - Add new `process` command that runs the full workflow: download → extract → discover → parse
+  - Support `--skip-*` flags for partial workflows (e.g., `--skip-validate`)
+  - Support `--from-step` for resuming from a specific point
+  - Fail fast with clear error messages
+
+- **Improved user experience**:
+  - Better error handling for missing/corrupted archives
+  - Progress reporting for downloads and extraction
+  - Clear logging showing which step is running
+  - Helpful suggestions when commands fail
+
+- **Documentation updates**:
+  - Document both individual commands (for flexibility) and meta-command (for convenience)
+  - Add workflow examples to README
+  - Update all CLI examples across docs
+
+### Exit Criteria
+
+- All individual commands follow single-responsibility principle
+- Meta `process` command works end-to-end for common workflows
+- Error messages provide actionable guidance
+- Documentation clearly explains both approaches
+
+### CLI Examples
+
+```bash
+# Individual commands (Unix philosophy - maximum control)
+armenian-budget download --years 2023-2024
+armenian-budget extract --years 2023-2024
+armenian-budget discover --years 2023-2024
+armenian-budget parse --years 2023-2024
+armenian-budget validate --csv data/processed/csv/2023_BUDGET_LAW.csv
+
+# Meta-command (convenience - common workflow)
+armenian-budget process --years 2023-2024                    # full pipeline
+armenian-budget process --years 2023 --skip-validate         # skip validation
+armenian-budget process --years 2023 --source-type mtep      # MTEP only
+armenian-budget process --years 2023 --from-step extract     # resume from extract
 ```
 
 ## Backlog / Stretch
