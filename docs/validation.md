@@ -49,7 +49,7 @@ All fields described in [data_schemas.md](data_schemas.md#7-complete-column-refe
 
 ### Empty Identifiers
 
-Budget lines must be identifiable. Empty state body or program names are critical errors; empty subprogram names are warnings.
+Budget lines must be identifiable. Empty identifiers prevent proper analysis.
 
 | Data Type | Empty State Body | Empty Program Name | Empty Subprogram Name |
 |-----------|------------------|--------------------|-----------------------|
@@ -59,7 +59,7 @@ Budget lines must be identifiable. Empty state body or program names are critica
 
 ### No Missing Financial Data
 
-Critical financial amounts and percentages must not be empty (null/NaN). Missing values prevent analysis and percentage calculations.
+Financial amounts and percentages must not be empty (null/NaN). Missing values prevent analysis.
 
 | Data Type | Missing Financial Fields | Severity by Level |
 |-----------|-------------------------|-------------------|
@@ -72,19 +72,19 @@ Critical financial amounts and percentages must not be empty (null/NaN). Missing
 
 ### Hierarchical Totals
 
-Budget hierarchy must sum correctly at each level. Grand total from metadata must equal sum of state bodies; each state body must equal sum of its programs; each program must equal sum of its subprograms. Small differences within tolerance may be rounding; large differences indicate data quality problems.
+Budget hierarchy must sum correctly: grand total = Σ state bodies, state body = Σ programs, program = Σ subprograms. Differences within tolerance may be rounding; larger differences indicate data quality problems.
 
-| Data Type | Grand Total = Σ State Bodies | State Body = Σ Programs | Program = Σ Subprograms | Tolerance (applies to all 3 checks) |
-|-----------|------------------------------|-------------------------|-------------------------|-------------------------------------|
+| Data Type | Grand Total = Σ State Bodies | State Body = Σ Programs | Program = Σ Subprograms | Tolerance |
+|-----------|------------------------------|-------------------------|-------------------------|-----------|
 | **Budget Law** | Error | Error | Error | 0.0 AMD (strict) |
-| **Spending Reports** | Error (all financial fields) | Error (all financial fields) | Error (all financial fields) | 5.0 AMD |
-| **MTEP** | Error (Y0, Y1, Y2) | Error (Y0, Y1, Y2) | - | 0.5 AMD per year |
+| **Spending Reports** | Error | Error | Error | 5.0 AMD |
+| **MTEP** | Error | Error | - | 0.5 AMD per year |
 
 **Note:** For Spending Reports, hierarchical checks apply to amount fields (not percentages): `*_annual_plan`, `*_rev_annual_plan`, `*_actual`, and for Q1/Q12/Q123 only: `*_period_plan`, `*_rev_period_plan` where `*` = overall, state_body, program, subprogram.
 
 ### Negative Totals
 
-Negative totals are critical errors at overall, state body, and program levels. Subprogram negatives are warnings as they may be legitimate corrections.
+Negative totals indicate data corruption. Subprogram negatives may be legitimate corrections.
 
 | Data Type | Fields | Severity by Level |
 |-----------|--------|-------------------|
@@ -97,7 +97,7 @@ Negative totals are critical errors at overall, state body, and program levels. 
 
 ### Period ≤ Annual Plan
 
-Quarterly/period budgets cannot exceed full-year budgets. Violations indicate data entry errors or missing annual plan updates.
+Period budgets cannot exceed annual budgets. Violations indicate data entry errors.
 
 | Data Type | Checks | Severity |
 |-----------|--------|----------|
@@ -107,7 +107,7 @@ Quarterly/period budgets cannot exceed full-year budgets. Violations indicate da
 
 ### No Negative Percentages
 
-Negative execution percentages are mathematically impossible and indicate data corruption. Critical at overall and state body levels; warnings at program/subprogram levels.
+Negative percentages are mathematically impossible and indicate data corruption.
 
 | Data Type | Fields | Severity by Level |
 |-----------|--------|-------------------|
@@ -118,7 +118,7 @@ Negative execution percentages are mathematically impossible and indicate data c
 
 ### Execution Exceeds 100%
 
-Execution percentages above 100% indicate spending exceeded revised plans (overspending). While this may be legitimate with budget revisions, it warrants review. All levels flagged as warnings.
+Execution above 100% indicates overspending. May be legitimate with budget revisions but warrants review.
 
 | Data Type | Fields | Severity by Level |
 |-----------|--------|-------------------|
@@ -129,7 +129,7 @@ Execution percentages above 100% indicate spending exceeded revised plans (overs
 
 ### Percentage Calculation Correctness
 
-Reported percentages must match calculated values at all hierarchy levels (grand total, state body, program, subprogram). Checks verify correctness of both annual and period percentages where applicable.
+Reported percentages must match calculated values at all hierarchy levels.
 
 | Data Type | Percentage Calculation Checks | Tolerance |
 |-----------|------------------------------|-----------|
@@ -138,40 +138,29 @@ Reported percentages must match calculated values at all hierarchy levels (grand
 
 **Wildcard (`*`) represents:** `overall` (JSON), `state_body`, `program`, `subprogram` (CSV).
 
-## Common Failure Scenarios
+## Interpreting Validation Results
 
-| Failure Pattern | Likely Cause | Recommended Action |
-|----------------|--------------|-------------------|
-| **Rollup mismatch (< 10 AMD)** | Harmless rounding in source Excel | Safe to proceed if tolerable for your use case |
-| **Rollup mismatch (> 1,000 AMD)** | Serious data quality problem | Investigate original file; do not use for critical decisions |
-| **Period plan exceeds annual** | Data entry error or annual plan not updated | Check specific programs; verify which figure is correct |
-| **Percentage calculation off by < 1%** | Minor calculation error in source | Recalculate percentages yourself using actual amounts |
-| **Empty program/subprogram names** | Data entry omission | Check if codes present; may still be usable |
-| **Negative state body/program total** | Critical data corruption | Always investigate; never proceed without resolution |
-| **Percentage > 100%** | Overspending or data error | Review specific programs; may indicate budget revisions |
-| **Missing required fields** | Incorrect parsing or wrong file | Verify you're using the correct processed CSV |
+Validation always completes and generates a full report with error and warning counts. Use this guide to determine if your data is trustworthy for analysis.
 
-## When to Proceed Despite Failures
+**Critical data issues (do not use for decisions):**
 
-**Generally safe:**
+- Large hierarchical mismatches (> 1,000 AMD) - indicates serious data corruption
+- Negative state body or program totals - always investigate
+- Negative percentages - mathematically impossible, indicates corruption
+- Missing required fields - data is incomplete
 
-- Small rounding differences (< 10 AMD) in rollup checks
-- Empty subprogram names if codes are present
-- Negative subprogram totals (may be legitimate corrections)
-- Execution > 100% warnings (may indicate legitimate budget revisions)
+**Review required (document in analysis):**
 
-**Proceed with caution (document in your analysis):**
+- Moderate hierarchical differences (10-1,000 AMD) - understand source
+- Period exceeding annual plan - verify which figure is correct
+- Percentage calculation errors - recalculate yourself using actual amounts
+- Execution > 100% - may indicate legitimate budget revisions
 
-- Moderate differences (10-1,000 AMD) in rollup totals
-- Missing percentage calculations - recalculate yourself
-- Period exceeding annual - understand which programs and why
+**Safe to proceed:**
 
-**Do not use without investigation:**
-
-- Large differences (> 1,000 AMD) in rollup totals
-- Negative state body or program totals
-- Negative percentages (indicates data corruption)
-- Missing required fields or extensive missing data
+- Small hierarchical differences (< 10 AMD) - harmless rounding
+- Empty subprogram names (if codes present) - may still be usable
+- Negative subprogram totals - may be legitimate corrections
 
 ---
 
