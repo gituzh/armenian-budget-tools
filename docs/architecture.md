@@ -105,8 +105,7 @@ src/armenian_budget/
 
 config/                     # Configuration files
 ├── sources.yaml
-├── parsers.yaml
-└── validation_rules.yaml
+└── parsers.yaml
 
 data/                       # Data directories
 ├── original/               # Downloaded archives
