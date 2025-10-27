@@ -536,24 +536,53 @@ def cmd_extract(args: argparse.Namespace) -> int:
     original_root = Path(args.original_root or Path("data/original")).resolve()
     extracted_root = Path(args.extracted_root or Path("data/extracted")).resolve()
     years = _parse_years_arg(args.years)
+
+    # Determine which source types to extract
+    source_type_filter = getattr(args, "source_type", None)
+    source_type_dirs = []
+    if source_type_filter:
+        # Map the filter to directory name
+        type_to_dir = {
+            "budget_law": "budget_laws",
+            "spending_q1": "spending_reports",
+            "spending_q12": "spending_reports",
+            "spending_q123": "spending_reports",
+            "spending_q1234": "spending_reports",
+            "mtep": "mtep",
+        }
+        dir_name = type_to_dir.get(source_type_filter.lower())
+        if dir_name:
+            source_type_dirs = [dir_name]
+    else:
+        # Extract all types
+        source_type_dirs = ["spending_reports", "mtep", "budget_laws"]
+
     if years is None:
-        # Auto-detect years from data/original/spending_reports/*
-        base = original_root / "spending_reports"
-        if base.exists():
-            years = sorted(int(p.name) for p in base.iterdir() if p.is_dir() and p.name.isdigit())
+        # Auto-detect years from all source type directories
+        years_set = set()
+        for dir_name in source_type_dirs:
+            base = original_root / dir_name
+            if base.exists():
+                for p in base.iterdir():
+                    if p.is_dir() and p.name.isdigit():
+                        years_set.add(int(p.name))
+        if years_set:
+            years = sorted(years_set)
         else:
-            logging.warning("No original spending_reports directory found: %s", base)
+            logging.warning("No original source directories found in: %s", original_root)
             return 0
 
     if not years:
         logging.warning("No years to extract.")
         return 0
 
+    # Extract from each source type directory
     for y in years:
-        input_dir = original_root / "spending_reports" / str(y)
-        output_dir = extracted_root / "spending_reports" / str(y)
-        extract_rar_files(input_dir, output_dir)
-        extract_zip_files(input_dir, output_dir)
+        for dir_name in source_type_dirs:
+            input_dir = original_root / dir_name / str(y)
+            output_dir = extracted_root / dir_name / str(y)
+            extract_rar_files(input_dir, output_dir)
+            extract_zip_files(input_dir, output_dir)
 
     return 0
 
@@ -743,6 +772,18 @@ def build_parser() -> argparse.ArgumentParser:
     p_extract.add_argument(
         "--years",
         help="Comma-separated years (e.g. 2019,2020) or range (2019-2024). If omitted, auto-detect from data/original.",
+    )
+    p_extract.add_argument(
+        "--source-type",
+        choices=[
+            "budget_law",
+            "spending_q1",
+            "spending_q12",
+            "spending_q123",
+            "spending_q1234",
+            "mtep",
+        ],
+        help="Limit extraction to a specific source type (case insensitive). If omitted, all types are extracted.",
     )
     p_extract.add_argument(
         "--original-root",
