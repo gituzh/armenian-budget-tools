@@ -25,6 +25,9 @@ For implementation details:
 
 from __future__ import annotations
 
+from armenian_budget.core.enums import SourceType
+from armenian_budget.core.utils import detect_source_type
+
 from .checks import ValidationCheck
 from .models import CheckResult, ValidationReport
 
@@ -34,4 +37,8 @@ __all__ = [
     "ValidationReport",
     # Check interface
     "ValidationCheck",
+    # Enums
+    "SourceType",
+    # Utilities
+    "detect_source_type",
 ]

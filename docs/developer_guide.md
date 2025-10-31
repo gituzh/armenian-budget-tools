@@ -22,6 +22,7 @@ Actual source organization:
 src/armenian_budget/
 ├── core/
 │   ├── enums.py              # SourceType enum
+│   ├── utils.py              # Shared utilities (filename parsing)
 │   └── query/                # MCP query engine
 ├── ingestion/
 │   ├── parsers/

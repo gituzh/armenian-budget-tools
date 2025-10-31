@@ -134,14 +134,6 @@ class ValidationReport:
             if not r.passed and (severity is None or r.severity == severity)
         ]
 
-    def get_passed_checks(self) -> List[CheckResult]:
-        """Get all passed checks.
-
-        Returns:
-            List of passed CheckResult objects.
-        """
-        return [r for r in self.results if r.passed]
-
     def summary(self) -> str:
         """Generate a concise text summary of validation results.
 

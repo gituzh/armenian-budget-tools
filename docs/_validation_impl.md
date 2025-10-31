@@ -6,11 +6,12 @@
 
 ## Current State
 
-**After Phase 1:**
+**After Phase 2:**
 
 - ✅ `validation/config.py` - Tolerance constants and severity rules
 - ✅ `validation/models.py` - CheckResult and ValidationReport dataclasses
 - ✅ `validation/checks/__init__.py` - ValidationCheck protocol
+- ✅ `core/utils.py` - Source type detection from CSV filenames
 - ✅ Old code deleted (`runner.py`, `financial.py`)
 - ✅ Performance optimizations applied (55% faster)
 
@@ -20,10 +21,10 @@
 - ✅ Centralized configuration (tolerances, severity)
 - ✅ Data models with helper methods
 - ✅ Check interface protocol
+- ✅ Source type detection (Budget Law vs Spending vs MTEP)
 
 **Still Missing:**
 
-- ❌ Source type detection (Budget Law vs Spending vs MTEP)
 - ❌ Complete validation checks per validation.md spec
 - ❌ Registry to orchestrate checks
 - ❌ Markdown report generation
@@ -73,14 +74,12 @@ src/armenian_budget/validation/
 
 **Completion Criteria:** Clean module structure, old code deleted ✅
 
-### Phase 2: Source Type Detection
+### Phase 2: Source Type Detection ✅
 
-- [ ] Remove `get_passed_checks()` method from ValidationReport (inline in summary())
-- [ ] Add `detect_source_type(csv_path: Path) -> SourceType` to models.py (parse filename)
-- [ ] Export SourceType from validation module for convenience
-- ✅ ValidationReport already has source_type field (no action needed)
+- [x] Add `detect_source_type(csv_path: Path) -> SourceType` to core/utils.py (shared utility)
+- [x] Export SourceType and detect_source_type from validation module for convenience
 
-**Completion Criteria:** Can reliably identify Budget Law vs Spending vs MTEP from filename, minimal API surface
+**Completion Criteria:** Can reliably identify Budget Law vs Spending vs MTEP from filename, minimal API surface ✅
 
 ### Phase 3: Core Structural Checks
 
@@ -164,8 +163,8 @@ src/armenian_budget/validation/
 ## Progress Tracking
 
 **Started:** 2025-10-27
-**Current Phase:** Phase 2
-**Completed Phases:** Phase 1 ✅
+**Current Phase:** Phase 3
+**Completed Phases:** Phase 1 ✅, Phase 2 ✅
 **Blockers:** None
 
 ## Architecture Decisions Log
