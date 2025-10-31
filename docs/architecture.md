@@ -95,7 +95,7 @@ The processing pipeline transforms government archives into validated datasets:
 
 ```text
 src/armenian_budget/
-├── core/                   # Core data models, types, and shared utilities
+├── core/                   # Core data models, types, schemas, and shared utilities
 ├── ingestion/              # Parsing and discovery
 ├── validation/             # Business rules
 ├── sources/                # Download and registry

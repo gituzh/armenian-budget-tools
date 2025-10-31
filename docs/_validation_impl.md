@@ -6,12 +6,16 @@
 
 ## Current State
 
-**After Phase 2:**
+**After Phase 3:**
 
 - ✅ `validation/config.py` - Tolerance constants and severity rules
 - ✅ `validation/models.py` - CheckResult and ValidationReport dataclasses
 - ✅ `validation/checks/__init__.py` - ValidationCheck protocol
 - ✅ `core/utils.py` - Source type detection from CSV filenames
+- ✅ `core/schemas.py` - Field definitions per source type
+- ✅ `validation/checks/required_fields.py` - Required fields check
+- ✅ `validation/checks/empty_identifiers.py` - Empty identifier check
+- ✅ `validation/checks/missing_financial_data.py` - Missing financial data check
 - ✅ Old code deleted (`runner.py`, `financial.py`)
 - ✅ Performance optimizations applied (55% faster)
 
@@ -22,13 +26,17 @@
 - ✅ Data models with helper methods
 - ✅ Check interface protocol
 - ✅ Source type detection (Budget Law vs Spending vs MTEP)
+- ✅ Core structural checks (required fields, empty IDs, missing financial data)
 
 **Still Missing:**
 
-- ❌ Complete validation checks per validation.md spec
-- ❌ Registry to orchestrate checks
+- ❌ Hierarchical and financial checks
+- ❌ Spending-specific checks
+- ❌ Registry to orchestrate checks (CLI validation currently broken - imports deleted runner.py)
 - ❌ Markdown report generation
 - ❌ CLI --report flag support
+
+**Note:** Phase 3 checks tested on real 2019/2026 data - all passing. Failure detection working correctly.
 
 ## Target Architecture
 
@@ -81,13 +89,15 @@ src/armenian_budget/validation/
 
 **Completion Criteria:** Can reliably identify Budget Law vs Spending vs MTEP from filename, minimal API surface ✅
 
-### Phase 3: Core Structural Checks
+### Phase 3: Core Structural Checks ✅
 
-- [ ] Implement `checks/required_fields.py` (complete schema from data_schemas.md)
-- [ ] Implement `checks/empty_identifiers.py` (with source-specific severity)
-- [ ] Implement `checks/missing_financial_data.py` (NEW - check nulls in all financial fields)
+- [x] Implement `checks/required_fields.py` (complete schema from data_schemas.md)
+- [x] Implement `checks/empty_identifiers.py` (with source-specific severity)
+- [x] Implement `checks/missing_financial_data.py` (NEW - check nulls in all financial fields)
+- [x] Create `core/schemas.py` for centralized field definitions
+- [x] Tested on real 2019/2026 data - all passing, failure detection working
 
-**Completion Criteria:** Required fields, empty IDs, missing data checks implemented (registry integration in Phase 6)
+**Completion Criteria:** Required fields, empty IDs, missing data checks implemented (registry integration in Phase 6) ✅
 
 ### Phase 4: Hierarchical & Financial Checks
 
@@ -121,9 +131,11 @@ src/armenian_budget/validation/
   - [ ] Filter checks by source type
   - [ ] Execute all applicable checks
   - [ ] Aggregate results into ValidationReport
-- [ ] Update CLI to use new registry
+- [ ] Update CLI `cmd_validate()` to use new registry (currently imports deleted runner.py)
 
 **Completion Criteria:** CLI validates CSV using new check registry
+
+**Note:** CLI validation currently broken - needs registry implementation to work.
 
 ### Phase 7: Report Generation
 
@@ -163,8 +175,8 @@ src/armenian_budget/validation/
 ## Progress Tracking
 
 **Started:** 2025-10-27
-**Current Phase:** Phase 3
-**Completed Phases:** Phase 1 ✅, Phase 2 ✅
+**Current Phase:** Phase 4
+**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅
 **Blockers:** None
 
 ## Architecture Decisions Log
