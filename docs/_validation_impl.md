@@ -6,26 +6,26 @@
 
 ## Current State
 
-**Existing (Early Draft):**
+**After Phase 1:**
 
-- `validation/financial.py` - Basic validation functions (165 lines)
-- `validation/runner.py` - Orchestration with CheckResult/ValidationReport (424 lines)
-- CLI integration at `interfaces/cli/main.py:323-338` (console summary only)
+- ✅ `validation/config.py` - Tolerance constants and severity rules
+- ✅ `validation/models.py` - CheckResult and ValidationReport dataclasses
+- ✅ `validation/checks/__init__.py` - ValidationCheck protocol
+- ✅ Old code deleted (`runner.py`, `financial.py`)
+- ✅ Performance optimizations applied (55% faster)
 
-**What Works:**
+**Implemented:**
 
-- ✅ Basic hierarchical totals check
-- ✅ Percentage range validation (0-1)
-- ✅ Period ≤ annual plan checks
-- ✅ Negative totals detection
-- ✅ Console output via `print_report()`
+- ✅ Clean module architecture
+- ✅ Centralized configuration (tolerances, severity)
+- ✅ Data models with helper methods
+- ✅ Check interface protocol
 
-**What's Missing:**
+**Still Missing:**
 
 - ❌ Source type detection (Budget Law vs Spending vs MTEP)
 - ❌ Complete validation checks per validation.md spec
-- ❌ Hierarchy-level-specific severity
-- ❌ Overall JSON validation
+- ❌ Registry to orchestrate checks
 - ❌ Markdown report generation
 - ❌ CLI --report flag support
 
@@ -35,9 +35,8 @@
 src/armenian_budget/validation/
 ├── __init__.py          # Public API exports
 ├── config.py            # Constants: tolerances, severity rules
+├── models.py            # CheckResult, ValidationReport, detect_source_type(), to_markdown()
 ├── registry.py          # Check orchestration and runner
-├── models.py            # CheckResult, ValidationReport
-├── report.py            # Markdown report generation
 └── checks/              # Individual validation checks
     ├── __init__.py
     ├── required_fields.py
@@ -70,26 +69,26 @@ src/armenian_budget/validation/
 - [x] Create `validation/checks/__init__.py` directory
 - [x] Define base check protocol/interface in `validation/checks/__init__.py`
 - [x] Update `validation/__init__.py` to export new public API
+- [x] Performance fixes applied (module-level constants, single-pass filtering)
 
 **Completion Criteria:** Clean module structure, old code deleted ✅
 
 ### Phase 2: Source Type Detection
 
-- [ ] Add `source_type` field to overall JSON during processing
-- [ ] Create `detect_source_type()` function (fallback to filename parsing)
-- [ ] Update ValidationReport to store source_type
-- [ ] Add SourceType import to validation module
+- [ ] Remove `get_passed_checks()` method from ValidationReport (inline in summary())
+- [ ] Add `detect_source_type(csv_path: Path) -> SourceType` to models.py (parse filename)
+- [ ] Export SourceType from validation module for convenience
+- ✅ ValidationReport already has source_type field (no action needed)
 
-**Completion Criteria:** Can reliably identify Budget Law vs Spending vs MTEP
+**Completion Criteria:** Can reliably identify Budget Law vs Spending vs MTEP from filename, minimal API surface
 
 ### Phase 3: Core Structural Checks
 
 - [ ] Implement `checks/required_fields.py` (complete schema from data_schemas.md)
 - [ ] Implement `checks/empty_identifiers.py` (with source-specific severity)
 - [ ] Implement `checks/missing_financial_data.py` (NEW - check nulls in all financial fields)
-- [ ] Update registry to run these checks
 
-**Completion Criteria:** Required fields, empty IDs, missing data checks pass on test data
+**Completion Criteria:** Required fields, empty IDs, missing data checks implemented (registry integration in Phase 6)
 
 ### Phase 4: Hierarchical & Financial Checks
 
@@ -100,9 +99,8 @@ src/armenian_budget/validation/
 - [ ] Implement `checks/negative_totals.py` (with hierarchy-level severity)
   - [ ] Check overall JSON
   - [ ] Check state body, program, subprogram CSV rows
-- [ ] Update registry to run these checks
 
-**Completion Criteria:** Hierarchical and negative checks work across all hierarchy levels
+**Completion Criteria:** Hierarchical and negative checks implemented (registry integration in Phase 6)
 
 ### Phase 5: Spending-Specific Checks
 
@@ -114,9 +112,8 @@ src/armenian_budget/validation/
 - [ ] Implement `checks/percentage_calculation.py` (all hierarchy levels)
   - [ ] actual_vs_rev_annual_plan = actual / rev_annual_plan
   - [ ] actual_vs_rev_period_plan = actual / rev_period_plan
-- [ ] Update registry to conditionally run on spending sources only
 
-**Completion Criteria:** All spending checks pass on Q1/Q12/Q123/Q1234 test data
+**Completion Criteria:** All spending checks implemented (registry integration in Phase 6)
 
 ### Phase 6: Registry and Runner
 
@@ -131,13 +128,13 @@ src/armenian_budget/validation/
 
 ### Phase 7: Report Generation
 
-- [ ] Create `validation/report.py`
-  - [ ] `generate_markdown_report(ValidationReport) -> str`
+- [ ] Add `ValidationReport.to_markdown() -> str` method to models.py
   - [ ] Format: check status (✅/❌/⚠️), counts, failure details
   - [ ] Include summary section (total errors, warnings)
 - [ ] Update CLI `cmd_validate()` to accept `--report` flag
   - [ ] `--report` (default location: {csv_path}_validation.md)
   - [ ] `--report path/to/custom.md` (custom path)
+  - [ ] Call `report.to_markdown()` to generate content
 - [ ] Update CLI help text and argument parser
 
 **Completion Criteria:** `armenian-budget validate --csv X.csv --report` creates Markdown file
@@ -209,6 +206,22 @@ src/armenian_budget/validation/
 - Focus on clarity and succinctness over migration path
 - Comprehensive docstrings (Google Python style guide)
 - No bloat, no legacy patterns
+
+### Decision 5: Minimal API Surface (2025-10-27)
+
+**Rationale:** Keep validation module minimal and focused:
+
+- Source type detection via filename parsing (no JSON modification needed)
+- Report generation as method on ValidationReport (no separate report.py file)
+- Remove `get_passed_checks()` from public API (inline in summary())
+- Each utility lives where it's most relevant (detect_source_type in models.py)
+
+**Benefits:**
+
+- Fewer files to maintain (14 vs 15 - removed report.py)
+- Clearer responsibility (models.py owns all data model logic)
+- No unnecessary parser modifications
+- Simpler for users (fewer imports, methods on objects)
 
 ## Notes
 
