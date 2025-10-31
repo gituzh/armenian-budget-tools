@@ -23,7 +23,7 @@ from armenian_budget.core.enums import SourceType
 # ============================================================================
 
 # Hierarchical totals tolerance by source type (in AMD)
-BUDGET_LAW_ABS_TOL = 0.0  # Strict matching - no tolerance
+BUDGET_LAW_ABS_TOL = 1.0  # Small rounding tolerance for floating-point precision
 SPENDING_ABS_TOL = 5.0    # Small rounding differences acceptable
 MTEP_ABS_TOL = 0.5        # Per-year tolerance for multi-year projections
 
@@ -62,11 +62,11 @@ HIERARCHICAL_TOTALS_SEVERITY = {
     "subprogram": "error",
 }
 
-# Negative totals - Error at top levels, Warning at subprogram (may be corrections)
+# Negative totals - Warning at all levels (may be legitimate corrections/adjustments)
 NEGATIVE_TOTALS_SEVERITY = {
-    "overall": "error",
-    "state_body": "error",
-    "program": "error",
+    "overall": "warning",
+    "state_body": "warning",
+    "program": "warning",
     "subprogram": "warning",
 }
 

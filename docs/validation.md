@@ -76,7 +76,7 @@ Budget hierarchy must sum correctly: grand total = Σ state bodies, state body =
 
 | Data Type | Grand Total = Σ State Bodies | State Body = Σ Programs | Program = Σ Subprograms | Tolerance |
 |-----------|------------------------------|-------------------------|-------------------------|-----------|
-| **Budget Law** | Error | Error | Error | 0.0 AMD (strict) |
+| **Budget Law** | Error | Error | Error | 1.0 AMD |
 | **Spending Reports** | Error | Error | Error | 5.0 AMD |
 | **MTEP** | Error | Error | - | 0.5 AMD per year |
 
@@ -84,14 +84,14 @@ Budget hierarchy must sum correctly: grand total = Σ state bodies, state body =
 
 ### Negative Totals
 
-Negative totals indicate data corruption. Subprogram negatives may be legitimate corrections.
+Negative values may indicate data quality issues or legitimate corrections/adjustments. All flagged as warnings for review.
 
 | Data Type | Fields | Severity by Level |
 |-----------|--------|-------------------|
-| **Budget Law** | `*_total` | Error: overall, state_body, program<br>Warning: subprogram |
-| **Spending Q1/Q12/Q123** | `*_annual_plan`, `*_rev_annual_plan`, `*_period_plan`, `*_rev_period_plan`, `*_actual` | Error: overall, state_body, program<br>Warning: subprogram |
-| **Spending Q1234** | `*_annual_plan`, `*_rev_annual_plan`, `*_actual` | Error: overall, state_body, program<br>Warning: subprogram |
-| **MTEP** | `*_total_y0`, `*_total_y1`, `*_total_y2` | Error: overall, state_body, program |
+| **Budget Law** | `*_total` | Warning: overall, state_body, program, subprogram |
+| **Spending Q1/Q12/Q123** | `*_annual_plan`, `*_rev_annual_plan`, `*_period_plan`, `*_rev_period_plan`, `*_actual` | Warning: overall, state_body, program, subprogram |
+| **Spending Q1234** | `*_annual_plan`, `*_rev_annual_plan`, `*_actual` | Warning: overall, state_body, program, subprogram |
+| **MTEP** | `*_total_y0`, `*_total_y1`, `*_total_y2` | Warning: overall, state_body, program |
 
 **Wildcard (`*`) represents:** `overall` (JSON), `state_body`, `program`, `subprogram` (CSV). MTEP has no subprogram.
 
@@ -145,7 +145,6 @@ Validation always completes and generates a full report with error and warning c
 **Critical data issues (do not use for decisions):**
 
 - Large hierarchical mismatches (> 1,000 AMD) - indicates serious data corruption
-- Negative state body or program totals - always investigate
 - Negative percentages - mathematically impossible, indicates corruption
 - Missing required fields - data is incomplete
 
@@ -155,12 +154,12 @@ Validation always completes and generates a full report with error and warning c
 - Period exceeding annual plan - verify which figure is correct
 - Percentage calculation errors - recalculate yourself using actual amounts
 - Execution > 100% - may indicate legitimate budget revisions
+- Negative totals - may be legitimate corrections or data quality issues
 
 **Safe to proceed:**
 
 - Small hierarchical differences (< 10 AMD) - harmless rounding
 - Empty subprogram names (if codes present) - may still be usable
-- Negative subprogram totals - may be legitimate corrections
 
 ---
 

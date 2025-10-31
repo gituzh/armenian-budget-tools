@@ -246,3 +246,98 @@ def get_financial_fields(source_type: SourceType) -> Tuple[List[str], List[str]]
         ]
 
     return csv_fields, json_fields
+
+
+def get_amount_fields(source_type: SourceType) -> Tuple[List[str], List[str]]:
+    """Get amount (non-percentage) fields for hierarchical and negative checks.
+
+    Returns only amount fields, excludes percentage fields like *_actual_vs_rev_annual_plan.
+    Used for hierarchical totals and negative totals validation.
+
+    Args:
+        source_type: Type of data source.
+
+    Returns:
+        Tuple of (csv_amount_fields, json_amount_fields).
+
+    Examples:
+        >>> csv, json = get_amount_fields(SourceType.BUDGET_LAW)
+        >>> "state_body_total" in csv
+        True
+        >>> "state_body_actual_vs_rev_annual_plan" in csv
+        False
+    """
+    if source_type == SourceType.BUDGET_LAW:
+        csv_fields = [
+            "state_body_total",
+            "program_total",
+            "subprogram_total",
+        ]
+        json_fields = ["overall_total"]
+
+    elif source_type == SourceType.MTEP:
+        csv_fields = [
+            "state_body_total_y0",
+            "state_body_total_y1",
+            "state_body_total_y2",
+            "program_total_y0",
+            "program_total_y1",
+            "program_total_y2",
+        ]
+        json_fields = [
+            "overall_total_y0",
+            "overall_total_y1",
+            "overall_total_y2",
+        ]
+
+    elif source_type in (
+        SourceType.SPENDING_Q1,
+        SourceType.SPENDING_Q12,
+        SourceType.SPENDING_Q123,
+    ):
+        # Q1/Q12/Q123 have period fields (amounts only, not percentages)
+        csv_fields = [
+            "state_body_annual_plan",
+            "state_body_rev_annual_plan",
+            "state_body_period_plan",
+            "state_body_rev_period_plan",
+            "state_body_actual",
+            "program_annual_plan",
+            "program_rev_annual_plan",
+            "program_period_plan",
+            "program_rev_period_plan",
+            "program_actual",
+            "subprogram_annual_plan",
+            "subprogram_rev_annual_plan",
+            "subprogram_period_plan",
+            "subprogram_rev_period_plan",
+            "subprogram_actual",
+        ]
+        json_fields = [
+            "overall_annual_plan",
+            "overall_rev_annual_plan",
+            "overall_period_plan",
+            "overall_rev_period_plan",
+            "overall_actual",
+        ]
+
+    else:  # SPENDING_Q1234
+        # Q1234 has no period fields (amounts only, not percentages)
+        csv_fields = [
+            "state_body_annual_plan",
+            "state_body_rev_annual_plan",
+            "state_body_actual",
+            "program_annual_plan",
+            "program_rev_annual_plan",
+            "program_actual",
+            "subprogram_annual_plan",
+            "subprogram_rev_annual_plan",
+            "subprogram_actual",
+        ]
+        json_fields = [
+            "overall_annual_plan",
+            "overall_rev_annual_plan",
+            "overall_actual",
+        ]
+
+    return csv_fields, json_fields

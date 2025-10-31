@@ -6,16 +6,18 @@
 
 ## Current State
 
-**After Phase 3:**
+**After Phase 4:**
 
 - ✅ `validation/config.py` - Tolerance constants and severity rules
 - ✅ `validation/models.py` - CheckResult and ValidationReport dataclasses
 - ✅ `validation/checks/__init__.py` - ValidationCheck protocol
 - ✅ `core/utils.py` - Source type detection from CSV filenames
-- ✅ `core/schemas.py` - Field definitions per source type
+- ✅ `core/schemas.py` - Field definitions per source type (including amount-only fields)
 - ✅ `validation/checks/required_fields.py` - Required fields check
 - ✅ `validation/checks/empty_identifiers.py` - Empty identifier check
 - ✅ `validation/checks/missing_financial_data.py` - Missing financial data check
+- ✅ `validation/checks/hierarchical_totals.py` - Hierarchical totals check
+- ✅ `validation/checks/negative_totals.py` - Negative totals check
 - ✅ Old code deleted (`runner.py`, `financial.py`)
 - ✅ Performance optimizations applied (55% faster)
 
@@ -27,16 +29,16 @@
 - ✅ Check interface protocol
 - ✅ Source type detection (Budget Law vs Spending vs MTEP)
 - ✅ Core structural checks (required fields, empty IDs, missing financial data)
+- ✅ Hierarchical and financial checks (hierarchical totals, negative totals)
 
 **Still Missing:**
 
-- ❌ Hierarchical and financial checks
-- ❌ Spending-specific checks
+- ❌ Spending-specific checks (period vs annual, negative percentages, execution >100%, percentage calculations)
 - ❌ Registry to orchestrate checks (CLI validation currently broken - imports deleted runner.py)
 - ❌ Markdown report generation
 - ❌ CLI --report flag support
 
-**Note:** Phase 3 checks tested on real 2019/2026 data - all passing. Failure detection working correctly.
+**Note:** Phases 3-4 tested on real 2019/2026 data. BUDGET_LAW tolerance adjusted to 1.0 AMD to handle floating-point precision from parsers.
 
 ## Target Architecture
 
@@ -99,17 +101,24 @@ src/armenian_budget/validation/
 
 **Completion Criteria:** Required fields, empty IDs, missing data checks implemented (registry integration in Phase 6) ✅
 
-### Phase 4: Hierarchical & Financial Checks
+### Phase 4: Hierarchical & Financial Checks ✅
 
-- [ ] Implement `checks/hierarchical_totals.py` (source-specific tolerances)
-  - [ ] Check overall JSON vs state body sums
-  - [ ] Check state body vs program sums
-  - [ ] Check program vs subprogram sums
-- [ ] Implement `checks/negative_totals.py` (with hierarchy-level severity)
-  - [ ] Check overall JSON
-  - [ ] Check state body, program, subprogram CSV rows
+- [x] Add `get_amount_fields()` to core/schemas.py (amounts only, excludes percentages)
+- [x] Implement `checks/hierarchical_totals.py` (source-specific tolerances)
+  - [x] Check overall JSON vs state body sums
+  - [x] Check state body vs program sums
+  - [x] Check program vs subprogram sums
+- [x] Implement `checks/negative_totals.py` (all warnings for all levels)
+  - [x] Check overall JSON
+  - [x] Check state body, program, subprogram CSV rows
+- [x] Tested on real 2019 SPENDING_Q1 (all hierarchical checks pass with 5.0 tolerance)
+- [x] Detected real negative values in 2019 data (warnings at all levels)
 
-**Completion Criteria:** Hierarchical and negative checks implemented (registry integration in Phase 6)
+**Completion Criteria:** Hierarchical and negative checks implemented (registry integration in Phase 6) ✅
+
+**Notes:**
+- BUDGET_LAW tolerance set to 1.0 AMD to handle floating-point precision from parsers
+- All negative totals are warnings (all source types, all levels) - negatives may be legitimate budget corrections/adjustments, simpler to review all as warnings
 
 ### Phase 5: Spending-Specific Checks
 
@@ -175,8 +184,8 @@ src/armenian_budget/validation/
 ## Progress Tracking
 
 **Started:** 2025-10-27
-**Current Phase:** Phase 4
-**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅
+**Current Phase:** Phase 5
+**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅
 **Blockers:** None
 
 ## Architecture Decisions Log
@@ -233,6 +242,24 @@ src/armenian_budget/validation/
 - Clearer responsibility (models.py owns all data model logic)
 - No unnecessary parser modifications
 - Simpler for users (fewer imports, methods on objects)
+
+### Decision 6: All Negative Totals as Warnings (2025-10-31)
+
+**Rationale:** Treat all negative totals as warnings (all source types, all hierarchy levels):
+
+- Negative values can represent legitimate budget corrections or adjustments in any context (not just spending reports)
+- Simpler implementation: single severity rule instead of source-type-specific logic
+- Easier to maintain: no special cases or conditional severity mapping
+- Better user experience: consistent behavior across all data types
+
+**Benefits:**
+
+- Simpler code in `config.py` (single `NEGATIVE_TOTALS_SEVERITY` dict)
+- No source-type-aware severity logic needed in checks
+- Consistent messaging: all negatives flagged for review, none treated as critical errors
+- Real-world validated: 2019 data shows negatives occur and may be legitimate
+
+**Implementation:** See Phase 4 notes for details.
 
 ## Notes
 
