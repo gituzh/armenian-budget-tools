@@ -332,9 +332,9 @@ def cmd_validate(args: argparse.Namespace) -> int:
     df = pd.read_csv(csv_path)
 
     # Dynamic import to avoid path resolution issues during dev
-    runner = importlib.import_module("armenian_budget.validation.runner")
-    report = runner.run_all_checks(df, csv_path)
-    runner.print_report(report)
+    registry = importlib.import_module("armenian_budget.validation.registry")
+    report = registry.run_validation(df, csv_path)
+    registry.print_report(report)
     return 2 if report.has_errors(strict=False) else 0
 
 

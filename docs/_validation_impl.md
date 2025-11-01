@@ -6,7 +6,7 @@
 
 ## Current State
 
-**After Phase 5:**
+**After Phase 6:**
 
 - ✅ `validation/config.py` - Tolerance constants and severity rules
 - ✅ `validation/models.py` - CheckResult and ValidationReport dataclasses
@@ -22,6 +22,9 @@
 - ✅ `validation/checks/negative_percentages.py` - Negative percentages check
 - ✅ `validation/checks/execution_exceeds_100.py` - Execution >100% check
 - ✅ `validation/checks/percentage_calculation.py` - Percentage calculation check
+- ✅ `validation/registry.py` - Check orchestration with ALL_CHECKS list and run_validation()
+- ✅ `validation/__init__.py` - Public API exports (run_validation, print_report)
+- ✅ CLI integration - `armenian-budget validate` command working
 - ✅ Old code deleted (`runner.py`, `financial.py`)
 - ✅ Performance optimizations applied (55% faster)
 
@@ -35,19 +38,21 @@
 - ✅ Core structural checks (required fields, empty IDs, missing financial data)
 - ✅ Hierarchical and financial checks (hierarchical totals, negative totals)
 - ✅ Spending-specific checks (period vs annual, negative percentages, execution >100%, percentage calculations)
+- ✅ Check registry and runner (run_validation, print_report)
+- ✅ CLI validation command (working end-to-end)
 
 **Still Missing:**
 
-- ❌ Registry to orchestrate checks (CLI validation currently broken - imports deleted runner.py)
 - ❌ Markdown report generation
 - ❌ CLI --report flag support
 
 **Notes:**
-- Phases 3-5 tested on real 2019 and 2023 SPENDING_Q1 data
+- Phases 3-6 tested on real 2019 and 2023 SPENDING_Q1 data
 - BUDGET_LAW tolerance adjusted to 1.0 AMD to handle floating-point precision from parsers
 - All negative totals are warnings (simpler than source-specific rules)
 - Bug fixes applied: field existence checks in period_vs_annual.py and percentage_calculation.py
 - Code simplification: empty_identifiers.py refactored to use loop (40% reduction)
+- CLI validation command fully functional, running all 9 check types across all hierarchy levels
 
 ## Target Architecture
 
@@ -167,18 +172,31 @@ src/armenian_budget/validation/
 - Fixed `percentage_calculation.py`: Check all three fields (percentage, numerator, denominator) exist before calculation
 - Refactored `empty_identifiers.py`: Use loop instead of repetition (~40% code reduction)
 
-### Phase 6: Registry and Runner
+### Phase 6: Registry and Runner ✅
 
-- [ ] Create `validation/registry.py` with ALL_CHECKS list
-- [ ] Implement `run_validation()` function
-  - [ ] Filter checks by source type
-  - [ ] Execute all applicable checks
-  - [ ] Aggregate results into ValidationReport
-- [ ] Update CLI `cmd_validate()` to use new registry (currently imports deleted runner.py)
+- [x] Create `validation/registry.py` with ALL_CHECKS list
+- [x] Implement `run_validation()` function
+  - [x] Filter checks by source type
+  - [x] Execute all applicable checks
+  - [x] Aggregate results into ValidationReport
+- [x] Implement `print_report()` function for console output
+- [x] Update CLI `cmd_validate()` to use new registry
+- [x] Update `validation/__init__.py` to export run_validation and print_report
+- [x] Tested on real 2019 and 2023 SPENDING_Q1 data
 
-**Completion Criteria:** CLI validates CSV using new check registry
+**Completion Criteria:** CLI validates CSV using new check registry ✅
 
-**Note:** CLI validation currently broken - needs registry implementation to work.
+**Test Results:**
+
+*2019 SPENDING_Q1* (47 total checks, 42 passed, 5 failed):
+
+- 2 errors: period_vs_annual violations at subprogram level
+- 12 warnings: negative totals (state_body, program, subprogram), execution >100% at subprogram level
+
+*2023 SPENDING_Q1* (47 total checks, 41 passed, 6 failed):
+
+- 18 errors: period_vs_annual violations at program (12) and subprogram (6) levels
+- 48 warnings: negative totals (35 total), execution >100% (13 total)
 
 ### Phase 7: Report Generation
 
@@ -277,8 +295,8 @@ src/armenian_budget/validation/
 ## Progress Tracking
 
 **Started:** 2025-10-27
-**Current Phase:** Phase 6
-**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅
+**Current Phase:** Phase 7 (Report Generation)
+**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅, Phase 6 ✅
 **Blockers:** None
 
 ## Architecture Decisions Log
