@@ -36,73 +36,41 @@ class EmptyIdentifiersCheck:
         """
         results = []
 
-        # Check state_body
-        empty_state_body = df["state_body"].isna() | (df["state_body"].str.strip() == "")
-        count_state_body = empty_state_body.sum()
-        if count_state_body > 0:
-            results.append(
-                CheckResult(
-                    check_id="empty_identifiers",
-                    severity=get_severity("empty_identifiers", "state_body"),
-                    passed=False,
-                    fail_count=count_state_body,
-                    messages=[f"Found {count_state_body} rows with empty state_body"],
-                )
-            )
-        else:
-            results.append(
-                CheckResult(
-                    check_id="empty_identifiers",
-                    severity=get_severity("empty_identifiers", "state_body"),
-                    passed=True,
-                    fail_count=0,
-                )
-            )
+        # Define identifier fields to check: (column_name, hierarchy_level)
+        identifiers = [
+            ("state_body", "state_body"),
+            ("program_name", "program"),
+            ("subprogram_name", "subprogram"),
+        ]
 
-        # Check program_name
-        empty_program = df["program_name"].isna() | (df["program_name"].str.strip() == "")
-        count_program = empty_program.sum()
-        if count_program > 0:
-            results.append(
-                CheckResult(
-                    check_id="empty_identifiers",
-                    severity=get_severity("empty_identifiers", "program"),
-                    passed=False,
-                    fail_count=count_program,
-                    messages=[f"Found {count_program} rows with empty program_name"],
-                )
-            )
-        else:
-            results.append(
-                CheckResult(
-                    check_id="empty_identifiers",
-                    severity=get_severity("empty_identifiers", "program"),
-                    passed=True,
-                    fail_count=0,
-                )
-            )
+        for field_name, level in identifiers:
+            # Skip subprogram for MTEP (no subprograms)
+            if level == "subprogram" and source_type == SourceType.MTEP:
+                continue
 
-        # Check subprogram_name (skip for MTEP which has no subprograms)
-        if source_type != SourceType.MTEP and "subprogram_name" in df.columns:
-            empty_subprogram = df["subprogram_name"].isna() | (
-                df["subprogram_name"].str.strip() == ""
-            )
-            count_subprogram = empty_subprogram.sum()
-            if count_subprogram > 0:
+            # Skip if field not in dataframe
+            if field_name not in df.columns:
+                continue
+
+            # Check for empty values (null or whitespace-only strings)
+            empty_mask = df[field_name].isna() | (df[field_name].str.strip() == "")
+            count = empty_mask.sum()
+
+            if count > 0:
                 results.append(
                     CheckResult(
                         check_id="empty_identifiers",
-                        severity=get_severity("empty_identifiers", "subprogram"),
+                        severity=get_severity("empty_identifiers", level),
                         passed=False,
-                        fail_count=count_subprogram,
-                        messages=[f"Found {count_subprogram} rows with empty subprogram_name"],
+                        fail_count=count,
+                        messages=[f"Found {count} rows with empty {field_name}"],
                     )
                 )
             else:
                 results.append(
                     CheckResult(
                         check_id="empty_identifiers",
-                        severity=get_severity("empty_identifiers", "subprogram"),
+                        severity=get_severity("empty_identifiers", level),
                         passed=True,
                         fail_count=0,
                     )

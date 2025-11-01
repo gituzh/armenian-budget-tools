@@ -6,18 +6,22 @@
 
 ## Current State
 
-**After Phase 4:**
+**After Phase 5:**
 
 - ✅ `validation/config.py` - Tolerance constants and severity rules
 - ✅ `validation/models.py` - CheckResult and ValidationReport dataclasses
 - ✅ `validation/checks/__init__.py` - ValidationCheck protocol
 - ✅ `core/utils.py` - Source type detection from CSV filenames
-- ✅ `core/schemas.py` - Field definitions per source type (including amount-only fields)
+- ✅ `core/schemas.py` - Field definitions per source type (amounts, percentages, all fields)
 - ✅ `validation/checks/required_fields.py` - Required fields check
 - ✅ `validation/checks/empty_identifiers.py` - Empty identifier check
 - ✅ `validation/checks/missing_financial_data.py` - Missing financial data check
 - ✅ `validation/checks/hierarchical_totals.py` - Hierarchical totals check
-- ✅ `validation/checks/negative_totals.py` - Negative totals check
+- ✅ `validation/checks/negative_totals.py` - Negative totals check (all warnings)
+- ✅ `validation/checks/period_vs_annual.py` - Period vs annual plan check
+- ✅ `validation/checks/negative_percentages.py` - Negative percentages check
+- ✅ `validation/checks/execution_exceeds_100.py` - Execution >100% check
+- ✅ `validation/checks/percentage_calculation.py` - Percentage calculation check
 - ✅ Old code deleted (`runner.py`, `financial.py`)
 - ✅ Performance optimizations applied (55% faster)
 
@@ -30,15 +34,20 @@
 - ✅ Source type detection (Budget Law vs Spending vs MTEP)
 - ✅ Core structural checks (required fields, empty IDs, missing financial data)
 - ✅ Hierarchical and financial checks (hierarchical totals, negative totals)
+- ✅ Spending-specific checks (period vs annual, negative percentages, execution >100%, percentage calculations)
 
 **Still Missing:**
 
-- ❌ Spending-specific checks (period vs annual, negative percentages, execution >100%, percentage calculations)
 - ❌ Registry to orchestrate checks (CLI validation currently broken - imports deleted runner.py)
 - ❌ Markdown report generation
 - ❌ CLI --report flag support
 
-**Note:** Phases 3-4 tested on real 2019/2026 data. BUDGET_LAW tolerance adjusted to 1.0 AMD to handle floating-point precision from parsers.
+**Notes:**
+- Phases 3-5 tested on real 2019 and 2023 SPENDING_Q1 data
+- BUDGET_LAW tolerance adjusted to 1.0 AMD to handle floating-point precision from parsers
+- All negative totals are warnings (simpler than source-specific rules)
+- Bug fixes applied: field existence checks in period_vs_annual.py and percentage_calculation.py
+- Code simplification: empty_identifiers.py refactored to use loop (40% reduction)
 
 ## Target Architecture
 
@@ -117,21 +126,46 @@ src/armenian_budget/validation/
 **Completion Criteria:** Hierarchical and negative checks implemented (registry integration in Phase 6) ✅
 
 **Notes:**
+
 - BUDGET_LAW tolerance set to 1.0 AMD to handle floating-point precision from parsers
 - All negative totals are warnings (all source types, all levels) - negatives may be legitimate budget corrections/adjustments, simpler to review all as warnings
 
-### Phase 5: Spending-Specific Checks
+### Phase 5: Spending-Specific Checks ✅
 
-- [ ] Implement `checks/period_vs_annual.py`
-  - [ ] period_plan ≤ annual_plan
-  - [ ] rev_period_plan ≤ rev_annual_plan
-- [ ] Implement `checks/negative_percentages.py` (hierarchy-specific severity)
-- [ ] Implement `checks/execution_exceeds_100.py` (warning-level check)
-- [ ] Implement `checks/percentage_calculation.py` (all hierarchy levels)
-  - [ ] actual_vs_rev_annual_plan = actual / rev_annual_plan
-  - [ ] actual_vs_rev_period_plan = actual / rev_period_plan
+- [x] Add `get_percentage_fields()` to core/schemas.py
+- [x] Implement `checks/period_vs_annual.py` (Q1/Q12/Q123 only)
+  - [x] period_plan ≤ annual_plan
+  - [x] rev_period_plan ≤ rev_annual_plan
+- [x] Implement `checks/negative_percentages.py` (hierarchy-specific severity)
+- [x] Implement `checks/execution_exceeds_100.py` (warning-level check)
+- [x] Implement `checks/percentage_calculation.py` (all hierarchy levels, 0.1% tolerance)
+  - [x] actual_vs_rev_annual_plan = actual / rev_annual_plan
+  - [x] actual_vs_rev_period_plan = actual / rev_period_plan (Q1/Q12/Q123)
+- [x] Tested on real 2019 SPENDING_Q1 data
 
-**Completion Criteria:** All spending checks implemented (registry integration in Phase 6)
+**Completion Criteria:** All spending checks implemented (registry integration in Phase 6) ✅
+
+**Test Results:**
+
+*2019 SPENDING_Q1* (42 passed, 5 failed - 1 error, 4 warnings):
+
+- Period ≤ Annual: 2 violations at subprogram level
+- Negative Percentages: All passed
+- Execution > 100%: 4 instances at subprogram level (warnings)
+- Percentage Calculation: All passed
+
+*2023 SPENDING_Q1* (41 passed, 6 failed - 2 errors, 4 warnings):
+
+- Period ≤ Annual: 12 violations at program level, 6 at subprogram level
+- Negative Totals: 30 negative program values, 5 negative subprogram values (warnings)
+- Execution > 100%: 10 instances at program level, 3 at subprogram level (warnings)
+- All other checks: Passed
+
+**Bug Fixes Applied:**
+
+- Fixed `period_vs_annual.py`: Added field existence checks to avoid masking missing fields with `.get(field, 0)` default
+- Fixed `percentage_calculation.py`: Check all three fields (percentage, numerator, denominator) exist before calculation
+- Refactored `empty_identifiers.py`: Use loop instead of repetition (~40% code reduction)
 
 ### Phase 6: Registry and Runner
 
@@ -184,8 +218,8 @@ src/armenian_budget/validation/
 ## Progress Tracking
 
 **Started:** 2025-10-27
-**Current Phase:** Phase 5
-**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅
+**Current Phase:** Phase 6
+**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅
 **Blockers:** None
 
 ## Architecture Decisions Log

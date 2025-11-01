@@ -341,3 +341,60 @@ def get_amount_fields(source_type: SourceType) -> Tuple[List[str], List[str]]:
         ]
 
     return csv_fields, json_fields
+
+
+def get_percentage_fields(source_type: SourceType) -> Tuple[List[str], List[str]]:
+    """Get percentage fields for spending reports.
+
+    Returns only percentage fields like *_actual_vs_rev_annual_plan.
+    Used for negative percentages, execution >100%, and percentage calculation checks.
+
+    Args:
+        source_type: Type of data source.
+
+    Returns:
+        Tuple of (csv_percentage_fields, json_percentage_fields).
+        Returns empty lists for BUDGET_LAW and MTEP (no percentages).
+
+    Examples:
+        >>> csv, json = get_percentage_fields(SourceType.SPENDING_Q1)
+        >>> "state_body_actual_vs_rev_annual_plan" in csv
+        True
+        >>> "state_body_actual" in csv
+        False
+    """
+    if source_type in (SourceType.BUDGET_LAW, SourceType.MTEP):
+        # Budget Law and MTEP have no percentage fields
+        return [], []
+
+    elif source_type in (
+        SourceType.SPENDING_Q1,
+        SourceType.SPENDING_Q12,
+        SourceType.SPENDING_Q123,
+    ):
+        # Q1/Q12/Q123 have two percentage fields per level
+        csv_fields = [
+            "state_body_actual_vs_rev_annual_plan",
+            "state_body_actual_vs_rev_period_plan",
+            "program_actual_vs_rev_annual_plan",
+            "program_actual_vs_rev_period_plan",
+            "subprogram_actual_vs_rev_annual_plan",
+            "subprogram_actual_vs_rev_period_plan",
+        ]
+        json_fields = [
+            "overall_actual_vs_rev_annual_plan",
+            "overall_actual_vs_rev_period_plan",
+        ]
+
+    else:  # SPENDING_Q1234
+        # Q1234 has one percentage field per level
+        csv_fields = [
+            "state_body_actual_vs_rev_annual_plan",
+            "program_actual_vs_rev_annual_plan",
+            "subprogram_actual_vs_rev_annual_plan",
+        ]
+        json_fields = [
+            "overall_actual_vs_rev_annual_plan",
+        ]
+
+    return csv_fields, json_fields
