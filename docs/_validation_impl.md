@@ -195,13 +195,72 @@ src/armenian_budget/validation/
 
 ### Phase 8: Testing and Validation
 
-- [ ] Add unit tests for each check in `checks/`
-- [ ] Add integration tests using real 2023/2024 data
-- [ ] Validate against validation.md spec (all checks implemented)
-- [ ] Update `tests/conftest.py` fixtures if needed
-- [ ] Update/replace existing validation tests (no backward compat needed)
+**A. Unit Tests for Validation System (Phases 1-5):**
 
-**Completion Criteria:** All tests pass, coverage maintained
+- [ ] Create `tests/validation/` directory
+- [ ] `test_schemas.py`: Test get_required_fields(), get_financial_fields(), get_amount_fields(), get_percentage_fields() for all source types
+- [ ] `test_config.py`: Test get_tolerance_for_source(), get_severity()
+- [ ] `test_required_fields_check.py`: Unit test with missing/present fields (synthetic data)
+- [ ] `test_empty_identifiers_check.py`: Unit test with empty/non-empty identifiers (synthetic data)
+- [ ] `test_missing_financial_data_check.py`: Unit test with null/non-null values (synthetic data)
+- [ ] `test_hierarchical_totals_check.py`: Unit test with correct/incorrect sums (synthetic data)
+- [ ] `test_negative_totals_check.py`: Unit test with positive/negative values (synthetic data)
+- [ ] `test_period_vs_annual_check.py`: Unit test with period vs annual violations (synthetic data)
+- [ ] `test_negative_percentages_check.py`: Unit test with negative/positive percentages (synthetic data)
+- [ ] `test_execution_exceeds_100_check.py`: Unit test with execution >100% (synthetic data)
+- [ ] `test_percentage_calculation_check.py`: Unit test with correct/incorrect calculations (synthetic data)
+- [ ] `test_all_checks_integration.py`: Integration test running all checks on real data using existing fixtures
+
+**B. Tests for Registry and Runner (Phase 6):**
+
+- [ ] `test_registry.py`: Test check filtering by source type, run_validation() execution, ValidationReport aggregation
+
+**C. Tests for Report Generation (Phase 7):**
+
+- [ ] `test_report.py`: Test to_markdown() format, summary sections, error/warning counts
+
+**D. CLI Integration Tests:**
+
+- [ ] Test `armenian-budget validate --csv X.csv` command execution
+- [ ] Test `--report` flag creates markdown file correctly
+- [ ] Test CLI error handling (missing files, invalid source types)
+
+**E. Delete Redundant Old Validation Tests:**
+
+- [ ] Delete redundant tests from `tests/data_validation/test_spending_validation.py`:
+  - Delete: test_spending_financial_consistency, test_spending_data_quality, test_spending_percentage_ranges, test_spending_logical_relationships
+  - Delete: test_spending_has_all_required_columns, test_spending_percentage_calculations, test_spending_no_negative_percentages
+  - Delete: test_spending_revised_vs_original_plans, test_spending_overall_matches_csv
+  - Delete: test_spending_actual_vs_plans_reasonableness, test_spending_quarterly_progression (warning-only tests)
+  - Keep: test_spending_csv_non_empty (parser test - to be reviewed)
+- [ ] Delete redundant tests from `tests/data_validation/test_budget_law_validation.py`:
+  - Delete: test_budget_law_financial_consistency, test_budget_law_data_quality
+  - Delete: test_budget_law_grand_total_consistency, test_budget_law_no_negative_totals
+  - Keep: test_budget_law_csv_non_empty, test_budget_law_program_codes_and_names_match, test_budget_law_program_distribution, test_budget_law_program_codes_format (parser tests - to be reviewed)
+- [ ] Delete redundant tests from `tests/data_validation/test_mtep_validation.py`:
+  - Delete: test_mtep_rollups_and_required_columns, test_mtep_overall_matches_csv, test_mtep_no_negative_totals
+  - Keep: test_mtep_csv_non_empty, test_mtep_program_codes_integer, test_mtep_program_codes_and_names_match (parser tests - to be reviewed)
+- [ ] Delete `tests/utils/validation_helpers.py` entirely
+
+**F. Review and Decide on Remaining Parser Tests:**
+
+- [ ] Review csv_non_empty tests (3 tests across files): Decide if these should move to `tests/parser/` or stay/delete
+- [ ] Review program_codes tests (5 tests): Decide if these should become validation checks or stay as parser tests
+- [ ] Review program_distribution test: Consider if this should become a validation check
+- [ ] If any become validation checks: Add corresponding pytest tests
+
+**G. Test Coverage and Quality:**
+
+- [ ] Validate test coverage >= 80% for validation module
+- [ ] Update `tests/conftest.py` fixtures if needed
+- [ ] Run full test suite and ensure all tests pass
+
+**Test Approach:**
+
+- Unit tests use synthetic DataFrames (3-10 rows) following pattern from test_mtep_validation.py:22-62
+- Integration tests use existing fixtures (all_budget_data, spending_data, budget_law_data)
+
+**Completion Criteria:** All validation code has tests, old redundant tests deleted, remaining tests reviewed and relocated appropriately, test coverage maintained
 
 ### Phase 9: Documentation and Cleanup
 
