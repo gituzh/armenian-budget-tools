@@ -161,3 +161,108 @@ class ValidationReport:
             f"  Errors: {errors}\n"
             f"  Warnings: {warnings}"
         )
+
+    def to_markdown(self) -> str:
+        """Generate detailed Markdown validation report.
+
+        Returns:
+            Formatted Markdown string with validation results, including:
+            - Header with file information and timestamp
+            - Summary section with pass/fail counts
+            - Passed checks list
+            - Failed checks with detailed messages
+            - Footer with interpretation guidance link
+
+        Examples:
+            >>> markdown = report.to_markdown()
+            >>> with open("validation_report.md", "w") as f:
+            ...     f.write(markdown)
+        """
+        from datetime import datetime
+
+        # Calculate statistics
+        total = len(self.results)
+        passed = sum(1 for r in self.results if r.passed)
+        failed = total - passed
+        errors = self.get_error_count()
+        warnings = self.get_warning_count()
+
+        # Group results by status
+        passed_checks = [r for r in self.results if r.passed]
+        failed_checks = self.get_failed_checks()
+
+        # Build markdown content
+        lines = [
+            f"# Validation Report: {self.csv_path.name}",
+            "",
+            f"**Source Type:** {self.source_type.value}",
+            f"**File:** {self.csv_path}",
+            f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            "",
+            "## Summary",
+            "",
+            f"- **Total Checks:** {total}",
+            f"- **Passed:** {passed} ✅",
+            f"- **Failed:** {failed} {'❌' if failed > 0 else ''}",
+            f"- **Errors:** {errors}",
+            f"- **Warnings:** {warnings}",
+            "",
+        ]
+
+        # Passed checks section
+        if passed_checks:
+            lines.append("## ✅ Passed Checks")
+            lines.append("")
+            # Group passed checks by check_id to avoid repetition
+            check_groups = {}
+            for result in passed_checks:
+                if result.check_id not in check_groups:
+                    check_groups[result.check_id] = []
+                check_groups[result.check_id].append(result)
+
+            for check_id in sorted(check_groups.keys()):
+                count = len(check_groups[check_id])
+                lines.append(f"- **{check_id}** ({count} passed)")
+            lines.append("")
+
+        # Failed checks section
+        if failed_checks:
+            lines.append("## ❌ Failed Checks")
+            lines.append("")
+
+            # Group failed checks by check_id
+            check_groups = {}
+            for result in failed_checks:
+                if result.check_id not in check_groups:
+                    check_groups[result.check_id] = []
+                check_groups[result.check_id].append(result)
+
+            for check_id in sorted(check_groups.keys()):
+                results = check_groups[check_id]
+                # Determine icon based on severity
+                icon = "❌" if results[0].severity == "error" else "⚠️"
+                severity_label = results[0].severity.capitalize()
+                total_failures = sum(r.fail_count for r in results)
+
+                lines.append(f"### {icon} {check_id} ({severity_label}) - {total_failures} failures")
+                lines.append("")
+
+                # Add all messages from all results for this check
+                for result in results:
+                    for msg in result.messages:
+                        lines.append(f"- {msg}")
+                lines.append("")
+        else:
+            lines.append("## ✅ All Checks Passed")
+            lines.append("")
+            lines.append("No validation issues found.")
+            lines.append("")
+
+        # Footer
+        lines.append("---")
+        lines.append("")
+        lines.append("For detailed information about validation checks and how to interpret results,")
+        lines.append("see [docs/validation.md](https://github.com/your-org/armenian-budget-tools/blob/main/docs/validation.md).")
+        lines.append("")
+
+        return "\n".join(lines)

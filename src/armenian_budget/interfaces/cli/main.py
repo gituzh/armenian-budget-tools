@@ -333,6 +333,24 @@ def cmd_validate(args: argparse.Namespace) -> int:
     registry = importlib.import_module("armenian_budget.validation.registry")
     report = registry.run_validation(df, csv_path)
     registry.print_report(report)
+
+    # Generate markdown report if requested
+    if args.report:
+        if args.report is True:
+            # Default location: next to CSV file
+            report_path = csv_path.parent / f"{csv_path.stem}_validation.md"
+        else:
+            # Custom location provided
+            report_path = Path(args.report)
+
+        # Write markdown report
+        markdown_content = report.to_markdown()
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(report_path, "w", encoding="utf-8") as f:
+            f.write(markdown_content)
+
+        logging.info("Validation report saved: %s", report_path)
+
     return 2 if report.has_errors(strict=False) else 0
 
 
@@ -907,6 +925,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_validate = sub.add_parser("validate", help="Validate a processed CSV (minimal checks)")
     p_validate.add_argument("--csv", required=True, help="Path to CSV produced by process")
+    p_validate.add_argument(
+        "--report",
+        nargs="?",
+        const=True,
+        default=False,
+        help="Generate detailed Markdown report. Optionally specify custom path (default: {csv_stem}_validation.md)",
+    )
     p_validate.set_defaults(func=cmd_validate)
 
     p_mcp = sub.add_parser("mcp-server", help="Run minimal MCP server (stdio or HTTP)")

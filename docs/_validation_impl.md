@@ -6,10 +6,10 @@
 
 ## Current State
 
-**After Phase 6:**
+**After Phase 7:**
 
 - ✅ `validation/config.py` - Tolerance constants and severity rules
-- ✅ `validation/models.py` - CheckResult and ValidationReport dataclasses
+- ✅ `validation/models.py` - CheckResult, ValidationReport, to_markdown()
 - ✅ `validation/checks/__init__.py` - ValidationCheck protocol
 - ✅ `core/utils.py` - Source type detection from CSV filenames
 - ✅ `core/schemas.py` - Field definitions per source type (amounts, percentages, all fields)
@@ -24,7 +24,8 @@
 - ✅ `validation/checks/percentage_calculation.py` - Percentage calculation check
 - ✅ `validation/registry.py` - Check orchestration with ALL_CHECKS list and run_validation()
 - ✅ `validation/__init__.py` - Public API exports (run_validation, print_report)
-- ✅ CLI integration - `armenian-budget validate` command working
+- ✅ CLI integration - `armenian-budget validate` command with --report flag
+- ✅ Markdown report generation - to_markdown() method
 - ✅ Old code deleted (`runner.py`, `financial.py`)
 - ✅ Performance optimizations applied (55% faster)
 
@@ -40,19 +41,22 @@
 - ✅ Spending-specific checks (period vs annual, negative percentages, execution >100%, percentage calculations)
 - ✅ Check registry and runner (run_validation, print_report)
 - ✅ CLI validation command (working end-to-end)
+- ✅ Markdown report generation (to_markdown method)
+- ✅ CLI --report flag support (default and custom paths)
 
 **Still Missing:**
 
-- ❌ Markdown report generation
-- ❌ CLI --report flag support
+- ❌ Unit and integration tests (Phase 8)
+- ❌ Developer guide documentation updates (Phase 9)
 
 **Notes:**
-- Phases 3-6 tested on real 2019 and 2023 SPENDING_Q1 data
+- Phases 3-7 tested on real 2019 and 2023 SPENDING_Q1 data
 - BUDGET_LAW tolerance adjusted to 1.0 AMD to handle floating-point precision from parsers
 - All negative totals are warnings (simpler than source-specific rules)
 - Bug fixes applied: field existence checks in period_vs_annual.py and percentage_calculation.py
 - Code simplification: empty_identifiers.py refactored to use loop (40% reduction)
 - CLI validation command fully functional, running all 9 check types across all hierarchy levels
+- Markdown reports generated with clean formatting, emoji indicators, and interpretation guidance
 
 ## Target Architecture
 
@@ -198,18 +202,43 @@ src/armenian_budget/validation/
 - 18 errors: period_vs_annual violations at program (12) and subprogram (6) levels
 - 48 warnings: negative totals (35 total), execution >100% (13 total)
 
-### Phase 7: Report Generation
+### Phase 7: Report Generation ✅
 
-- [ ] Add `ValidationReport.to_markdown() -> str` method to models.py
-  - [ ] Format: check status (✅/❌/⚠️), counts, failure details
-  - [ ] Include summary section (total errors, warnings)
-- [ ] Update CLI `cmd_validate()` to accept `--report` flag
-  - [ ] `--report` (default location: {csv_path}_validation.md)
-  - [ ] `--report path/to/custom.md` (custom path)
-  - [ ] Call `report.to_markdown()` to generate content
-- [ ] Update CLI help text and argument parser
+- [x] Add `ValidationReport.to_markdown() -> str` method to models.py (~108 lines)
+  - [x] Format: check status (✅/❌/⚠️), counts, failure details
+  - [x] Include summary section (total errors, warnings)
+  - [x] Header with file info and timestamp
+  - [x] Grouped by pass/fail status for easy scanning
+  - [x] Footer with link to docs/validation.md
+- [x] Update CLI `cmd_validate()` to accept `--report` flag
+  - [x] `--report` (default location: {csv_path}_validation.md)
+  - [x] `--report path/to/custom.md` (custom path)
+  - [x] Call `report.to_markdown()` to generate content
+  - [x] Create parent directories if needed
+  - [x] Log output path
+- [x] Update CLI help text and argument parser (nargs="?", const=True)
+- [x] Tested on real 2019 and 2023 SPENDING_Q1 data
 
-**Completion Criteria:** `armenian-budget validate --csv X.csv --report` creates Markdown file
+**Completion Criteria:** `armenian-budget validate --csv X.csv --report` creates Markdown file ✅
+
+**Test Results:**
+
+*Default Location Test* (2019_SPENDING_Q1.csv):
+
+- Created: `data/processed/csv/2019_SPENDING_Q1_validation.md`
+- Format: Clean markdown with emoji indicators, proper sections
+- Size: ~1KB for report with 47 checks (42 passed, 5 failed)
+
+*Custom Location Test* (2023_SPENDING_Q1.csv):
+
+- Created: `/tmp/test_validation_report.md`
+- Format: Same clean structure
+- Size: ~1.8KB for report with 47 checks (41 passed, 6 failed)
+
+*Console-Only Test* (no --report flag):
+
+- Console output works as before
+- No markdown file created (backward compatible)
 
 ### Phase 8: Testing and Validation
 
@@ -295,8 +324,8 @@ src/armenian_budget/validation/
 ## Progress Tracking
 
 **Started:** 2025-10-27
-**Current Phase:** Phase 7 (Report Generation)
-**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅, Phase 6 ✅
+**Current Phase:** Phase 8 (Testing and Validation)
+**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅, Phase 6 ✅, Phase 7 ✅
 **Blockers:** None
 
 ## Architecture Decisions Log
