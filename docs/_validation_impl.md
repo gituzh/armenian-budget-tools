@@ -11,7 +11,6 @@
 - ✅ `validation/config.py` - Tolerance constants and severity rules
 - ✅ `validation/models.py` - CheckResult, ValidationReport, to_markdown()
 - ✅ `validation/checks/__init__.py` - ValidationCheck protocol
-- ✅ `core/utils.py` - Source type detection from CSV filenames
 - ✅ `core/schemas.py` - Field definitions per source type (amounts, percentages, all fields)
 - ✅ `validation/checks/required_fields.py` - Required fields check
 - ✅ `validation/checks/empty_identifiers.py` - Empty identifier check
@@ -24,10 +23,11 @@
 - ✅ `validation/checks/percentage_calculation.py` - Percentage calculation check
 - ✅ `validation/registry.py` - Check orchestration with ALL_CHECKS list and run_validation()
 - ✅ `validation/__init__.py` - Public API exports (run_validation, print_report)
-- ✅ CLI integration - `armenian-budget validate` command with --report flag
-- ✅ Markdown report generation - to_markdown() method
+- ✅ CLI integration - `armenian-budget validate --csv` with --report flag
+- ✅ Markdown report generation (grouped format)
 - ✅ Old code deleted (`runner.py`, `financial.py`)
 - ✅ Performance optimizations applied (55% faster)
+- ✅ Redundancy cleanup - removed detect_source_type(), run_validation() accepts source_type param
 
 **Implemented:**
 
@@ -35,17 +35,17 @@
 - ✅ Centralized configuration (tolerances, severity)
 - ✅ Data models with helper methods
 - ✅ Check interface protocol
-- ✅ Source type detection (Budget Law vs Spending vs MTEP)
 - ✅ Core structural checks (required fields, empty IDs, missing financial data)
 - ✅ Hierarchical and financial checks (hierarchical totals, negative totals)
 - ✅ Spending-specific checks (period vs annual, negative percentages, execution >100%, percentage calculations)
 - ✅ Check registry and runner (run_validation, print_report)
-- ✅ CLI validation command (working end-to-end)
-- ✅ Markdown report generation (to_markdown method)
-- ✅ CLI --report flag support (default and custom paths)
+- ✅ CLI validation command (`--csv` flag)
+- ✅ Markdown report generation (grouped format)
+- ✅ Redundancy cleanup (removed detect_source_type)
 
 **Still Missing:**
 
+- ❌ Phase 7.1: CLI consistency (--years/--source-type), restructured reports, JSON format
 - ❌ Unit and integration tests (Phase 8)
 - ❌ Developer guide documentation updates (Phase 9)
 
@@ -56,7 +56,6 @@
 - Bug fixes applied: field existence checks in period_vs_annual.py and percentage_calculation.py
 - Code simplification: empty_identifiers.py refactored to use loop (40% reduction)
 - CLI validation command fully functional, running all 9 check types across all hierarchy levels
-- Markdown reports generated with clean formatting, emoji indicators, and interpretation guidance
 
 ## Target Architecture
 
@@ -240,6 +239,53 @@ src/armenian_budget/validation/
 - Console output works as before
 - No markdown file created (backward compatible)
 
+### Phase 7.1: Corrective Updates
+
+**Issues Identified:**
+
+1. CLI argument inconsistency: `--csv` doesn't match other commands (`--years`, `--source-type`)
+2. Markdown report groups checks and mixes warnings/errors - need separate sections
+3. Missing JSON report format
+
+**Changes Required:**
+
+**A. Refactor `run_validation()` signature:**
+
+- [ ] Change from `(df, csv_path, source_type)` to `(year: int, source_type: SourceType, processed_root: Path)`
+- [ ] Construct paths internally, load CSV and JSON internally
+- [ ] Update docstring and examples
+
+**B. Update CLI:**
+
+- [ ] Replace `--csv` with `--years`, `--source-type`, `--processed-root`
+- [ ] Use `_parse_years_arg()` for year parsing
+- [ ] Loop over years, call `run_validation(year, source_type, processed_root)` for each
+- [ ] Add `--report-json` flag support
+- [ ] Remove CSV loading (now in run_validation)
+
+**C. Restructure `ValidationReport.to_markdown()`:**
+
+- [ ] Create three separate sections: Passed, Warnings, Errors
+- [ ] List each CheckResult individually (not grouped by check_id)
+- [ ] For failed checks, display all messages showing entity names and values (not just "X rows")
+
+**D. Add `ValidationReport.to_json()`:**
+
+- [ ] Mirror markdown structure (metadata, summary, passed_checks, warnings, errors)
+
+**E. Update `validation/__init__.py`:**
+
+- [ ] Update usage example with new run_validation signature
+
+**Documentation:** See docs/validation.md, README.md, CLAUDE.md for CLI syntax and report formats (already updated in docs-only phase).
+
+**Completion Criteria:**
+
+- CLI accepts --years/--source-type (not --csv), consistent with process/download/discover commands
+- Markdown reports have three sections (Passed/Warnings/Errors), checks listed individually
+- JSON reports available with --report-json flag
+- Tested on 2019 and 2023 data
+
 ### Phase 8: Testing and Validation
 
 **A. Unit Tests for Validation System (Phases 1-5):**
@@ -268,8 +314,8 @@ src/armenian_budget/validation/
 
 **D. CLI Integration Tests:**
 
-- [ ] Test `armenian-budget validate --csv X.csv` command execution
-- [ ] Test `--report` flag creates markdown file correctly
+- [ ] Test `armenian-budget validate --years X --source-type Y` command execution
+- [ ] Test `--report` and `--report-json` flags create files correctly
 - [ ] Test CLI error handling (missing files, invalid source types)
 
 **E. Delete Redundant Old Validation Tests:**
@@ -324,7 +370,7 @@ src/armenian_budget/validation/
 ## Progress Tracking
 
 **Started:** 2025-10-27
-**Current Phase:** Phase 8 (Testing and Validation)
+**Current Phase:** Phase 7.1 (Corrective Updates)
 **Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅, Phase 6 ✅, Phase 7 ✅
 **Blockers:** None
 
