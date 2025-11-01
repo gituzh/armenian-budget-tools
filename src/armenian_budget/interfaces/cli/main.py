@@ -51,9 +51,9 @@ def setup_logging(
 def cmd_process(args: argparse.Namespace) -> int:
     """Process one or more years of budget data.
 
-    Supports either --year or --years; when multiple years are provided,
-    any missing year/source-type inputs only emit warnings and the
-    command succeeds if at least one dataset was processed overall.
+    When multiple years are provided, any missing year/source-type inputs
+    only emit warnings and the command succeeds if at least one dataset
+    was processed overall.
     """
 
     # Resolve roots
@@ -98,10 +98,8 @@ def cmd_process(args: argparse.Namespace) -> int:
     if getattr(args, "years", None):
         parsed = _parse_years_arg(args.years)
         years = parsed or []
-    elif getattr(args, "year", None):
-        years = [int(args.year)]
     else:
-        logging.error("One of --year or --years is required")
+        logging.error("--years is required")
         return 2
 
     # Determine which source types to process
@@ -126,7 +124,7 @@ def cmd_process(args: argparse.Namespace) -> int:
     # If user provided --input and multiple years, reject as ambiguous
     if getattr(args, "input", None) and len(years) != 1:
         logging.error(
-            "When --input is provided, only a single --year may be specified (not --years)."
+            "When --input is provided, only a single year may be specified in --years."
         )
         return 2
 
@@ -841,13 +839,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_discover.set_defaults(func=cmd_discover)
 
     p_process = sub.add_parser("process", help="Process one or more source Excels and write CSV")
-    p_process.add_argument("--year", required=False, help="Year, e.g., 2023")
     p_process.add_argument(
         "--years",
-        required=False,
+        required=True,
         help=(
             "Comma-separated years (e.g. 2019,2020) or range (2019-2024). "
-            "When provided, processes all listed years."
+            "For a single year, use --years 2023. When provided, processes all listed years."
         ),
     )
     p_process.add_argument(

@@ -67,10 +67,10 @@ pytest -vv tests/data_validation/test_spending_validation.py::test_spending_perc
 
 ```bash
 # Process all sources for a year
-armenian-budget process --year 2023
+armenian-budget process --years 2023
 
 # Process specific source type
-armenian-budget process --year 2023 --source-type BUDGET_LAW
+armenian-budget process --years 2023 --source-type BUDGET_LAW
 
 # Process multiple years
 armenian-budget process --years 2019-2024

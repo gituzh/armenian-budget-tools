@@ -94,6 +94,7 @@ pip install -U -e .
 
 ```bash
 armenian-budget download --years 2019-2024 --extract
+armenian-budget discover --years 2019-2024
 armenian-budget process --years 2019-2024
 
 # Find outputs in ./data/processed/csv/

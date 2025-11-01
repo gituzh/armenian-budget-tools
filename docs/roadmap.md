@@ -139,10 +139,10 @@ mcp_client.query(
 
 ```bash
 # Parse government targets
-armenian-budget parse --year 2023 --source-type GOVERNMENT_TARGETS
+armenian-budget parse --years 2023 --source-type GOVERNMENT_TARGETS
 
 # Analyze budget efficiency
-armenian-budget analyze --year 2023 --metric budget-efficiency \
+armenian-budget analyze --years 2023 --metric budget-efficiency \
   --compare BUDGET_LAW GOVERNMENT_TARGETS
 ```
 

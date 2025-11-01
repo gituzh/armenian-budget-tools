@@ -21,7 +21,7 @@ pip install -U -e ".[dev]"  # Installs package + pytest, pytest-cov, jupyter
 Use the CLI to exercise the pipeline locally:
 
 ```bash
-armenian-budget process --year 2023 --source-type BUDGET_LAW
+armenian-budget process --years 2023 --source-type BUDGET_LAW
 ```
 
 Run the automated suite and coverage checks:

@@ -172,11 +172,11 @@ pytest -k spending
 armenian-budget download --years 2019-2024 --extract
 
 # Process
-armenian-budget process --year 2023
-armenian-budget process --year 2023 --source-type BUDGET_LAW
+armenian-budget process --years 2023
+armenian-budget process --years 2023 --source-type BUDGET_LAW
 
 # Validate
-armenian-budget validate --year 2023
+armenian-budget validate --years 2023
 
 # MCP server
 armenian-budget mcp-server --data-path ./data/processed
