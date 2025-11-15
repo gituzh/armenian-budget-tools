@@ -1,7 +1,6 @@
 """Core utility functions for Armenian Budget Tools.
 
-This module provides shared utilities used across the project:
-- Filename parsing and source type detection
+This module provides shared utilities used across the project.
 """
 
 from __future__ import annotations
@@ -11,50 +10,35 @@ from pathlib import Path
 from armenian_budget.core.enums import SourceType
 
 
-def detect_source_type(csv_path: Path) -> SourceType:
-    """Detect source type from CSV filename.
+def get_processed_paths(
+    year: int, source_type: SourceType, processed_root: Path
+) -> tuple[Path, Path]:
+    """Get CSV and overall.json paths for a given year and source type.
 
-    Parses filenames following the convention: {year}_{SOURCE_TYPE}.csv
+    Constructs file paths following the standard naming convention:
+    - CSV: {processed_root}/csv/{year}_{SOURCE_TYPE}.csv
+    - JSON: {processed_root}/csv/{year}_{SOURCE_TYPE}_overall.json
 
     Args:
-        csv_path: Path to CSV file (e.g., "2023_BUDGET_LAW.csv").
+        year: The year of the budget data (e.g., 2023).
+        source_type: The source type (e.g., BUDGET_LAW, SPENDING_Q1).
+        processed_root: Path to the processed data root directory.
 
     Returns:
-        SourceType enum value extracted from filename.
-
-    Raises:
-        ValueError: If filename doesn't match expected format or source type is invalid.
+        A tuple of (csv_path, overall_path).
 
     Examples:
-        >>> detect_source_type(Path("2023_BUDGET_LAW.csv"))
-        SourceType.BUDGET_LAW
-        >>> detect_source_type(Path("data/2024_SPENDING_Q1.csv"))
-        SourceType.SPENDING_Q1
+        >>> from pathlib import Path
+        >>> from armenian_budget.core.enums import SourceType
+        >>> csv_path, overall_path = get_processed_paths(
+        ...     2023, SourceType.BUDGET_LAW, Path("data/processed")
+        ... )
+        >>> print(csv_path)
+        data/processed/csv/2023_BUDGET_LAW.csv
+        >>> print(overall_path)
+        data/processed/csv/2023_BUDGET_LAW_overall.json
     """
-    stem = csv_path.stem  # Get filename without extension
-    parts = stem.split("_", 1)  # Split on first underscore only
-
-    if len(parts) != 2:
-        raise ValueError(
-            f"Invalid CSV filename format: '{csv_path.name}'. "
-            f"Expected format: {{year}}_{{SOURCE_TYPE}}.csv"
-        )
-
-    year_part, source_part = parts
-
-    # Validate year part is numeric
-    if not year_part.isdigit():
-        raise ValueError(
-            f"Invalid year in filename: '{year_part}'. "
-            f"Expected numeric year in format: {{year}}_{{SOURCE_TYPE}}.csv"
-        )
-
-    # Try to convert source_part to SourceType
-    try:
-        return SourceType(source_part)
-    except ValueError as exc:
-        valid_types = ", ".join(t.value for t in SourceType)
-        raise ValueError(
-            f"Unknown source type: '{source_part}'. "
-            f"Valid types: {valid_types}"
-        ) from exc
+    csv_dir = processed_root / "csv"
+    csv_path = csv_dir / f"{year}_{source_type.value}.csv"
+    overall_path = csv_dir / f"{year}_{source_type.value}_overall.json"
+    return csv_path, overall_path

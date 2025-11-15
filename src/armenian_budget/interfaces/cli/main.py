@@ -6,6 +6,11 @@ import importlib
 import colorlog
 import yaml
 
+from armenian_budget.core.enums import SourceType
+
+# Source type choices for argparse - used across all commands
+SOURCE_TYPE_CHOICES = list(SourceType.__members__.keys())
+
 try:
     # Prefer package-defined version
     from armenian_budget import __version__ as _PACKAGE_VERSION
@@ -319,39 +324,193 @@ def cmd_process(args: argparse.Namespace) -> int:
 
 
 def cmd_validate(args: argparse.Namespace) -> int:
-    # Validation: run structural and financial checks
-    csv_path = Path(args.csv)
-    if not csv_path.exists():
-        logging.error("CSV not found: %s", csv_path)
+    """Validate one or more years of processed budget data.
+
+    When multiple years are provided, validation runs for each year independently.
+    Any missing year/source-type combinations emit warnings, and the command
+    succeeds if at least one dataset was validated successfully (with or without errors).
+
+    Returns:
+        0 if all validations passed without errors
+        1 if no datasets were validated
+        2 if any validation errors were found
+    """
+    # Import validation module and utilities
+    from armenian_budget.core.enums import SourceType
+    from armenian_budget.core.utils import get_processed_paths
+
+    registry = importlib.import_module("armenian_budget.validation.registry")
+
+    # Parse years argument
+    years: List[int] = []
+    if getattr(args, "years", None):
+        parsed = _parse_years_arg(args.years)
+        years = parsed or []
+    else:
+        logging.error("--years is required")
         return 2
 
-    import pandas as pd
+    # Parse source type
+    try:
+        source_type = SourceType[args.source_type]
+    except KeyError:
+        valid_types = ", ".join(t.value for t in SourceType)
+        logging.error(
+            "Unknown source type: '%s'. Valid types: %s",
+            args.source_type,
+            valid_types,
+        )
+        return 2
 
-    df = pd.read_csv(csv_path)
+    # Determine processed_root
+    processed_root_arg = getattr(args, "processed_root", None)
+    if processed_root_arg is not None:
+        processed_root = Path(processed_root_arg).resolve()
+    else:
+        processed_root = Path("data/processed").resolve()
 
-    # Dynamic import to avoid path resolution issues during dev
-    registry = importlib.import_module("armenian_budget.validation.registry")
-    report = registry.run_validation(df, csv_path)
-    registry.print_report(report)
+    # Check that processed_root exists
+    if not processed_root.exists():
+        logging.error(
+            "Processed root not found: %s. Run 'armenian-budget process' first.",
+            processed_root,
+        )
+        return 2
 
-    # Generate markdown report if requested
-    if args.report:
-        if args.report is True:
-            # Default location: next to CSV file
-            report_path = csv_path.parent / f"{csv_path.stem}_validation.md"
-        else:
-            # Custom location provided
-            report_path = Path(args.report)
+    # Track results for end-of-run summary
+    validation_results: List[dict] = []
+    total_errors = 0
+    successful_validations = 0
 
-        # Write markdown report
-        markdown_content = report.to_markdown()
-        report_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(report_path, "w", encoding="utf-8") as f:
-            f.write(markdown_content)
+    # Validate each year
+    for year in years:
+        logging.info("Validating %s/%s...", year, source_type.value)
 
-        logging.info("Validation report saved: %s", report_path)
+        try:
+            # Run validation for this year
+            report = registry.run_validation(year, source_type, processed_root)
 
-    return 2 if report.has_errors(strict=False) else 0
+            # Track results
+            has_errors = report.has_errors(strict=False)
+            error_count = report.get_error_count()
+            warning_count = report.get_warning_count()
+
+            if has_errors:
+                total_errors += error_count
+                logging.warning(
+                    "Validation failed for %s/%s: %d errors, %d warnings",
+                    year,
+                    source_type.value,
+                    error_count,
+                    warning_count,
+                )
+            else:
+                logging.info(
+                    "Validation passed for %s/%s",
+                    year,
+                    source_type.value,
+                )
+
+            # Print console report
+            registry.print_report(report)
+
+            # Generate markdown report if requested
+            if args.report:
+                if args.report is True:
+                    # Default location: next to CSV file
+                    csv_path, _ = get_processed_paths(year, source_type, processed_root)
+                    report_dir = csv_path.parent
+                    report_path = report_dir / f"{year}_{source_type.value}_validation.md"
+                else:
+                    # Custom directory provided - create per-year files
+                    report_dir = Path(args.report)
+                    report_dir.mkdir(parents=True, exist_ok=True)
+                    report_path = report_dir / f"{year}_{source_type.value}_validation.md"
+
+                # Write markdown report
+                markdown_content = report.to_markdown()
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(report_path, "w", encoding="utf-8") as f:
+                    f.write(markdown_content)
+
+                logging.info("Markdown report saved: %s", report_path)
+
+            # Track success
+            successful_validations += 1
+            validation_results.append({
+                "year": year,
+                "source_type": source_type.value,
+                "status": "FAIL" if has_errors else "OK",
+                "errors": error_count,
+                "warnings": warning_count,
+            })
+
+        except FileNotFoundError as e:
+            logging.warning(
+                "Dataset not found for %s/%s: %s",
+                year,
+                source_type.value,
+                e,
+            )
+            validation_results.append({
+                "year": year,
+                "source_type": source_type.value,
+                "status": "MISSING",
+                "errors": 0,
+                "warnings": 0,
+                "reason": str(e),
+            })
+            continue
+        except (ValueError, OSError) as e:
+            logging.error(
+                "Error validating %s/%s: %s",
+                year,
+                source_type.value,
+                e,
+            )
+            validation_results.append({
+                "year": year,
+                "source_type": source_type.value,
+                "status": "ERROR",
+                "errors": 0,
+                "warnings": 0,
+                "reason": str(e),
+            })
+            continue
+
+    # Print summary if multiple years
+    if len(years) > 1 and validation_results:
+        logging.info("Validation Summary:")
+        for entry in validation_results:
+            if entry["status"] == "OK":
+                logging.info("%s %s: PASSED", entry["year"], entry["source_type"])
+            elif entry["status"] == "FAIL":
+                logging.info(
+                    "%s %s: FAILED (%d errors, %d warnings)",
+                    entry["year"],
+                    entry["source_type"],
+                    entry["errors"],
+                    entry["warnings"],
+                )
+            else:
+                logging.info(
+                    "%s %s: %s (%s)",
+                    entry["year"],
+                    entry["source_type"],
+                    entry["status"],
+                    entry.get("reason", ""),
+                )
+
+    # Determine exit code (strict: fail if ANY errors found)
+    if successful_validations == 0:
+        logging.error("No datasets were validated.")
+        return 1
+
+    if total_errors > 0:
+        logging.error("Validation found %d errors across all datasets.", total_errors)
+        return 2
+
+    return 0
 
 
 def _parse_years_arg(years_arg: Optional[str]) -> Optional[List[int]]:
@@ -402,19 +561,9 @@ def cmd_download(args: argparse.Namespace) -> int:
 
     # Filter by source type if specified
     if getattr(args, "source_type", None):
-        requested_type = args.source_type.lower()
-        type_mapping = {
-            "budget_law": "budget_law",
-            "spending_q1": "spending_q1",
-            "spending_q12": "spending_q12",
-            "spending_q123": "spending_q123",
-            "spending_q1234": "spending_q1234",
-            "mtep": "mtep",
-        }
-        if requested_type in type_mapping:
-            sources = [s for s in sources if s.source_type == type_mapping[requested_type]]
-        else:
-            sources = []
+        # argparse already uppercased it via type=str.upper
+        requested_type = args.source_type.lower()  # Convert to lowercase for source comparison
+        sources = [s for s in sources if s.source_type == requested_type]
     else:
         # Keep budget laws, spending sources, and MTEP sources
         sources = [
@@ -558,15 +707,16 @@ def cmd_extract(args: argparse.Namespace) -> int:
     source_type_dirs = []
     if source_type_filter:
         # Map the filter to directory name
+        # argparse already uppercased it via type=str.upper, so convert to lowercase
         type_to_dir = {
-            "budget_law": "budget_laws",
-            "spending_q1": "spending_reports",
-            "spending_q12": "spending_reports",
-            "spending_q123": "spending_reports",
-            "spending_q1234": "spending_reports",
-            "mtep": "mtep",
+            "BUDGET_LAW": "budget_laws",
+            "SPENDING_Q1": "spending_reports",
+            "SPENDING_Q12": "spending_reports",
+            "SPENDING_Q123": "spending_reports",
+            "SPENDING_Q1234": "spending_reports",
+            "MTEP": "mtep",
         }
-        dir_name = type_to_dir.get(source_type_filter.lower())
+        dir_name = type_to_dir.get(source_type_filter)
         if dir_name:
             source_type_dirs = [dir_name]
     else:
@@ -772,14 +922,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_download.add_argument(
         "--source-type",
-        choices=[
-            "budget_law",
-            "spending_q1",
-            "spending_q12",
-            "spending_q123",
-            "spending_q1234",
-            "mtep",
-        ],
+        type=str.upper,
+        choices=SOURCE_TYPE_CHOICES,
         help="Limit download to a specific source type (case insensitive)",
     )
     p_download.set_defaults(func=cmd_download)
@@ -791,14 +935,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_extract.add_argument(
         "--source-type",
-        choices=[
-            "budget_law",
-            "spending_q1",
-            "spending_q12",
-            "spending_q123",
-            "spending_q1234",
-            "mtep",
-        ],
+        type=str.upper,
+        choices=SOURCE_TYPE_CHOICES,
         help="Limit extraction to a specific source type (case insensitive). If omitted, all types are extracted.",
     )
     p_extract.add_argument(
@@ -824,14 +962,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_discover.add_argument(
         "--source-type",
-        choices=[
-            "BUDGET_LAW",
-            "SPENDING_Q1",
-            "SPENDING_Q12",
-            "SPENDING_Q123",
-            "SPENDING_Q1234",
-            "MTEP",
-        ],
+        type=str.upper,
+        choices=SOURCE_TYPE_CHOICES,
         help="Limit discovery to a specific source type",
     )
     p_discover.add_argument(
@@ -867,17 +999,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_process.add_argument(
         "--source-type",
-        required=False,
-        choices=[
-            "BUDGET_LAW",
-            "SPENDING_Q1",
-            "SPENDING_Q12",
-            "SPENDING_Q123",
-            "SPENDING_Q1234",
-            "MTEP",
-        ],
+        choices=SOURCE_TYPE_CHOICES,
         help=(
-            "Source type. If omitted, all supported source types for the year will be processed."
+            "Source type (case insensitive). If omitted, all supported source types for the year will be processed."
         ),
     )
     p_process.add_argument(
@@ -923,14 +1047,34 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_process.set_defaults(func=cmd_process)
 
-    p_validate = sub.add_parser("validate", help="Validate a processed CSV (minimal checks)")
-    p_validate.add_argument("--csv", required=True, help="Path to CSV produced by process")
+    p_validate = sub.add_parser("validate", help="Validate processed budget data")
+    p_validate.add_argument(
+        "--years",
+        required=True,
+        help=(
+            "Comma-separated years (e.g. 2019,2020) or range (2019-2024). "
+            "For a single year, use --years 2023."
+        ),
+    )
+    p_validate.add_argument(
+        "--source-type",
+        required=True,
+        type=str.upper,
+        choices=SOURCE_TYPE_CHOICES,
+        help="Source type to validate (case insensitive).",
+    )
+    p_validate.add_argument(
+        "--processed-root",
+        required=False,
+        default=None,
+        help="Processed data root (CSV read from <processed-root>/csv). Defaults to ./data/processed",
+    )
     p_validate.add_argument(
         "--report",
         nargs="?",
         const=True,
         default=False,
-        help="Generate detailed Markdown report. Optionally specify custom path (default: {csv_stem}_validation.md)",
+        help="Generate detailed Markdown report (one per year). Optionally specify custom directory path.",
     )
     p_validate.set_defaults(func=cmd_validate)
 

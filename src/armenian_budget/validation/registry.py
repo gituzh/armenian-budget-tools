@@ -15,7 +15,7 @@ from typing import List
 import pandas as pd
 
 from armenian_budget.core.enums import SourceType
-from armenian_budget.core.utils import detect_source_type
+from armenian_budget.core.utils import get_processed_paths
 from .checks.required_fields import RequiredFieldsCheck
 from .checks.empty_identifiers import EmptyIdentifiersCheck
 from .checks.missing_financial_data import MissingFinancialDataCheck
@@ -46,38 +46,65 @@ ALL_CHECKS = [
 ]
 
 
-def run_validation(df: pd.DataFrame, csv_path: Path) -> ValidationReport:
+def run_validation(
+    year: int, source_type: SourceType, processed_root: Path
+) -> ValidationReport:
     """Run all applicable validation checks on a dataset.
 
     Args:
-        df: DataFrame containing CSV data (state body, program, subprogram rows).
-        csv_path: Path to the CSV file being validated.
+        year: The year of the budget data to validate (e.g., 2023).
+        source_type: The source type of the data (e.g., BUDGET_LAW, SPENDING_Q1).
+        processed_root: Path to the processed data root directory.
 
     Returns:
         ValidationReport containing aggregated results from all applicable checks.
 
     Raises:
-        ValueError: If CSV filename doesn't match expected format or source type invalid.
-        FileNotFoundError: If corresponding overall.json file not found.
+        FileNotFoundError: If processed_root, CSV file, or overall.json file not found.
+        ValueError: If CSV or JSON files cannot be parsed.
 
     Examples:
-        >>> df = pd.read_csv("data/2023_BUDGET_LAW.csv")
-        >>> report = run_validation(df, Path("data/2023_BUDGET_LAW.csv"))
+        >>> from pathlib import Path
+        >>> processed_root = Path("data/processed")
+        >>> report = run_validation(2023, SourceType.BUDGET_LAW, processed_root)
         >>> print(report.summary())
     """
-    # Detect source type from filename
-    source_type = detect_source_type(csv_path)
+    # Check that processed_root exists
+    if not processed_root.exists():
+        raise FileNotFoundError(
+            f"Processed data root not found: {processed_root}. "
+            f"Run 'armenian-budget process' first to generate processed data."
+        )
 
-    # Load overall.json file
-    overall_path = csv_path.parent / f"{csv_path.stem}_overall.json"
+    # Construct file paths using utility function
+    csv_path, overall_path = get_processed_paths(year, source_type, processed_root)
+
+    # Validate CSV file exists
+    if not csv_path.exists():
+        raise FileNotFoundError(
+            f"CSV file not found: {csv_path}. "
+            f"Expected format: {{year}}_{{SOURCE_TYPE}}.csv"
+        )
+
+    # Validate overall.json file exists
     if not overall_path.exists():
         raise FileNotFoundError(
             f"Overall JSON file not found: {overall_path}. "
-            f"Expected format: {{csv_stem}}_overall.json"
+            f"Expected format: {{year}}_{{SOURCE_TYPE}}_overall.json"
         )
 
-    with open(overall_path, "r", encoding="utf-8") as f:
-        overall = json.load(f)
+    # Load CSV data
+    try:
+        df = pd.read_csv(csv_path, encoding="utf-8-sig")
+    except (OSError, pd.errors.ParserError) as e:
+        raise ValueError(f"Failed to read CSV file {csv_path}: {e}") from e
+
+    # Load overall.json file
+    try:
+        with open(overall_path, "r", encoding="utf-8") as f:
+            overall = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        raise ValueError(f"Failed to read overall JSON file {overall_path}: {e}") from e
 
     # Filter and execute applicable checks
     all_results: List[CheckResult] = []

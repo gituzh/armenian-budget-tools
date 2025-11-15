@@ -15,10 +15,10 @@ Public API:
     print_report: Display validation results to console
 
 Usage:
-    >>> from armenian_budget.validation import run_validation, print_report
-    >>> import pandas as pd
-    >>> df = pd.read_csv("2023_BUDGET_LAW.csv")
-    >>> report = run_validation(df, Path("2023_BUDGET_LAW.csv"))
+    >>> from armenian_budget.validation import run_validation, print_report, SourceType
+    >>> from pathlib import Path
+    >>> processed_root = Path("data/processed")
+    >>> report = run_validation(2023, SourceType.BUDGET_LAW, processed_root)
     >>> print_report(report)
 
 For implementation details:
@@ -30,7 +30,6 @@ For implementation details:
 from __future__ import annotations
 
 from armenian_budget.core.enums import SourceType
-from armenian_budget.core.utils import detect_source_type
 
 from .checks import ValidationCheck
 from .models import CheckResult, ValidationReport
@@ -47,6 +46,4 @@ __all__ = [
     "print_report",
     # Enums
     "SourceType",
-    # Utilities
-    "detect_source_type",
 ]
