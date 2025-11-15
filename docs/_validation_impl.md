@@ -45,7 +45,7 @@
 
 **Still Missing:**
 
-- ❌ Phase 7.1: CLI consistency (--years/--source-type), restructured reports, JSON format
+- ❌ Phase 7.1 C, D: Restructured reports, JSON format
 - ❌ Unit and integration tests (Phase 8)
 - ❌ Developer guide documentation updates (Phase 9)
 
@@ -55,7 +55,7 @@
 - All negative totals are warnings (simpler than source-specific rules)
 - Bug fixes applied: field existence checks in period_vs_annual.py and percentage_calculation.py
 - Code simplification: empty_identifiers.py refactored to use loop (40% reduction)
-- CLI validation command fully functional, running all 9 check types across all hierarchy levels
+- CLI validation command now uses --years/--source-type, consistent with other commands.
 
 ## Target Architecture
 
@@ -249,19 +249,18 @@ src/armenian_budget/validation/
 
 **Changes Required:**
 
-**A. Refactor `run_validation()` signature:**
+**A. Refactor `run_validation()` signature: ✅**
 
-- [ ] Change from `(df, csv_path, source_type)` to `(year: int, source_type: SourceType, processed_root: Path)`
-- [ ] Construct paths internally, load CSV and JSON internally
-- [ ] Update docstring and examples
+- [x] Change from `(df, csv_path, source_type)` to `(year: int, source_type: SourceType, processed_root: Path)`
+- [x] Construct paths internally, load CSV and JSON internally
+- [x] Update docstring and examples
 
-**B. Update CLI:**
+**B. Update CLI: ✅**
 
-- [ ] Replace `--csv` with `--years`, `--source-type`, `--processed-root`
-- [ ] Use `_parse_years_arg()` for year parsing
-- [ ] Loop over years, call `run_validation(year, source_type, processed_root)` for each
-- [ ] Add `--report-json` flag support
-- [ ] Remove CSV loading (now in run_validation)
+- [x] Replace `--csv` with `--years`, `--source-type`, `--processed-root`
+- [x] Use `_parse_years_arg()` for year parsing
+- [x] Loop over years, call `run_validation(year, source_type, processed_root)` for each
+- [x] Remove CSV loading (now in run_validation)
 
 **C. Restructure `ValidationReport.to_markdown()`:**
 
@@ -271,11 +270,12 @@ src/armenian_budget/validation/
 
 **D. Add `ValidationReport.to_json()`:**
 
+- [ ] Add `--report-json` flag support
 - [ ] Mirror markdown structure (metadata, summary, passed_checks, warnings, errors)
 
-**E. Update `validation/__init__.py`:**
+**E. Update `validation/__init__.py`: ✅**
 
-- [ ] Update usage example with new run_validation signature
+- [x] Update usage example with new run_validation signature
 
 **Documentation:** See docs/validation.md, README.md, CLAUDE.md for CLI syntax and report formats (already updated in docs-only phase).
 
