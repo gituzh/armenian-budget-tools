@@ -135,23 +135,22 @@ class PercentageCalculationCheck:
                     df_check["expected"] = df_check[level_num] / df_check[level_denom]
                     df_check["diff"] = abs(df_check["expected"] - df_check[level_pct])
 
-                    # Count rows where difference exceeds tolerance
-                    mismatches = (df_check["diff"] > PERCENTAGE_TOL).sum()
+                    mismatch_rows = df_check[df_check["diff"] > PERCENTAGE_TOL]
+                    
+                    messages = []
+                    for index, row in mismatch_rows.iterrows():
+                        messages.append(
+                            f"Row {index}: Mismatch for '{level_pct}'. Expected: {row['expected']:.4f}, Reported: {row[level_pct]:.4f}, Diff: {row['diff']:.4f} in {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                        )
 
-                    if mismatches > 0:
-                        # Get worst mismatch for message
-                        worst = df_check.loc[df_check["diff"].idxmax()]
+                    if messages:
                         results.append(
                             CheckResult(
                                 check_id="percentage_calculation",
                                 severity=get_severity("percentage_calculation", level),
                                 passed=False,
-                                fail_count=mismatches,
-                                messages=[
-                                    f"{level.capitalize()} {pct_field}: {mismatches} mismatches "
-                                    f"(worst: expected {worst['expected']:.4f}, "
-                                    f"reported {worst[level_pct]:.4f}, diff {worst['diff']:.4f})"
-                                ],
+                                fail_count=len(messages),
+                                messages=messages,
                             )
                         )
                     else:

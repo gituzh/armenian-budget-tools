@@ -45,7 +45,6 @@
 
 **Still Missing:**
 
-- ❌ Phase 7.1 C, D: Restructured reports, JSON format
 - ❌ Unit and integration tests (Phase 8)
 - ❌ Developer guide documentation updates (Phase 9)
 
@@ -262,16 +261,17 @@ src/armenian_budget/validation/
 - [x] Loop over years, call `run_validation(year, source_type, processed_root)` for each
 - [x] Remove CSV loading (now in run_validation)
 
-**C. Restructure `ValidationReport.to_markdown()`:**
+**C. Restructure ValidationReport.to_markdown() & Console Summary: ✅**
 
-- [ ] Create three separate sections: Passed, Warnings, Errors
-- [ ] List each CheckResult individually (not grouped by check_id)
-- [ ] For failed checks, display all messages showing entity names and values (not just "X rows")
+- [x] Create three separate sections: Passed, Warnings, Errors
+- [x] List each CheckResult individually (not grouped by check_id)
+- [x] For failed checks, display all messages showing entity names and values (not just "X rows")
+- [x] Implement ValidationReport.to_console_summary() & update print_report()
 
-**D. Add `ValidationReport.to_json()`:**
+**D. Add `ValidationReport.to_json()`: ✅**
 
-- [ ] Add `--report-json` flag support
-- [ ] Mirror markdown structure (metadata, summary, passed_checks, warnings, errors)
+- [x] Add `--report-json` flag support
+- [x] Mirror markdown structure (metadata, summary, passed_checks, warnings, errors)
 
 **E. Update `validation/__init__.py`: ✅**
 
@@ -283,12 +283,15 @@ src/armenian_budget/validation/
 
 - CLI accepts --years/--source-type (not --csv), consistent with process/download/discover commands
 - Markdown reports have three sections (Passed/Warnings/Errors), checks listed individually
+- Console output provides a concise summary of failures
 - JSON reports available with --report-json flag
 - Tested on 2019 and 2023 data
 
 ### Phase 8: Testing and Validation
 
 **A. Unit Tests for Validation System (Phases 1-5):**
+
+Note: Existing validation checks have been enhanced to provide more detailed, row-specific messages in the reports.
 
 - [ ] Create `tests/validation/` directory
 - [ ] `test_schemas.py`: Test get_required_fields(), get_financial_fields(), get_amount_fields(), get_percentage_fields() for all source types
@@ -364,6 +367,7 @@ src/armenian_budget/validation/
 - [ ] Verify all docstrings follow Google Python style guide
 - [ ] Code review for clarity and succinctness
 - [ ] Delete `_validation_impl.md` (this file)
+- [ ] Update `docs/validation.md` to reflect detailed messages and new CLI usage.
 
 **Completion Criteria:** Documentation matches implementation, code is clean and well-documented
 

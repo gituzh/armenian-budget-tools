@@ -82,32 +82,34 @@ class PeriodVsAnnualCheck:
             rev_period_field = f"{level}_rev_period_plan"
             rev_annual_field = f"{level}_rev_annual_plan"
 
-            # Check both period vs annual comparisons
-            total_violations = 0
-            violation_details = []
+            messages = []
 
             # Check period_plan ≤ annual_plan
             if period_field in df.columns and annual_field in df.columns:
-                period_violations = (df[period_field] > df[annual_field]).sum()
-                if period_violations > 0:
-                    total_violations += period_violations
-                    violation_details.append(f"{period_field} > {annual_field} ({period_violations} rows)")
+                violations = df[df[period_field] > df[annual_field]]
+                for _, row in violations.iterrows():
+                    diff = row[period_field] - row[annual_field]
+                    messages.append(
+                        f"{level.capitalize()} violation: '{period_field}' ({row[period_field]:.2f}) > '{annual_field}' ({row[annual_field]:.2f}) by {diff:.2f} for {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                    )
 
             # Check rev_period_plan ≤ rev_annual_plan
             if rev_period_field in df.columns and rev_annual_field in df.columns:
-                rev_violations = (df[rev_period_field] > df[rev_annual_field]).sum()
-                if rev_violations > 0:
-                    total_violations += rev_violations
-                    violation_details.append(f"{rev_period_field} > {rev_annual_field} ({rev_violations} rows)")
+                violations = df[df[rev_period_field] > df[rev_annual_field]]
+                for _, row in violations.iterrows():
+                    diff = row[rev_period_field] - row[rev_annual_field]
+                    messages.append(
+                        f"{level.capitalize()} violation: '{rev_period_field}' ({row[rev_period_field]:.2f}) > '{rev_annual_field}' ({row[rev_annual_field]:.2f}) by {diff:.2f} for {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                    )
 
-            if total_violations > 0:
+            if messages:
                 results.append(
                     CheckResult(
                         check_id="period_vs_annual",
                         severity=get_severity("period_vs_annual", level),
                         passed=False,
-                        fail_count=total_violations,
-                        messages=[f"{level.capitalize()} violations: {', '.join(violation_details)}"],
+                        fail_count=len(messages),
+                        messages=messages,
                     )
                 )
             else:

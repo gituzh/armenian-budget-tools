@@ -180,7 +180,7 @@ class HierarchicalTotalsCheck:
             severity="error",
             passed=False,
             fail_count=len(failures),
-            messages=[f"State body vs program totals ({state_body_field}): {', '.join(failures[:5])}"],
+            messages=failures,
         )
 
     def _check_program_vs_subprograms(
@@ -217,5 +217,5 @@ class HierarchicalTotalsCheck:
             severity="error",
             passed=False,
             fail_count=len(failures),
-            messages=[f"Program vs subprogram totals ({program_field}): {', '.join(failures[:5])}"],
+            messages=failures,
         )

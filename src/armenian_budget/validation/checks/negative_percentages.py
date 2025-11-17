@@ -65,24 +65,23 @@ class NegativePercentagesCheck:
             # Get percentage fields for this level
             level_fields = [f for f in csv_fields if f.startswith(f"{level}_")]
 
-            # Count negatives across all level fields
-            total_negatives = 0
-            negative_fields = []
+            messages = []
             for field in level_fields:
                 if field in df.columns:
-                    negative_count = (df[field] < 0).sum()
-                    if negative_count > 0:
-                        total_negatives += negative_count
-                        negative_fields.append(f"{field} ({negative_count} rows)")
+                    negative_rows = df[df[field] < 0]
+                    for index, row in negative_rows.iterrows():
+                        messages.append(
+                            f"Row {index}: Negative percentage for '{field}' ({row[field]:.2%}) in {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                        )
 
-            if total_negatives > 0:
+            if messages:
                 results.append(
                     CheckResult(
                         check_id="negative_percentages",
                         severity=get_severity("negative_percentages", level),
                         passed=False,
-                        fail_count=total_negatives,
-                        messages=[f"Negative {level} percentages: {', '.join(negative_fields)}"],
+                        fail_count=len(messages),
+                        messages=messages,
                     )
                 )
             else:

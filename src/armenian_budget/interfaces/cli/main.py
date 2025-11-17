@@ -435,6 +435,27 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
                 logging.info("Markdown report saved: %s", report_path)
 
+            # Generate JSON report if requested
+            if args.report_json:
+                if args.report_json is True:
+                    # Default location: next to CSV file
+                    csv_path, _ = get_processed_paths(year, source_type, processed_root)
+                    report_dir = csv_path.parent
+                    report_path = report_dir / f"{year}_{source_type.value}_validation.json"
+                else:
+                    # Custom directory provided - create per-year files
+                    report_dir = Path(args.report_json)
+                    report_dir.mkdir(parents=True, exist_ok=True)
+                    report_path = report_dir / f"{year}_{source_type.value}_validation.json"
+
+                # Write JSON report
+                json_content = report.to_json()
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(report_path, "w", encoding="utf-8") as f:
+                    f.write(json_content)
+
+                logging.info("JSON report saved: %s", report_path)
+
             # Track success
             successful_validations += 1
             validation_results.append({
@@ -1075,6 +1096,13 @@ def build_parser() -> argparse.ArgumentParser:
         const=True,
         default=False,
         help="Generate detailed Markdown report (one per year). Optionally specify custom directory path.",
+    )
+    p_validate.add_argument(
+        "--report-json",
+        nargs="?",
+        const=True,
+        default=False,
+        help="Generate detailed JSON report (one per year). Optionally specify custom directory path.",
     )
     p_validate.set_defaults(func=cmd_validate)
 

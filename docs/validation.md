@@ -9,23 +9,30 @@ Every processed CSV file can be validated to give you confidence that the number
 ## How to Run Validation
 
 ```bash
-# Console summary only (shows which checks passed/failed)
-armenian-budget validate --csv data/processed/csv/2023_BUDGET_LAW.csv
+# Console summary only for a single dataset
+armenian-budget validate --years 2023 --source-type BUDGET_LAW
 
-# Save detailed report to default location (next to the CSV file)
-armenian-budget validate --csv data/processed/csv/2023_BUDGET_LAW.csv --report
+# Validate multiple years at once
+armenian-budget validate --years 2022,2023 --source-type SPENDING_Q1
 
+# Save detailed reports to the default location (next to the CSV files)
+armenian-budget validate --years 2023 --source-type BUDGET_LAW --report
 # This creates: data/processed/csv/2023_BUDGET_LAW_validation.md
 
-# Save report to a custom location
-armenian-budget validate --csv data/processed/csv/2023_BUDGET_LAW.csv --report path/to/my_report.md
+# Save JSON reports to a custom directory
+armenian-budget validate --years 2022-2024 --source-type MTEP --report-json path/to/my_reports/
+# This creates:
+# - path/to/my_reports/2022_MTEP_validation.json
+# - path/to/my_reports/2023_MTEP_validation.json
+# - path/to/my_reports/2024_MTEP_validation.json
 ```
 
 **What happens:**
 
-- Validation always shows a summary in the console
-- Use `--report` to also save a detailed Markdown file with complete failure information
-- Without `--report`, no file is created (console only)
+- Validation always shows a summary in the console for each year.
+- Use `--report` to also save a detailed Markdown file for each year.
+- Use `--report-json` to save a detailed JSON file for each year.
+- Without these flags, no files are created (console only).
 
 ## Understanding Validation Reports
 

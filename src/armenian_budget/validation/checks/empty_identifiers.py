@@ -54,16 +54,23 @@ class EmptyIdentifiersCheck:
 
             # Check for empty values (null or whitespace-only strings)
             empty_mask = df[field_name].isna() | (df[field_name].str.strip() == "")
-            count = empty_mask.sum()
+            
+            messages = []
+            if empty_mask.any():
+                empty_rows = df[empty_mask]
+                for index, row in empty_rows.iterrows():
+                    messages.append(
+                        f"Row {index}: Empty {field_name} for {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                    )
 
-            if count > 0:
+            if messages:
                 results.append(
                     CheckResult(
                         check_id="empty_identifiers",
                         severity=get_severity("empty_identifiers", level),
                         passed=False,
-                        fail_count=count,
-                        messages=[f"Found {count} rows with empty {field_name}"],
+                        fail_count=len(messages),
+                        messages=messages,
                     )
                 )
             else:

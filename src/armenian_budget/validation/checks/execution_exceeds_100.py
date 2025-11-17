@@ -65,24 +65,23 @@ class ExecutionExceeds100Check:
             # Get percentage fields for this level
             level_fields = [f for f in csv_fields if f.startswith(f"{level}_")]
 
-            # Count executions > 100% across all level fields
-            total_exceeds = 0
-            exceeds_fields = []
+            messages = []
             for field in level_fields:
                 if field in df.columns:
-                    exceeds_count = (df[field] > 1.0).sum()
-                    if exceeds_count > 0:
-                        total_exceeds += exceeds_count
-                        exceeds_fields.append(f"{field} ({exceeds_count} rows)")
+                    exceeds_rows = df[df[field] > 1.0]
+                    for index, row in exceeds_rows.iterrows():
+                        messages.append(
+                            f"Row {index}: Execution > 100% for '{field}' ({row[field]:.2%}) in {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                        )
 
-            if total_exceeds > 0:
+            if messages:
                 results.append(
                     CheckResult(
                         check_id="execution_exceeds_100",
                         severity=get_severity("execution_exceeds_100", level),
                         passed=False,
-                        fail_count=total_exceeds,
-                        messages=[f"{level.capitalize()} execution > 100%: {', '.join(exceeds_fields)}"],
+                        fail_count=len(messages),
+                        messages=messages,
                     )
                 )
             else:

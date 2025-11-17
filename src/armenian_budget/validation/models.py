@@ -188,8 +188,9 @@ class ValidationReport:
         warnings = self.get_warning_count()
 
         # Group results by status
-        passed_checks = [r for r in self.results if r.passed]
-        failed_checks = self.get_failed_checks()
+        passed_checks = sorted([r for r in self.results if r.passed], key=lambda x: x.check_id)
+        warning_checks = sorted([r for r in self.results if not r.passed and r.severity == "warning"], key=lambda x: x.check_id)
+        error_checks = sorted([r for r in self.results if not r.passed and r.severity == "error"], key=lambda x: x.check_id)
 
         # Build markdown content
         lines = [
@@ -213,50 +214,37 @@ class ValidationReport:
         if passed_checks:
             lines.append("## ✅ Passed Checks")
             lines.append("")
-            # Group passed checks by check_id to avoid repetition
-            check_groups = {}
             for result in passed_checks:
-                if result.check_id not in check_groups:
-                    check_groups[result.check_id] = []
-                check_groups[result.check_id].append(result)
-
-            for check_id in sorted(check_groups.keys()):
-                count = len(check_groups[check_id])
-                lines.append(f"- **{check_id}** ({count} passed)")
+                lines.append(f"- **{result.check_id}**")
             lines.append("")
 
-        # Failed checks section
-        if failed_checks:
-            lines.append("## ❌ Failed Checks")
-            lines.append("")
-
-            # Group failed checks by check_id
-            check_groups = {}
-            for result in failed_checks:
-                if result.check_id not in check_groups:
-                    check_groups[result.check_id] = []
-                check_groups[result.check_id].append(result)
-
-            for check_id in sorted(check_groups.keys()):
-                results = check_groups[check_id]
-                # Determine icon based on severity
-                icon = "❌" if results[0].severity == "error" else "⚠️"
-                severity_label = results[0].severity.capitalize()
-                total_failures = sum(r.fail_count for r in results)
-
-                lines.append(f"### {icon} {check_id} ({severity_label}) - {total_failures} failures")
-                lines.append("")
-
-                # Add all messages from all results for this check
-                for result in results:
-                    for msg in result.messages:
-                        lines.append(f"- {msg}")
-                lines.append("")
-        else:
+        if not warning_checks and not error_checks:
             lines.append("## ✅ All Checks Passed")
             lines.append("")
             lines.append("No validation issues found.")
             lines.append("")
+        else:
+            # Warnings section
+            if warning_checks:
+                lines.append("## ⚠️ Warnings")
+                lines.append("")
+                for result in warning_checks:
+                    lines.append(f"### ⚠️ {result.check_id} ({result.fail_count} failures)")
+                    lines.append("")
+                    for msg in result.messages:
+                        lines.append(f"- {msg}")
+                    lines.append("")
+
+            # Errors section
+            if error_checks:
+                lines.append("## ❌ Errors")
+                lines.append("")
+                for result in error_checks:
+                    lines.append(f"### ❌ {result.check_id} ({result.fail_count} failures)")
+                    lines.append("")
+                    for msg in result.messages:
+                        lines.append(f"- {msg}")
+                    lines.append("")
 
         # Footer
         lines.append("---")
@@ -264,5 +252,91 @@ class ValidationReport:
         lines.append("For detailed information about validation checks and how to interpret results,")
         lines.append("see [docs/validation.md](https://github.com/your-org/armenian-budget-tools/blob/main/docs/validation.md).")
         lines.append("")
+
+        return "\n".join(lines)
+
+    def to_json(self) -> str:
+        """Generate detailed JSON validation report.
+
+        Returns:
+            Formatted JSON string with validation results.
+        """
+        import json
+        from datetime import datetime
+
+        # Calculate statistics
+        total = len(self.results)
+        passed = sum(1 for r in self.results if r.passed)
+        failed = total - passed
+        errors = self.get_error_count()
+        warnings = self.get_warning_count()
+
+        # Group results by status
+        passed_checks = sorted([r for r in self.results if r.passed], key=lambda x: x.check_id)
+        warning_checks = sorted([r for r in self.results if not r.passed and r.severity == "warning"], key=lambda x: x.check_id)
+        error_checks = sorted([r for r in self.results if not r.passed and r.severity == "error"], key=lambda x: x.check_id)
+
+        report_data = {
+            "metadata": {
+                "source_type": self.source_type.value,
+                "csv_path": str(self.csv_path),
+                "overall_path": str(self.overall_path) if self.overall_path else None,
+                "generated_at": datetime.now().isoformat(),
+            },
+            "summary": {
+                "total_checks": total,
+                "passed_checks": passed,
+                "failed_checks": failed,
+                "errors": errors,
+                "warnings": warnings,
+            },
+            "passed_checks": [
+                {
+                    "check_id": r.check_id,
+                    "severity": r.severity,
+                    "messages": r.messages,
+                }
+                for r in passed_checks
+            ],
+            "warning_checks": [
+                {
+                    "check_id": r.check_id,
+                    "severity": r.severity,
+                    "fail_count": r.fail_count,
+                    "messages": r.messages,
+                }
+                for r in warning_checks
+            ],
+            "error_checks": [
+                {
+                    "check_id": r.check_id,
+                    "severity": r.severity,
+                    "fail_count": r.fail_count,
+                    "messages": r.messages,
+                }
+                for r in error_checks
+            ],
+        }
+        return json.dumps(report_data, indent=2, ensure_ascii=False)
+
+    def to_console_summary(self) -> str:
+        """Generate a concise summary for console output.
+
+        Returns:
+            A string containing the overall summary and a brief list of failed checks.
+        """
+        lines = [self.summary(), ""]
+
+        failed_checks = self.get_failed_checks()
+
+        if not failed_checks:
+            lines.append("✅ All validation checks passed!")
+        else:
+            lines.append("Failed Checks:")
+            for result in failed_checks:
+                icon = "❌" if result.severity == "error" else "⚠️"
+                lines.append(f"{icon} {result.check_id} ({result.severity}): {result.fail_count} failures")
+                if result.messages:
+                    lines.append(f"   - {result.messages[0]}")
 
         return "\n".join(lines)

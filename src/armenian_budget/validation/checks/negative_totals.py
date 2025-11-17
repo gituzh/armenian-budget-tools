@@ -39,15 +39,19 @@ class NegativeTotalsCheck:
         csv_fields, json_fields = get_amount_fields(source_type)
 
         # Check overall JSON
-        negative_overall = [f for f in json_fields if overall.get(f, 0) < 0]
-        if negative_overall:
+        messages = []
+        for f in json_fields:
+            if f in overall and overall[f] < 0:
+                messages.append(f"Overall field '{f}' has negative value: {overall[f]:.2f}")
+
+        if messages:
             results.append(
                 CheckResult(
                     check_id="negative_totals",
                     severity=get_severity("negative_totals", "overall"),
                     passed=False,
-                    fail_count=len(negative_overall),
-                    messages=[f"Negative overall fields: {', '.join(negative_overall)}"],
+                    fail_count=len(messages),
+                    messages=messages,
                 )
             )
         else:
@@ -69,24 +73,23 @@ class NegativeTotalsCheck:
             if level == "subprogram" and source_type == SourceType.MTEP:
                 continue
 
-            # Count negatives across all level fields
-            total_negatives = 0
-            negative_fields = []
+            messages = []
             for field in level_fields:
                 if field in df.columns:
-                    negative_count = (df[field] < 0).sum()
-                    if negative_count > 0:
-                        total_negatives += negative_count
-                        negative_fields.append(f"{field} ({negative_count} rows)")
+                    negative_rows = df[df[field] < 0]
+                    for _, row in negative_rows.iterrows():
+                        messages.append(
+                            f"{level.capitalize()} field '{field}' has negative value: {row[field]:.2f} for {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                        )
 
-            if total_negatives > 0:
+            if messages:
                 results.append(
                     CheckResult(
                         check_id="negative_totals",
                         severity=get_severity("negative_totals", level),
                         passed=False,
-                        fail_count=total_negatives,
-                        messages=[f"Negative {level} values: {', '.join(negative_fields)}"],
+                        fail_count=len(messages),
+                        messages=messages,
                     )
                 )
             else:

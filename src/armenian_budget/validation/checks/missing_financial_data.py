@@ -69,24 +69,23 @@ class MissingFinancialDataCheck:
             if level == "subprogram" and source_type == SourceType.MTEP:
                 continue
 
-            # Count nulls across all level fields
-            total_nulls = 0
-            missing_fields = []
+            messages = []
             for field in level_fields:
                 if field in df.columns:
-                    null_count = df[field].isna().sum()
-                    if null_count > 0:
-                        total_nulls += null_count
-                        missing_fields.append(f"{field} ({null_count} nulls)")
+                    missing_rows = df[df[field].isna()]
+                    for index, row in missing_rows.iterrows():
+                        messages.append(
+                            f"Row {index}: Missing data for '{field}' in {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                        )
 
-            if total_nulls > 0:
+            if messages:
                 results.append(
                     CheckResult(
                         check_id="missing_financial_data",
                         severity=get_severity("missing_financial_data", level),
                         passed=False,
-                        fail_count=total_nulls,
-                        messages=[f"Missing {level} data: {', '.join(missing_fields)}"],
+                        fail_count=len(messages),
+                        messages=messages,
                     )
                 )
             else:

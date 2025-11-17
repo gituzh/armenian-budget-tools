@@ -143,24 +143,4 @@ def print_report(report: ValidationReport) -> None:
         ❌ hierarchical_totals (error): 2 failures
            - Overall overall_total: expected 100000, got 99999, diff 1 (tolerance 1.0)
     """
-    # Print summary
-    print(report.summary())
-    print()
-
-    # Get failed checks
-    failed = report.get_failed_checks()
-
-    if not failed:
-        print("✅ All validation checks passed!")
-        return
-
-    # Print failed checks
-    print("Failed Checks:")
-    for result in failed:
-        # Use emoji for severity
-        icon = "❌" if result.severity == "error" else "⚠️"
-        print(f"{icon} {result.check_id} ({result.severity}): {result.fail_count} failures")
-
-        # Print messages (indented)
-        for msg in result.messages:
-            print(f"   - {msg}")
+    print(report.to_console_summary())
