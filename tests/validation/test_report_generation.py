@@ -1,12 +1,15 @@
-"""Pytest tests for validation report generation."""
+"""Pytest tests for validation report generation.
+
+This module verifies the correct functionality of the `ValidationReport` class,
+including its methods for generating Markdown reports (`to_markdown`),
+JSON reports (`to_json`), and console summaries (`to_console_summary`).
+It ensures that report outputs accurately reflect check results and metadata.
+"""
 
 import json
 from pathlib import Path
 from datetime import datetime
-from unittest.mock import MagicMock
-
 import pytest
-
 from armenian_budget.core.enums import SourceType
 from armenian_budget.validation.models import CheckResult, ValidationReport
 
@@ -51,7 +54,7 @@ def mock_check_results():
 
 
 @pytest.fixture
-def mock_validation_report(mock_check_results):
+def mock_validation_report(mock_check_results):  # pylint: disable=redefined-outer-name
     """Fixture for a mock ValidationReport instance."""
     return ValidationReport(
         results=mock_check_results,
@@ -62,16 +65,12 @@ def mock_validation_report(mock_check_results):
 
 
 @pytest.fixture
-def mock_validation_report_all_passed():
+def mock_validation_report_all_passed():  # pylint: disable=redefined-outer-name
     """Fixture for a ValidationReport where all checks passed."""
     return ValidationReport(
         results=[
-            CheckResult(
-                check_id="required_fields", severity="error", passed=True, fail_count=0
-            ),
-            CheckResult(
-                check_id="negative_totals", severity="warning", passed=True, fail_count=0
-            ),
+            CheckResult(check_id="required_fields", severity="error", passed=True, fail_count=0),
+            CheckResult(check_id="negative_totals", severity="warning", passed=True, fail_count=0),
         ],
         source_type=SourceType.BUDGET_LAW,
         csv_path=Path("data/processed/csv/2024_BUDGET_LAW.csv"),
@@ -79,7 +78,7 @@ def mock_validation_report_all_passed():
     )
 
 
-def test_to_markdown_output(mock_validation_report):
+def test_to_markdown_output(mock_validation_report):  # pylint: disable=redefined-outer-name
     """Test the to_markdown method for correct content and structure."""
     markdown_output = mock_validation_report.to_markdown()
 
@@ -117,7 +116,7 @@ def test_to_markdown_output(mock_validation_report):
     assert "For detailed information about validation checks" in markdown_output
 
 
-def test_to_markdown_all_passed(mock_validation_report_all_passed):
+def test_to_markdown_all_passed(mock_validation_report_all_passed):  # pylint: disable=redefined-outer-name
     """Test to_markdown when all checks pass."""
     markdown_output = mock_validation_report_all_passed.to_markdown()
 
@@ -129,7 +128,7 @@ def test_to_markdown_all_passed(mock_validation_report_all_passed):
     assert "## ❌ Errors" not in markdown_output
 
 
-def test_to_json_output(mock_validation_report):
+def test_to_json_output(mock_validation_report):  # pylint: disable=redefined-outer-name
     """Test the to_json method for correct content and structure."""
     json_output = mock_validation_report.to_json()
     report_data = json.loads(json_output)
@@ -168,7 +167,7 @@ def test_to_json_output(mock_validation_report):
     assert report_data["error_checks"][1]["fail_count"] == 2
 
 
-def test_to_json_all_passed(mock_validation_report_all_passed):
+def test_to_json_all_passed(mock_validation_report_all_passed):  # pylint: disable=redefined-outer-name
     """Test to_json when all checks pass."""
     json_output = mock_validation_report_all_passed.to_json()
     report_data = json.loads(json_output)
@@ -182,7 +181,7 @@ def test_to_json_all_passed(mock_validation_report_all_passed):
     assert len(report_data["error_checks"]) == 0
 
 
-def test_to_console_summary_output(mock_validation_report):
+def test_to_console_summary_output(mock_validation_report):  # pylint: disable=redefined-outer-name
     """Test the to_console_summary method for correct content and structure."""
     console_output = mock_validation_report.to_console_summary()
 
@@ -203,7 +202,7 @@ def test_to_console_summary_output(mock_validation_report):
     assert "   - Period plan exceeds annual plan for 'program_Y' in row 15" in console_output
 
 
-def test_to_console_summary_all_passed(mock_validation_report_all_passed):
+def test_to_console_summary_all_passed(mock_validation_report_all_passed):  # pylint: disable=redefined-outer-name
     """Test to_console_summary when all checks pass."""
     console_output = mock_validation_report_all_passed.to_console_summary()
 

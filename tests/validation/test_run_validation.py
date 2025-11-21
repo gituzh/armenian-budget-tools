@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-
 import pandas as pd
 import pytest
-
 from armenian_budget.core.enums import SourceType
 from armenian_budget.core.utils import get_processed_paths
 from armenian_budget.validation import run_validation
@@ -20,9 +18,7 @@ class TestGetProcessedPaths:
     def test_get_processed_paths_basic(self):
         """Test that get_processed_paths() constructs correct paths."""
         processed_root = Path("data/processed")
-        csv_path, overall_path = get_processed_paths(
-            2023, SourceType.BUDGET_LAW, processed_root
-        )
+        csv_path, overall_path = get_processed_paths(2023, SourceType.BUDGET_LAW, processed_root)
 
         assert csv_path == Path("data/processed/csv/2023_BUDGET_LAW.csv")
         assert overall_path == Path("data/processed/csv/2023_BUDGET_LAW_overall.json")
@@ -50,9 +46,7 @@ class TestGetProcessedPaths:
             ),
         ],
     )
-    def test_get_processed_paths_parametrized(
-        self, year, source_type, expected_csv, expected_json
-    ):
+    def test_get_processed_paths_parametrized(self, year, source_type, expected_csv, expected_json):
         """Test path construction for different years and source types."""
         processed_root = Path("/tmp/test")
         csv_path, overall_path = get_processed_paths(year, source_type, processed_root)
@@ -197,13 +191,15 @@ class TestRunValidation:
         if source_type == SourceType.BUDGET_LAW:
             df_data["subprogram_total"] = [1000.0, 1000.0]
         else:  # SPENDING types
-            df_data.update({
-                "subprogram_annual_plan": [1000.0, 1000.0],
-                "subprogram_rev_annual_plan": [1000.0, 1000.0],
-                "subprogram_actual": [800.0, 800.0],
-                "subprogram_actual_vs_annual_plan": [80.0, 80.0],
-                "subprogram_actual_vs_rev_annual_plan": [80.0, 80.0],
-            })
+            df_data.update(
+                {
+                    "subprogram_annual_plan": [1000.0, 1000.0],
+                    "subprogram_rev_annual_plan": [1000.0, 1000.0],
+                    "subprogram_actual": [800.0, 800.0],
+                    "subprogram_actual_vs_annual_plan": [80.0, 80.0],
+                    "subprogram_actual_vs_rev_annual_plan": [80.0, 80.0],
+                }
+            )
 
         pd.DataFrame(df_data).to_csv(csv_path, index=False)
 

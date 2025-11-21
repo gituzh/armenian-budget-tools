@@ -1,17 +1,23 @@
-"""Pytest tests for CLI report generation."""
+"""Pytest tests for CLI report generation.
+
+This module verifies the functionality of the `armenian-budget validate` CLI command,
+ensuring it correctly generates validation reports in Markdown and JSON formats
+at specified or default locations.
+"""
 
 import json
 import subprocess
-from pathlib import Path
+import sys
 
 
 def run_cli_command(args: list[str]) -> subprocess.CompletedProcess:
     """Helper function to run CLI commands."""
     return subprocess.run(
-        ["armenian-budget"] + args,
+        [sys.executable, "-m", "armenian_budget.interfaces.cli.main"] + args,
         capture_output=True,
         text=True,
         encoding="utf-8",
+        check=False,
     )
 
 
@@ -104,9 +110,7 @@ def test_cli_validate_report_generation(tmp_path):
         ]
     )
     assert result.returncode == 2
-    custom_json_report_path = (
-        custom_json_report_dir / "2023_SPENDING_Q1_validation.json"
-    )
+    custom_json_report_path = custom_json_report_dir / "2023_SPENDING_Q1_validation.json"
     assert custom_json_report_path.exists()
     custom_json_content = json.loads(custom_json_report_path.read_text())
     assert custom_json_content["metadata"]["source_type"] == "SPENDING_Q1"

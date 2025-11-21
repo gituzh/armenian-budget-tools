@@ -6,6 +6,13 @@ When we process Armenian budget data from official Excel files, we run comprehen
 
 Every processed CSV file can be validated to give you confidence that the numbers are correct before you use them for analysis, reporting, or decision-making.
 
+It's helpful to distinguish between two types of data quality checks:
+
+* A **Parser Test** validates the *syntax and structure of the raw source file*. It answers: "Can this file be read and converted into a structured DataFrame correctly?"
+* A **Validation Check** validates the *semantics, consistency, and logical rules of the data after it has been successfully parsed*. It answers: "Now that I have the data, does it make sense?"
+
+This validation framework focuses exclusively on the second type: checking the semantic and logical integrity of the processed data.
+
 ## How to Run Validation
 
 ```bash
