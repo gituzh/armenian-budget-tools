@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Dict, List
 
+import numpy as np
 import pandas as pd
 
 from armenian_budget.core.enums import SourceType
@@ -68,13 +69,14 @@ class PercentageCalculationCheck:
                 overall_pct in overall
                 and overall_num in overall
                 and overall_denom in overall
+                and pd.notna(overall[overall_denom])
                 and overall[overall_denom] != 0
             ):
                 expected = overall[overall_num] / overall[overall_denom]
                 reported = overall[overall_pct]
                 diff = abs(expected - reported)
 
-                if diff > PERCENTAGE_TOL:
+                if not np.isclose(expected, reported, atol=PERCENTAGE_TOL):
                     results.append(
                         CheckResult(
                             check_id="percentage_calculation",
@@ -83,7 +85,7 @@ class PercentageCalculationCheck:
                             fail_count=1,
                             messages=[
                                 f"Overall {pct_field}: expected {expected:.4f}, "
-                                f"reported {reported:.4f}, diff {diff:.4f} (tolerance {PERCENTAGE_TOL})"
+                                f"reported {reported:.4f}, diff {abs(expected - reported):.4f} (tolerance {PERCENTAGE_TOL})"
                             ],
                         )
                     )
@@ -119,7 +121,7 @@ class PercentageCalculationCheck:
                     and level_denom in df.columns
                 ):
                     # Calculate expected percentage (avoid division by zero)
-                    df_check = df[df[level_denom] != 0].copy()
+                    df_check = df[pd.notna(df[level_denom]) & (df[level_denom] != 0)].copy()
                     if len(df_check) == 0:
                         # All denominators are zero - pass
                         results.append(
@@ -133,14 +135,15 @@ class PercentageCalculationCheck:
                         continue
 
                     df_check["expected"] = df_check[level_num] / df_check[level_denom]
-                    df_check["diff"] = abs(df_check["expected"] - df_check[level_pct])
 
-                    mismatch_rows = df_check[df_check["diff"] > PERCENTAGE_TOL]
+                    mismatch_rows = df_check[
+                        ~np.isclose(df_check[level_pct], df_check["expected"], atol=PERCENTAGE_TOL)
+                    ]
                     
                     messages = []
                     for index, row in mismatch_rows.iterrows():
                         messages.append(
-                            f"Row {index}: Mismatch for '{level_pct}'. Expected: {row['expected']:.4f}, Reported: {row[level_pct]:.4f}, Diff: {row['diff']:.4f} in {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                            f"Row {index}: Mismatch for '{level_pct}'. Expected: {row['expected']:.4f}, Reported: {row[level_pct]:.4f}, Diff: {abs(row['expected'] - row[level_pct]):.4f} in {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
                         )
 
                     if messages:
