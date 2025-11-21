@@ -334,34 +334,43 @@ Note: This section is updated with more detailed testing guidance. Tests should 
 
 **B. Tests for Registry and Runner (Phase 6):**
 
-- [ ] `test_registry.py`: Test check filtering by source type, run_validation() execution, ValidationReport aggregation
+- [ ] `test_registry.py`:
+  - [ ] Test check filtering by source type (e.g., ensure spending checks don't run for `BUDGET_LAW`).
+  - [ ] Test `run_validation()` execution and `ValidationReport` aggregation (e.g., ensure a mix of 1 error and 1 warning are counted correctly).
 
 **C. Tests for Report Generation (Phase 7):**
 
-- [ ] `test_report.py`: Test to_markdown() format, summary sections, error/warning counts
+- [ ] `test_report.py`:
+  - [ ] Test report structure, not brittle/exact string matching.
+  - [ ] For Markdown, assert that a known error message appears under an "Errors" heading.
+  - [ ] For JSON, parse the output and assert the `errors` list contains the expected object.
 
 **D. CLI Integration Tests:**
 
-- [ ] Test `armenian-budget validate --years X --source-type Y` command execution
-- [ ] Test `--report` and `--report-json` flags create files correctly
-- [ ] Test CLI error handling (missing files, invalid source types)
+- [ ] Test `armenian-budget validate --years X --source-type Y` command execution.
+- [ ] Test that `--report` and `--report-json` flags create files correctly in a temporary directory.
+- [ ] Test for non-zero exit codes and user-friendly error messages on invalid input (e.g., missing files, invalid source type).
+
+**Notes on CLI Test Implementation:**
+- `tests/cli/test_cmd_validate.py` and `tests/validation/test_cli_report_generation.py` were fixed to correctly handle `argparse.Namespace` objects and missing imports (`sys`).
 
 **E. Delete Redundant Old Validation Tests:**
 
-- [ ] Delete redundant tests from `tests/data_validation/test_spending_validation.py`:
-  - Delete: test_spending_financial_consistency, test_spending_data_quality, test_spending_percentage_ranges, test_spending_logical_relationships
-  - Delete: test_spending_has_all_required_columns, test_spending_percentage_calculations, test_spending_no_negative_percentages
-  - Delete: test_spending_revised_vs_original_plans, test_spending_overall_matches_csv
-  - Delete: test_spending_actual_vs_plans_reasonableness, test_spending_quarterly_progression (warning-only tests)
-  - Keep: test_spending_csv_non_empty (parser test - to be reviewed)
-- [ ] Delete redundant tests from `tests/data_validation/test_budget_law_validation.py`:
-  - Delete: test_budget_law_financial_consistency, test_budget_law_data_quality
-  - Delete: test_budget_law_grand_total_consistency, test_budget_law_no_negative_totals
-  - Keep: test_budget_law_csv_non_empty, test_budget_law_program_codes_and_names_match, test_budget_law_program_distribution, test_budget_law_program_codes_format (parser tests - to be reviewed)
-- [ ] Delete redundant tests from `tests/data_validation/test_mtep_validation.py`:
-  - Delete: test_mtep_rollups_and_required_columns, test_mtep_overall_matches_csv, test_mtep_no_negative_totals
-  - Keep: test_mtep_csv_non_empty, test_mtep_program_codes_integer, test_mtep_program_codes_and_names_match (parser tests - to be reviewed)
-- [ ] Delete `tests/utils/validation_helpers.py` entirely
+- [x] Delete redundant tests from `tests/data_validation/test_spending_validation.py`:
+  - [x] Delete: test_spending_financial_consistency, test_spending_data_quality, test_spending_percentage_ranges, test_spending_logical_relationships
+  - [ ] Delete: test_spending_has_all_required_columns
+  - [x] Delete: test_spending_percentage_calculations, test_spending_no_negative_percentages
+  - [x] Delete: test_spending_revised_vs_original_plans, test_spending_overall_matches_csv
+  - [x] Delete: test_spending_actual_vs_plans_reasonableness, test_spending_quarterly_progression (warning-only tests)
+  - [x] Keep: test_spending_csv_non_empty (parser test - to be reviewed)
+- [x] Delete redundant tests from `tests/data_validation/test_budget_law_validation.py`:
+  - [x] Delete: test_budget_law_financial_consistency, test_budget_law_data_quality
+  - [x] Delete: test_budget_law_grand_total_consistency, test_budget_law_no_negative_totals
+  - [x] Keep: test_budget_law_csv_non_empty, test_budget_law_program_codes_and_names_match, test_budget_law_program_distribution, test_budget_law_program_codes_format (parser tests - to be reviewed)
+- [x] Delete redundant tests from `tests/data_validation/test_mtep_validation.py`:
+  - [x] Delete: test_mtep_rollups_and_required_columns, test_mtep_overall_matches_csv, test_mtep_no_negative_totals
+  - [x] Keep: test_mtep_csv_non_empty, test_mtep_program_codes_integer, test_mtep_program_codes_and_names_match (parser tests - to be reviewed)
+- [x] Delete `tests/utils/validation_helpers.py` entirely
 
 **F. Review and Decide on Remaining Parser Tests:**
 
