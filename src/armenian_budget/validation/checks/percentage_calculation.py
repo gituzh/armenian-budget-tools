@@ -85,7 +85,8 @@ class PercentageCalculationCheck:
                             fail_count=1,
                             messages=[
                                 f"Overall {pct_field}: expected {expected:.4f}, "
-                                f"reported {reported:.4f}, diff {abs(expected - reported):.4f} (tolerance {PERCENTAGE_TOL})"
+                                f"reported {reported:.4f}, diff {diff:.4f} "
+                                f"(tolerance {PERCENTAGE_TOL})"
                             ],
                         )
                     )
@@ -139,11 +140,16 @@ class PercentageCalculationCheck:
                     mismatch_rows = df_check[
                         ~np.isclose(df_check[level_pct], df_check["expected"], atol=PERCENTAGE_TOL)
                     ]
-                    
+
                     messages = []
                     for index, row in mismatch_rows.iterrows():
                         messages.append(
-                            f"Row {index}: Mismatch for '{level_pct}'. Expected: {row['expected']:.4f}, Reported: {row[level_pct]:.4f}, Diff: {abs(row['expected'] - row[level_pct]):.4f} in {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                            f"Row {index}: Mismatch for '{level_pct}'. "
+                            f"Expected: {row['expected']:.4f}, "
+                            f"Reported: {row[level_pct]:.4f}, "
+                            f"Diff: {abs(row['expected'] - row[level_pct]):.4f} "
+                            f"in {row.get('state_body', '')} | {row.get('program_code', '')} | "
+                            f"{row.get('subprogram_code', '')}"
                         )
 
                     if messages:

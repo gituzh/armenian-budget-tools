@@ -20,6 +20,7 @@ from .checks.required_fields import RequiredFieldsCheck
 from .checks.empty_identifiers import EmptyIdentifiersCheck
 from .checks.missing_financial_data import MissingFinancialDataCheck
 from .checks.hierarchical_totals import HierarchicalTotalsCheck
+from .checks.hierarchical_structure_sanity import HierarchicalStructureSanityCheck
 from .checks.negative_totals import NegativeTotalsCheck
 from .checks.period_vs_annual import PeriodVsAnnualCheck
 from .checks.negative_percentages import NegativePercentagesCheck
@@ -37,6 +38,7 @@ ALL_CHECKS = [
     MissingFinancialDataCheck(),
     # Phase 4: Hierarchical & Financial Checks
     HierarchicalTotalsCheck(),
+    HierarchicalStructureSanityCheck(),
     NegativeTotalsCheck(),
     # Phase 5: Spending-Specific Checks
     PeriodVsAnnualCheck(),

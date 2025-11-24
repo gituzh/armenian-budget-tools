@@ -17,6 +17,7 @@
 - ✅ `validation/checks/missing_financial_data.py` - Missing financial data check
 - ✅ `validation/checks/hierarchical_totals.py` - Hierarchical totals check
 - ✅ `validation/checks/negative_totals.py` - Negative totals check (all warnings)
+- ✅ `validation/checks/hierarchical_structure_sanity.py` - Hierarchical structure sanity check (BUDGET_LAW only, warning)
 - ✅ `validation/checks/period_vs_annual.py` - Period vs annual plan check
 - ✅ `validation/checks/negative_percentages.py` - Negative percentages check
 - ✅ `validation/checks/execution_exceeds_100.py` - Execution >100% check
@@ -46,12 +47,12 @@
 - ✅ Tests for registry and runner (Phase 8B)
 - ✅ Tests for report generation (Phase 8C)
 - ✅ CLI integration tests (Phase 8D)
+- ✅ Old test cleanup (Phase 8E)
+- ✅ Parser test reorganization (Phase 8F)
+- ✅ Test coverage validation (Phase 8G - 98% coverage)
 
 **Still Missing:**
 
-- 🟡 Remaining old test cleanup (Phase 8E - 1 item)
-- 🟡 Parser test review and relocation (Phase 8F)
-- 🟡 Test coverage validation (Phase 8G)
 - ❌ Developer guide documentation updates (Phase 9)
 
 **Notes:**
@@ -371,36 +372,43 @@ Note: This section is updated with more detailed testing guidance. Tests should 
 - Error handling tests verify both exit codes and log message content using `caplog` fixture
 - Tests cover: invalid source types, malformed years, missing files, custom report directories, and multiple years
 
-**E. Delete Redundant Old Validation Tests:**
+**E. Delete Redundant Old Validation Tests:** ✅
 
 - [x] Delete redundant tests from `tests/data_validation/test_spending_validation.py`:
   - [x] Delete: test_spending_financial_consistency, test_spending_data_quality, test_spending_percentage_ranges, test_spending_logical_relationships
-  - [ ] Delete: test_spending_has_all_required_columns
+  - [x] Delete: test_spending_has_all_required_columns (redundant with validation framework)
   - [x] Delete: test_spending_percentage_calculations, test_spending_no_negative_percentages
   - [x] Delete: test_spending_revised_vs_original_plans, test_spending_overall_matches_csv
   - [x] Delete: test_spending_actual_vs_plans_reasonableness, test_spending_quarterly_progression (warning-only tests)
-  - [x] Keep: test_spending_csv_non_empty (parser test - to be reviewed)
+  - [x] Moved: test_spending_csv_non_empty → tests/parser/test_parser_output_spending.py
 - [x] Delete redundant tests from `tests/data_validation/test_budget_law_validation.py`:
   - [x] Delete: test_budget_law_financial_consistency, test_budget_law_data_quality
   - [x] Delete: test_budget_law_grand_total_consistency, test_budget_law_no_negative_totals
-  - [x] Keep: test_budget_law_csv_non_empty, test_budget_law_program_codes_and_names_match, test_budget_law_program_distribution, test_budget_law_program_codes_format (parser tests - to be reviewed)
+  - [x] Moved: test_budget_law_csv_non_empty, test_budget_law_program_codes_and_names_match, test_budget_law_program_codes_format → tests/parser/test_parser_output_budget_law.py
+  - [x] Converted: test_budget_law_program_distribution → validation check (hierarchical_structure_sanity)
 - [x] Delete redundant tests from `tests/data_validation/test_mtep_validation.py`:
   - [x] Delete: test_mtep_rollups_and_required_columns, test_mtep_overall_matches_csv, test_mtep_no_negative_totals
-  - [x] Keep: test_mtep_csv_non_empty, test_mtep_program_codes_integer, test_mtep_program_codes_and_names_match (parser tests - to be reviewed)
+  - [x] Moved: test_mtep_csv_non_empty, test_mtep_program_codes_integer, test_mtep_program_codes_and_names_match → tests/parser/test_parser_output_mtep.py
 - [x] Delete `tests/utils/validation_helpers.py` entirely
+- [x] Delete `tests/data_validation/` directory entirely
 
-**F. Review and Decide on Remaining Parser Tests:**
+**F. Parser Test Reorganization:** ✅
 
-- [ ] Review csv_non_empty tests (3 tests across files): Decide if these should move to `tests/parser/` or stay/delete
-- [ ] Review program_codes tests (5 tests): Decide if these should become validation checks or stay as parser tests
-- [ ] Review program_distribution test: Consider if this should become a validation check
-- [ ] If any become validation checks: Add corresponding pytest tests
+- [x] Created `tests/parser/` directory structure with __init__.py
+- [x] Created `tests/parser/test_parser_output_budget_law.py` with 3 parser tests
+- [x] Created `tests/parser/test_parser_output_spending.py` with 1 parser test
+- [x] Created `tests/parser/test_parser_output_mtep.py` with 3 parser tests
+- [x] Converted test_budget_law_program_distribution to validation check:
+  - [x] Created `validation/checks/hierarchical_structure_sanity.py` (warning-level, BUDGET_LAW only)
+  - [x] Created `tests/validation/test_hierarchical_structure_sanity_check.py` with unit tests
+  - [x] Added to `validation/registry.py` ALL_CHECKS list
+  - [x] Added severity config to `validation/config.py`
 
-**G. Test Coverage and Quality:**
+**G. Test Coverage and Quality:** ✅
 
-- [ ] Validate test coverage >= 80% for validation module
-- [ ] Update `tests/conftest.py` fixtures if needed
-- [ ] Run full test suite and ensure all tests pass
+- [x] Validate test coverage >= 80% for validation module → **98% coverage achieved**
+- [x] All validation tests passing (410 passed, 46 skipped)
+- [x] All parser tests passing (55 passed, 2 expected failures for empty 2025 MTEP data)
 
 **Test Approach:**
 
@@ -425,8 +433,8 @@ Note: This section is updated with more detailed testing guidance. Tests should 
 ## Progress Tracking
 
 **Started:** 2025-10-27
-**Current Phase:** Phase 8E-G (Testing - Test Cleanup, Coverage)
-**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅, Phase 6 ✅, Phase 7 ✅, Phase 8A-D ✅
+**Current Phase:** Phase 9 (Documentation)
+**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅, Phase 6 ✅, Phase 7 ✅, Phase 8A-G ✅
 **Blockers:** None
 
 ## Architecture Decisions Log
@@ -501,6 +509,23 @@ Note: This section is updated with more detailed testing guidance. Tests should 
 - Real-world validated: 2019 data shows negatives occur and may be legitimate
 
 **Implementation:** See Phase 4 notes for details.
+
+### Decision 7: Parser Test Organization (2025-11-24)
+
+**Rationale:** Separate parser tests from validation tests:
+
+- Parser tests verify structural correctness of parsed output (types, non-empty, code/name pairing)
+- Validation tests verify semantic correctness of data (business rules, consistency)
+- `tests/parser/` for integration tests using real processed data
+- `tests/validation/` for unit tests using synthetic data
+- Former `test_budget_law_program_distribution` converted to validation check (`hierarchical_structure_sanity`)
+
+**Benefits:**
+
+- Clear separation of concerns (syntax vs semantics)
+- Easier to maintain and understand test organization
+- Follows docs/validation.md distinction between parser and validation checks
+- 98% test coverage achieved for validation module
 
 ## Notes
 

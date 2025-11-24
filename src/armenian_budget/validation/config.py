@@ -102,6 +102,11 @@ PERCENTAGE_CALCULATION_SEVERITY = {
     "subprogram": "error",
 }
 
+# Hierarchical structure sanity - Warning (sanity check for degenerate hierarchies)
+HIERARCHICAL_STRUCTURE_SANITY_SEVERITY = {
+    "overall": "warning",
+}
+
 
 # ============================================================================
 # SEVERITY MAP (for get_severity helper)
@@ -116,6 +121,7 @@ _SEVERITY_MAP = {
     "negative_percentages": NEGATIVE_PERCENTAGES_SEVERITY,
     "execution_exceeds_100": EXECUTION_EXCEEDS_100_SEVERITY,
     "percentage_calculation": PERCENTAGE_CALCULATION_SEVERITY,
+    "hierarchical_structure_sanity": HIERARCHICAL_STRUCTURE_SANITY_SEVERITY,
 }
 
 
