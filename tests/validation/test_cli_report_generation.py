@@ -92,7 +92,7 @@ def test_cli_validate_report_generation(tmp_path):
     assert json_report_path.exists()
     json_content = json.loads(json_report_path.read_text())
     assert json_content["metadata"]["source_type"] == "SPENDING_Q1"
-    assert json_content["summary"]["failed_checks"] > 0
+    assert json_content["summary"]["with_errors"] > 0
 
     # Test --report-json with custom directory
     custom_json_report_dir = tmp_path / "custom_json_reports"

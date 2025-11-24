@@ -51,6 +51,12 @@ The validation report lists every check performed and shows:
 
 For each failure, the report shows exactly which state bodies, programs, or subprograms have problems and what the issue is (e.g., "expected 1000, got 950, difference: 50").
 
+### Report Format Consistency
+
+Markdown and JSON reports contain identical information. JSON field names are snake_case versions of markdown labels: `**Total Rules:**` → `"total_rules"`, `**Passed:**` → `"passed"`, `**With Warnings:**` → `"with_warnings"`, `**With Errors:**` → `"with_errors"`.
+
+Use Markdown for human review and documentation. Use JSON for programmatic analysis and automation.
+
 ## Validation Checks
 
 ### Required Fields

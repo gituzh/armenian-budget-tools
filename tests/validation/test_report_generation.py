@@ -90,11 +90,14 @@ def test_to_markdown_output(mock_validation_report):  # pylint: disable=redefine
 
     # Check summary section
     assert "## Summary" in markdown_output
-    assert "- **Total Checks:** 4" in markdown_output
+    assert "### Check Status" in markdown_output
+    assert "- **Total Rules:** 4" in markdown_output
     assert "- **Passed:** 1 ✅" in markdown_output
-    assert "- **Failed:** 3 ❌" in markdown_output
-    assert "- **Errors:** 5" in markdown_output
-    assert "- **Warnings:** 1" in markdown_output
+    assert "- **With Warnings:** 1 ⚠️" in markdown_output
+    assert "- **With Errors:** 2 ❌" in markdown_output
+    assert "### Issues Found" in markdown_output
+    assert "- **Errors:** 5 ❌" in markdown_output
+    assert "- **Warnings:** 1 ⚠️" in markdown_output
 
     # Check passed checks section
     assert "## ✅ Passed Checks" in markdown_output
@@ -135,15 +138,16 @@ def test_to_json_output(mock_validation_report):  # pylint: disable=redefined-ou
 
     # Check metadata
     assert report_data["metadata"]["source_type"] == mock_validation_report.source_type.value
-    assert report_data["metadata"]["csv_path"] == str(mock_validation_report.csv_path)
-    assert report_data["metadata"]["overall_path"] == str(mock_validation_report.overall_path)
+    assert report_data["metadata"]["csv_path"] == mock_validation_report.csv_path.name
+    assert report_data["metadata"]["overall_path"] == mock_validation_report.overall_path.name
     assert "generated_at" in report_data["metadata"]
     assert datetime.fromisoformat(report_data["metadata"]["generated_at"])
 
     # Check summary
-    assert report_data["summary"]["total_checks"] == 4
-    assert report_data["summary"]["passed_checks"] == 1
-    assert report_data["summary"]["failed_checks"] == 3
+    assert report_data["summary"]["total_rules"] == 4
+    assert report_data["summary"]["passed"] == 1
+    assert report_data["summary"]["with_warnings"] == 1
+    assert report_data["summary"]["with_errors"] == 2
     assert report_data["summary"]["errors"] == 5
     assert report_data["summary"]["warnings"] == 1
 
@@ -172,8 +176,8 @@ def test_to_json_all_passed(mock_validation_report_all_passed):  # pylint: disab
     json_output = mock_validation_report_all_passed.to_json()
     report_data = json.loads(json_output)
 
-    assert report_data["summary"]["passed_checks"] == 2
-    assert report_data["summary"]["failed_checks"] == 0
+    assert report_data["summary"]["passed"] == 2
+    assert report_data["summary"]["with_errors"] == 0
     assert report_data["summary"]["errors"] == 0
     assert report_data["summary"]["warnings"] == 0
     assert len(report_data["passed_checks"]) == 2
@@ -188,12 +192,11 @@ def test_to_console_summary_output(mock_validation_report):  # pylint: disable=r
     # Check summary section
     assert "Validation Summary:" in console_output
     assert "Source: SPENDING_Q1 (2023_SPENDING_Q1.csv)" in console_output
-    assert "Checks: 4 total, 1 passed, 3 failed" in console_output
-    assert "Errors: 5" in console_output
-    assert "Warnings: 1" in console_output
+    assert "Checks: 4 executed (1 passed, 1 warnings, 2 failed)" in console_output
+    assert "Issues: 5 errors, 1 warnings" in console_output
 
     # Check failed checks list
-    assert "Failed Checks:" in console_output
+    assert "Check Details:" in console_output
     assert "❌ required_fields (error): 2 failures" in console_output
     assert "   - Missing field 'program_id' in row 5" in console_output
     assert "⚠️ negative_totals (warning): 1 failures" in console_output
@@ -208,7 +211,7 @@ def test_to_console_summary_all_passed(mock_validation_report_all_passed):  # py
 
     assert "Validation Summary:" in console_output
     assert "✅ All validation checks passed!" in console_output
-    assert "Failed Checks:" not in console_output
+    assert "Check Details:" not in console_output
 
 
 def test_markdown_json_consistency(mock_validation_report):  # pylint: disable=redefined-outer-name
@@ -228,14 +231,25 @@ def test_markdown_json_consistency(mock_validation_report):  # pylint: disable=r
     assert mock_validation_report.source_type.value in md_output
     assert json_data["metadata"]["source_type"] == mock_validation_report.source_type.value
     assert mock_validation_report.csv_path.name in md_output
-    assert json_data["metadata"]["csv_path"] == str(mock_validation_report.csv_path)
+    assert json_data["metadata"]["csv_path"] == mock_validation_report.csv_path.name
 
     # Verify summary statistics match
-    assert f"**Total Checks:** {json_data['summary']['total_checks']}" in md_output
-    assert f"**Passed:** {json_data['summary']['passed_checks']} ✅" in md_output
-    assert f"**Failed:** {json_data['summary']['failed_checks']} ❌" in md_output
-    assert f"**Errors:** {json_data['summary']['errors']}" in md_output
-    assert f"**Warnings:** {json_data['summary']['warnings']}" in md_output
+    assert "### Check Status" in md_output
+    assert f"**Total Rules:** {json_data['summary']['total_rules']}" in md_output
+    assert f"**Passed:** {json_data['summary']['passed']} ✅" in md_output
+    assert f"**With Warnings:** {json_data['summary']['with_warnings']} ⚠️" in md_output
+    assert f"**With Errors:** {json_data['summary']['with_errors']} ❌" in md_output
+    assert "### Issues Found" in md_output
+    # Check Errors line with emoji (only if errors > 0)
+    if json_data['summary']['errors'] > 0:
+        assert f"**Errors:** {json_data['summary']['errors']} ❌" in md_output
+    else:
+        assert f"**Errors:** {json_data['summary']['errors']}" in md_output
+    # Check Warnings line with emoji (only if warnings > 0)
+    if json_data['summary']['warnings'] > 0:
+        assert f"**Warnings:** {json_data['summary']['warnings']} ⚠️" in md_output
+    else:
+        assert f"**Warnings:** {json_data['summary']['warnings']}" in md_output
 
     # Verify passed checks consistency
     for check in json_data["passed_checks"]:
@@ -282,11 +296,14 @@ def test_markdown_json_consistency_all_passed(mock_validation_report_all_passed)
     )
 
     # Verify summary statistics for all-passed case
-    assert json_data["summary"]["failed_checks"] == 0
+    assert json_data["summary"]["with_warnings"] == 0
+    assert json_data["summary"]["with_errors"] == 0
     assert json_data["summary"]["errors"] == 0
     assert json_data["summary"]["warnings"] == 0
-    assert f"**Total Checks:** {json_data['summary']['total_checks']}" in md_output
-    assert f"**Passed:** {json_data['summary']['passed_checks']} ✅" in md_output
+    assert "### Check Status" in md_output
+    assert f"**Total Rules:** {json_data['summary']['total_rules']}" in md_output
+    assert f"**Passed:** {json_data['summary']['passed']} ✅" in md_output
+    assert "### Issues Found" in md_output
 
     # Verify markdown shows special all-passed message
     assert "## ✅ All Checks Passed" in md_output
@@ -295,7 +312,7 @@ def test_markdown_json_consistency_all_passed(mock_validation_report_all_passed)
     # Verify JSON has empty failure arrays
     assert len(json_data["warning_checks"]) == 0
     assert len(json_data["error_checks"]) == 0
-    assert len(json_data["passed_checks"]) == json_data["summary"]["total_checks"]
+    assert len(json_data["passed_checks"]) == json_data["summary"]["total_rules"]
 
     # Verify no warning/error sections in markdown
     assert "## ⚠️ Warnings" not in md_output

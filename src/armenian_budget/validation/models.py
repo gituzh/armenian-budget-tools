@@ -138,23 +138,23 @@ class ValidationReport:
         Examples:
             >>> print(report.summary())
             Validation Summary:
-              Source: BUDGET_LAW (data/2023_BUDGET_LAW.csv)
-              Checks: 10 total, 8 passed, 2 failed
-              Errors: 2
-              Warnings: 0
+              Source: BUDGET_LAW (2023_BUDGET_LAW.csv)
+              Checks: 10 executed (8 passed, 0 warnings, 2 failed)
+              Issues: 2 errors, 0 warnings
         """
         total = len(self.results)
         passed = sum(1 for r in self.results if r.passed)
-        failed = total - passed
+        warning_checks = sum(1 for r in self.results if not r.passed and r.severity == "warning")
+        failed_checks = sum(1 for r in self.results if not r.passed and r.severity == "error")
         errors = self.get_error_count()
         warnings = self.get_warning_count()
 
         return (
             f"Validation Summary:\n"
             f"  Source: {self.source_type.value} ({self.csv_path.name})\n"
-            f"  Checks: {total} total, {passed} passed, {failed} failed\n"
-            f"  Errors: {errors}\n"
-            f"  Warnings: {warnings}"
+            f"  Checks: {total} executed ({passed} passed, {warning_checks} warnings, "
+            f"{failed_checks} failed)\n"
+            f"  Issues: {errors} errors, {warnings} warnings"
         )
 
     def to_markdown(self) -> str:
@@ -178,7 +178,6 @@ class ValidationReport:
         # Calculate statistics
         total = len(self.results)
         passed = sum(1 for r in self.results if r.passed)
-        failed = total - passed
         errors = self.get_error_count()
         warnings = self.get_warning_count()
 
@@ -203,11 +202,17 @@ class ValidationReport:
             "",
             "## Summary",
             "",
-            f"- **Total Checks:** {total}",
+            "### Check Status",
+            "",
+            f"- **Total Rules:** {total}",
             f"- **Passed:** {passed} ✅",
-            f"- **Failed:** {failed} {'❌' if failed > 0 else ''}",
-            f"- **Errors:** {errors}",
-            f"- **Warnings:** {warnings}",
+            f"- **With Warnings:** {len(warning_checks)} ⚠️",
+            f"- **With Errors:** {len(error_checks)} ❌",
+            "",
+            "### Issues Found",
+            "",
+            f"- **Errors:** {errors} ❌" if errors > 0 else f"- **Errors:** {errors}",
+            f"- **Warnings:** {warnings} ⚠️" if warnings > 0 else f"- **Warnings:** {warnings}",
             "",
         ]
 
@@ -273,7 +278,6 @@ class ValidationReport:
         # Calculate statistics
         total = len(self.results)
         passed = sum(1 for r in self.results if r.passed)
-        failed = total - passed
         errors = self.get_error_count()
         warnings = self.get_warning_count()
 
@@ -291,14 +295,15 @@ class ValidationReport:
         report_data = {
             "metadata": {
                 "source_type": self.source_type.value,
-                "csv_path": str(self.csv_path),
-                "overall_path": str(self.overall_path) if self.overall_path else None,
+                "csv_path": self.csv_path.name,
+                "overall_path": self.overall_path.name if self.overall_path else None,
                 "generated_at": datetime.now().isoformat(),
             },
             "summary": {
-                "total_checks": total,
-                "passed_checks": passed,
-                "failed_checks": failed,
+                "total_rules": total,
+                "passed": passed,
+                "with_warnings": len(warning_checks),
+                "with_errors": len(error_checks),
                 "errors": errors,
                 "warnings": warnings,
             },
@@ -344,7 +349,7 @@ class ValidationReport:
         if not failed_checks:
             lines.append("✅ All validation checks passed!")
         else:
-            lines.append("Failed Checks:")
+            lines.append("Check Details:")
             for result in failed_checks:
                 icon = "❌" if result.severity == "error" else "⚠️"
                 lines.append(
