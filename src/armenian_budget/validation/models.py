@@ -101,9 +101,7 @@ class ValidationReport:
         Returns:
             Total count of failures from all error-severity checks.
         """
-        return sum(
-            r.fail_count for r in self.results if r.severity == "error" and not r.passed
-        )
+        return sum(r.fail_count for r in self.results if r.severity == "error" and not r.passed)
 
     def get_warning_count(self) -> int:
         """Count total number of warning-level failures.
@@ -111,9 +109,7 @@ class ValidationReport:
         Returns:
             Total count of failures from all warning-severity checks.
         """
-        return sum(
-            r.fail_count for r in self.results if r.severity == "warning" and not r.passed
-        )
+        return sum(r.fail_count for r in self.results if r.severity == "warning" and not r.passed)
 
     def get_failed_checks(self, severity: Optional[str] = None) -> List[CheckResult]:
         """Get all failed checks, optionally filtered by severity.
@@ -130,8 +126,7 @@ class ValidationReport:
             >>> all_failures = report.get_failed_checks()
         """
         return [
-            r for r in self.results
-            if not r.passed and (severity is None or r.severity == severity)
+            r for r in self.results if not r.passed and (severity is None or r.severity == severity)
         ]
 
     def summary(self) -> str:
@@ -189,8 +184,14 @@ class ValidationReport:
 
         # Group results by status
         passed_checks = sorted([r for r in self.results if r.passed], key=lambda x: x.check_id)
-        warning_checks = sorted([r for r in self.results if not r.passed and r.severity == "warning"], key=lambda x: x.check_id)
-        error_checks = sorted([r for r in self.results if not r.passed and r.severity == "error"], key=lambda x: x.check_id)
+        warning_checks = sorted(
+            [r for r in self.results if not r.passed and r.severity == "warning"],
+            key=lambda x: x.check_id,
+        )
+        error_checks = sorted(
+            [r for r in self.results if not r.passed and r.severity == "error"],
+            key=lambda x: x.check_id,
+        )
 
         # Build markdown content
         lines = [
@@ -249,8 +250,12 @@ class ValidationReport:
         # Footer
         lines.append("---")
         lines.append("")
-        lines.append("For detailed information about validation checks and how to interpret results,")
-        lines.append("see [docs/validation.md](https://github.com/your-org/armenian-budget-tools/blob/main/docs/validation.md).")
+        lines.append(
+            "For detailed information about validation checks and how to interpret results,"
+        )
+        lines.append(
+            "see [docs/validation.md](https://github.com/your-org/armenian-budget-tools/blob/main/docs/validation.md)."
+        )
         lines.append("")
 
         return "\n".join(lines)
@@ -273,8 +278,14 @@ class ValidationReport:
 
         # Group results by status
         passed_checks = sorted([r for r in self.results if r.passed], key=lambda x: x.check_id)
-        warning_checks = sorted([r for r in self.results if not r.passed and r.severity == "warning"], key=lambda x: x.check_id)
-        error_checks = sorted([r for r in self.results if not r.passed and r.severity == "error"], key=lambda x: x.check_id)
+        warning_checks = sorted(
+            [r for r in self.results if not r.passed and r.severity == "warning"],
+            key=lambda x: x.check_id,
+        )
+        error_checks = sorted(
+            [r for r in self.results if not r.passed and r.severity == "error"],
+            key=lambda x: x.check_id,
+        )
 
         report_data = {
             "metadata": {
@@ -335,7 +346,9 @@ class ValidationReport:
             lines.append("Failed Checks:")
             for result in failed_checks:
                 icon = "❌" if result.severity == "error" else "⚠️"
-                lines.append(f"{icon} {result.check_id} ({result.severity}): {result.fail_count} failures")
+                lines.append(
+                    f"{icon} {result.check_id} ({result.severity}): {result.fail_count} failures"
+                )
                 if result.messages:
                     lines.append(f"   - {result.messages[0]}")
 

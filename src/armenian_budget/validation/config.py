@@ -123,6 +123,7 @@ _SEVERITY_MAP = {
 # HELPER FUNCTIONS
 # ============================================================================
 
+
 def get_tolerance_for_source(source_type: SourceType) -> float:
     """Get hierarchical totals tolerance for a source type.
 
