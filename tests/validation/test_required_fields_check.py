@@ -53,7 +53,16 @@ def test_required_fields_pass(budget_law_data):  # pylint: disable=redefined-out
 
 
 def test_required_fields_pass_with_null_column(budget_law_data):  # pylint: disable=redefined-outer-name
-    """Test that the check passes if a required column exists but contains only nulls."""
+    """Test that the check passes if a required column exists but contains only nulls.
+
+    Note: RequiredFieldsCheck validates SCHEMA (column headers exist), not DATA
+    (values populated). This is by design - separation of concerns:
+    - RequiredFieldsCheck = Schema validation (column exists in DataFrame/dict)
+    - MissingFinancialDataCheck = Data validation (no null values in fields)
+
+    A column full of nulls still has the column header present, so schema
+    validation passes. Data validation would catch the null values separately.
+    """
     df, overall = budget_law_data
     # The fixture already includes a column with only nulls
     df["subprogram_name"] = np.nan

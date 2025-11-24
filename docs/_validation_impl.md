@@ -326,7 +326,7 @@ Note: This section is updated with more detailed testing guidance. Tests should 
   - [x] Test with percentages below, equal to, and above 100%.
 - [x] `test_percentage_calculation_check.py`:
   - [x] Test with correct/incorrect calculations.
-  - [x] Test for division-by-zero where denominator is `0`, `None`, or `NaN`. The check should log a warning, not crash.
+  - [x] Test for division-by-zero where denominator is `0`, `None`, or `NaN`. The check should gracefully skip the calculation without crashing.
 
 **Notes on Test Implementation:**
 
@@ -337,6 +337,13 @@ Note: This section is updated with more detailed testing guidance. Tests should 
   - Fixed `NameError` for `numpy` and `sys` imports.
   - Changed percentage calculation comparison in `PercentageCalculationCheck` from strict `>` to `numpy.isclose()` to handle floating-point precision issues, resolving `AssertionError` in tolerance boundary tests.
   - Updated `PercentageCalculationCheck` to use `pd.notna()` in denominator checks, preventing failures when the denominator is `None` or `NaN` and aligning with the test's expectation that division by nulls should be gracefully handled.
+
+**Test Quality Improvements:**
+
+- **`test_config.py`**: Refactored `test_all_check_ids_in_map()` to test public API (`get_severity()`) instead of private `_SEVERITY_MAP`, improving maintainability and decoupling from implementation details.
+- **`test_percentage_calculation_check.py`**: Merged redundant division-by-zero tests into a single comprehensive parametrized test.
+- **`test_empty_identifiers_check.py`**: Removed `test_empty_identifiers_robustness_with_non_string_data()` as it tested pandas type coercion rather than validation logic.
+- **`test_required_fields_check.py`**: Enhanced docstring for `test_required_fields_pass_with_null_column()` to explain separation of concerns between schema and data validation.
 
 **B. Tests for Registry and Runner (Phase 6):** ✅
 

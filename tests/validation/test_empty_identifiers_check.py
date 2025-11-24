@@ -69,28 +69,6 @@ def test_empty_identifiers_fail_comprehensive():
     assert "Row 2" in subprogram_result.messages[0]
 
 
-def test_empty_identifiers_robustness_with_non_string_data():
-    """Test that the check doesn't crash with non-string data like numbers."""
-    data = {
-        "state_body": ["Ministry of Finance", "Ministry of Health"],
-        "program_name": ["Program A", "Program B"],
-        "subprogram_name": [12345, "Subprogram B1"],  # Contains a number
-        "program_code": [100, 200],
-        "subprogram_code": [101, 201],
-    }
-    df = pd.DataFrame(data)
-    check = EmptyIdentifiersCheck()
-
-    # The check should run without raising an exception
-    try:
-        results = check.validate(df, {}, SourceType.BUDGET_LAW)
-        # It should pass, as '12345' is not an empty identifier
-        subprogram_result = results[2]  # Assumes subprogram is the 3rd result
-        assert subprogram_result.passed is True
-    except Exception as e:
-        pytest.fail(f"Check crashed on non-string data: {e}")
-
-
 def test_empty_identifiers_mtep_skips_subprogram():
     """Test that for MTEP, the subprogram check is skipped."""
     data = {

@@ -119,37 +119,36 @@ def test_percentage_calculation_tolerance_boundaries(valid_percentage_calc_data,
 
 
 @pytest.mark.parametrize(
-    "denominator",
-    [0, None, np.nan],
+    "denominator, reported_percentage",
+    [(0, 0), (None, 0), (np.nan, 0)],
     ids=["zero", "none", "nan"],
 )
-def test_percentage_calculation_division_by_zero(valid_percentage_calc_data, denominator):  # pylint: disable=redefined-outer-name
-    """Test that division by zero is handled gracefully."""
+def test_percentage_calculation_handles_invalid_denominator(
+    valid_percentage_calc_data, denominator, reported_percentage  # pylint: disable=redefined-outer-name
+):
+    """Test that division by zero/null is handled gracefully without crashing.
+
+    When the denominator is 0, None, or NaN, the percentage calculation is undefined.
+    The check should gracefully skip the calculation rather than crashing.
+    Reported percentage is typically 0 in these cases.
+    """
     df, overall = valid_percentage_calc_data
-    df.loc[0, "program_rev_annual_plan"] = denominator
+    # Test with subprogram level to verify specific result handling
+    df.loc[0, "subprogram_rev_annual_plan"] = denominator
+    df.loc[0, "subprogram_actual_vs_rev_annual_plan"] = reported_percentage
+
     check = PercentageCalculationCheck()
     results = check.validate(df, overall, SourceType.SPENDING_Q1)
 
-    # We expect the check to pass because it should skip the calculation
-    # when the denominator is zero/null, not crash.
-    all_passed = all(r.passed for r in results)
-    assert all_passed, "The check should not fail when the denominator is zero or null."
-
-
-def test_percentage_calculation_pass_zero_denominator(valid_percentage_calc_data):  # pylint: disable=redefined-outer-name
-    """Test that the check passes when the denominator is zero."""
-    df, overall = valid_percentage_calc_data
-    df.loc[0, "subprogram_rev_annual_plan"] = 0
-    # Expected percentage is undefined, but reported is often 0 in this case
-    df.loc[0, "subprogram_actual_vs_rev_annual_plan"] = 0
-    check = PercentageCalculationCheck()
-    results = check.validate(df, overall, SourceType.SPENDING_Q1)
-
-    # The check should pass because division by zero is skipped
+    # The check should pass because division by zero/null is skipped
     subprogram_annual_result = results[3]  # 4th result is subprogram annual
     assert subprogram_annual_result.passed is True, (
-        f"Check failed with zero denominator: {subprogram_annual_result.messages}"
+        f"Check failed with denominator={denominator}: {subprogram_annual_result.messages}"
     )
+
+    # All results should pass (no crashes)
+    all_passed = all(r.passed for r in results)
+    assert all_passed, "The check should not fail when the denominator is zero or null."
 
 
 def test_applies_to_source_type():

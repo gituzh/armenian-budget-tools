@@ -45,12 +45,16 @@ def test_get_severity_invalid_hierarchy_level():
         get_severity("negative_totals", "non_existent_level")
 
 
-def test_all_check_ids_in_map():
-    # This test ensures that all check implementation files will have a corresponding entry in the severity map.
-    # This is a bit of a meta-test.
-    from armenian_budget.validation.config import _SEVERITY_MAP
+def test_all_checks_have_severity_configured():
+    """Verify that get_severity() works for all known checks.
 
-    # Based on files in src/armenian_budget/validation/checks/
+    This test ensures that all check implementations have proper severity
+    configuration by testing the public API rather than internal data structures.
+
+    Note: 'required_fields' is intentionally excluded as it computes severity
+    dynamically and doesn't use the severity map.
+    """
+    # Based on check files in src/armenian_budget/validation/checks/
     # and the plan in docs/_validation_impl.md
     expected_check_ids = [
         "empty_identifiers",
@@ -61,14 +65,17 @@ def test_all_check_ids_in_map():
         "negative_percentages",
         "execution_exceeds_100",
         "percentage_calculation",
-        # "required_fields" is missing from the map, but it doesn't use get_severity.
-        # It computes severity manually. Let's check the implementation.
     ]
 
-    # After checking required_fields.py, it doesn't use get_severity. It has its own logic.
-    # So we don't need to add it to the map.
-
+    # Test that get_severity() works for each check
+    # Using 'program' as a representative hierarchy level that all checks support
     for check_id in expected_check_ids:
-        assert check_id in _SEVERITY_MAP, (
-            f"Check ID '{check_id}' is missing from _SEVERITY_MAP in config.py"
-        )
+        try:
+            severity = get_severity(check_id, "program")
+            assert severity in ["error", "warning"], (
+                f"Check '{check_id}' returned invalid severity: {severity}"
+            )
+        except ValueError as e:
+            pytest.fail(
+                f"Check ID '{check_id}' is missing from severity configuration: {e}"
+            )
