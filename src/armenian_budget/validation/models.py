@@ -198,7 +198,7 @@ class ValidationReport:
             f"# Validation Report: {self.csv_path.name}",
             "",
             f"**Source Type:** {self.source_type.value}",
-            f"**File:** {self.csv_path}",
+            f"**File:** {self.csv_path.name}",
             f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
             "",
             "## Summary",

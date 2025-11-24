@@ -49,7 +49,7 @@ armenian-budget extract --years 2024 --source-type mtep
 armenian-budget parse --years 2024 --source-type MTEP
 
 # Validate MTEP output
-armenian-budget validate --csv data/processed/csv/2024_MTEP.csv
+armenian-budget validate --csv data/processed/2024_MTEP.csv
 ```
 
 ## Milestone v0.5.0 — MCP Server Redesign
@@ -190,7 +190,7 @@ armenian-budget download --years 2023-2024
 armenian-budget extract --years 2023-2024
 armenian-budget discover --years 2023-2024
 armenian-budget parse --years 2023-2024
-armenian-budget validate --csv data/processed/csv/2023_BUDGET_LAW.csv
+armenian-budget validate --csv data/processed/2023_BUDGET_LAW.csv
 
 # Meta-command (convenience - common workflow)
 armenian-budget process --years 2023-2024                    # full pipeline

@@ -5,7 +5,7 @@
 ## Project Structure & Module Organization
 
 Core library lives in `src/armenian_budget/`, including ingestion parsers, CLI interfaces under `interfaces/cli`, and validations in `validation/`. Add new source-specific logic inside the matching `ingestion/` module and expose CLI entry points via `interfaces/cli/`.
-Data staging uses `data/original/` for downloaded archives, `data/extracted/` for unpacked spreadsheets with discovery index at `discovery_index.json`, and `data/processed/csv/` for analyst-ready outputs. Config templates reside in `config/` (notably `config/parsers.yaml`), while notebooks and docs supporting research live in `notebooks/` and `docs/`.
+Data staging uses `data/original/` for downloaded archives, `data/extracted/` for unpacked spreadsheets with discovery index at `discovery_index.json`, and `data/processed/` for analyst-ready outputs. Config templates reside in `config/` (notably `config/parsers.yaml`), while notebooks and docs supporting research live in `notebooks/` and `docs/`.
 Tests mirror the runtime layout: `tests/test_extraction_functions.py` for function checks, `tests/data_validation/` for dataset rules, and shared fixtures in `tests/conftest.py`. Keep helper utilities in `tests/utils/`.
 
 ## Build, Test, and Development Commands

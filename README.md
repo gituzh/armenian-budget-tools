@@ -18,9 +18,9 @@ Parses official Armenian government budget documents into analysis-ready CSVs wi
 
 Pre-processed CSVs ready to use:
 
-- **Budget Laws** (2019-2025): `data/processed/csv/{year}_BUDGET_LAW.csv`
-- **Spending Reports** (2019-2024): `data/processed/csv/{year}_SPENDING_Q{1,12,123,1234}.csv`
-- **MTEP** (2024+): `data/processed/csv/{year}_MTEP.csv`
+- **Budget Laws** (2019-2025): `data/processed/{year}_BUDGET_LAW.csv`
+- **Spending Reports** (2019-2024): `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
+- **MTEP** (2024+): `data/processed/{year}_MTEP.csv`
 
 → See [data_schemas.md](docs/data_schemas.md) for column details
 
@@ -97,7 +97,7 @@ armenian-budget download --years 2019-2024 --extract
 armenian-budget discover --years 2019-2024
 armenian-budget process --years 2019-2024
 
-# Find outputs in ./data/processed/csv/
+# Find outputs in ./data/processed/
 ```
 
 ### 👩‍💻 For Developers & Contributors

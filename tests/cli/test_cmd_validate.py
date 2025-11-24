@@ -28,8 +28,8 @@ class TestCmdValidate:
         """Test cmd_validate with minimal valid data."""
         # Setup directory structure
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         # Create minimal valid CSV (BUDGET_LAW format)
         csv_path = csv_dir / "2023_BUDGET_LAW.csv"
@@ -67,8 +67,8 @@ class TestCmdValidate:
         """Test cmd_validate with --report flag to generate markdown report."""
         # Setup directory structure
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         # Create minimal valid CSV
         csv_path = csv_dir / "2023_BUDGET_LAW.csv"
@@ -112,8 +112,8 @@ class TestCmdValidate:
         """Test cmd_validate with custom --report directory."""
         # Setup directory structure
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         # Create minimal valid CSV
         csv_path = csv_dir / "2023_BUDGET_LAW.csv"
@@ -152,8 +152,8 @@ class TestCmdValidate:
     def test_cmd_validate_multiple_years(self, tmp_path):
         """Test cmd_validate with multiple years."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         # Create data for 2023 and 2024
         for year in [2023, 2024]:
@@ -187,8 +187,8 @@ class TestCmdValidate:
     def test_cmd_validate_missing_year(self, tmp_path):
         """Test cmd_validate when some years are missing."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         # Create data only for 2023
         csv_path = csv_dir / "2023_BUDGET_LAW.csv"
@@ -221,8 +221,8 @@ class TestCmdValidate:
     def test_cmd_validate_all_years_missing(self, tmp_path):
         """Test error when no years have data."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         # Don't create any data files
         args = argparse.Namespace(
@@ -238,8 +238,8 @@ class TestCmdValidate:
     def test_cmd_validate_report_multiple_years(self, tmp_path):
         """Test --report generates one file per year."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         # Create data for 2023 and 2024
         for year in [2023, 2024]:
@@ -280,8 +280,8 @@ class TestCmdValidate:
     def test_cmd_validate_invalid_source_type(self, tmp_path, caplog):
         """Test error handling for invalid source type."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         # Create minimal valid data
         csv_path = csv_dir / "2023_BUDGET_LAW.csv"
@@ -322,8 +322,8 @@ class TestCmdValidate:
     def test_cmd_validate_malformed_years_raises_error(self, tmp_path, invalid_years):
         """Test that non-numeric year arguments raise ValueError."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         args = argparse.Namespace(
             years=invalid_years,
@@ -343,8 +343,8 @@ class TestCmdValidate:
     def test_cmd_validate_reversed_range(self, tmp_path, caplog):
         """Test that reversed year range (2030-2020) results in no datasets found."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         args = argparse.Namespace(
             years="2030-2020",
@@ -366,8 +366,8 @@ class TestCmdValidate:
     def test_cmd_validate_missing_csv_file(self, tmp_path, caplog):
         """Test error when CSV missing but overall.json exists."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         # Create only overall.json
         overall_path = csv_dir / "2023_BUDGET_LAW_overall.json"
@@ -393,8 +393,8 @@ class TestCmdValidate:
     def test_cmd_validate_missing_overall_json(self, tmp_path, caplog):
         """Test error when overall.json missing but CSV exists."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         # Create only CSV
         csv_path = csv_dir / "2023_BUDGET_LAW.csv"
@@ -425,8 +425,8 @@ class TestCmdValidate:
     def test_cmd_validate_error_messages_are_helpful(self, tmp_path, caplog):
         """Verify error messages are user-friendly and actionable."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir()
+        csv_dir = processed_root
+        csv_dir.mkdir(exist_ok=True)
 
         # Test 1: Missing processed_root directory
         args = argparse.Namespace(

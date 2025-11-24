@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **BREAKING**: Processed data now written to `data/processed/` instead of `data/processed/csv/`
+  - CSV files, overall JSON files, and validation reports now stored directly in `data/processed/`
+  - MCP server and CLI automatically use new location
+  - Old `csv/` directory preserved with placeholder file for GitHub users with bookmarks
+- Validation markdown reports now show only filename (not absolute paths) for better portability
+- Internal refactoring: renamed `_processed_csv_dir()` → `_processed_data_dir()` and `csv_dir` → `data_dir` variables where appropriate
+
 ## [0.3.0] - 2025-08-24
 
 ### Added

@@ -85,7 +85,7 @@ def test_to_markdown_output(mock_validation_report):  # pylint: disable=redefine
     # Check for header and metadata
     assert f"# Validation Report: {mock_validation_report.csv_path.name}" in markdown_output
     assert f"**Source Type:** {mock_validation_report.source_type.value}" in markdown_output
-    assert f"**File:** {mock_validation_report.csv_path}" in markdown_output
+    assert f"**File:** {mock_validation_report.csv_path.name}" in markdown_output
     assert "Generated:" in markdown_output
 
     # Check summary section
@@ -227,7 +227,7 @@ def test_markdown_json_consistency(mock_validation_report):  # pylint: disable=r
     # Verify metadata consistency
     assert mock_validation_report.source_type.value in md_output
     assert json_data["metadata"]["source_type"] == mock_validation_report.source_type.value
-    assert str(mock_validation_report.csv_path) in md_output
+    assert mock_validation_report.csv_path.name in md_output
     assert json_data["metadata"]["csv_path"] == str(mock_validation_report.csv_path)
 
     # Verify summary statistics match

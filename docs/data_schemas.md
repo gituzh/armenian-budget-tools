@@ -141,7 +141,7 @@ Archives contain multiple budget components beyond the currently parsed program 
 
 **CSV Files:**
 
-- **Location**: `data/processed/csv/`
+- **Location**: `data/processed/`
 - **Naming**: `{year}_{SOURCE_TYPE}.csv`
 - **Format**: UTF-8 encoded CSV with Armenian text support
 

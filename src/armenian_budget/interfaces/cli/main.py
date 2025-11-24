@@ -85,9 +85,9 @@ def cmd_process(args: argparse.Namespace) -> int:
         if args.extracted_root is not None and args.processed_root is None:
             logging.error("--processed-root is required when --extracted-root is provided")
             return 2
-    # Determine processed output directory (csv is written under this root)
+    # Determine processed output directory (processed files are written to this root)
     processed_root = resolve_path_with_default(args.processed_root, "data/processed")
-    out_dir = (processed_root / "csv").resolve()
+    out_dir = processed_root.resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Dynamic import of parsers to avoid static resolution issues in some IDEs
@@ -1066,7 +1066,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--processed-root",
         required=False,
         default=None,
-        help="Processed outputs root (CSV written under <processed-root>/csv). Defaults to ./data/processed",
+        help="Processed outputs root. Defaults to ./data/processed",
     )
     p_process.add_argument(
         "--auto",
@@ -1119,7 +1119,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--processed-root",
         required=False,
         default=None,
-        help="Processed data root (CSV read from <processed-root>/csv). Defaults to ./data/processed",
+        help="Processed data root. Defaults to ./data/processed",
     )
     p_validate.add_argument(
         "--report",

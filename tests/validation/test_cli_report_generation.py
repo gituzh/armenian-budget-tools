@@ -24,7 +24,7 @@ def run_cli_command(args: list[str]) -> subprocess.CompletedProcess:
 def test_cli_validate_report_generation(tmp_path):
     """Test that `validate` command with --report and --report-json flags generates reports."""
     processed_root = tmp_path / "processed"
-    csv_dir = processed_root / "csv"
+    csv_dir = processed_root
     csv_dir.mkdir(parents=True)
 
     # Create dummy CSV and overall.json files

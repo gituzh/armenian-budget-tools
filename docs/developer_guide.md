@@ -228,8 +228,8 @@ import pandas as pd
 from pathlib import Path
 
 # Run validation on a CSV file
-df = pd.read_csv("data/processed/csv/2023_BUDGET_LAW.csv")
-report = run_validation(df, Path("data/processed/csv/2023_BUDGET_LAW.csv"), SourceType.BUDGET_LAW)
+df = pd.read_csv("data/processed/2023_BUDGET_LAW.csv")
+report = run_validation(df, Path("data/processed/2023_BUDGET_LAW.csv"), SourceType.BUDGET_LAW)
 
 # Print results to console
 print_report(report)

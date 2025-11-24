@@ -48,15 +48,15 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def _processed_csv_dir() -> Path:
-    """Get the CSV directory, with validation."""
+def _processed_data_dir() -> Path:
+    """Get the processed data directory, with validation."""
     if _DATA_ROOT is None:
-        base = Path("data/processed/csv")
+        base = Path("data/processed")
     else:
-        base = _DATA_ROOT / "csv"
+        base = _DATA_ROOT
 
     if not base.exists():
-        logger.warning("CSV directory does not exist: %s", base)
+        logger.warning("Processed data directory does not exist: %s", base)
         base.mkdir(parents=True, exist_ok=True)
 
     return base
@@ -64,12 +64,12 @@ def _processed_csv_dir() -> Path:
 
 def _validate_data_availability() -> Dict[str, Any]:
     """Check what data is actually available and return diagnostics."""
-    csv_dir = _processed_csv_dir()
-    csv_files = list(csv_dir.glob("*.csv")) if csv_dir.exists() else []
+    data_dir = _processed_data_dir()
+    csv_files = list(data_dir.glob("*.csv")) if data_dir.exists() else []
 
     return {
-        "csv_dir": str(csv_dir),
-        "csv_dir_exists": csv_dir.exists(),
+        "data_dir": str(data_dir),
+        "data_dir_exists": data_dir.exists(),
         "csv_count": len(csv_files),
         "sample_files": [f.name for f in csv_files[:5]],
         "data_root": str(_DATA_ROOT) if _DATA_ROOT else "default (./data/processed)",
@@ -115,9 +115,9 @@ def _get_measure_columns(source_type: str) -> Dict[str, str]:
 
 def _resolve_csv_path(year: int, source_type: str) -> Path:
     """Resolve CSV path for a given year and source type or raise if missing."""
-    csv_dir = _processed_csv_dir()
+    data_dir = _processed_data_dir()
     filename = f"{int(year)}_{str(source_type).upper()}.csv"
-    csv_path = csv_dir / filename
+    csv_path = data_dir / filename
     if not csv_path.exists():
         raise FileNotFoundError(f"Dataset not found: {filename}")
     return csv_path
@@ -708,14 +708,14 @@ async def get_dataset_overall(
           "count": 3
         }
     """
-    csv_dir = _processed_csv_dir()
-    if not csv_dir.exists():
+    data_dir = _processed_data_dir()
+    if not data_dir.exists():
         return {
             "overalls": {},
             "years": [],
             "source_types": [],
             "count": 0,
-            "error": f"CSV directory not found: {csv_dir}",
+            "error": f"Processed data directory not found: {data_dir}",
         }
 
     filter_year: Optional[int] = int(year) if year is not None else None
@@ -725,7 +725,7 @@ async def get_dataset_overall(
     source_set: set[str] = set()
     total_entries = 0
 
-    for path in csv_dir.glob("*_overall.json"):
+    for path in data_dir.glob("*_overall.json"):
         name = path.name
         m = re.match(r"^(\d{4})_([A-Z0-9_]+)_overall\.json$", name)
         if not m:
@@ -988,8 +988,8 @@ async def list_available_data() -> Dict[str, Any]:
     """Return inventory of available datasets with diagnostics."""
     try:
         diagnostics = _validate_data_availability()
-        csv_dir = _processed_csv_dir()
-        csv_files = list(csv_dir.glob("*.csv")) if csv_dir.exists() else []
+        data_dir = _processed_data_dir()
+        csv_files = list(data_dir.glob("*.csv")) if data_dir.exists() else []
 
         budget_years: List[int] = []
         spending_by_year: Dict[int, List[str]] = {}
@@ -1039,16 +1039,16 @@ async def list_available_data() -> Dict[str, Any]:
 async def get_data_schema(year: int, source_type: str) -> Dict[str, Any]:
     """Return schema information for a specific dataset."""
     try:
-        csv_dir = _processed_csv_dir()
+        data_dir = _processed_data_dir()
         filename = f"{year}_{source_type.upper()}.csv"
-        csv_path = csv_dir / filename
+        csv_path = data_dir / filename
 
         if not csv_path.exists():
-            available_files = [f.name for f in csv_dir.glob("*.csv")]
+            available_files = [f.name for f in data_dir.glob("*.csv")]
             return {
                 "error": f"Dataset not found: {filename}",
                 "available_files": available_files[:10],
-                "csv_dir": str(csv_dir),
+                "data_dir": str(data_dir),
             }
 
         # Read just a sample for schema detection
@@ -1093,9 +1093,9 @@ async def filter_budget_data(
             "DEPRECATED: 'filter_budget_data' will be removed in a future release. "
             "Use 'filter_budget_data_enhanced' with 'force_file_output' and 'max_rows' instead."
         )
-        csv_dir = _processed_csv_dir()
+        data_dir = _processed_data_dir()
         filename = f"{year}_{source_type.upper()}.csv"
-        csv_path = csv_dir / filename
+        csv_path = data_dir / filename
 
         if not csv_path.exists():
             raise FileNotFoundError(f"Dataset not found: {filename}")
@@ -1129,7 +1129,7 @@ async def filter_budget_data(
             logger.info("Limited output to %d rows", max_rows)
 
         # Save to temporary file
-        temp_dir = csv_dir.parent / "tmp"
+        temp_dir = data_dir / "tmp"
         temp_dir.mkdir(exist_ok=True)
 
         temp_filename = f"filtered_{year}_{source_type}_{uuid4().hex[:8]}.csv"
@@ -2194,7 +2194,7 @@ def _calculate_match_summary(matches: Dict) -> Dict[str, int]:
 async def get_ministry_spending_summary(year: int, ministry: str) -> Dict[str, Any]:
     """Get spending summary for a ministry across available datasets."""
     try:
-        csv_dir = _processed_csv_dir()
+        data_dir = _processed_data_dir()
 
         # Try to find the best dataset for this year
         preferred_order = [
@@ -2208,16 +2208,16 @@ async def get_ministry_spending_summary(year: int, ministry: str) -> Dict[str, A
 
         for source_type in preferred_order:
             filename = f"{year}_{source_type}.csv"
-            if (csv_dir / filename).exists():
+            if (data_dir / filename).exists():
                 selected_type = source_type
                 break
 
         if not selected_type:
-            available = [f.name for f in csv_dir.glob(f"{year}_*.csv")]
+            available = [f.name for f in data_dir.glob(f"{year}_*.csv")]
             return {"error": f"No data found for year {year}", "available_files": available}
 
         # Load and filter data
-        csv_path = csv_dir / f"{year}_{selected_type}.csv"
+        csv_path = data_dir / f"{year}_{selected_type}.csv"
         df = pd.read_csv(csv_path)
 
         # Filter by ministry (case-insensitive partial match)
@@ -2298,7 +2298,7 @@ def run(data_path: Optional[str] = None) -> None:
     _DATA_ROOT = Path(data_path) if data_path else Path("data/processed")
 
     logger.info("Starting MCP server with data path: %s", _DATA_ROOT)
-    logger.info("CSV directory: %s", _processed_csv_dir())
+    logger.info("Processed data directory: %s", _processed_data_dir())
 
     asyncio.run(_SERVER.run_stdio_async())
 

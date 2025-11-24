@@ -27,7 +27,7 @@ armenian-budget validate --years 2022,2023 --source-type SPENDING_Q1
 
 # Save detailed Markdown reports (next to CSV files)
 armenian-budget validate --years 2023 --source-type BUDGET_LAW --report
-# Creates: data/processed/csv/2023_BUDGET_LAW_validation.md
+# Creates: data/processed/2023_BUDGET_LAW_validation.md
 
 # Save JSON reports to custom directory
 armenian-budget validate --years 2022-2024 --source-type MTEP --report-json path/to/my_reports/

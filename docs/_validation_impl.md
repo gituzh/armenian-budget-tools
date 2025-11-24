@@ -231,7 +231,7 @@ src/armenian_budget/validation/
 
 *Default Location Test* (2019_SPENDING_Q1.csv):
 
-- Created: `data/processed/csv/2019_SPENDING_Q1_validation.md`
+- Created: `data/processed/2019_SPENDING_Q1_validation.md`
 - Format: Clean markdown with emoji indicators, proper sections
 - Size: ~1KB for report with 47 checks (42 passed, 5 failed)
 

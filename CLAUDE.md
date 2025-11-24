@@ -122,7 +122,7 @@ The processing pipeline follows 6 steps:
 3. **Discover** - Build discovery index matching year/source to best file → `discovery_index.json`
 4. **Parse** - State-machine parsing with Armenian text detection
 5. **Validate** - Business rule checks with tolerance handling
-6. **Persist** - Write clean CSVs with metadata → `data/processed/csv/`
+6. **Persist** - Write clean CSVs with metadata → `data/processed/`
 
 ### Source Types
 

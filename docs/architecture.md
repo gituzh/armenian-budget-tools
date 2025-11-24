@@ -89,7 +89,7 @@ The processing pipeline transforms government archives into validated datasets:
 
 - `data/original/` - Downloaded archives with checksums
 - `data/extracted/` - Unarchived Excel files + discovery index
-- `data/processed/csv/` - Final CSV outputs + overall totals JSON
+- `data/processed/` - Final CSV outputs + overall totals JSON
 
 ## 5. Repository Structure
 

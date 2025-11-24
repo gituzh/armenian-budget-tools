@@ -18,8 +18,8 @@ from armenian_budget.validation.registry import ALL_CHECKS
 def mock_processed_data(tmp_path: Path) -> Path:
     """Create a temporary directory with minimal valid processed data."""
     processed_root = tmp_path
-    csv_dir = processed_root / "csv"
-    csv_dir.mkdir(parents=True)
+    csv_dir = processed_root
+    csv_dir.mkdir(parents=True, exist_ok=True)
 
     csv_path = csv_dir / "2023_BUDGET_LAW.csv"
     pd.DataFrame({"state_body": ["Test"]}).to_csv(csv_path, index=False)

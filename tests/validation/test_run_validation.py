@@ -20,8 +20,8 @@ class TestGetProcessedPaths:
         processed_root = Path("data/processed")
         csv_path, overall_path = get_processed_paths(2023, SourceType.BUDGET_LAW, processed_root)
 
-        assert csv_path == Path("data/processed/csv/2023_BUDGET_LAW.csv")
-        assert overall_path == Path("data/processed/csv/2023_BUDGET_LAW_overall.json")
+        assert csv_path == Path("data/processed/2023_BUDGET_LAW.csv")
+        assert overall_path == Path("data/processed/2023_BUDGET_LAW_overall.json")
 
     @pytest.mark.parametrize(
         "year,source_type,expected_csv,expected_json",
@@ -53,8 +53,8 @@ class TestGetProcessedPaths:
 
         assert csv_path.name == expected_csv
         assert overall_path.name == expected_json
-        assert csv_path.parent == Path("/tmp/test/csv")
-        assert overall_path.parent == Path("/tmp/test/csv")
+        assert csv_path.parent == Path("/tmp/test")
+        assert overall_path.parent == Path("/tmp/test")
 
 
 class TestRunValidation:
@@ -70,7 +70,7 @@ class TestRunValidation:
     def test_run_validation_missing_csv(self, tmp_path):
         """Test that FileNotFoundError is raised if CSV file doesn't exist."""
         processed_root = tmp_path
-        (processed_root / "csv").mkdir(parents=True)
+        (processed_root).mkdir(parents=True, exist_ok=True)
 
         with pytest.raises(FileNotFoundError, match="CSV file not found"):
             run_validation(2023, SourceType.BUDGET_LAW, processed_root)
@@ -78,8 +78,8 @@ class TestRunValidation:
     def test_run_validation_missing_overall_json(self, tmp_path):
         """Test that FileNotFoundError is raised if overall.json doesn't exist."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir(parents=True)
+        csv_dir = processed_root
+        csv_dir.mkdir(parents=True, exist_ok=True)
 
         # Create CSV but not overall.json
         csv_path = csv_dir / "2023_BUDGET_LAW.csv"
@@ -91,8 +91,8 @@ class TestRunValidation:
     def test_run_validation_invalid_csv(self, tmp_path):
         """Test that ValueError is raised if CSV is malformed."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir(parents=True)
+        csv_dir = processed_root
+        csv_dir.mkdir(parents=True, exist_ok=True)
 
         # Create malformed CSV
         csv_path = csv_dir / "2023_BUDGET_LAW.csv"
@@ -109,8 +109,8 @@ class TestRunValidation:
     def test_run_validation_invalid_json(self, tmp_path):
         """Test that ValueError is raised if overall.json is malformed."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir(parents=True)
+        csv_dir = processed_root
+        csv_dir.mkdir(parents=True, exist_ok=True)
 
         # Create valid CSV
         csv_path = csv_dir / "2023_BUDGET_LAW.csv"
@@ -126,8 +126,8 @@ class TestRunValidation:
     def test_run_validation_success_minimal(self, tmp_path):
         """Test successful validation with minimal valid data."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir(parents=True)
+        csv_dir = processed_root
+        csv_dir.mkdir(parents=True, exist_ok=True)
 
         # Create minimal valid CSV (BUDGET_LAW format)
         csv_path = csv_dir / "2023_BUDGET_LAW.csv"
@@ -171,8 +171,8 @@ class TestRunValidation:
     def test_run_validation_different_source_types(self, source_type, tmp_path):
         """Test that run_validation handles different source types correctly."""
         processed_root = tmp_path
-        csv_dir = processed_root / "csv"
-        csv_dir.mkdir(parents=True)
+        csv_dir = processed_root
+        csv_dir.mkdir(parents=True, exist_ok=True)
 
         # Create minimal CSV with columns appropriate for source type
         csv_path = csv_dir / f"2023_{source_type.value}.csv"
@@ -230,7 +230,7 @@ class TestRunValidationIntegration:
             pytest.skip("No processed data available for integration test")
 
         # Try 2023 BUDGET_LAW as it's commonly available
-        csv_path = processed_root / "csv/2023_BUDGET_LAW.csv"
+        csv_path = processed_root / "2023_BUDGET_LAW.csv"
         if not csv_path.exists():
             pytest.skip("2023 BUDGET_LAW data not available")
 
