@@ -32,7 +32,8 @@ def test_mtep_program_codes_integer(year: int, source_type: str) -> None:
     """Test that MTEP program codes are parsed as integers."""
     data = load_budget_data(year, source_type)
     assert str(data.df["program_code"].dtype).startswith("int"), (
-        f"{year}/{source_type}: program_code should be integer, found {data.df['program_code'].dtype}"
+        f"{year}/{source_type}: program_code should be integer, "
+        f"found {data.df['program_code'].dtype}"
     )
 
 

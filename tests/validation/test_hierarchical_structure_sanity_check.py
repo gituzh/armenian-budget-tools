@@ -34,7 +34,7 @@ def normal_hierarchy_data():
     return df, overall
 
 
-def test_hierarchical_structure_sanity_pass(normal_hierarchy_data):
+def test_hierarchical_structure_sanity_pass(normal_hierarchy_data):  # pylint: disable=redefined-outer-name
     """Test that the check passes with normal hierarchical structure."""
     df, _overall = normal_hierarchy_data
     check = HierarchicalStructureSanityCheck()

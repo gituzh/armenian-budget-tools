@@ -90,7 +90,11 @@ class PeriodVsAnnualCheck:
                 for _, row in violations.iterrows():
                     diff = row[period_field] - row[annual_field]
                     messages.append(
-                        f"{level.capitalize()} violation: '{period_field}' ({row[period_field]:.2f}) > '{annual_field}' ({row[annual_field]:.2f}) by {diff:.2f} for {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                        f"{level.capitalize()} violation: '{period_field}' "
+                        f"({row[period_field]:.2f}) > '{annual_field}' "
+                        f"({row[annual_field]:.2f}) by {diff:.2f} for "
+                        f"{row.get('state_body', '')} | {row.get('program_code', '')} | "
+                        f"{row.get('subprogram_code', '')}"
                     )
 
             # Check rev_period_plan ≤ rev_annual_plan
@@ -99,7 +103,11 @@ class PeriodVsAnnualCheck:
                 for _, row in violations.iterrows():
                     diff = row[rev_period_field] - row[rev_annual_field]
                     messages.append(
-                        f"{level.capitalize()} violation: '{rev_period_field}' ({row[rev_period_field]:.2f}) > '{rev_annual_field}' ({row[rev_annual_field]:.2f}) by {diff:.2f} for {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                        f"{level.capitalize()} violation: '{rev_period_field}' "
+                        f"({row[rev_period_field]:.2f}) > '{rev_annual_field}' "
+                        f"({row[rev_annual_field]:.2f}) by {diff:.2f} for "
+                        f"{row.get('state_body', '')} | {row.get('program_code', '')} | "
+                        f"{row.get('subprogram_code', '')}"
                     )
 
             if messages:

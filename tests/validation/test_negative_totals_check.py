@@ -9,7 +9,6 @@ import pandas as pd
 import pytest
 from armenian_budget.core.enums import SourceType
 from armenian_budget.validation.checks.negative_totals import NegativeTotalsCheck
-from armenian_budget.validation.config import get_severity
 
 
 @pytest.fixture

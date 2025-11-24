@@ -18,6 +18,7 @@ ALL_SOURCE_TYPES = list(SourceType)
 
 @pytest.mark.parametrize("source_type", ALL_SOURCE_TYPES)
 def test_get_required_fields(source_type):
+    """Test that get_required_fields() returns the expected fields for each source type."""
     csv_fields, json_fields = get_required_fields(source_type)
     assert isinstance(csv_fields, list)
     assert isinstance(json_fields, list)
@@ -43,6 +44,7 @@ def test_get_required_fields(source_type):
 
 @pytest.mark.parametrize("source_type", ALL_SOURCE_TYPES)
 def test_get_financial_fields(source_type):
+    """Test that get_financial_fields() returns the expected fields for each source type."""
     csv_fields, json_fields = get_financial_fields(source_type)
     assert isinstance(csv_fields, list)
     assert isinstance(json_fields, list)
@@ -69,6 +71,7 @@ def test_get_financial_fields(source_type):
 
 @pytest.mark.parametrize("source_type", ALL_SOURCE_TYPES)
 def test_get_amount_fields(source_type):
+    """Test that get_amount_fields() returns the expected fields for each source type."""
     csv_fields, json_fields = get_amount_fields(source_type)
     assert isinstance(csv_fields, list)
     assert isinstance(json_fields, list)
@@ -96,6 +99,7 @@ def test_get_amount_fields(source_type):
 
 @pytest.mark.parametrize("source_type", ALL_SOURCE_TYPES)
 def test_get_percentage_fields(source_type):
+    """Test that get_percentage_fields() returns the expected fields for each source type."""
     csv_fields, json_fields = get_percentage_fields(source_type)
     assert isinstance(csv_fields, list)
     assert isinstance(json_fields, list)

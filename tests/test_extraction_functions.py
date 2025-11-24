@@ -1,9 +1,9 @@
 """Tests for the budget extraction functions themselves."""
 
-import pytest
-import tempfile
-import pandas as pd
 import os
+import tempfile
+import pytest
+import pandas as pd
 from armenian_budget.ingestion.parsers import (
     flatten_budget_excel_2019_2024,
     flatten_budget_excel_2025,

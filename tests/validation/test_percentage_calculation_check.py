@@ -88,7 +88,8 @@ def test_percentage_calculation_fail_program(valid_percentage_calc_data):  # pyl
     assert fail_result is not None
     assert fail_result.passed is False
     assert (
-        "Row 0: Mismatch for 'program_actual_vs_rev_period_plan'. Expected: 3.8000, Reported: 3.7000"
+        "Row 0: Mismatch for 'program_actual_vs_rev_period_plan'. Expected: 3.8000, "
+        "Reported: 3.7000"
         in fail_result.messages[0]
     )
 
@@ -124,7 +125,9 @@ def test_percentage_calculation_tolerance_boundaries(valid_percentage_calc_data,
     ids=["zero", "none", "nan"],
 )
 def test_percentage_calculation_handles_invalid_denominator(
-    valid_percentage_calc_data, denominator, reported_percentage  # pylint: disable=redefined-outer-name
+    valid_percentage_calc_data,  # pylint: disable=redefined-outer-name
+    denominator,
+    reported_percentage,
 ):
     """Test that division by zero/null is handled gracefully without crashing.
 

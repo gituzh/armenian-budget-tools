@@ -164,7 +164,8 @@ class HierarchicalTotalsCheck:
             diff = abs(state_body_total - program_sum)
             if diff > tolerance:
                 failures.append(
-                    f"{state_body_name}: expected {program_sum}, got {state_body_total}, diff {diff}"
+                    f"{state_body_name}: expected {program_sum}, got {state_body_total}, "
+                    f"diff {diff}"
                 )
 
         if not failures:

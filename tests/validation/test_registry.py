@@ -30,7 +30,7 @@ def mock_processed_data(tmp_path: Path) -> Path:
     return processed_root
 
 
-def test_run_validation_filters_checks_by_source_type(mock_processed_data: Path):
+def test_run_validation_filters_checks_by_source_type(mock_processed_data: Path):  # pylint: disable=redefined-outer-name
     """
     Test that run_validation() correctly filters checks based on source_type.
     `ALL_CHECKS` is a list of INSTANCES, so we patch it with mock INSTANCES.
@@ -60,7 +60,7 @@ def test_run_validation_filters_checks_by_source_type(mock_processed_data: Path)
             mock_instance.validate.assert_not_called()
 
 
-def test_run_validation_aggregates_results(mock_processed_data: Path):
+def test_run_validation_aggregates_results(mock_processed_data: Path):  # pylint: disable=redefined-outer-name
     """
     Test that run_validation() correctly aggregates results into a ValidationReport.
     """

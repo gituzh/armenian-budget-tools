@@ -71,7 +71,9 @@ class NegativePercentagesCheck:
                     negative_rows = df[df[field] < 0]
                     for index, row in negative_rows.iterrows():
                         messages.append(
-                            f"Row {index}: Negative percentage for '{field}' ({row[field]:.2%}) in {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                            f"Row {index}: Negative percentage for '{field}' ({row[field]:.2%}) in "
+                            f"{row.get('state_body', '')} | {row.get('program_code', '')} | "
+                            f"{row.get('subprogram_code', '')}"
                         )
 
             if messages:

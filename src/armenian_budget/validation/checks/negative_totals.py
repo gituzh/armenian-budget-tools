@@ -79,7 +79,10 @@ class NegativeTotalsCheck:
                     negative_rows = df[df[field] < 0]
                     for _, row in negative_rows.iterrows():
                         messages.append(
-                            f"{level.capitalize()} field '{field}' has negative value: {row[field]:.2f} for {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                            f"{level.capitalize()} field '{field}' "
+                            f"has negative value: {row[field]:.2f} for "
+                            f"{row.get('state_body', '')} | {row.get('program_code', '')} | "
+                            f"{row.get('subprogram_code', '')}"
                         )
 
             if messages:

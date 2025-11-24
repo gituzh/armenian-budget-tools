@@ -5,10 +5,10 @@ output from real Excel files.
 """
 
 import pytest
-from conftest import budget_law_data, get_all_available_data, load_budget_data
+from conftest import get_all_available_data, load_budget_data
 
 
-def test_budget_law_program_codes_and_names_match(budget_law_data):
+def test_budget_law_program_codes_and_names_match(budget_law_data):  # pylint: disable=redefined-outer-name
     """Test that number of unique program codes matches number of unique program names."""
     df = budget_law_data.df
     unique_codes = len(df["program_code"].unique())
@@ -21,7 +21,7 @@ def test_budget_law_program_codes_and_names_match(budget_law_data):
     )
 
 
-def test_budget_law_program_codes_format(budget_law_data):
+def test_budget_law_program_codes_format(budget_law_data):  # pylint: disable=redefined-outer-name
     """Test that program and subprogram codes are integers and properly formatted."""
     df = budget_law_data.df
 
@@ -40,7 +40,8 @@ def test_budget_law_program_codes_format(budget_law_data):
     # For 2025, verify program_code_ext
     if budget_law_data.year == 2025:
         assert "program_code_ext" in df.columns, (
-            f"{budget_law_data.year}/{budget_law_data.source_type}: program_code_ext column is missing"
+            f"{budget_law_data.year}/{budget_law_data.source_type}: "
+            f"program_code_ext column is missing"
         )
 
         assert df["program_code_ext"].dtype in ["int64", "int32"], (

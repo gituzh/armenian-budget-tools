@@ -75,7 +75,9 @@ class MissingFinancialDataCheck:
                     missing_rows = df[df[field].isna()]
                     for index, row in missing_rows.iterrows():
                         messages.append(
-                            f"Row {index}: Missing data for '{field}' in {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                            f"Row {index}: Missing data for '{field}' in "
+                            f"{row.get('state_body', '')} | {row.get('program_code', '')} | "
+                            f"{row.get('subprogram_code', '')}"
                         )
 
             if messages:

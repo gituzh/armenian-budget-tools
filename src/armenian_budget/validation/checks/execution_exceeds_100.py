@@ -71,7 +71,9 @@ class ExecutionExceeds100Check:
                     exceeds_rows = df[df[field] > 1.0]
                     for index, row in exceeds_rows.iterrows():
                         messages.append(
-                            f"Row {index}: Execution > 100% for '{field}' ({row[field]:.2%}) in {row.get('state_body', '')} | {row.get('program_code', '')} | {row.get('subprogram_code', '')}"
+                            f"Row {index}: Execution > 100% for '{field}' ({row[field]:.2%}) in "
+                            f"{row.get('state_body', '')} | {row.get('program_code', '')} | "
+                            f"{row.get('subprogram_code', '')}"
                         )
 
             if messages:

@@ -254,7 +254,8 @@ class ValidationReport:
             "For detailed information about validation checks and how to interpret results,"
         )
         lines.append(
-            "see [docs/validation.md](https://github.com/your-org/armenian-budget-tools/blob/main/docs/validation.md)."
+            "see [docs/validation.md](https://github.com/gituzh/armenian-budget-tools/"
+            "blob/main/docs/validation.md)."
         )
         lines.append("")
 

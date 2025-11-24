@@ -74,7 +74,6 @@ class PercentageCalculationCheck:
             ):
                 expected = overall[overall_num] / overall[overall_denom]
                 reported = overall[overall_pct]
-                diff = abs(expected - reported)
 
                 if not np.isclose(expected, reported, atol=PERCENTAGE_TOL):
                     results.append(
@@ -85,7 +84,7 @@ class PercentageCalculationCheck:
                             fail_count=1,
                             messages=[
                                 f"Overall {pct_field}: expected {expected:.4f}, "
-                                f"reported {reported:.4f}, diff {diff:.4f} "
+                                f"reported {reported:.4f}, diff {abs(expected - reported):.4f} "
                                 f"(tolerance {PERCENTAGE_TOL})"
                             ],
                         )

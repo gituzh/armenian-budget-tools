@@ -4,12 +4,8 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
-
 import pandas as pd
 import pytest
-
-from armenian_budget.core.enums import SourceType
 from armenian_budget.interfaces.cli.main import cmd_validate
 
 
@@ -100,7 +96,7 @@ class TestCmdValidate:
             report=True,
             report_json=False,
         )
-        result = cmd_validate(args)
+        cmd_validate(args)
 
         # Check that markdown report was created
         expected_report = csv_dir / "2023_BUDGET_LAW_validation.md"
@@ -146,7 +142,7 @@ class TestCmdValidate:
             report=str(custom_dir),
             report_json=False,
         )
-        result = cmd_validate(args)
+        cmd_validate(args)
 
         # Check that markdown report was created in custom directory
         expected_report = custom_dir / "2023_BUDGET_LAW_validation.md"
@@ -271,7 +267,7 @@ class TestCmdValidate:
             report=True,
             report_json=False,
         )
-        result = cmd_validate(args)
+        cmd_validate(args)
 
         # Check that reports were created for both years
         report_2023 = csv_dir / "2023_BUDGET_LAW_validation.md"
@@ -422,7 +418,9 @@ class TestCmdValidate:
 
         # Verify error message mentions missing JSON
         log_messages = " ".join([record.message for record in caplog.records])
-        assert ("json" in log_messages.lower() and "not found" in log_messages.lower()) or "overall" in log_messages.lower()
+        assert (
+            "json" in log_messages.lower() and "not found" in log_messages.lower()
+        ) or "overall" in log_messages.lower()
 
     def test_cmd_validate_error_messages_are_helpful(self, tmp_path, caplog):
         """Verify error messages are user-friendly and actionable."""

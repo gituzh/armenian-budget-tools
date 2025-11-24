@@ -10,9 +10,7 @@ from conftest import load_budget_data, get_all_available_data
 
 
 # Precompute spending parameter sets and stable IDs
-_SPENDING_PARAMS = [
-    (y, t) for (y, t) in get_all_available_data() if str(t).startswith("SPENDING_")
-]
+_SPENDING_PARAMS = [(y, t) for (y, t) in get_all_available_data() if str(t).startswith("SPENDING_")]
 _SPENDING_IDS = [f"{y}_{t}" for (y, t) in _SPENDING_PARAMS]
 
 

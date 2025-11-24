@@ -11,6 +11,7 @@ from armenian_budget.validation.config import get_tolerance_for_source, get_seve
 
 
 def test_get_tolerance_for_source():
+    """Test that get_tolerance_for_source() returns the expected values for each source type."""
     assert get_tolerance_for_source(SourceType.BUDGET_LAW) == 1.0
     assert get_tolerance_for_source(SourceType.MTEP) == 0.5
     assert get_tolerance_for_source(SourceType.SPENDING_Q1) == 5.0
@@ -20,7 +21,9 @@ def test_get_tolerance_for_source():
 
 
 def test_get_severity_valid():
-    # Test a few representative cases
+    """Test that get_severity() returns the expected values for valid check IDs and
+    hierarchy levels.
+    """
     assert get_severity("empty_identifiers", "state_body") == "error"
     assert get_severity("empty_identifiers", "subprogram") == "warning"
 
@@ -34,11 +37,13 @@ def test_get_severity_valid():
 
 
 def test_get_severity_invalid_check_id():
+    """Test that get_severity() raises ValueError for unknown check IDs."""
     with pytest.raises(ValueError, match="Unknown check_id: non_existent_check"):
         get_severity("non_existent_check", "program")
 
 
 def test_get_severity_invalid_hierarchy_level():
+    """Test that get_severity() raises ValueError for unknown hierarchy levels."""
     with pytest.raises(
         ValueError, match="Invalid hierarchy_level 'non_existent_level' for check 'negative_totals'"
     ):
@@ -76,6 +81,4 @@ def test_all_checks_have_severity_configured():
                 f"Check '{check_id}' returned invalid severity: {severity}"
             )
         except ValueError as e:
-            pytest.fail(
-                f"Check ID '{check_id}' is missing from severity configuration: {e}"
-            )
+            pytest.fail(f"Check ID '{check_id}' is missing from severity configuration: {e}")

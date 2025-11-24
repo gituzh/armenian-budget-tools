@@ -5,11 +5,8 @@ This is a sanity check to catch parser failures or data quality issues.
 """
 
 from __future__ import annotations
-
-from typing import Dict, List
-
+from typing import List
 import pandas as pd
-
 from armenian_budget.core.enums import SourceType
 from ..config import get_severity
 from ..models import CheckResult

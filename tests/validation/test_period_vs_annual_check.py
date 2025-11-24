@@ -79,7 +79,8 @@ def test_period_vs_annual_fail_program_revised(valid_period_data):  # pylint: di
     assert program_result.passed is False
     assert program_result.fail_count == 1
     assert (
-        "Program violation: 'program_rev_period_plan' (1101.00) > 'program_rev_annual_plan' (1100.00)"
+        "Program violation: 'program_rev_period_plan' (1101.00) > 'program_rev_annual_plan' "
+        "(1100.00)"
         in program_result.messages[0]
     )
 
