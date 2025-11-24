@@ -128,9 +128,7 @@ def cmd_process(args: argparse.Namespace) -> int:
 
     # If user provided --input and multiple years, reject as ambiguous
     if getattr(args, "input", None) and len(years) != 1:
-        logging.error(
-            "When --input is provided, only a single year may be specified in --years."
-        )
+        logging.error("When --input is provided, only a single year may be specified in --years.")
         return 2
 
     # Lazy import discovery if needed
@@ -350,17 +348,19 @@ def cmd_validate(args: argparse.Namespace) -> int:
         logging.error("--years is required")
         return 2
 
-    # Parse source type
-    try:
-        source_type = SourceType[args.source_type]
-    except KeyError:
-        valid_types = ", ".join(t.value for t in SourceType)
-        logging.error(
-            "Unknown source type: '%s'. Valid types: %s",
-            args.source_type,
-            valid_types,
-        )
-        return 2
+    # Determine which source types to validate
+    if args.source_type:
+        source_types: list[str] = [args.source_type]
+    else:
+        # Validate all supported types when not specified
+        source_types = [
+            "BUDGET_LAW",
+            "SPENDING_Q1",
+            "SPENDING_Q12",
+            "SPENDING_Q123",
+            "SPENDING_Q1234",
+            "MTEP",
+        ]
 
     # Determine processed_root
     processed_root_arg = getattr(args, "processed_root", None)
@@ -382,125 +382,148 @@ def cmd_validate(args: argparse.Namespace) -> int:
     total_errors = 0
     successful_validations = 0
 
-    # Validate each year
+    # Validate each year and source type combination
     for year in years:
-        logging.info("Validating %s/%s...", year, source_type.value)
+        for st_name in source_types:
+            try:
+                source_type = SourceType[st_name]
+            except KeyError:
+                logging.warning("Skipping unknown source type: %s", st_name)
+                validation_results.append(
+                    {
+                        "year": year,
+                        "source_type": st_name,
+                        "status": "ERROR",
+                        "errors": 0,
+                        "warnings": 0,
+                        "reason": "unknown source type",
+                    }
+                )
+                continue
 
-        try:
-            # Run validation for this year
-            report = registry.run_validation(year, source_type, processed_root)
+            logging.info("Validating %s/%s...", year, source_type.value)
 
-            # Track results
-            has_errors = report.has_errors(strict=False)
-            error_count = report.get_error_count()
-            warning_count = report.get_warning_count()
+            try:
+                # Run validation for this year
+                report = registry.run_validation(year, source_type, processed_root)
 
-            if has_errors:
-                total_errors += error_count
+                # Track results
+                has_errors = report.has_errors(strict=False)
+                error_count = report.get_error_count()
+                warning_count = report.get_warning_count()
+
+                if has_errors:
+                    total_errors += error_count
+                    logging.warning(
+                        "Validation failed for %s/%s: %d errors, %d warnings",
+                        year,
+                        source_type.value,
+                        error_count,
+                        warning_count,
+                    )
+                else:
+                    logging.info(
+                        "Validation passed for %s/%s",
+                        year,
+                        source_type.value,
+                    )
+
+                # Print console report
+                registry.print_report(report)
+
+                # Generate markdown report if requested
+                if args.report:
+                    if args.report is True:
+                        # Default location: next to CSV file
+                        csv_path, _ = get_processed_paths(year, source_type, processed_root)
+                        report_dir = csv_path.parent
+                        report_path = report_dir / f"{year}_{source_type.value}_validation.md"
+                    else:
+                        # Custom directory provided - create per-year files
+                        report_dir = Path(args.report)
+                        report_dir.mkdir(parents=True, exist_ok=True)
+                        report_path = report_dir / f"{year}_{source_type.value}_validation.md"
+
+                    # Write markdown report
+                    markdown_content = report.to_markdown()
+                    report_path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(report_path, "w", encoding="utf-8") as f:
+                        f.write(markdown_content)
+
+                    logging.info("Markdown report saved: %s", report_path)
+
+                # Generate JSON report if requested
+                if args.report_json:
+                    if args.report_json is True:
+                        # Default location: next to CSV file
+                        csv_path, _ = get_processed_paths(year, source_type, processed_root)
+                        report_dir = csv_path.parent
+                        report_path = report_dir / f"{year}_{source_type.value}_validation.json"
+                    else:
+                        # Custom directory provided - create per-year files
+                        report_dir = Path(args.report_json)
+                        report_dir.mkdir(parents=True, exist_ok=True)
+                        report_path = report_dir / f"{year}_{source_type.value}_validation.json"
+
+                    # Write JSON report
+                    json_content = report.to_json()
+                    report_path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(report_path, "w", encoding="utf-8") as f:
+                        f.write(json_content)
+
+                    logging.info("JSON report saved: %s", report_path)
+
+                # Track success
+                successful_validations += 1
+                validation_results.append(
+                    {
+                        "year": year,
+                        "source_type": source_type.value,
+                        "status": "FAIL" if has_errors else "OK",
+                        "errors": error_count,
+                        "warnings": warning_count,
+                    }
+                )
+
+            except FileNotFoundError as e:
                 logging.warning(
-                    "Validation failed for %s/%s: %d errors, %d warnings",
+                    "Dataset not found for %s/%s: %s",
                     year,
                     source_type.value,
-                    error_count,
-                    warning_count,
+                    e,
                 )
-            else:
-                logging.info(
-                    "Validation passed for %s/%s",
+                validation_results.append(
+                    {
+                        "year": year,
+                        "source_type": source_type.value,
+                        "status": "MISSING",
+                        "errors": 0,
+                        "warnings": 0,
+                        "reason": str(e),
+                    }
+                )
+                continue
+            except (ValueError, OSError) as e:
+                logging.error(
+                    "Error validating %s/%s: %s",
                     year,
                     source_type.value,
+                    e,
                 )
+                validation_results.append(
+                    {
+                        "year": year,
+                        "source_type": source_type.value,
+                        "status": "ERROR",
+                        "errors": 0,
+                        "warnings": 0,
+                        "reason": str(e),
+                    }
+                )
+                continue
 
-            # Print console report
-            registry.print_report(report)
-
-            # Generate markdown report if requested
-            if args.report:
-                if args.report is True:
-                    # Default location: next to CSV file
-                    csv_path, _ = get_processed_paths(year, source_type, processed_root)
-                    report_dir = csv_path.parent
-                    report_path = report_dir / f"{year}_{source_type.value}_validation.md"
-                else:
-                    # Custom directory provided - create per-year files
-                    report_dir = Path(args.report)
-                    report_dir.mkdir(parents=True, exist_ok=True)
-                    report_path = report_dir / f"{year}_{source_type.value}_validation.md"
-
-                # Write markdown report
-                markdown_content = report.to_markdown()
-                report_path.parent.mkdir(parents=True, exist_ok=True)
-                with open(report_path, "w", encoding="utf-8") as f:
-                    f.write(markdown_content)
-
-                logging.info("Markdown report saved: %s", report_path)
-
-            # Generate JSON report if requested
-            if args.report_json:
-                if args.report_json is True:
-                    # Default location: next to CSV file
-                    csv_path, _ = get_processed_paths(year, source_type, processed_root)
-                    report_dir = csv_path.parent
-                    report_path = report_dir / f"{year}_{source_type.value}_validation.json"
-                else:
-                    # Custom directory provided - create per-year files
-                    report_dir = Path(args.report_json)
-                    report_dir.mkdir(parents=True, exist_ok=True)
-                    report_path = report_dir / f"{year}_{source_type.value}_validation.json"
-
-                # Write JSON report
-                json_content = report.to_json()
-                report_path.parent.mkdir(parents=True, exist_ok=True)
-                with open(report_path, "w", encoding="utf-8") as f:
-                    f.write(json_content)
-
-                logging.info("JSON report saved: %s", report_path)
-
-            # Track success
-            successful_validations += 1
-            validation_results.append({
-                "year": year,
-                "source_type": source_type.value,
-                "status": "FAIL" if has_errors else "OK",
-                "errors": error_count,
-                "warnings": warning_count,
-            })
-
-        except FileNotFoundError as e:
-            logging.warning(
-                "Dataset not found for %s/%s: %s",
-                year,
-                source_type.value,
-                e,
-            )
-            validation_results.append({
-                "year": year,
-                "source_type": source_type.value,
-                "status": "MISSING",
-                "errors": 0,
-                "warnings": 0,
-                "reason": str(e),
-            })
-            continue
-        except (ValueError, OSError) as e:
-            logging.error(
-                "Error validating %s/%s: %s",
-                year,
-                source_type.value,
-                e,
-            )
-            validation_results.append({
-                "year": year,
-                "source_type": source_type.value,
-                "status": "ERROR",
-                "errors": 0,
-                "warnings": 0,
-                "reason": str(e),
-            })
-            continue
-
-    # Print summary if multiple years
-    if len(years) > 1 and validation_results:
+    # Print summary if multiple years or source types
+    if (len(years) > 1 or len(source_types) > 1) and validation_results:
         logging.info("Validation Summary:")
         for entry in validation_results:
             if entry["status"] == "OK":
@@ -1079,10 +1102,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_validate.add_argument(
         "--source-type",
-        required=True,
         type=str.upper,
         choices=SOURCE_TYPE_CHOICES,
-        help="Source type to validate (case insensitive).",
+        help="Source type to validate (case insensitive). If omitted, all supported source types will be validated.",
     )
     p_validate.add_argument(
         "--processed-root",

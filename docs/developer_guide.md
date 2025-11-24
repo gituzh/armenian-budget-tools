@@ -186,8 +186,9 @@ armenian-budget download --years 2019-2024 --extract
 armenian-budget process --years 2023
 armenian-budget process --years 2023 --source-type BUDGET_LAW
 
-# Validate
+# Validate (all source types or specific one)
 armenian-budget validate --years 2023
+armenian-budget validate --years 2023 --source-type BUDGET_LAW
 
 # MCP server
 armenian-budget mcp-server --data-path ./data/processed

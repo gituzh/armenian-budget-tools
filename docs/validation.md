@@ -16,22 +16,22 @@ This validation framework focuses exclusively on the second type: checking the s
 ## How to Run Validation
 
 ```bash
-# Console summary only for a single dataset
+# Validate all source types for a year (BUDGET_LAW, SPENDING_Q1/Q12/Q123/Q1234, MTEP)
+armenian-budget validate --years 2023
+
+# Validate specific source type only
 armenian-budget validate --years 2023 --source-type BUDGET_LAW
 
-# Validate multiple years at once
+# Validate multiple years
 armenian-budget validate --years 2022,2023 --source-type SPENDING_Q1
 
-# Save detailed reports to the default location (next to the CSV files)
+# Save detailed Markdown reports (next to CSV files)
 armenian-budget validate --years 2023 --source-type BUDGET_LAW --report
-# This creates: data/processed/csv/2023_BUDGET_LAW_validation.md
+# Creates: data/processed/csv/2023_BUDGET_LAW_validation.md
 
-# Save JSON reports to a custom directory
+# Save JSON reports to custom directory
 armenian-budget validate --years 2022-2024 --source-type MTEP --report-json path/to/my_reports/
-# This creates:
-# - path/to/my_reports/2022_MTEP_validation.json
-# - path/to/my_reports/2023_MTEP_validation.json
-# - path/to/my_reports/2024_MTEP_validation.json
+# Creates: path/to/my_reports/{year}_{source_type}_validation.json
 ```
 
 **What happens:**
