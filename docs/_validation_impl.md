@@ -6,7 +6,7 @@
 
 ## Current State
 
-**After Phase 7:**
+**After Phase 8C (Unit Tests, Registry Tests, Report Generation Tests):**
 
 - ✅ `validation/config.py` - Tolerance constants and severity rules
 - ✅ `validation/models.py` - CheckResult, ValidationReport, to_markdown()
@@ -39,13 +39,19 @@
 - ✅ Hierarchical and financial checks (hierarchical totals, negative totals)
 - ✅ Spending-specific checks (period vs annual, negative percentages, execution >100%, percentage calculations)
 - ✅ Check registry and runner (run_validation, print_report)
-- ✅ CLI validation command (`--csv` flag)
-- ✅ Markdown report generation (grouped format)
+- ✅ CLI validation command with --years/--source-type flags
+- ✅ Markdown and JSON report generation
 - ✅ Redundancy cleanup (removed detect_source_type)
+- ✅ Unit tests for all validation checks (Phase 8A)
+- ✅ Tests for registry and runner (Phase 8B)
+- ✅ Tests for report generation (Phase 8C)
 
 **Still Missing:**
 
-- 🟡 Integration tests and test coverage (Phase 8)
+- 🟡 CLI integration tests (Phase 8D)
+- 🟡 Remaining old test cleanup (Phase 8E - 1 item)
+- 🟡 Parser test review and relocation (Phase 8F)
+- 🟡 Test coverage validation (Phase 8G)
 - ❌ Developer guide documentation updates (Phase 9)
 
 **Notes:**
@@ -332,18 +338,18 @@ Note: This section is updated with more detailed testing guidance. Tests should 
   - Changed percentage calculation comparison in `PercentageCalculationCheck` from strict `>` to `numpy.isclose()` to handle floating-point precision issues, resolving `AssertionError` in tolerance boundary tests.
   - Updated `PercentageCalculationCheck` to use `pd.notna()` in denominator checks, preventing failures when the denominator is `None` or `NaN` and aligning with the test's expectation that division by nulls should be gracefully handled.
 
-**B. Tests for Registry and Runner (Phase 6):**
+**B. Tests for Registry and Runner (Phase 6):** ✅
 
-- [ ] `test_registry.py`:
-  - [ ] Test check filtering by source type (e.g., ensure spending checks don't run for `BUDGET_LAW`).
-  - [ ] Test `run_validation()` execution and `ValidationReport` aggregation (e.g., ensure a mix of 1 error and 1 warning are counted correctly).
+- [x] `test_registry.py`:
+  - [x] Test check filtering by source type (e.g., ensure spending checks don't run for `BUDGET_LAW`).
+  - [x] Test `run_validation()` execution and `ValidationReport` aggregation (e.g., ensure a mix of 1 error and 1 warning are counted correctly).
 
-**C. Tests for Report Generation (Phase 7):**
+**C. Tests for Report Generation (Phase 7):** ✅
 
-- [ ] `test_report.py`:
-  - [ ] Test report structure, not brittle/exact string matching.
-  - [ ] For Markdown, assert that a known error message appears under an "Errors" heading.
-  - [ ] For JSON, parse the output and assert the `errors` list contains the expected object.
+- [x] `test_report_generation.py`:
+  - [x] Test report structure, not brittle/exact string matching.
+  - [x] For Markdown, assert that a known error message appears under an "Errors" heading.
+  - [x] For JSON, parse the output and assert the `errors` list contains the expected object.
 
 **D. CLI Integration Tests:**
 
@@ -352,6 +358,7 @@ Note: This section is updated with more detailed testing guidance. Tests should 
 - [ ] Test for non-zero exit codes and user-friendly error messages on invalid input (e.g., missing files, invalid source type).
 
 **Notes on CLI Test Implementation:**
+
 - `tests/cli/test_cmd_validate.py` and `tests/validation/test_cli_report_generation.py` were fixed to correctly handle `argparse.Namespace` objects and missing imports (`sys`).
 
 **E. Delete Redundant Old Validation Tests:**
@@ -408,8 +415,8 @@ Note: This section is updated with more detailed testing guidance. Tests should 
 ## Progress Tracking
 
 **Started:** 2025-10-27
-**Current Phase:** Phase 8 (Testing and Validation)
-**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅, Phase 6 ✅, Phase 7 ✅
+**Current Phase:** Phase 8D-G (Testing - CLI Integration, Test Cleanup, Coverage)
+**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅, Phase 6 ✅, Phase 7 ✅, Phase 8A-C ✅
 **Blockers:** None
 
 ## Architecture Decisions Log
