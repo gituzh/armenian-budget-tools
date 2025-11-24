@@ -53,6 +53,19 @@ def setup_logging(
         logger.setLevel(logging.DEBUG if verbose else logging.INFO)
 
 
+def resolve_path_with_default(arg_value: Optional[str], default: str) -> Path:
+    """Resolve optional path argument with default fallback.
+
+    Args:
+        arg_value: The argument value from argparse (may be None)
+        default: Default path to use if arg_value is None
+
+    Returns:
+        Resolved absolute Path object
+    """
+    return Path(arg_value or default).resolve()
+
+
 def cmd_process(args: argparse.Namespace) -> int:
     """Process one or more years of budget data.
 
@@ -62,23 +75,18 @@ def cmd_process(args: argparse.Namespace) -> int:
     """
 
     # Resolve roots
-    extracted_root = Path(args.extracted_root or Path("data/extracted")).resolve()
-    processed_root_arg = getattr(args, "processed_root", None)
-    input_provided = bool(getattr(args, "input", None))
+    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
+    input_provided = args.input is not None
     # When discovery is used, extracted_root must exist; if explicitly provided, processed_root must be provided too
     if not input_provided:
         if not extracted_root.exists() or not extracted_root.is_dir():
             logging.error("Extracted root not found or not a directory: %s", extracted_root)
             return 2
-        if getattr(args, "extracted_root", None) is not None and processed_root_arg is None:
+        if args.extracted_root is not None and args.processed_root is None:
             logging.error("--processed-root is required when --extracted-root is provided")
             return 2
     # Determine processed output directory (csv is written under this root)
-    if processed_root_arg is not None:
-        processed_root = Path(processed_root_arg).resolve()
-    else:
-        # Default to ./data/processed (sibling of default extracted root)
-        processed_root = Path("data/processed").resolve()
+    processed_root = resolve_path_with_default(args.processed_root, "data/processed")
     out_dir = (processed_root / "csv").resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -190,8 +198,8 @@ def cmd_process(args: argparse.Namespace) -> int:
                         year=year,
                         source_type=st_name,
                         parsers_config_path=parsers_yaml,
-                        force_discover=bool(getattr(args, "force_discover", False)),
-                        deep_validate=bool(getattr(args, "deep_validate", False)),
+                        force_discover=args.force_discover,
+                        deep_validate=args.deep_validate,
                     )
                 except (
                     AssertionError,
@@ -290,17 +298,16 @@ def cmd_process(args: argparse.Namespace) -> int:
     # End-of-run processing report
     if report_entries:
         # Optional JSON report path
-        report_path = getattr(args, "report_json", None)
-        if report_path:
+        if args.report_json:
             try:
                 import json
 
                 ordered = sorted(report_entries, key=lambda r: (int(r["year"]), str(r["source"])))
-                with open(report_path, "w", encoding="utf-8") as f:
+                with open(args.report_json, "w", encoding="utf-8") as f:
                     json.dump(ordered, f, ensure_ascii=False, indent=2)
-                logging.info("Saved processing report JSON: %s", report_path)
+                logging.info("Saved processing report JSON: %s", args.report_json)
             except (OSError, ValueError) as e:
-                logging.error("Failed to write report JSON %s: %s", report_path, e)
+                logging.error("Failed to write report JSON %s: %s", args.report_json, e)
 
         logging.info("Processing report:")
         # Stable order: by year, then by source name
@@ -363,11 +370,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
         ]
 
     # Determine processed_root
-    processed_root_arg = getattr(args, "processed_root", None)
-    if processed_root_arg is not None:
-        processed_root = Path(processed_root_arg).resolve()
-    else:
-        processed_root = Path("data/processed").resolve()
+    processed_root = resolve_path_with_default(args.processed_root, "data/processed")
 
     # Check that processed_root exists
     if not processed_root.exists():
@@ -589,8 +592,8 @@ def cmd_download(args: argparse.Namespace) -> int:
     extract_zip_files = getattr(organizer_mod, "extract_zip_files")
 
     cfg_path = Path(args.config)
-    original_root = Path(args.original_root or Path("data/original")).resolve()
-    extracted_root = Path(args.extracted_root or Path("data/extracted")).resolve()
+    original_root = resolve_path_with_default(args.original_root, "data/original")
+    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
     if not original_root.exists():
         original_root.mkdir(parents=True, exist_ok=True)
 
@@ -604,7 +607,7 @@ def cmd_download(args: argparse.Namespace) -> int:
     sources = registry.all() if years is None else registry.for_years(years)
 
     # Filter by source type if specified
-    if getattr(args, "source_type", None):
+    if args.source_type:
         # argparse already uppercased it via type=str.upper
         requested_type = args.source_type.lower()  # Convert to lowercase for source comparison
         sources = [s for s in sources if s.source_type == requested_type]
@@ -624,8 +627,8 @@ def cmd_download(args: argparse.Namespace) -> int:
     results = download_sources(
         sources,
         original_root,
-        skip_existing=(not bool(args.force)),
-        overwrite_existing=bool(getattr(args, "overwrite", False)),
+        skip_existing=(not args.force),
+        overwrite_existing=args.overwrite,
     )
     # Always record checksums for successful results into config/checksums.yaml
     import hashlib
@@ -742,12 +745,12 @@ def cmd_extract(args: argparse.Namespace) -> int:
     extract_rar_files = getattr(organizer_mod, "extract_rar_files")
     extract_zip_files = getattr(organizer_mod, "extract_zip_files")
 
-    original_root = Path(args.original_root or Path("data/original")).resolve()
-    extracted_root = Path(args.extracted_root or Path("data/extracted")).resolve()
+    original_root = resolve_path_with_default(args.original_root, "data/original")
+    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
     years = _parse_years_arg(args.years)
 
     # Determine which source types to extract
-    source_type_filter = getattr(args, "source_type", None)
+    source_type_filter = args.source_type
     source_type_dirs = []
     if source_type_filter:
         # Map the filter to directory name
@@ -816,11 +819,11 @@ def cmd_mcp_server(args: argparse.Namespace) -> int:
         display_path = rel.as_posix()
     except (ValueError, OSError):
         display_path = str(Path(data_path))
-    port = getattr(args, "port", None)
-    host = getattr(args, "host", None) or "127.0.0.1"
-    https = bool(getattr(args, "https", False))
-    certfile = getattr(args, "certfile", None)
-    keyfile = getattr(args, "keyfile", None)
+    port = args.port
+    host = args.host or "127.0.0.1"
+    https = args.https
+    certfile = args.certfile
+    keyfile = args.keyfile
     if port and https:
         logging.info(
             "Starting MCP HTTPS server on %s:%s (data path: %s)",
@@ -868,11 +871,11 @@ def cmd_discover(args: argparse.Namespace) -> int:
         logging.error("--years is required for discover")
         return 2
 
-    extracted_root = Path(args.extracted_root or Path("data/extracted")).resolve()
+    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
     if not extracted_root.exists() or not extracted_root.is_dir():
         logging.error("Extracted root not found or not a directory: %s", extracted_root)
         return 2
-    parsers_yaml = Path(args.parsers_config or Path("config/parsers.yaml").resolve())
+    parsers_yaml = resolve_path_with_default(args.parsers_config, "config/parsers.yaml")
     src_types: List[str]
     if args.source_type:
         src_types = [args.source_type]
@@ -893,8 +896,8 @@ def cmd_discover(args: argparse.Namespace) -> int:
                     year=int(y),
                     source_type=st,
                     parsers_config_path=parsers_yaml,
-                    force_discover=bool(getattr(args, "force_discover", False)),
-                    deep_validate=bool(getattr(args, "deep_validate", False)),
+                    force_discover=args.force_discover,
+                    deep_validate=args.deep_validate,
                 )
                 logging.info("Discovered %s/%s → %s", y, st, path)
                 ok += 1
