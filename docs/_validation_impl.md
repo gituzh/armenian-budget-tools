@@ -10,7 +10,7 @@
 
 - ✅ `validation/config.py` - Tolerance constants and severity rules
 - ✅ `validation/models.py` - CheckResult, ValidationReport, to_markdown()
-- ✅ `validation/checks/__init__.py` - ValidationCheck protocol
+- ✅ `validation/checks/__init__.py` - Check interface documentation (convention-based, no protocol)
 - ✅ `core/schemas.py` - Field definitions per source type (amounts, percentages, all fields)
 - ✅ `validation/checks/required_fields.py` - Required fields check
 - ✅ `validation/checks/empty_identifiers.py` - Empty identifier check
@@ -35,7 +35,7 @@
 - ✅ Clean module architecture
 - ✅ Centralized configuration (tolerances, severity)
 - ✅ Data models with helper methods
-- ✅ Check interface protocol
+- ✅ Check interface (convention-based, duck typing)
 - ✅ Core structural checks (required fields, empty IDs, missing financial data)
 - ✅ Hierarchical and financial checks (hierarchical totals, negative totals)
 - ✅ Spending-specific checks (period vs annual, negative percentages, execution >100%, percentage calculations)
@@ -526,6 +526,30 @@ Note: This section is updated with more detailed testing guidance. Tests should 
 - Easier to maintain and understand test organization
 - Follows docs/validation.md distinction between parser and validation checks
 - 98% test coverage achieved for validation module
+
+### Decision 8: Remove ValidationCheck Protocol (2025-11-24)
+
+**Rationale:** Remove Protocol in favor of convention-based interface (duck typing):
+
+- Protocol was not enforced (no mypy/type checking configured)
+- Rigid signature incompatible with future data types (KPI checks may need different params)
+- Caused unused parameter warnings (ARG002) for checks that don't use all params
+- Python's strength is duck typing - let each check have natural signature
+- Convention documented in `validation/checks/__init__.py` docstring
+
+**Implementation:**
+
+- Budget checks follow convention: `validate(df, overall, source_type)` and `applies_to_source_type()`
+- Registry uses try-except for signature flexibility (standard → simplified fallback)
+- TODO added in registry for future refactoring when adding new check types
+- Future options: **kwargs pattern, multiple registries, or multiple protocols per domain
+
+**Benefits:**
+
+- No false uniformity enforcement
+- Flexibility for future check types (KPI, cross-validation, etc.)
+- Cleaner signatures for checks that don't need all parameters
+- Standard Python duck typing pattern
 
 ## Notes
 

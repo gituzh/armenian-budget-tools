@@ -18,12 +18,7 @@ from ..models import CheckResult
 class HierarchicalStructureSanityCheck:
     """Validate that the budget hierarchy has reasonable structure."""
 
-    def validate(
-        self,
-        df: pd.DataFrame,
-        overall: Dict,
-        source_type: SourceType,
-    ) -> List[CheckResult]:
+    def validate(self, df: pd.DataFrame) -> List[CheckResult]:
         """Check that the hierarchical structure is not degenerate.
 
         Verifies:
@@ -32,8 +27,6 @@ class HierarchicalStructureSanityCheck:
 
         Args:
             df: DataFrame containing CSV data.
-            overall: Dictionary from overall.json file.
-            source_type: Type of data source being validated.
 
         Returns:
             List with one CheckResult object.

@@ -109,10 +109,22 @@ def run_validation(
         raise ValueError(f"Failed to read overall JSON file {overall_path}: {e}") from e
 
     # Filter and execute applicable checks
+    # TODO: Revisit dispatch architecture when adding new data types (KPI, etc.)
+    # Current: Try-except for signature flexibility (Budget checks use 3 params, some use fewer)
+    # Future options to consider:
+    # 1. Explicit **kwargs pattern: validate(df, *, overall=None, source_type=None, **kwargs)
+    # 2. Multiple registries: BUDGET_CHECKS, KPI_CHECKS with domain-specific runners
+    # 3. Multiple protocols: BudgetCheck, KPICheck with isinstance() dispatch
+    # See discussion: https://github.com/gituzh/armenian-budget-tools/issues/XXX
     all_results: List[CheckResult] = []
     for check in ALL_CHECKS:
         if check.applies_to_source_type(source_type):
-            results = check.validate(df, overall, source_type)
+            try:
+                # Standard signature for budget checks
+                results = check.validate(df, overall, source_type)
+            except TypeError:
+                # Simplified signature (some checks don't need all params)
+                results = check.validate(df)
             all_results.extend(results)
 
     # Create and return validation report

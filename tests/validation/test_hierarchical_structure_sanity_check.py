@@ -36,9 +36,9 @@ def normal_hierarchy_data():
 
 def test_hierarchical_structure_sanity_pass(normal_hierarchy_data):
     """Test that the check passes with normal hierarchical structure."""
-    df, overall = normal_hierarchy_data
+    df, _overall = normal_hierarchy_data
     check = HierarchicalStructureSanityCheck()
-    results = check.validate(df, overall, SourceType.BUDGET_LAW)
+    results = check.validate(df)
 
     assert len(results) == 1
     result = results[0]
@@ -65,10 +65,9 @@ def test_hierarchical_structure_sanity_fail_identical_counts():
         "subprogram_code": [1001, 1011, 2001, 2011, 3001, 3011],
     }
     df = pd.DataFrame(data)
-    overall = {}
 
     check = HierarchicalStructureSanityCheck()
-    results = check.validate(df, overall, SourceType.BUDGET_LAW)
+    results = check.validate(df)
 
     assert len(results) == 1
     result = results[0]
@@ -92,10 +91,9 @@ def test_hierarchical_structure_sanity_fail_no_multi_program():
         "subprogram_code": [1001, 2001, 3001],
     }
     df = pd.DataFrame(data)
-    overall = {}
 
     check = HierarchicalStructureSanityCheck()
-    results = check.validate(df, overall, SourceType.BUDGET_LAW)
+    results = check.validate(df)
 
     assert len(results) == 1
     result = results[0]
