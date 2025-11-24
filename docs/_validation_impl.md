@@ -45,10 +45,10 @@
 - ✅ Unit tests for all validation checks (Phase 8A)
 - ✅ Tests for registry and runner (Phase 8B)
 - ✅ Tests for report generation (Phase 8C)
+- ✅ CLI integration tests (Phase 8D)
 
 **Still Missing:**
 
-- 🟡 CLI integration tests (Phase 8D)
 - 🟡 Remaining old test cleanup (Phase 8E - 1 item)
 - 🟡 Parser test review and relocation (Phase 8F)
 - 🟡 Test coverage validation (Phase 8G)
@@ -358,15 +358,18 @@ Note: This section is updated with more detailed testing guidance. Tests should 
   - [x] For Markdown, assert that a known error message appears under an "Errors" heading.
   - [x] For JSON, parse the output and assert the `errors` list contains the expected object.
 
-**D. CLI Integration Tests:**
+**D. CLI Integration Tests:** ✅
 
-- [ ] Test `armenian-budget validate --years X --source-type Y` command execution.
-- [ ] Test that `--report` and `--report-json` flags create files correctly in a temporary directory.
-- [ ] Test for non-zero exit codes and user-friendly error messages on invalid input (e.g., missing files, invalid source type).
+- [x] Test `armenian-budget validate --years X --source-type Y` command execution.
+- [x] Test that `--report` and `--report-json` flags create files correctly in a temporary directory.
+- [x] Test for non-zero exit codes and user-friendly error messages on invalid input (e.g., missing files, invalid source type).
 
 **Notes on CLI Test Implementation:**
 
-- `tests/cli/test_cmd_validate.py` and `tests/validation/test_cli_report_generation.py` were fixed to correctly handle `argparse.Namespace` objects and missing imports (`sys`).
+- `tests/cli/test_cmd_validate.py` contains 15 comprehensive tests covering all CLI scenarios
+- `tests/validation/test_cli_report_generation.py` contains subprocess-based integration tests
+- Error handling tests verify both exit codes and log message content using `caplog` fixture
+- Tests cover: invalid source types, malformed years, missing files, custom report directories, and multiple years
 
 **E. Delete Redundant Old Validation Tests:**
 
@@ -422,8 +425,8 @@ Note: This section is updated with more detailed testing guidance. Tests should 
 ## Progress Tracking
 
 **Started:** 2025-10-27
-**Current Phase:** Phase 8D-G (Testing - CLI Integration, Test Cleanup, Coverage)
-**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅, Phase 6 ✅, Phase 7 ✅, Phase 8A-C ✅
+**Current Phase:** Phase 8E-G (Testing - Test Cleanup, Coverage)
+**Completed Phases:** Phase 1 ✅, Phase 2 ✅, Phase 3 ✅, Phase 4 ✅, Phase 5 ✅, Phase 6 ✅, Phase 7 ✅, Phase 8A-D ✅
 **Blockers:** None
 
 ## Architecture Decisions Log
