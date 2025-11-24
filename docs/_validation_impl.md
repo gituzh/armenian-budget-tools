@@ -358,6 +358,11 @@ Note: This section is updated with more detailed testing guidance. Tests should 
   - [x] Test report structure, not brittle/exact string matching.
   - [x] For Markdown, assert that a known error message appears under an "Errors" heading.
   - [x] For JSON, parse the output and assert the `errors` list contains the expected object.
+  - [x] Test consistency between markdown and JSON formats:
+    - [x] Verify same summary statistics (counts) in both formats
+    - [x] Verify same check IDs appear in corresponding sections
+    - [x] Verify same messages and fail counts for each check
+    - [x] Test both mixed results and all-passed scenarios
 
 **D. CLI Integration Tests:** ✅
 

@@ -209,3 +209,98 @@ def test_to_console_summary_all_passed(mock_validation_report_all_passed):  # py
     assert "Validation Summary:" in console_output
     assert "✅ All validation checks passed!" in console_output
     assert "Failed Checks:" not in console_output
+
+
+def test_markdown_json_consistency(mock_validation_report):  # pylint: disable=redefined-outer-name
+    """Test that markdown and JSON reports contain consistent information.
+
+    Verifies that both output formats report the same:
+    - Summary statistics (total checks, passed/failed counts, errors/warnings)
+    - Check IDs in each category (passed, warnings, errors)
+    - Fail counts for each failed check
+    - Messages for each check
+    """
+    md_output = mock_validation_report.to_markdown()
+    json_output = mock_validation_report.to_json()
+    json_data = json.loads(json_output)
+
+    # Verify metadata consistency
+    assert mock_validation_report.source_type.value in md_output
+    assert json_data["metadata"]["source_type"] == mock_validation_report.source_type.value
+    assert str(mock_validation_report.csv_path) in md_output
+    assert json_data["metadata"]["csv_path"] == str(mock_validation_report.csv_path)
+
+    # Verify summary statistics match
+    assert f"**Total Checks:** {json_data['summary']['total_checks']}" in md_output
+    assert f"**Passed:** {json_data['summary']['passed_checks']} ✅" in md_output
+    assert f"**Failed:** {json_data['summary']['failed_checks']} ❌" in md_output
+    assert f"**Errors:** {json_data['summary']['errors']}" in md_output
+    assert f"**Warnings:** {json_data['summary']['warnings']}" in md_output
+
+    # Verify passed checks consistency
+    for check in json_data["passed_checks"]:
+        assert f"- **{check['check_id']}**" in md_output
+
+    # Verify warning checks consistency
+    for check in json_data["warning_checks"]:
+        assert f"### ⚠️ {check['check_id']} ({check['fail_count']} failures)" in md_output
+        for msg in check["messages"]:
+            assert f"- {msg}" in md_output
+
+    # Verify error checks consistency
+    for check in json_data["error_checks"]:
+        assert f"### ❌ {check['check_id']} ({check['fail_count']} failures)" in md_output
+        for msg in check["messages"]:
+            assert f"- {msg}" in md_output
+
+    # Verify all checks from fixtures appear in exactly one category
+    all_json_check_ids = (
+        {c["check_id"] for c in json_data["passed_checks"]}
+        | {c["check_id"] for c in json_data["warning_checks"]}
+        | {c["check_id"] for c in json_data["error_checks"]}
+    )
+    expected_check_ids = {r.check_id for r in mock_validation_report.results}
+    assert all_json_check_ids == expected_check_ids
+
+
+def test_markdown_json_consistency_all_passed(mock_validation_report_all_passed):  # pylint: disable=redefined-outer-name
+    """Test format consistency when all checks pass.
+
+    Verifies that the all-passed scenario is represented consistently:
+    - Markdown shows "All Checks Passed" message
+    - JSON has empty warning_checks and error_checks arrays
+    - Summary shows 0 failures, 0 errors, 0 warnings in both formats
+    """
+    md_output = mock_validation_report_all_passed.to_markdown()
+    json_output = mock_validation_report_all_passed.to_json()
+    json_data = json.loads(json_output)
+
+    # Verify metadata consistency
+    assert mock_validation_report_all_passed.source_type.value in md_output
+    assert (
+        json_data["metadata"]["source_type"] == mock_validation_report_all_passed.source_type.value
+    )
+
+    # Verify summary statistics for all-passed case
+    assert json_data["summary"]["failed_checks"] == 0
+    assert json_data["summary"]["errors"] == 0
+    assert json_data["summary"]["warnings"] == 0
+    assert f"**Total Checks:** {json_data['summary']['total_checks']}" in md_output
+    assert f"**Passed:** {json_data['summary']['passed_checks']} ✅" in md_output
+
+    # Verify markdown shows special all-passed message
+    assert "## ✅ All Checks Passed" in md_output
+    assert "No validation issues found." in md_output
+
+    # Verify JSON has empty failure arrays
+    assert len(json_data["warning_checks"]) == 0
+    assert len(json_data["error_checks"]) == 0
+    assert len(json_data["passed_checks"]) == json_data["summary"]["total_checks"]
+
+    # Verify no warning/error sections in markdown
+    assert "## ⚠️ Warnings" not in md_output
+    assert "## ❌ Errors" not in md_output
+
+    # Verify all checks appear in passed section
+    for check in json_data["passed_checks"]:
+        assert f"- **{check['check_id']}**" in md_output
