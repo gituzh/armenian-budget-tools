@@ -391,15 +391,21 @@ def cmd_validate(args: argparse.Namespace) -> int:
             try:
                 source_type = SourceType[st_name]
             except KeyError:
-                logging.warning("Skipping unknown source type: %s", st_name)
+                valid_types = ", ".join(SourceType.__members__.keys())
+                logging.error(
+                    "Invalid source type: %s. Valid types: %s",
+                    st_name,
+                    valid_types,
+                )
+                total_errors += 1
                 validation_results.append(
                     {
                         "year": year,
                         "source_type": st_name,
                         "status": "ERROR",
-                        "errors": 0,
+                        "errors": 1,
                         "warnings": 0,
-                        "reason": "unknown source type",
+                        "reason": "invalid source type",
                     }
                 )
                 continue
@@ -549,13 +555,13 @@ def cmd_validate(args: argparse.Namespace) -> int:
                 )
 
     # Determine exit code (strict: fail if ANY errors found)
-    if successful_validations == 0:
-        logging.error("No datasets were validated.")
-        return 1
-
     if total_errors > 0:
         logging.error("Validation found %d errors across all datasets.", total_errors)
         return 2
+
+    if successful_validations == 0:
+        logging.error("No datasets were validated.")
+        return 1
 
     return 0
 
