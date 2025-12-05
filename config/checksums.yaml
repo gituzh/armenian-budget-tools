@@ -209,3 +209,15 @@ checksums:
   url: https://minfin.am/website/images/website/637cb1feeb346546589329b6ac4a9320ba2c7db0a30054205ddaf02f2be116a4.rar
   checksum: 1b1d49a05c7fd979be62aebb2d90755ecbaac48c72c851c605213128433548f6
   checksum_updated_at: '2025-09-15T02:20:52.789149+00:00'
+- name: 2025_mtep
+  year: 2025
+  source_type: mtep
+  url: https://minfin.am/website/images/website/%D5%84%D4%BA%D4%BE%D4%BE-%D5%B0%D5%A1%D5%BE%D5%A5%D5%AC%D5%BE%D5%A1%D5%AE%D5%B6%D5%A5%D6%80%20(1).rar
+  checksum: f5e42c3b486b1742907ea4ba1489a2e5fede5faa65cabe17641daaeeddf4bac2
+  checksum_updated_at: '2025-10-31T07:44:16.165308+00:00'
+- name: 2025_spending_q123
+  year: 2025
+  source_type: spending_q123
+  url: https://minfin.am/website/images/files/2025_9%20%D5%A1%D5%B4%D5%AB%D5%BD_%D5%B0%D5%A1%D5%B7%D5%BE%D5%A5%D5%BF%D5%BE%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.rar
+  checksum: 2e854f980f350957683090b797b7fd13cd0751099e78220c1b4916c7529b7c17
+  checksum_updated_at: '2025-11-11T16:22:09.363595+00:00'

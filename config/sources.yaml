@@ -223,6 +223,13 @@ sources:
     file_format: "rar"
     description: "2025 State Budget Law attachments (Excel)"
 
+  - name: "2025_mtep"
+    year: 2025
+    source_type: "mtep"
+    url: "https://minfin.am/website/images/website/%D5%84%D4%BA%D4%BE%D4%BE-%D5%B0%D5%A1%D5%BE%D5%A5%D5%AC%D5%BE%D5%A1%D5%AE%D5%B6%D5%A5%D6%80%20(1).rar"
+    file_format: "rar"
+    description: "2025 Mid-Term Expenditure Program"
+
   - name: "2025_spending_q1"
     year: 2025
     source_type: "spending_q1"
@@ -236,3 +243,10 @@ sources:
     url: "https://minfin.am/website/images/files/2025_I կիսամյակ_հաշվետվություն.rar"
     file_format: "rar"
     description: "2025 Q1-Q2 Spending Report"
+
+  - name: "2025_spending_q123"
+    year: 2025
+    source_type: "spending_q123"
+    url: "https://minfin.am/website/images/files/2025_9%20%D5%A1%D5%B4%D5%AB%D5%BD_%D5%B0%D5%A1%D5%B7%D5%BE%D5%A5%D5%BF%D5%BE%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.rar"
+    file_format: "rar"
+    description: "2025 Q1-Q3 Spending Report"
