@@ -2,7 +2,7 @@
 
 **Source Type:** SPENDING_Q12
 **File:** 2021_SPENDING_Q12.csv
-**Generated:** 2025-11-24 18:40:32
+**Generated:** 2025-12-05 15:24:16
 
 ## Summary
 
@@ -10,13 +10,13 @@
 
 - **Total Rules:** 47
 - **Passed:** 42 ✅
-- **With Warnings:** 4 ⚠️
-- **With Errors:** 1 ❌
+- **With Warnings:** 5 ⚠️
+- **With Errors:** 0 ❌
 
 ### Issues Found
 
-- **Errors:** 6 ❌
-- **Warnings:** 27 ⚠️
+- **Errors:** 0
+- **Warnings:** 33 ⚠️
 
 ## ✅ Passed Checks
 
@@ -104,16 +104,14 @@
 - Subprogram field 'subprogram_rev_period_plan' has negative value: -1276.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 - Subprogram field 'subprogram_actual' has negative value: -644789.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 
-## ❌ Errors
+### ⚠️ period_vs_annual (6 failures)
 
-### ❌ period_vs_annual (6 failures)
-
-- Subprogram violation: 'subprogram_period_plan' (272450.40) > 'subprogram_annual_plan' (0.00) by 272450.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1004 | 11012
-- Subprogram violation: 'subprogram_period_plan' (83937.20) > 'subprogram_annual_plan' (0.00) by 83937.20 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12004
-- Subprogram violation: 'subprogram_period_plan' (227272.00) > 'subprogram_annual_plan' (0.00) by 227272.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1072 | 11003
-- Subprogram violation: 'subprogram_period_plan' (165000.00) > 'subprogram_annual_plan' (0.00) by 165000.00 for ՀՀ առողջապահության նախարարություն | 1053 | 32004
-- Subprogram violation: 'subprogram_period_plan' (500000.00) > 'subprogram_annual_plan' (387693.00) by 112307.00 for ՀՀ ֆինանսների նախարարություն | 1006 | 11002
-- Subprogram violation: 'subprogram_period_plan' (50000.00) > 'subprogram_annual_plan' (0.00) by 50000.00 for ՀՀ ֆինանսների նախարարություն | 1108 | 11008
+- Subprogram violation: 'subprogram_period_plan' (272450.40) exceeds limit 'subprogram_annual_plan' (0.00) by 272450.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1004 | 11012
+- Subprogram violation: 'subprogram_period_plan' (83937.20) exceeds limit 'subprogram_annual_plan' (0.00) by 83937.20 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12004
+- Subprogram violation: 'subprogram_period_plan' (227272.00) exceeds limit 'subprogram_annual_plan' (0.00) by 227272.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1072 | 11003
+- Subprogram violation: 'subprogram_period_plan' (165000.00) exceeds limit 'subprogram_annual_plan' (0.00) by 165000.00 for ՀՀ առողջապահության նախարարություն | 1053 | 32004
+- Subprogram violation: 'subprogram_period_plan' (500000.00) exceeds limit 'subprogram_annual_plan' (387693.00) by 112307.00 for ՀՀ ֆինանսների նախարարություն | 1006 | 11002
+- Subprogram violation: 'subprogram_period_plan' (50000.00) exceeds limit 'subprogram_annual_plan' (0.00) by 50000.00 for ՀՀ ֆինանսների նախարարություն | 1108 | 11008
 
 ---
 

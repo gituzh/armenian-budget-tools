@@ -3,14 +3,14 @@
     "source_type": "SPENDING_Q123",
     "csv_path": "2022_SPENDING_Q123.csv",
     "overall_path": "2022_SPENDING_Q123_overall.json",
-    "generated_at": "2025-11-24T18:40:33.050472"
+    "generated_at": "2025-12-05T15:24:16.897900"
   },
   "summary": {
     "total_rules": 47,
-    "passed": 42,
+    "passed": 44,
     "with_warnings": 3,
-    "with_errors": 2,
-    "errors": 16,
+    "with_errors": 0,
+    "errors": 0,
     "warnings": 47
   },
   "passed_checks": [
@@ -220,6 +220,16 @@
       "messages": []
     },
     {
+      "check_id": "period_vs_annual",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "period_vs_annual",
+      "severity": "warning",
+      "messages": []
+    },
+    {
       "check_id": "required_fields",
       "severity": "error",
       "messages": []
@@ -295,36 +305,5 @@
       ]
     }
   ],
-  "error_checks": [
-    {
-      "check_id": "period_vs_annual",
-      "severity": "error",
-      "fail_count": 14,
-      "messages": [
-        "Program violation: 'program_period_plan' (-5150738.10) > 'program_annual_plan' (-8917337.50) by 3766599.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001",
-        "Program violation: 'program_period_plan' (-5150738.10) > 'program_annual_plan' (-8917337.50) by 3766599.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003",
-        "Program violation: 'program_period_plan' (-5150738.10) > 'program_annual_plan' (-8917337.50) by 3766599.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11007",
-        "Program violation: 'program_period_plan' (-5150738.10) > 'program_annual_plan' (-8917337.50) by 3766599.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11012",
-        "Program violation: 'program_period_plan' (-5150738.10) > 'program_annual_plan' (-8917337.50) by 3766599.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11015",
-        "Program violation: 'program_period_plan' (-5150738.10) > 'program_annual_plan' (-8917337.50) by 3766599.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
-        "Program violation: 'program_period_plan' (-5150738.10) > 'program_annual_plan' (-8917337.50) by 3766599.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31004",
-        "Program violation: 'program_rev_period_plan' (-5073311.00) > 'program_rev_annual_plan' (-8835667.40) by 3762356.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001",
-        "Program violation: 'program_rev_period_plan' (-5073311.00) > 'program_rev_annual_plan' (-8835667.40) by 3762356.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003",
-        "Program violation: 'program_rev_period_plan' (-5073311.00) > 'program_rev_annual_plan' (-8835667.40) by 3762356.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11007",
-        "Program violation: 'program_rev_period_plan' (-5073311.00) > 'program_rev_annual_plan' (-8835667.40) by 3762356.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11012",
-        "Program violation: 'program_rev_period_plan' (-5073311.00) > 'program_rev_annual_plan' (-8835667.40) by 3762356.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11015",
-        "Program violation: 'program_rev_period_plan' (-5073311.00) > 'program_rev_annual_plan' (-8835667.40) by 3762356.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
-        "Program violation: 'program_rev_period_plan' (-5073311.00) > 'program_rev_annual_plan' (-8835667.40) by 3762356.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31004"
-      ]
-    },
-    {
-      "check_id": "period_vs_annual",
-      "severity": "error",
-      "fail_count": 2,
-      "messages": [
-        "Subprogram violation: 'subprogram_period_plan' (-6000000.00) > 'subprogram_annual_plan' (-10059266.00) by 4059266.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
-        "Subprogram violation: 'subprogram_rev_period_plan' (-6000000.00) > 'subprogram_rev_annual_plan' (-10059266.00) by 4059266.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002"
-      ]
-    }
-  ]
+  "error_checks": []
 }

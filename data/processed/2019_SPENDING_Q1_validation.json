@@ -3,14 +3,14 @@
     "source_type": "SPENDING_Q1",
     "csv_path": "2019_SPENDING_Q1.csv",
     "overall_path": "2019_SPENDING_Q1_overall.json",
-    "generated_at": "2025-11-24T18:40:31.412592"
+    "generated_at": "2025-12-05T15:24:15.223611"
   },
   "summary": {
     "total_rules": 47,
-    "passed": 42,
+    "passed": 43,
     "with_warnings": 4,
-    "with_errors": 1,
-    "errors": 2,
+    "with_errors": 0,
+    "errors": 0,
     "warnings": 12
   },
   "passed_checks": [
@@ -220,6 +220,11 @@
       "messages": []
     },
     {
+      "check_id": "period_vs_annual",
+      "severity": "warning",
+      "messages": []
+    },
+    {
       "check_id": "required_fields",
       "severity": "error",
       "messages": []
@@ -267,15 +272,5 @@
       ]
     }
   ],
-  "error_checks": [
-    {
-      "check_id": "period_vs_annual",
-      "severity": "error",
-      "fail_count": 2,
-      "messages": [
-        "Subprogram violation: 'subprogram_period_plan' (0.00) > 'subprogram_annual_plan' (-1276.00) by 1276.00 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարություն | 1079 | 31002",
-        "Subprogram violation: 'subprogram_rev_period_plan' (0.00) > 'subprogram_rev_annual_plan' (-1276.00) by 1276.00 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարություն | 1079 | 31002"
-      ]
-    }
-  ]
+  "error_checks": []
 }

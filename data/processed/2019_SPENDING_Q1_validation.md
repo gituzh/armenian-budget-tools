@@ -2,20 +2,20 @@
 
 **Source Type:** SPENDING_Q1
 **File:** 2019_SPENDING_Q1.csv
-**Generated:** 2025-11-24 18:40:31
+**Generated:** 2025-12-05 15:24:15
 
 ## Summary
 
 ### Check Status
 
 - **Total Rules:** 47
-- **Passed:** 42 ✅
+- **Passed:** 43 ✅
 - **With Warnings:** 4 ⚠️
-- **With Errors:** 1 ❌
+- **With Errors:** 0 ❌
 
 ### Issues Found
 
-- **Errors:** 2 ❌
+- **Errors:** 0
 - **Warnings:** 12 ⚠️
 
 ## ✅ Passed Checks
@@ -61,6 +61,7 @@
 - **period_vs_annual**
 - **period_vs_annual**
 - **period_vs_annual**
+- **period_vs_annual**
 - **required_fields**
 
 ## ⚠️ Warnings
@@ -88,13 +89,6 @@
 - Subprogram field 'subprogram_actual' has negative value: -126747.38 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարություն | 1079 | 31002
 - Subprogram field 'subprogram_actual' has negative value: -94.85 for ՀՀ արտակարգ իրավիճակների նախարարություն | 9995 | 99100
 - Subprogram field 'subprogram_actual' has negative value: -7565.86 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարության պետական գույքի կառավարման կոմիտե | 9975 | 99100
-
-## ❌ Errors
-
-### ❌ period_vs_annual (2 failures)
-
-- Subprogram violation: 'subprogram_period_plan' (0.00) > 'subprogram_annual_plan' (-1276.00) by 1276.00 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարություն | 1079 | 31002
-- Subprogram violation: 'subprogram_rev_period_plan' (0.00) > 'subprogram_rev_annual_plan' (-1276.00) by 1276.00 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարություն | 1079 | 31002
 
 ---
 

@@ -2,20 +2,20 @@
 
 **Source Type:** SPENDING_Q12
 **File:** 2022_SPENDING_Q12.csv
-**Generated:** 2025-11-24 18:40:32
+**Generated:** 2025-12-05 15:24:16
 
 ## Summary
 
 ### Check Status
 
 - **Total Rules:** 47
-- **Passed:** 41 ✅
+- **Passed:** 43 ✅
 - **With Warnings:** 4 ⚠️
-- **With Errors:** 2 ❌
+- **With Errors:** 0 ❌
 
 ### Issues Found
 
-- **Errors:** 16 ❌
+- **Errors:** 0
 - **Warnings:** 54 ⚠️
 
 ## ✅ Passed Checks
@@ -58,6 +58,8 @@
 - **percentage_calculation**
 - **percentage_calculation**
 - **percentage_calculation**
+- **period_vs_annual**
+- **period_vs_annual**
 - **period_vs_annual**
 - **period_vs_annual**
 - **required_fields**
@@ -129,30 +131,6 @@
 - Subprogram field 'subprogram_period_plan' has negative value: -3000000.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 - Subprogram field 'subprogram_rev_period_plan' has negative value: -3000000.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 - Subprogram field 'subprogram_actual' has negative value: -3554165.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
-
-## ❌ Errors
-
-### ❌ period_vs_annual (14 failures)
-
-- Program violation: 'program_period_plan' (-2419342.80) > 'program_annual_plan' (-8917337.50) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001
-- Program violation: 'program_period_plan' (-2419342.80) > 'program_annual_plan' (-8917337.50) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003
-- Program violation: 'program_period_plan' (-2419342.80) > 'program_annual_plan' (-8917337.50) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11007
-- Program violation: 'program_period_plan' (-2419342.80) > 'program_annual_plan' (-8917337.50) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11012
-- Program violation: 'program_period_plan' (-2419342.80) > 'program_annual_plan' (-8917337.50) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11015
-- Program violation: 'program_period_plan' (-2419342.80) > 'program_annual_plan' (-8917337.50) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
-- Program violation: 'program_period_plan' (-2419342.80) > 'program_annual_plan' (-8917337.50) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31004
-- Program violation: 'program_rev_period_plan' (-2369804.10) > 'program_rev_annual_plan' (-8867798.80) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001
-- Program violation: 'program_rev_period_plan' (-2369804.10) > 'program_rev_annual_plan' (-8867798.80) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003
-- Program violation: 'program_rev_period_plan' (-2369804.10) > 'program_rev_annual_plan' (-8867798.80) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11007
-- Program violation: 'program_rev_period_plan' (-2369804.10) > 'program_rev_annual_plan' (-8867798.80) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11012
-- Program violation: 'program_rev_period_plan' (-2369804.10) > 'program_rev_annual_plan' (-8867798.80) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11015
-- Program violation: 'program_rev_period_plan' (-2369804.10) > 'program_rev_annual_plan' (-8867798.80) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
-- Program violation: 'program_rev_period_plan' (-2369804.10) > 'program_rev_annual_plan' (-8867798.80) by 6497994.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31004
-
-### ❌ period_vs_annual (2 failures)
-
-- Subprogram violation: 'subprogram_period_plan' (-3000000.00) > 'subprogram_annual_plan' (-10059266.00) by 7059266.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
-- Subprogram violation: 'subprogram_rev_period_plan' (-3000000.00) > 'subprogram_rev_annual_plan' (-10059266.00) by 7059266.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 
 ---
 
