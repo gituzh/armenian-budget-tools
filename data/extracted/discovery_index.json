@@ -289,15 +289,15 @@
     "checksum": "sha256:12610fd4d7c57574ce70947555a369ed0c49ce7499142ec6031ac6d09182b719",
     "discovered_at": "2025-09-14T00:08:40Z"
   },
-  "2025/budget_law": {
-    "key": "2025/budget_law",
-    "path": "budget_laws/2025/օրենքի հավելվածներ/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+  "2024/mtep": {
+    "key": "2024/mtep",
+    "path": "mtep/2024/637cb1feeb346546589329b6ac4a9320ba2c7db0a30054205ddaf02f2be116a4/2024-2026 HAVELVACNER/1. Հավելված N1_ԲԳԿ.Ծրագիր.xlsx",
     "matched_by": "global",
-    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
-    "mtime": 1747107406.9242134,
-    "size": 148356,
-    "checksum": "sha256:8a95bddc42991c018bbc8af2210829306fe68cfd56ec71e407a9c06929b24970",
-    "discovered_at": "2025-08-23T19:15:00Z"
+    "pattern": "(?i)(?=.*ծրագ).*\\.(xlsx|xls)$",
+    "mtime": 1686858716.0,
+    "size": 63343,
+    "checksum": "sha256:eab514657e1e91f97f8486d39014e31fe43048fc5de0f591b49b94ef43058ff2",
+    "discovered_at": "2025-09-15T01:58:02Z"
   },
   "2024/spending_q1234": {
     "key": "2024/spending_q1234",
@@ -308,6 +308,16 @@
     "size": 383457,
     "checksum": "sha256:871d1ccadf12fc3a27fadb96fb2d5a9f1c2113ffeeda12e7bdae9384c2bc70f0",
     "discovered_at": "2025-09-13T02:22:05Z"
+  },
+  "2025/budget_law": {
+    "key": "2025/budget_law",
+    "path": "budget_laws/2025/օրենքի հավելվածներ/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1747107406.9242134,
+    "size": 148356,
+    "checksum": "sha256:8a95bddc42991c018bbc8af2210829306fe68cfd56ec71e407a9c06929b24970",
+    "discovered_at": "2025-08-23T19:15:00Z"
   },
   "2025/spending_q1": {
     "key": "2025/spending_q1",
@@ -329,14 +339,14 @@
     "checksum": "sha256:0f466c2bbaaea29515a6f3153dd1aa4e4b5d0b6b76af4bc602177b52095ba6c7",
     "discovered_at": "2025-09-13T02:22:05Z"
   },
-  "2024/mtep": {
-    "key": "2024/mtep",
-    "path": "mtep/2024/637cb1feeb346546589329b6ac4a9320ba2c7db0a30054205ddaf02f2be116a4/2024-2026 HAVELVACNER/1. Հավելված N1_ԲԳԿ.Ծրագիր.xlsx",
+  "2025/spending_q123": {
+    "key": "2025/spending_q123",
+    "path": "spending_reports/2025/Q123/2025_9 ամիս_հաշվետվություն/2025_9 ամիս_հաշվետվություն/2. Ծախսային քաղաքականություն/2.3.Հավելվածներ/2.Ծախսերն ըստ ծրագրերի և միջոցառումների_2025 9 ամիս.xlsx",
     "matched_by": "global",
-    "pattern": "(?i)(?=.*ծրագ).*\\.(xlsx|xls)$",
-    "mtime": 1686858716.0,
-    "size": 63343,
-    "checksum": "sha256:eab514657e1e91f97f8486d39014e31fe43048fc5de0f591b49b94ef43058ff2",
-    "discovered_at": "2025-09-15T01:58:02Z"
-  }
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1762517000.3120003,
+    "size": 221955,
+    "checksum": "sha256:b1edd553363b2b0580ae100e11e7c0326ac55636040bc5b9c8a710a0136a6d7c",
+    "discovered_at": "2025-11-11T16:22:36Z"
+  },
 }
