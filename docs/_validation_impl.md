@@ -431,7 +431,9 @@ Note: This section is updated with more detailed testing guidance. Tests should 
     - [x] Violation if `Period < Annual` (i.e., Period is "more negative" than Annual)
   - [x] **Rule 3: Mixed Signs**
     - [x] If `Annual` and `Period` have different signs (and `Period` is not zero), it is a violation.
-  - [x] **Severity:** All identified violations should result in an `error` severity.
+  - [x] **Severity:** 
+    - [x] Error: overall, state_body, program
+    - [x] Warning: subprogram
 - [x] Update corresponding unit tests in `tests/validation/test_period_vs_annual_check.py` to cover new logic, including mixed sign scenarios.
 
 ### Phase 9: Documentation and Cleanup

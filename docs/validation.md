@@ -127,7 +127,7 @@ Period budgets generally should not exceed annual budgets, but the logic depends
 
 | Data Type | Checks | Severity |
 |-----------|--------|----------|
-| **Spending Q1/Q12/Q123** | `*_period_plan` vs `*_annual_plan`<br>`*_rev_period_plan` vs `*_rev_annual_plan` | Error |
+| **Spending Q1/Q12/Q123** | `*_period_plan` vs `*_annual_plan`<br>`*_rev_period_plan` vs `*_rev_annual_plan` | Error: overall, state_body, program<br>Warning: subprogram |
 
 **Wildcard (`*`) represents:** `overall` (JSON), `state_body`, `program`, `subprogram` (CSV).
 

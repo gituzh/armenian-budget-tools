@@ -64,8 +64,10 @@ def test_period_vs_annual_fail_overall(valid_period_data):  # pylint: disable=re
     overall_result = results[0]
     assert overall_result.passed is False
     assert (
-        "overall_period_plan (1001.0) exceeds limit overall_annual_plan (1000.0)" in overall_result.messages[0]
+        "overall_period_plan (1001.0) exceeds limit overall_annual_plan (1000.0)"
+        in overall_result.messages[0]
     )
+    assert overall_result.severity == "error"
 
 
 def test_period_vs_annual_fail_program_revised(valid_period_data):  # pylint: disable=redefined-outer-name
@@ -79,9 +81,27 @@ def test_period_vs_annual_fail_program_revised(valid_period_data):  # pylint: di
     assert program_result.passed is False
     assert program_result.fail_count == 1
     assert (
-        "Program violation: 'program_rev_period_plan' (1101.00) exceeds limit 'program_rev_annual_plan' "
-        "(1100.00) by 1.00"
-        in program_result.messages[0]
+        "Program violation: 'program_rev_period_plan' (1101.00) exceeds limit "
+        "'program_rev_annual_plan' "
+        "(1100.00) by 1.00" in program_result.messages[0]
+    )
+    assert program_result.severity == "error"
+
+
+def test_period_vs_annual_fail_subprogram_warning(valid_period_data):  # pylint: disable=redefined-outer-name
+    """Test that subprogram violation is a warning, not an error."""
+    df, overall = valid_period_data
+    df.loc[0, "subprogram_period_plan"] = 1001.0
+    check = PeriodVsAnnualCheck()
+    results = check.validate(df, overall, SourceType.SPENDING_Q1)
+
+    subprogram_result = results[3]  # overall, state_body, program, subprogram
+    assert subprogram_result.passed is False
+    assert subprogram_result.fail_count == 1
+    assert subprogram_result.severity == "warning"
+    assert (
+        "Subprogram violation: 'subprogram_period_plan' (1001.00) exceeds limit 'subprogram_annual_plan' "
+        "(1000.00) by 1.00" in subprogram_result.messages[0]
     )
 
 

@@ -75,7 +75,7 @@ PERIOD_VS_ANNUAL_SEVERITY = {
     "overall": "error",
     "state_body": "error",
     "program": "error",
-    "subprogram": "error",
+    "subprogram": "warning",
 }
 
 # Negative percentages - Error at overall/state_body, Warning at program/subprogram
