@@ -42,18 +42,38 @@ class PeriodVsAnnualCheck:
 
         # Check overall JSON
         violations = []
+
+        def check_pair(p_val, a_val, p_name, a_name):
+            # Rule 1: Annual >= 0 AND Period > Annual
+            if a_val >= 0 and p_val > a_val:
+                return f"{p_name} ({p_val}) exceeds limit {a_name} ({a_val})"
+            # Rule 2: Annual < 0 AND Period < Annual
+            if a_val < 0 and p_val < a_val:
+                return f"{p_name} ({p_val}) exceeds limit {a_name} ({a_val})"
+            # Rule 3: Mixed Signs
+            if ((a_val >= 0 and p_val < 0) or (a_val <= 0 and p_val > 0)) and p_val != 0:
+                return f"{p_name} ({p_val}) exceeds limit {a_name} ({a_val})"
+            return None
+
         if "overall_period_plan" in overall and "overall_annual_plan" in overall:
-            if overall["overall_period_plan"] > overall["overall_annual_plan"]:
-                violations.append(
-                    f"overall_period_plan ({overall['overall_period_plan']}) > "
-                    f"overall_annual_plan ({overall['overall_annual_plan']})"
-                )
+            msg = check_pair(
+                overall["overall_period_plan"],
+                overall["overall_annual_plan"],
+                "overall_period_plan",
+                "overall_annual_plan",
+            )
+            if msg:
+                violations.append(msg)
+
         if "overall_rev_period_plan" in overall and "overall_rev_annual_plan" in overall:
-            if overall["overall_rev_period_plan"] > overall["overall_rev_annual_plan"]:
-                violations.append(
-                    f"overall_rev_period_plan ({overall['overall_rev_period_plan']}) > "
-                    f"overall_rev_annual_plan ({overall['overall_rev_annual_plan']})"
-                )
+            msg = check_pair(
+                overall["overall_rev_period_plan"],
+                overall["overall_rev_annual_plan"],
+                "overall_rev_period_plan",
+                "overall_rev_annual_plan",
+            )
+            if msg:
+                violations.append(msg)
 
         if violations:
             results.append(
@@ -84,28 +104,72 @@ class PeriodVsAnnualCheck:
 
             messages = []
 
-            # Check period_plan ≤ annual_plan
+            # Check period_plan vs annual_plan
             if period_field in df.columns and annual_field in df.columns:
-                violations = df[df[period_field] > df[annual_field]]
+                # Rule 1: Annual >= 0 AND Period > Annual
+                violations_rule1 = df[
+                    (df[annual_field] >= 0) & (df[period_field] > df[annual_field])
+                ]
+
+                # Rule 2: Annual < 0 AND Period < Annual
+                violations_rule2 = df[
+                    (df[annual_field] < 0) & (df[period_field] < df[annual_field])
+                ]
+
+                # Rule 3: Mixed Signs (and Period is not 0)
+                violations_rule3 = df[
+                    (
+                        ((df[annual_field] >= 0) & (df[period_field] < 0))
+                        | ((df[annual_field] <= 0) & (df[period_field] > 0))
+                    )
+                    & (df[period_field] != 0)
+                ]
+
+                violations = pd.concat(
+                    [violations_rule1, violations_rule2, violations_rule3]
+                ).drop_duplicates()
+
                 for _, row in violations.iterrows():
                     diff = row[period_field] - row[annual_field]
                     messages.append(
                         f"{level.capitalize()} violation: '{period_field}' "
-                        f"({row[period_field]:.2f}) > '{annual_field}' "
-                        f"({row[annual_field]:.2f}) by {diff:.2f} for "
+                        f"({row[period_field]:.2f}) exceeds limit '{annual_field}' "
+                        f"({row[annual_field]:.2f}) by {abs(diff):.2f} for "
                         f"{row.get('state_body', '')} | {row.get('program_code', '')} | "
                         f"{row.get('subprogram_code', '')}"
                     )
 
-            # Check rev_period_plan ≤ rev_annual_plan
+            # Check rev_period_plan vs rev_annual_plan
             if rev_period_field in df.columns and rev_annual_field in df.columns:
-                violations = df[df[rev_period_field] > df[rev_annual_field]]
-                for _, row in violations.iterrows():
+                # Rule 1: Annual >= 0 AND Period > Annual
+                violations_rule1_rev = df[
+                    (df[rev_annual_field] >= 0) & (df[rev_period_field] > df[rev_annual_field])
+                ]
+
+                # Rule 2: Annual < 0 AND Period < Annual
+                violations_rule2_rev = df[
+                    (df[rev_annual_field] < 0) & (df[rev_period_field] < df[rev_annual_field])
+                ]
+
+                # Rule 3: Mixed Signs (and Period is not 0)
+                violations_rule3_rev = df[
+                    (
+                        ((df[rev_annual_field] >= 0) & (df[rev_period_field] < 0))
+                        | ((df[rev_annual_field] <= 0) & (df[rev_period_field] > 0))
+                    )
+                    & (df[rev_period_field] != 0)
+                ]
+
+                violations_rev = pd.concat(
+                    [violations_rule1_rev, violations_rule2_rev, violations_rule3_rev]
+                ).drop_duplicates()
+
+                for _, row in violations_rev.iterrows():
                     diff = row[rev_period_field] - row[rev_annual_field]
                     messages.append(
                         f"{level.capitalize()} violation: '{rev_period_field}' "
-                        f"({row[rev_period_field]:.2f}) > '{rev_annual_field}' "
-                        f"({row[rev_annual_field]:.2f}) by {diff:.2f} for "
+                        f"({row[rev_period_field]:.2f}) exceeds limit '{rev_annual_field}' "
+                        f"({row[rev_annual_field]:.2f}) by {abs(diff):.2f} for "
                         f"{row.get('state_body', '')} | {row.get('program_code', '')} | "
                         f"{row.get('subprogram_code', '')}"
                     )

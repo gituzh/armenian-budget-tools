@@ -64,7 +64,7 @@ def test_period_vs_annual_fail_overall(valid_period_data):  # pylint: disable=re
     overall_result = results[0]
     assert overall_result.passed is False
     assert (
-        "overall_period_plan (1001.0) > overall_annual_plan (1000.0)" in overall_result.messages[0]
+        "overall_period_plan (1001.0) exceeds limit overall_annual_plan (1000.0)" in overall_result.messages[0]
     )
 
 
@@ -79,8 +79,8 @@ def test_period_vs_annual_fail_program_revised(valid_period_data):  # pylint: di
     assert program_result.passed is False
     assert program_result.fail_count == 1
     assert (
-        "Program violation: 'program_rev_period_plan' (1101.00) > 'program_rev_annual_plan' "
-        "(1100.00)"
+        "Program violation: 'program_rev_period_plan' (1101.00) exceeds limit 'program_rev_annual_plan' "
+        "(1100.00) by 1.00"
         in program_result.messages[0]
     )
 
@@ -88,14 +88,41 @@ def test_period_vs_annual_fail_program_revised(valid_period_data):  # pylint: di
 @pytest.mark.parametrize(
     "period_plan, annual_plan, expect_pass",
     [
-        (200.0, 1000.0, True),  # period < annual
+        # Rule 1: Annual >= 0
+        (200.0, 1000.0, True),  # period <= annual
         (1000.0, 1000.0, True),  # period == annual
         (1001.0, 1000.0, False),  # period > annual
+        (0.0, 0.0, True),  # zero case
+        # Rule 2: Annual < 0
+        (-80.0, -100.0, True),  # period >= annual (less negative)
+        (-100.0, -100.0, True),  # period == annual
+        (-120.0, -100.0, False),  # period < annual (more negative)
+        (0.0, -1276.0, True),  # period > annual (delayed return case, OK)
+        # Rule 3: Mixed Signs
+        (-10.0, 100.0, False),  # Annual +, Period - (not 0) -> Violation
+        (10.0, -100.0, False),  # Annual -, Period + (not 0) -> Violation
+        (0.0, 100.0, True),  # Annual +, Period 0 (Ok)
+        (0.0, -100.0, True),  # Annual -, Period 0 (Ok)
+        (-10.0, 0.0, False),  # Annual 0, Period - (strict zero enforcement)
     ],
-    ids=["less_than", "equal_to", "greater_than"],
+    ids=[
+        "pos_less",
+        "pos_equal",
+        "pos_greater",
+        "pos_zero",
+        "neg_less_neg",
+        "neg_equal",
+        "neg_more_neg",
+        "neg_zero_period",
+        "mixed_ann_pos_per_neg",
+        "mixed_ann_neg_per_pos",
+        "mixed_ann_pos_per_zero",
+        "mixed_ann_neg_per_zero",
+        "zero_annual_neg_period",
+    ],
 )
 def test_period_vs_annual_boundaries(valid_period_data, period_plan, annual_plan, expect_pass):  # pylint: disable=redefined-outer-name
-    """Test boundary conditions for the period vs annual check."""
+    """Test boundary conditions for the period vs annual check with new logic."""
     df, overall = valid_period_data
     # Modify the program level for testing
     df.loc[0, "program_period_plan"] = period_plan

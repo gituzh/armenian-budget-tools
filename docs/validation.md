@@ -115,13 +115,19 @@ Negative values may indicate data quality issues or legitimate corrections/adjus
 
 **Wildcard (`*`) represents:** `overall` (JSON), `state_body`, `program`, `subprogram` (CSV). MTEP has no subprogram.
 
-### Period ≤ Annual Plan
+### Period vs Annual Plan Consistency
 
-Period budgets cannot exceed annual budgets. Violations indicate data entry errors.
+Period budgets generally should not exceed annual budgets, but the logic depends on the sign of the amounts (spending vs. returns).
+
+**Rules:**
+
+1.  **Positive Annual Plan (Spending):** Violation if `Period > Annual`. You cannot plan to spend more in a period than for the whole year.
+2.  **Negative Annual Plan (Returns/Reductions):** Violation if `Period < Annual` (i.e., more negative). You cannot plan to return more in a period than authorized for the whole year.
+3.  **Mixed Signs:** Violation if `Period` and `Annual` have different signs (unless `Period` is zero). This indicates a fundamental mismatch in the direction of the flow.
 
 | Data Type | Checks | Severity |
 |-----------|--------|----------|
-| **Spending Q1/Q12/Q123** | `*_period_plan` ≤ `*_annual_plan`<br>`*_rev_period_plan` ≤ `*_rev_annual_plan` | Error |
+| **Spending Q1/Q12/Q123** | `*_period_plan` vs `*_annual_plan`<br>`*_rev_period_plan` vs `*_rev_annual_plan` | Error |
 
 **Wildcard (`*`) represents:** `overall` (JSON), `state_body`, `program`, `subprogram` (CSV).
 

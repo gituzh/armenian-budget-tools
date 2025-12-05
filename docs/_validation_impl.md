@@ -422,6 +422,18 @@ Note: This section is updated with more detailed testing guidance. Tests should 
 
 **Completion Criteria:** All validation code has tests, old redundant tests deleted, remaining tests reviewed and relocated appropriately, test coverage maintained
 
+### Phase 8.1: Enhanced Period vs Annual Logic ✅
+
+- [x] Revisit `validation/checks/period_vs_annual.py` to implement enhanced logic:
+  - [x] **Rule 1: If Annual Plan is positive or zero (`Annual >= 0`)**
+    - [x] Violation if `Period > Annual`
+  - [x] **Rule 2: If Annual Plan is negative (`Annual < 0`)**
+    - [x] Violation if `Period < Annual` (i.e., Period is "more negative" than Annual)
+  - [x] **Rule 3: Mixed Signs**
+    - [x] If `Annual` and `Period` have different signs (and `Period` is not zero), it is a violation.
+  - [x] **Severity:** All identified violations should result in an `error` severity.
+- [x] Update corresponding unit tests in `tests/validation/test_period_vs_annual_check.py` to cover new logic, including mixed sign scenarios.
+
 ### Phase 9: Documentation and Cleanup
 
 - [ ] Update `docs/developer_guide.md` validation section
