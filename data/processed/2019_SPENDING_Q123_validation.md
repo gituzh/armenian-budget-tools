@@ -1,0 +1,166 @@
+# Validation Report: 2019_SPENDING_Q123.csv
+
+**Source Type:** SPENDING_Q123
+**File:** 2019_SPENDING_Q123.csv
+**Generated:** 2025-11-24 18:40:31
+
+## Summary
+
+### Check Status
+
+- **Total Rules:** 47
+- **Passed:** 28 ✅
+- **With Warnings:** 3 ⚠️
+- **With Errors:** 16 ❌
+
+### Issues Found
+
+- **Errors:** 39 ❌
+- **Warnings:** 11 ⚠️
+
+## ✅ Passed Checks
+
+- **empty_identifiers**
+- **empty_identifiers**
+- **empty_identifiers**
+- **execution_exceeds_100**
+- **execution_exceeds_100**
+- **execution_exceeds_100**
+- **missing_financial_data**
+- **missing_financial_data**
+- **missing_financial_data**
+- **missing_financial_data**
+- **negative_percentages**
+- **negative_percentages**
+- **negative_percentages**
+- **negative_percentages**
+- **negative_totals**
+- **negative_totals**
+- **percentage_calculation**
+- **percentage_calculation**
+- **percentage_calculation**
+- **percentage_calculation**
+- **percentage_calculation**
+- **percentage_calculation**
+- **percentage_calculation**
+- **percentage_calculation**
+- **period_vs_annual**
+- **period_vs_annual**
+- **period_vs_annual**
+- **required_fields**
+
+## ⚠️ Warnings
+
+### ⚠️ execution_exceeds_100 (4 failures)
+
+- Row 104: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (355.20%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12002
+- Row 160: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (32418.10%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
+- Row 196: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (898.90%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 9017 | 31002
+- Row 104: Execution > 100% for 'subprogram_actual_vs_rev_period_plan' (355.20%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12002
+
+### ⚠️ negative_totals (1 failures)
+
+- Program field 'program_actual' has negative value: -688.40 for ՀՀ արտակարգ իրավիճակների նախարարություն | 9995 | 99100
+
+### ⚠️ negative_totals (6 failures)
+
+- Subprogram field 'subprogram_annual_plan' has negative value: -1276.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
+- Subprogram field 'subprogram_rev_annual_plan' has negative value: -1276.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
+- Subprogram field 'subprogram_rev_annual_plan' has negative value: -2052.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 9017 | 31002
+- Subprogram field 'subprogram_actual' has negative value: -413655.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
+- Subprogram field 'subprogram_actual' has negative value: -18448.90 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 9017 | 31002
+- Subprogram field 'subprogram_actual' has negative value: -688.40 for ՀՀ արտակարգ իրավիճակների նախարարություն | 9995 | 99100
+
+## ❌ Errors
+
+### ❌ hierarchical_totals (1 failures)
+
+- Overall overall_actual: expected 1011998593.5, got 1053040169.6, diff 41041576.100000024 (tolerance 5.0)
+
+### ❌ hierarchical_totals (3 failures)
+
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն: expected 97156788.8, got 77079518.1, diff 20077270.700000003
+- ՀՀ էկոնոմիկայի նախարարություն: expected 8090515.2, got 3071527.0, diff 5018988.2
+- ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն: expected 102681013.80000001, got 88783397.6, diff 13897616.200000018
+
+### ❌ hierarchical_totals (3 failures)
+
+- ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն/Երիտասարդության ծրագիր: expected 787476.2000000001, got 54509.4, diff 732966.8
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Կոլեկտորադրենաժային ծառայություններ: expected 147221.7, got 13278.0, diff 133943.7
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Ջրամատակարարաման և ջրահեռացման բարելավում: expected 1180790.9, got 0.0, diff 1180790.9
+
+### ❌ hierarchical_totals (1 failures)
+
+- Overall overall_annual_plan: expected 1563735093.6999998, got 1648063122.3, diff 84328028.60000014 (tolerance 5.0)
+
+### ❌ hierarchical_totals (3 failures)
+
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն: expected 182578718.7, got 147577637.6, diff 35001081.099999994
+- ՀՀ էկոնոմիկայի նախարարություն: expected 25407550.799999997, got 9322213.5, diff 16085337.299999997
+- ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն: expected 161013824.60000002, got 141696953.9, diff 19316870.700000018
+
+### ❌ hierarchical_totals (3 failures)
+
+- ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն/Երիտասարդության ծրագիր: expected 978187.4, got 0.0, diff 978187.4
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Կոլեկտորադրենաժային ծառայություններ: expected 336497.3, got 0.0, diff 336497.3
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Ջրամատակարարաման և ջրահեռացման բարելավում: expected 12610054.8, got 0.0, diff 12610054.8
+
+### ❌ hierarchical_totals (1 failures)
+
+- Overall overall_period_plan: expected 1139106583.3000002, got 1206661489.8, diff 67554906.49999976 (tolerance 5.0)
+
+### ❌ hierarchical_totals (3 failures)
+
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն: expected 141264363.7, got 110956228.4, diff 30308135.299999982
+- ՀՀ էկոնոմիկայի նախարարություն: expected 19535051.000000004, got 7172382.1, diff 12362668.900000004
+- ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն: expected 110541653.7, got 96512764.0, diff 14028889.700000003
+
+### ❌ hierarchical_totals (3 failures)
+
+- ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն/Երիտասարդության ծրագիր: expected 743473.3, got 0.0, diff 743473.3
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Կոլեկտորադրենաժային ծառայություններ: expected 259546.0, got 0.0, diff 259546.0
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Ջրամատակարարաման և ջրահեռացման բարելավում: expected 9852193.3, got 0.0, diff 9852193.3
+
+### ❌ hierarchical_totals (1 failures)
+
+- Overall overall_rev_annual_plan: expected 1640332819.3000002, got 1732611706.0, diff 92278886.69999981 (tolerance 5.0)
+
+### ❌ hierarchical_totals (3 failures)
+
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն: expected 199999711.0, got 158715810.1, diff 41283900.900000006
+- ՀՀ էկոնոմիկայի նախարարություն: expected 25626949.199999996, got 9449722.5, diff 16177226.699999996
+- ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն: expected 168146046.5, got 145564471.2, diff 22581575.300000012
+
+### ❌ hierarchical_totals (3 failures)
+
+- ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն/Երիտասարդության ծրագիր: expected 997884.1000000001, got 54509.4, diff 943374.7000000001
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Կոլեկտորադրենաժային ծառայություններ: expected 402105.0, got 65607.7, diff 336497.3
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Ջրամատակարարաման և ջրահեռացման բարելավում: expected 11224415.5, got 268103.6, diff 10956311.9
+
+### ❌ hierarchical_totals (1 failures)
+
+- Overall overall_rev_period_plan: expected 1200150328.1, got 1275771214.3, diff 75620886.20000005 (tolerance 5.0)
+
+### ❌ hierarchical_totals (3 failures)
+
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն: expected 155747423.8, got 119156468.7, diff 36590955.10000001
+- ՀՀ էկոնոմիկայի նախարարություն: expected 19709465.400000002, got 7254891.1, diff 12454574.300000003
+- ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն: expected 115814867.6, got 98572132.7, diff 17242734.89999999
+
+### ❌ hierarchical_totals (3 failures)
+
+- ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն/Երիտասարդության ծրագիր: expected 929135.0, got 54509.4, diff 874625.6
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Կոլեկտորադրենաժային ծառայություններ: expected 325153.7, got 65607.7, diff 259546.0
+- ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Ջրամատակարարաման և ջրահեռացման բարելավում: expected 8466553.999999998, got 268103.6, diff 8198450.3999999985
+
+### ❌ period_vs_annual (4 failures)
+
+- Subprogram violation: 'subprogram_period_plan' (103725.60) > 'subprogram_annual_plan' (103538.70) by 186.90 for ՀՀ վարչապետի  աշխատակազմ | 1033 | 12002
+- Subprogram violation: 'subprogram_period_plan' (0.00) > 'subprogram_annual_plan' (-1276.00) by 1276.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
+- Subprogram violation: 'subprogram_rev_period_plan' (0.00) > 'subprogram_rev_annual_plan' (-1276.00) by 1276.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
+- Subprogram violation: 'subprogram_rev_period_plan' (0.00) > 'subprogram_rev_annual_plan' (-2052.40) by 2052.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 9017 | 31002
+
+---
+
+For detailed information about validation checks and how to interpret results,
+see [docs/validation.md](https://github.com/gituzh/armenian-budget-tools/blob/main/docs/validation.md).

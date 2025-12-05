@@ -1,0 +1,255 @@
+{
+  "metadata": {
+    "source_type": "SPENDING_Q1234",
+    "csv_path": "2023_SPENDING_Q1234.csv",
+    "overall_path": "2023_SPENDING_Q1234_overall.json",
+    "generated_at": "2025-11-24T18:40:33.567237"
+  },
+  "summary": {
+    "total_rules": 33,
+    "passed": 22,
+    "with_warnings": 4,
+    "with_errors": 7,
+    "errors": 7,
+    "warnings": 39
+  },
+  "passed_checks": [
+    {
+      "check_id": "empty_identifiers",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "empty_identifiers",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "empty_identifiers",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "required_fields",
+      "severity": "error",
+      "messages": []
+    }
+  ],
+  "warning_checks": [
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "fail_count": 2,
+      "messages": [
+        "Row 11: Execution > 100% for 'program_actual_vs_rev_annual_plan' (100.20%) in ՀՀ վարչապետի  աշխատակազմ | 1018 | 11004",
+        "Row 12: Execution > 100% for 'program_actual_vs_rev_annual_plan' (100.20%) in ՀՀ վարչապետի  աշխատակազմ | 1018 | 32003"
+      ]
+    },
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "fail_count": 10,
+      "messages": [
+        "Row 12: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (100.20%) in ՀՀ վարչապետի  աշխատակազմ | 1018 | 32003",
+        "Row 134: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (101.10%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1004 | 31001",
+        "Row 177: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (100.80%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1049 | 21006",
+        "Row 180: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (106.10%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1049 | 21009",
+        "Row 183: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (100.50%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1049 | 21013",
+        "Row 196: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (100.50%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1072 | 31001",
+        "Row 281: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (111.10%) in ՀՀ առողջապահության նախարարություն | 1053 | 11005",
+        "Row 412: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (107.50%) in ՀՀ էկոնոմիկայի նախարարություն | 1134 | 12004",
+        "Row 910: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (101.00%) in ՀՀ ֆինանսների նախարարություն | 1108 | 31002",
+        "Row 920: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (103.10%) in ՀՀ ներքին գործերի նախարարություն | 1090 | 11006"
+      ]
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "fail_count": 24,
+      "messages": [
+        "Program field 'program_annual_plan' has negative value: -8683502.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001",
+        "Program field 'program_annual_plan' has negative value: -8683502.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003",
+        "Program field 'program_annual_plan' has negative value: -8683502.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11007",
+        "Program field 'program_annual_plan' has negative value: -8683502.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11015",
+        "Program field 'program_annual_plan' has negative value: -8683502.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11017",
+        "Program field 'program_annual_plan' has negative value: -8683502.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 12003",
+        "Program field 'program_annual_plan' has negative value: -8683502.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31001",
+        "Program field 'program_annual_plan' has negative value: -8683502.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
+        "Program field 'program_rev_annual_plan' has negative value: -22580692.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001",
+        "Program field 'program_rev_annual_plan' has negative value: -22580692.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003",
+        "Program field 'program_rev_annual_plan' has negative value: -22580692.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11007",
+        "Program field 'program_rev_annual_plan' has negative value: -22580692.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11015",
+        "Program field 'program_rev_annual_plan' has negative value: -22580692.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11017",
+        "Program field 'program_rev_annual_plan' has negative value: -22580692.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 12003",
+        "Program field 'program_rev_annual_plan' has negative value: -22580692.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31001",
+        "Program field 'program_rev_annual_plan' has negative value: -22580692.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
+        "Program field 'program_actual' has negative value: -20175446.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001",
+        "Program field 'program_actual' has negative value: -20175446.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003",
+        "Program field 'program_actual' has negative value: -20175446.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11007",
+        "Program field 'program_actual' has negative value: -20175446.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11015",
+        "Program field 'program_actual' has negative value: -20175446.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11017",
+        "Program field 'program_actual' has negative value: -20175446.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 12003",
+        "Program field 'program_actual' has negative value: -20175446.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31001",
+        "Program field 'program_actual' has negative value: -20175446.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002"
+      ]
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "fail_count": 3,
+      "messages": [
+        "Subprogram field 'subprogram_annual_plan' has negative value: -10000000.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
+        "Subprogram field 'subprogram_rev_annual_plan' has negative value: -24237558.20 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
+        "Subprogram field 'subprogram_actual' has negative value: -21764390.90 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002"
+      ]
+    }
+  ],
+  "error_checks": [
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "fail_count": 1,
+      "messages": [
+        "Overall overall_actual: expected 2546861923.0, got 2547649891.9, diff 787968.9000000954 (tolerance 5.0)"
+      ]
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "fail_count": 1,
+      "messages": [
+        "ՀՀ ներքին գործերի նախարարություն: expected 16649111.5, got 15861142.1, diff 787969.4000000004"
+      ]
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "fail_count": 1,
+      "messages": [
+        "Overall overall_annual_plan: expected 2590581177.8999996, got 2590973151.1, diff 391973.2000002861 (tolerance 5.0)"
+      ]
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "fail_count": 1,
+      "messages": [
+        "ՀՀ ներքին գործերի նախարարություն: expected 17491376.0, got 17099402.8, diff 391973.19999999925"
+      ]
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "fail_count": 1,
+      "messages": [
+        "Overall overall_rev_annual_plan: expected 2623908566.7, got 2624738747.9, diff 830181.2000002861 (tolerance 5.0)"
+      ]
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "fail_count": 1,
+      "messages": [
+        "ՀՀ ներքին գործերի նախարարություն: expected 17541880.1, got 16711698.8, diff 830181.3000000007"
+      ]
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "fail_count": 1,
+      "messages": [
+        "Row 113: Mismatch for 'subprogram_actual_vs_rev_annual_plan'. Expected: 1.0000, Reported: 0.9980, Diff: 0.0020 in ՀՀ դատախազություն | 1087 | 11004"
+      ]
+    }
+  ]
+}

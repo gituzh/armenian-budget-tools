@@ -1,0 +1,112 @@
+{
+  "metadata": {
+    "source_type": "BUDGET_LAW",
+    "csv_path": "2025_BUDGET_LAW.csv",
+    "overall_path": "2025_BUDGET_LAW_overall.json",
+    "generated_at": "2025-11-24T18:40:34.085169"
+  },
+  "summary": {
+    "total_rules": 16,
+    "passed": 14,
+    "with_warnings": 2,
+    "with_errors": 0,
+    "errors": 0,
+    "warnings": 7
+  },
+  "passed_checks": [
+    {
+      "check_id": "empty_identifiers",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "empty_identifiers",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "empty_identifiers",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_structure_sanity",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "required_fields",
+      "severity": "error",
+      "messages": []
+    }
+  ],
+  "warning_checks": [
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "fail_count": 6,
+      "messages": [
+        "Program field 'program_total' has negative value: -12529883.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001",
+        "Program field 'program_total' has negative value: -12529883.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003",
+        "Program field 'program_total' has negative value: -12529883.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11015",
+        "Program field 'program_total' has negative value: -12529883.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11017",
+        "Program field 'program_total' has negative value: -12529883.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31001",
+        "Program field 'program_total' has negative value: -12529883.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002"
+      ]
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "fail_count": 1,
+      "messages": [
+        "Subprogram field 'subprogram_total' has negative value: -15000000.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002"
+      ]
+    }
+  ],
+  "error_checks": []
+}

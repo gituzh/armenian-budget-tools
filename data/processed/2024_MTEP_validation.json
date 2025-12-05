@@ -1,0 +1,101 @@
+{
+  "metadata": {
+    "source_type": "MTEP",
+    "csv_path": "2024_MTEP.csv",
+    "overall_path": "2024_MTEP_overall.json",
+    "generated_at": "2025-11-24T18:40:34.055669"
+  },
+  "summary": {
+    "total_rules": 15,
+    "passed": 14,
+    "with_warnings": 1,
+    "with_errors": 0,
+    "errors": 0,
+    "warnings": 3
+  },
+  "passed_checks": [
+    {
+      "check_id": "empty_identifiers",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "empty_identifiers",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "required_fields",
+      "severity": "error",
+      "messages": []
+    }
+  ],
+  "warning_checks": [
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "fail_count": 3,
+      "messages": [
+        "Program field 'program_total_y0' has negative value: -5569939.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | ",
+        "Program field 'program_total_y1' has negative value: -6976821.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | ",
+        "Program field 'program_total_y2' has negative value: -8371872.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | "
+      ]
+    }
+  ],
+  "error_checks": []
+}
