@@ -268,7 +268,7 @@ def _is_entry_still_valid(entry: Dict[str, Any], *, extracted_root: Path) -> boo
 
 def _validate_with_parser(candidate: Path, year: int, source_type: str) -> bool:
     try:
-        if int(year) == 2025:
+        if int(year) >= 2025:
             df, _overall, _, _ = flatten_budget_excel_2025(
                 str(candidate), source_type=SourceType[source_type]
             )

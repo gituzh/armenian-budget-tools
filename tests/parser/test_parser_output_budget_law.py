@@ -37,8 +37,8 @@ def test_budget_law_program_codes_format(budget_law_data):  # pylint: disable=re
         f"subprogram_code should be integer type, found {df['subprogram_code'].dtype}"
     )
 
-    # For 2025, verify program_code_ext
-    if budget_law_data.year == 2025:
+    # For 2025+, verify program_code_ext
+    if budget_law_data.year >= 2025:
         assert "program_code_ext" in df.columns, (
             f"{budget_law_data.year}/{budget_law_data.source_type}: "
             f"program_code_ext column is missing"
