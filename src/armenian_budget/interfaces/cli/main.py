@@ -224,8 +224,8 @@ def cmd_process(args: argparse.Namespace) -> int:
             try:
                 if st_enum.name == "MTEP":
                     df, overall, _, _ = flatten_mtep_excel(str(input_path), year=int(year))
-                elif year == 2025:
-                    # Use 2025 parser for all 2025 sources, passing source_type for spending
+                elif year >= 2025:
+                    # Use 2025+ parser for all 2025 and later sources, passing source_type for spending
                     df, overall, _, _ = flatten_budget_excel_2025(
                         str(input_path), source_type=st_enum
                     )

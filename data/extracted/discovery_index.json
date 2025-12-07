@@ -349,4 +349,14 @@
     "checksum": "sha256:b1edd553363b2b0580ae100e11e7c0326ac55636040bc5b9c8a710a0136a6d7c",
     "discovered_at": "2025-11-11T16:22:36Z"
   },
+  "2026/budget_law": {
+    "key": "2026/budget_law",
+    "path": "budget_laws/2026/copy_5_օրենքի հավելվածներ/օրենքի հավելվածներ/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1764134794.4665108,
+    "size": 148959,
+    "checksum": "sha256:d0b93f35e2a0cafac991bb70089a41fd10ef5a53b865f72159e2ec6722782132",
+    "discovered_at": "2025-12-07T18:43:50Z"
+  }
 }
