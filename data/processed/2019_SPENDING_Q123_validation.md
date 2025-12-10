@@ -2,7 +2,7 @@
 
 **Source Type:** SPENDING_Q123
 **File:** 2019_SPENDING_Q123.csv
-**Generated:** 2025-11-24 18:40:31
+**Generated:** 2025-12-10 23:40:10
 
 ## Summary
 
@@ -10,13 +10,13 @@
 
 - **Total Rules:** 47
 - **Passed:** 28 ✅
-- **With Warnings:** 3 ⚠️
-- **With Errors:** 16 ❌
+- **With Warnings:** 4 ⚠️
+- **With Errors:** 15 ❌
 
 ### Issues Found
 
-- **Errors:** 39 ❌
-- **Warnings:** 11 ⚠️
+- **Errors:** 35 ❌
+- **Warnings:** 12 ⚠️
 
 ## ✅ Passed Checks
 
@@ -71,11 +71,15 @@
 - Subprogram field 'subprogram_actual' has negative value: -18448.90 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 9017 | 31002
 - Subprogram field 'subprogram_actual' has negative value: -688.40 for ՀՀ արտակարգ իրավիճակների նախարարություն | 9995 | 99100
 
+### ⚠️ period_vs_annual (1 failures)
+
+- Subprogram violation: 'subprogram_period_plan' (103725.60) exceeds limit 'subprogram_annual_plan' (103538.70) by 186.90 for ՀՀ վարչապետի  աշխատակազմ | 1033 | 12002
+
 ## ❌ Errors
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_actual: expected 1011998593.5, got 1053040169.6, diff 41041576.100000024 (tolerance 5.0)
+- Overall overall_actual: expected 1011998593.5, got 1053040169.6, diff 41041576.100000024 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (3 failures)
 
@@ -91,7 +95,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_annual_plan: expected 1563735093.6999998, got 1648063122.3, diff 84328028.60000014 (tolerance 5.0)
+- Overall overall_annual_plan: expected 1563735093.6999998, got 1648063122.3, diff 84328028.60000014 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (3 failures)
 
@@ -107,7 +111,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_period_plan: expected 1139106583.3000002, got 1206661489.8, diff 67554906.49999976 (tolerance 5.0)
+- Overall overall_period_plan: expected 1139106583.3000002, got 1206661489.8, diff 67554906.49999976 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (3 failures)
 
@@ -123,7 +127,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_rev_annual_plan: expected 1640332819.3000002, got 1732611706.0, diff 92278886.69999981 (tolerance 5.0)
+- Overall overall_rev_annual_plan: expected 1640332819.3000002, got 1732611706.0, diff 92278886.69999981 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (3 failures)
 
@@ -139,7 +143,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_rev_period_plan: expected 1200150328.1, got 1275771214.3, diff 75620886.20000005 (tolerance 5.0)
+- Overall overall_rev_period_plan: expected 1200150328.1, got 1275771214.3, diff 75620886.20000005 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (3 failures)
 
@@ -153,14 +157,7 @@
 - ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Կոլեկտորադրենաժային ծառայություններ: expected 325153.7, got 65607.7, diff 259546.0
 - ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն/Ջրամատակարարաման և ջրահեռացման բարելավում: expected 8466553.999999998, got 268103.6, diff 8198450.3999999985
 
-### ❌ period_vs_annual (4 failures)
-
-- Subprogram violation: 'subprogram_period_plan' (103725.60) > 'subprogram_annual_plan' (103538.70) by 186.90 for ՀՀ վարչապետի  աշխատակազմ | 1033 | 12002
-- Subprogram violation: 'subprogram_period_plan' (0.00) > 'subprogram_annual_plan' (-1276.00) by 1276.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
-- Subprogram violation: 'subprogram_rev_period_plan' (0.00) > 'subprogram_rev_annual_plan' (-1276.00) by 1276.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
-- Subprogram violation: 'subprogram_rev_period_plan' (0.00) > 'subprogram_rev_annual_plan' (-2052.40) by 2052.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 9017 | 31002
-
 ---
 
 For detailed information about validation checks and how to interpret results,
-see [docs/validation.md](https://github.com/gituzh/armenian-budget-tools/blob/main/docs/validation.md).
+see [docs/validation.md](../../docs/validation.md).

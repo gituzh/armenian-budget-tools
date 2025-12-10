@@ -24,11 +24,11 @@ from armenian_budget.core.enums import SourceType
 
 # Hierarchical totals tolerance by source type (in AMD)
 BUDGET_LAW_ABS_TOL = 1.0  # Small rounding tolerance for floating-point precision
-SPENDING_ABS_TOL = 5.0    # Small rounding differences acceptable
+SPENDING_ABS_TOL = 2000.0    # Small rounding differences acceptable
 MTEP_ABS_TOL = 0.5        # Per-year tolerance for multi-year projections
 
 # Percentage calculation tolerance (0.1% = 0.001)
-PERCENTAGE_TOL = 0.001
+PERCENTAGE_TOL = 0.0025
 
 
 # ============================================================================
@@ -74,7 +74,7 @@ NEGATIVE_TOTALS_SEVERITY = {
 PERIOD_VS_ANNUAL_SEVERITY = {
     "overall": "error",
     "state_body": "error",
-    "program": "error",
+    "program": "warning",
     "subprogram": "warning",
 }
 

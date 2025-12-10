@@ -3,7 +3,7 @@
     "source_type": "SPENDING_Q12",
     "csv_path": "2020_SPENDING_Q12.csv",
     "overall_path": "2020_SPENDING_Q12_overall.json",
-    "generated_at": "2025-12-05T15:24:15.833811"
+    "generated_at": "2025-12-10T23:40:11.189776"
   },
   "summary": {
     "total_rules": 47,
@@ -216,7 +216,7 @@
     },
     {
       "check_id": "period_vs_annual",
-      "severity": "error",
+      "severity": "warning",
       "messages": []
     },
     {

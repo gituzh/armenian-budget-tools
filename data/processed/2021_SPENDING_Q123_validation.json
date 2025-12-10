@@ -3,15 +3,15 @@
     "source_type": "SPENDING_Q123",
     "csv_path": "2021_SPENDING_Q123.csv",
     "overall_path": "2021_SPENDING_Q123_overall.json",
-    "generated_at": "2025-11-24T18:40:32.623290"
+    "generated_at": "2025-12-10T23:40:11.765033"
   },
   "summary": {
     "total_rules": 47,
     "passed": 41,
-    "with_warnings": 4,
-    "with_errors": 2,
-    "errors": 11,
-    "warnings": 34
+    "with_warnings": 6,
+    "with_errors": 0,
+    "errors": 0,
+    "warnings": 45
   },
   "passed_checks": [
     {
@@ -282,33 +282,32 @@
         "Subprogram field 'subprogram_rev_period_plan' has negative value: -1276.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
         "Subprogram field 'subprogram_actual' has negative value: -1020038.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002"
       ]
-    }
-  ],
-  "error_checks": [
+    },
     {
       "check_id": "period_vs_annual",
-      "severity": "error",
+      "severity": "warning",
       "fail_count": 5,
       "messages": [
-        "Program violation: 'program_period_plan' (1913244.80) > 'program_annual_plan' (1825841.20) by 87403.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 11001",
-        "Program violation: 'program_period_plan' (1913244.80) > 'program_annual_plan' (1825841.20) by 87403.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 11002",
-        "Program violation: 'program_period_plan' (1913244.80) > 'program_annual_plan' (1825841.20) by 87403.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12001",
-        "Program violation: 'program_period_plan' (1913244.80) > 'program_annual_plan' (1825841.20) by 87403.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12003",
-        "Program violation: 'program_period_plan' (1913244.80) > 'program_annual_plan' (1825841.20) by 87403.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12004"
+        "Program violation: 'program_period_plan' (1913244.80) exceeds limit 'program_annual_plan' (1825841.20) by 87403.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 11001",
+        "Program violation: 'program_period_plan' (1913244.80) exceeds limit 'program_annual_plan' (1825841.20) by 87403.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 11002",
+        "Program violation: 'program_period_plan' (1913244.80) exceeds limit 'program_annual_plan' (1825841.20) by 87403.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12001",
+        "Program violation: 'program_period_plan' (1913244.80) exceeds limit 'program_annual_plan' (1825841.20) by 87403.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12003",
+        "Program violation: 'program_period_plan' (1913244.80) exceeds limit 'program_annual_plan' (1825841.20) by 87403.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12004"
       ]
     },
     {
       "check_id": "period_vs_annual",
-      "severity": "error",
+      "severity": "warning",
       "fail_count": 6,
       "messages": [
-        "Subprogram violation: 'subprogram_period_plan' (272450.40) > 'subprogram_annual_plan' (0.00) by 272450.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1004 | 11012",
-        "Subprogram violation: 'subprogram_period_plan' (235308.00) > 'subprogram_annual_plan' (0.00) by 235308.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12004",
-        "Subprogram violation: 'subprogram_period_plan' (227272.00) > 'subprogram_annual_plan' (0.00) by 227272.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1072 | 11003",
-        "Subprogram violation: 'subprogram_period_plan' (165000.00) > 'subprogram_annual_plan' (0.00) by 165000.00 for ՀՀ առողջապահության նախարարություն | 1053 | 32004",
-        "Subprogram violation: 'subprogram_period_plan' (502693.00) > 'subprogram_annual_plan' (387693.00) by 115000.00 for ՀՀ ֆինանսների նախարարություն | 1006 | 11002",
-        "Subprogram violation: 'subprogram_period_plan' (50000.00) > 'subprogram_annual_plan' (0.00) by 50000.00 for ՀՀ ֆինանսների նախարարություն | 1108 | 11008"
+        "Subprogram violation: 'subprogram_period_plan' (272450.40) exceeds limit 'subprogram_annual_plan' (0.00) by 272450.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1004 | 11012",
+        "Subprogram violation: 'subprogram_period_plan' (235308.00) exceeds limit 'subprogram_annual_plan' (0.00) by 235308.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1019 | 12004",
+        "Subprogram violation: 'subprogram_period_plan' (227272.00) exceeds limit 'subprogram_annual_plan' (0.00) by 227272.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1072 | 11003",
+        "Subprogram violation: 'subprogram_period_plan' (165000.00) exceeds limit 'subprogram_annual_plan' (0.00) by 165000.00 for ՀՀ առողջապահության նախարարություն | 1053 | 32004",
+        "Subprogram violation: 'subprogram_period_plan' (502693.00) exceeds limit 'subprogram_annual_plan' (387693.00) by 115000.00 for ՀՀ ֆինանսների նախարարություն | 1006 | 11002",
+        "Subprogram violation: 'subprogram_period_plan' (50000.00) exceeds limit 'subprogram_annual_plan' (0.00) by 50000.00 for ՀՀ ֆինանսների նախարարություն | 1108 | 11008"
       ]
     }
-  ]
+  ],
+  "error_checks": []
 }

@@ -2,7 +2,7 @@
 
 **Source Type:** SPENDING_Q1234
 **File:** 2019_SPENDING_Q1234.csv
-**Generated:** 2025-11-24 18:40:31
+**Generated:** 2025-12-10 23:40:10
 
 ## Summary
 
@@ -65,7 +65,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_actual: expected 1566562784.7000003, got 1629436862.4, diff 62874077.69999981 (tolerance 5.0)
+- Overall overall_actual: expected 1566562784.7000003, got 1629436862.4, diff 62874077.69999981 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (3 failures)
 
@@ -82,7 +82,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_annual_plan: expected 1563735093.6999998, got 1648063122.3, diff 84328028.60000014 (tolerance 5.0)
+- Overall overall_annual_plan: expected 1563735093.6999998, got 1648063122.3, diff 84328028.60000014 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (3 failures)
 
@@ -99,7 +99,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_rev_annual_plan: expected 1674463746.6000001, got 1762920130.7, diff 88456384.0999999 (tolerance 5.0)
+- Overall overall_rev_annual_plan: expected 1674463746.6000001, got 1762920130.7, diff 88456384.0999999 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (3 failures)
 
@@ -121,4 +121,4 @@
 ---
 
 For detailed information about validation checks and how to interpret results,
-see [docs/validation.md](https://github.com/gituzh/armenian-budget-tools/blob/main/docs/validation.md).
+see [docs/validation.md](../../docs/validation.md).

@@ -3,14 +3,14 @@
     "source_type": "SPENDING_Q1234",
     "csv_path": "2023_SPENDING_Q1234.csv",
     "overall_path": "2023_SPENDING_Q1234_overall.json",
-    "generated_at": "2025-11-24T18:40:33.567237"
+    "generated_at": "2025-12-10T23:40:12.802529"
   },
   "summary": {
     "total_rules": 33,
-    "passed": 22,
+    "passed": 23,
     "with_warnings": 4,
-    "with_errors": 7,
-    "errors": 7,
+    "with_errors": 6,
+    "errors": 6,
     "warnings": 39
   },
   "passed_checks": [
@@ -120,6 +120,11 @@
       "messages": []
     },
     {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
       "check_id": "required_fields",
       "severity": "error",
       "messages": []
@@ -200,7 +205,7 @@
       "severity": "error",
       "fail_count": 1,
       "messages": [
-        "Overall overall_actual: expected 2546861923.0, got 2547649891.9, diff 787968.9000000954 (tolerance 5.0)"
+        "Overall overall_actual: expected 2546861923.0, got 2547649891.9, diff 787968.9000000954 (tolerance 2000.0)"
       ]
     },
     {
@@ -216,7 +221,7 @@
       "severity": "error",
       "fail_count": 1,
       "messages": [
-        "Overall overall_annual_plan: expected 2590581177.8999996, got 2590973151.1, diff 391973.2000002861 (tolerance 5.0)"
+        "Overall overall_annual_plan: expected 2590581177.8999996, got 2590973151.1, diff 391973.2000002861 (tolerance 2000.0)"
       ]
     },
     {
@@ -232,7 +237,7 @@
       "severity": "error",
       "fail_count": 1,
       "messages": [
-        "Overall overall_rev_annual_plan: expected 2623908566.7, got 2624738747.9, diff 830181.2000002861 (tolerance 5.0)"
+        "Overall overall_rev_annual_plan: expected 2623908566.7, got 2624738747.9, diff 830181.2000002861 (tolerance 2000.0)"
       ]
     },
     {
@@ -241,14 +246,6 @@
       "fail_count": 1,
       "messages": [
         "ՀՀ ներքին գործերի նախարարություն: expected 17541880.1, got 16711698.8, diff 830181.3000000007"
-      ]
-    },
-    {
-      "check_id": "percentage_calculation",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "Row 113: Mismatch for 'subprogram_actual_vs_rev_annual_plan'. Expected: 1.0000, Reported: 0.9980, Diff: 0.0020 in ՀՀ դատախազություն | 1087 | 11004"
       ]
     }
   ]

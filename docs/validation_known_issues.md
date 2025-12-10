@@ -48,3 +48,9 @@ Validation errors suggest similar patterns in other years, likely due to subsequ
 
 * **Current State:** The parser reads these as sequential blocks.
 * **Proposed Fix (On Hold):** Logic to detect duplicate State Body names and "unify" their totals was proposed but put on hold to avoid diluting the original source structure without further consideration.
+
+## Current validation failures (Dec 2025 run)
+
+- `2019_SPENDING_Q123.csv` and `2019_SPENDING_Q1234.csv`: All `hierarchical_totals` errors map to the split-body blocks described in §1 (multiple totals for the same ministry).
+- `2023_SPENDING_Q123.csv` and `2023_SPENDING_Q1234.csv`: `hierarchical_totals` deltas (~0.4–0.8M AMD) for the Ministry of Internal Affairs align with the Police + Emergency Situations merger described in §2.
+- Other datasets currently have no errors; remaining warnings reflect source numbers (e.g., execution >100%, negative plan values).

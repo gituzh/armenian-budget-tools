@@ -3,15 +3,15 @@
     "source_type": "SPENDING_Q123",
     "csv_path": "2020_SPENDING_Q123.csv",
     "overall_path": "2020_SPENDING_Q123_overall.json",
-    "generated_at": "2025-11-24T18:40:32.110167"
+    "generated_at": "2025-12-10T23:40:11.312720"
   },
   "summary": {
     "total_rules": 47,
     "passed": 41,
-    "with_warnings": 4,
-    "with_errors": 2,
-    "errors": 43,
-    "warnings": 37
+    "with_warnings": 6,
+    "with_errors": 0,
+    "errors": 0,
+    "warnings": 79
   },
   "passed_checks": [
     {
@@ -285,65 +285,63 @@
         "Subprogram field 'subprogram_rev_period_plan' has negative value: -20825.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
         "Subprogram field 'subprogram_actual' has negative value: -1317804.60 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002"
       ]
-    }
-  ],
-  "error_checks": [
+    },
     {
       "check_id": "period_vs_annual",
-      "severity": "error",
+      "severity": "warning",
       "fail_count": 32,
       "messages": [
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11001",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11003",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11004",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11005",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11006",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11007",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11009",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11010",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11011",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 12006",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 12007",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31001",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31002",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31003",
-        "Program violation: 'program_period_plan' (9360166.60) > 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31004",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11001",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11002",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11004",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11006",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11007",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12001",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12002",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12003",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12004",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12005",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12006",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12008",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12009",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12010",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12011",
-        "Program violation: 'program_period_plan' (2202917.10) > 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12013",
-        "Program violation: 'program_rev_period_plan' (255880.00) > 'program_rev_annual_plan' (117330.20) by 138549.80 for ՀՀ կառավարություն | 1139 | 11001"
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11001",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11003",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11004",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11005",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11006",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11007",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11009",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11010",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11011",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 12006",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 12007",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31001",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31002",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31003",
+        "Program violation: 'program_period_plan' (9360166.60) exceeds limit 'program_annual_plan' (7187414.20) by 2172752.40 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31004",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11001",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11002",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11004",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11006",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11007",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12001",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12002",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12003",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12004",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12005",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12006",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12008",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12009",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12010",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12011",
+        "Program violation: 'program_period_plan' (2202917.10) exceeds limit 'program_annual_plan' (1984337.90) by 218579.20 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12013",
+        "Program violation: 'program_rev_period_plan' (255880.00) exceeds limit 'program_rev_annual_plan' (117330.20) by 138549.80 for ՀՀ կառավարություն | 1139 | 11001"
       ]
     },
     {
       "check_id": "period_vs_annual",
-      "severity": "error",
-      "fail_count": 11,
+      "severity": "warning",
+      "fail_count": 10,
       "messages": [
-        "Subprogram violation: 'subprogram_period_plan' (1585956.00) > 'subprogram_annual_plan' (0.00) by 1585956.00 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11011",
-        "Subprogram violation: 'subprogram_period_plan' (1354536.90) > 'subprogram_annual_plan' (0.00) by 1354536.90 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31003",
-        "Subprogram violation: 'subprogram_period_plan' (1355280.00) > 'subprogram_annual_plan' (0.00) by 1355280.00 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31004",
-        "Subprogram violation: 'subprogram_period_plan' (180000.00) > 'subprogram_annual_plan' (0.00) by 180000.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1049 | 11015",
-        "Subprogram violation: 'subprogram_period_plan' (158350.10) > 'subprogram_annual_plan' (0.00) by 158350.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1167 | 11006",
-        "Subprogram violation: 'subprogram_period_plan' (2250.00) > 'subprogram_annual_plan' (0.00) by 2250.00 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11007",
-        "Subprogram violation: 'subprogram_period_plan' (470000.00) > 'subprogram_annual_plan' (70000.00) by 400000.00 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12013",
-        "Subprogram violation: 'subprogram_period_plan' (602.00) > 'subprogram_annual_plan' (0.00) by 602.00 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1098 | 12003",
-        "Subprogram violation: 'subprogram_period_plan' (270000.00) > 'subprogram_annual_plan' (200000.00) by 70000.00 for ՀՀ բարձր տեխնոլոգիական արդյունաբերության նախարարություն | 1043 | 11004",
-        "Subprogram violation: 'subprogram_rev_period_plan' (-20825.60) > 'subprogram_rev_annual_plan' (-31152.30) by 10326.70 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
-        "Subprogram violation: 'subprogram_rev_period_plan' (255880.00) > 'subprogram_rev_annual_plan' (117330.20) by 138549.80 for ՀՀ կառավարություն | 1139 | 11001"
+        "Subprogram violation: 'subprogram_period_plan' (1585956.00) exceeds limit 'subprogram_annual_plan' (0.00) by 1585956.00 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11011",
+        "Subprogram violation: 'subprogram_period_plan' (1354536.90) exceeds limit 'subprogram_annual_plan' (0.00) by 1354536.90 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31003",
+        "Subprogram violation: 'subprogram_period_plan' (1355280.00) exceeds limit 'subprogram_annual_plan' (0.00) by 1355280.00 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31004",
+        "Subprogram violation: 'subprogram_period_plan' (180000.00) exceeds limit 'subprogram_annual_plan' (0.00) by 180000.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1049 | 11015",
+        "Subprogram violation: 'subprogram_period_plan' (158350.10) exceeds limit 'subprogram_annual_plan' (0.00) by 158350.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1167 | 11006",
+        "Subprogram violation: 'subprogram_period_plan' (2250.00) exceeds limit 'subprogram_annual_plan' (0.00) by 2250.00 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11007",
+        "Subprogram violation: 'subprogram_period_plan' (470000.00) exceeds limit 'subprogram_annual_plan' (70000.00) by 400000.00 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12013",
+        "Subprogram violation: 'subprogram_period_plan' (602.00) exceeds limit 'subprogram_annual_plan' (0.00) by 602.00 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1098 | 12003",
+        "Subprogram violation: 'subprogram_period_plan' (270000.00) exceeds limit 'subprogram_annual_plan' (200000.00) by 70000.00 for ՀՀ բարձր տեխնոլոգիական արդյունաբերության նախարարություն | 1043 | 11004",
+        "Subprogram violation: 'subprogram_rev_period_plan' (255880.00) exceeds limit 'subprogram_rev_annual_plan' (117330.20) by 138549.80 for ՀՀ կառավարություն | 1139 | 11001"
       ]
     }
-  ]
+  ],
+  "error_checks": []
 }

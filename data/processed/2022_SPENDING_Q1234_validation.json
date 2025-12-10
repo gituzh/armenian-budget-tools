@@ -3,14 +3,14 @@
     "source_type": "SPENDING_Q1234",
     "csv_path": "2022_SPENDING_Q1234.csv",
     "overall_path": "2022_SPENDING_Q1234_overall.json",
-    "generated_at": "2025-11-24T18:40:33.120668"
+    "generated_at": "2025-12-10T23:40:12.305575"
   },
   "summary": {
     "total_rules": 33,
-    "passed": 29,
+    "passed": 30,
     "with_warnings": 3,
-    "with_errors": 1,
-    "errors": 1,
+    "with_errors": 0,
+    "errors": 0,
     "warnings": 35
   },
   "passed_checks": [
@@ -155,6 +155,11 @@
       "messages": []
     },
     {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
       "check_id": "required_fields",
       "severity": "error",
       "messages": []
@@ -218,14 +223,5 @@
       ]
     }
   ],
-  "error_checks": [
-    {
-      "check_id": "percentage_calculation",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "Row 293: Mismatch for 'subprogram_actual_vs_rev_annual_plan'. Expected: 0.9878, Reported: 0.9900, Diff: 0.0022 in ՀՀ առողջապահության նախարարություն | 1126 | 11007"
-      ]
-    }
-  ]
+  "error_checks": []
 }

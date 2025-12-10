@@ -2,20 +2,20 @@
 
 **Source Type:** SPENDING_Q1234
 **File:** 2022_SPENDING_Q1234.csv
-**Generated:** 2025-11-24 18:40:33
+**Generated:** 2025-12-10 23:40:12
 
 ## Summary
 
 ### Check Status
 
 - **Total Rules:** 33
-- **Passed:** 29 ✅
+- **Passed:** 30 ✅
 - **With Warnings:** 3 ⚠️
-- **With Errors:** 1 ❌
+- **With Errors:** 0 ❌
 
 ### Issues Found
 
-- **Errors:** 1 ❌
+- **Errors:** 0
 - **Warnings:** 35 ⚠️
 
 ## ✅ Passed Checks
@@ -45,6 +45,7 @@
 - **negative_percentages**
 - **negative_totals**
 - **negative_totals**
+- **percentage_calculation**
 - **percentage_calculation**
 - **percentage_calculation**
 - **percentage_calculation**
@@ -96,13 +97,7 @@
 - Subprogram field 'subprogram_rev_annual_plan' has negative value: -10059266.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 - Subprogram field 'subprogram_actual' has negative value: -8725601.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 
-## ❌ Errors
-
-### ❌ percentage_calculation (1 failures)
-
-- Row 293: Mismatch for 'subprogram_actual_vs_rev_annual_plan'. Expected: 0.9878, Reported: 0.9900, Diff: 0.0022 in ՀՀ առողջապահության նախարարություն | 1126 | 11007
-
 ---
 
 For detailed information about validation checks and how to interpret results,
-see [docs/validation.md](https://github.com/gituzh/armenian-budget-tools/blob/main/docs/validation.md).
+see [docs/validation.md](../../docs/validation.md).

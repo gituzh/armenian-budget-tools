@@ -3,14 +3,14 @@
     "source_type": "SPENDING_Q12",
     "csv_path": "2019_SPENDING_Q12.csv",
     "overall_path": "2019_SPENDING_Q12_overall.json",
-    "generated_at": "2025-11-24T18:40:31.536942"
+    "generated_at": "2025-12-10T23:40:10.721704"
   },
   "summary": {
     "total_rules": 47,
-    "passed": 32,
+    "passed": 43,
     "with_warnings": 4,
-    "with_errors": 11,
-    "errors": 12,
+    "with_errors": 0,
+    "errors": 0,
     "warnings": 11
   },
   "passed_checks": [
@@ -70,6 +70,56 @@
       "messages": []
     },
     {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
       "check_id": "missing_financial_data",
       "severity": "error",
       "messages": []
@@ -166,7 +216,12 @@
     },
     {
       "check_id": "period_vs_annual",
-      "severity": "error",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "period_vs_annual",
+      "severity": "warning",
       "messages": []
     },
     {
@@ -216,95 +271,5 @@
       ]
     }
   ],
-  "error_checks": [
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "Overall overall_actual: expected 633462930.31, got 636637196.46, diff 3174266.1500000954 (tolerance 5.0)"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "ՀՀ էկոնոմիկայի նախարարություն: expected 5216845.62, got 2042579.47, diff 3174266.1500000004"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "Overall overall_annual_plan: expected 1631977785.02, got 1648063122.32, diff 16085337.299999952 (tolerance 5.0)"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "ՀՀ էկոնոմիկայի նախարարություն: expected 26488847.499999996, got 10403510.2, diff 16085337.299999997"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "Overall overall_period_plan: expected 761847057.78, got 769496066.28, diff 7649008.5 (tolerance 5.0)"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "ՀՀ էկոնոմիկայի նախարարություն: expected 13094322.800000004, got 5445314.3, diff 7649008.500000005"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "Overall overall_rev_annual_plan: expected 1672550903.58, got 1688725904.14, diff 16175000.560000181 (tolerance 5.0)"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "ՀՀ էկոնոմիկայի նախարարություն: expected 26814859.929999996, got 10639859.37, diff 16175000.559999997"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "Overall overall_rev_period_plan: expected 790210142.3399999, got 797972330.1, diff 7762187.76000011 (tolerance 5.0)"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "ՀՀ էկոնոմիկայի նախարարություն: expected 13443851.230000002, got 5681663.47, diff 7762187.760000003"
-      ]
-    },
-    {
-      "check_id": "period_vs_annual",
-      "severity": "error",
-      "fail_count": 2,
-      "messages": [
-        "Subprogram violation: 'subprogram_period_plan' (0.00) > 'subprogram_annual_plan' (-1276.00) by 1276.00 for ՀՀ էկոնոմիկայի նախարարություն | 1079 | 31002",
-        "Subprogram violation: 'subprogram_rev_period_plan' (0.00) > 'subprogram_rev_annual_plan' (-1276.00) by 1276.00 for ՀՀ էկոնոմիկայի նախարարություն | 1079 | 31002"
-      ]
-    }
-  ]
+  "error_checks": []
 }

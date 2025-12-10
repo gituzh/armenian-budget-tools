@@ -39,7 +39,8 @@ This project:
 - **Structural**: Required columns, data types, encoding
 - **Cross-temporal**: Program consistency across years
 
-→ See full validation list in [validation.md](docs/validation.md)
+→ See full validation list in [validation.md](docs/validation.md)  
+→ Source-data anomalies and current validation exceptions: [validation_known_issues.md](docs/validation_known_issues.md)
 
 ### 🤖 AI-Assisted Analysis (MCP Server)
 

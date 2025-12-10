@@ -2,20 +2,20 @@
 
 **Source Type:** SPENDING_Q1234
 **File:** 2023_SPENDING_Q1234.csv
-**Generated:** 2025-11-24 18:40:33
+**Generated:** 2025-12-10 23:40:12
 
 ## Summary
 
 ### Check Status
 
 - **Total Rules:** 33
-- **Passed:** 22 ✅
+- **Passed:** 23 ✅
 - **With Warnings:** 4 ⚠️
-- **With Errors:** 7 ❌
+- **With Errors:** 6 ❌
 
 ### Issues Found
 
-- **Errors:** 7 ❌
+- **Errors:** 6 ❌
 - **Warnings:** 39 ⚠️
 
 ## ✅ Passed Checks
@@ -38,6 +38,7 @@
 - **negative_percentages**
 - **negative_totals**
 - **negative_totals**
+- **percentage_calculation**
 - **percentage_calculation**
 - **percentage_calculation**
 - **percentage_calculation**
@@ -100,7 +101,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_actual: expected 2546861923.0, got 2547649891.9, diff 787968.9000000954 (tolerance 5.0)
+- Overall overall_actual: expected 2546861923.0, got 2547649891.9, diff 787968.9000000954 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (1 failures)
 
@@ -108,7 +109,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_annual_plan: expected 2590581177.8999996, got 2590973151.1, diff 391973.2000002861 (tolerance 5.0)
+- Overall overall_annual_plan: expected 2590581177.8999996, got 2590973151.1, diff 391973.2000002861 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (1 failures)
 
@@ -116,17 +117,13 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_rev_annual_plan: expected 2623908566.7, got 2624738747.9, diff 830181.2000002861 (tolerance 5.0)
+- Overall overall_rev_annual_plan: expected 2623908566.7, got 2624738747.9, diff 830181.2000002861 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (1 failures)
 
 - ՀՀ ներքին գործերի նախարարություն: expected 17541880.1, got 16711698.8, diff 830181.3000000007
 
-### ❌ percentage_calculation (1 failures)
-
-- Row 113: Mismatch for 'subprogram_actual_vs_rev_annual_plan'. Expected: 1.0000, Reported: 0.9980, Diff: 0.0020 in ՀՀ դատախազություն | 1087 | 11004
-
 ---
 
 For detailed information about validation checks and how to interpret results,
-see [docs/validation.md](https://github.com/gituzh/armenian-budget-tools/blob/main/docs/validation.md).
+see [docs/validation.md](../../docs/validation.md).

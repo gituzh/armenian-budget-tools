@@ -2,21 +2,21 @@
 
 **Source Type:** SPENDING_Q123
 **File:** 2023_SPENDING_Q123.csv
-**Generated:** 2025-11-24 18:40:33
+**Generated:** 2025-12-10 23:40:12
 
 ## Summary
 
 ### Check Status
 
 - **Total Rules:** 47
-- **Passed:** 32 ✅
-- **With Warnings:** 3 ⚠️
-- **With Errors:** 12 ❌
+- **Passed:** 33 ✅
+- **With Warnings:** 4 ⚠️
+- **With Errors:** 10 ❌
 
 ### Issues Found
 
-- **Errors:** 30 ❌
-- **Warnings:** 48 ⚠️
+- **Errors:** 10 ❌
+- **Warnings:** 54 ⚠️
 
 ## ✅ Passed Checks
 
@@ -49,6 +49,7 @@
 - **percentage_calculation**
 - **percentage_calculation**
 - **percentage_calculation**
+- **period_vs_annual**
 - **period_vs_annual**
 - **period_vs_annual**
 - **required_fields**
@@ -112,11 +113,20 @@
 - Subprogram field 'subprogram_rev_period_plan' has negative value: -20314737.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 - Subprogram field 'subprogram_actual' has negative value: -5889853.20 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 
+### ⚠️ period_vs_annual (6 failures)
+
+- Subprogram violation: 'subprogram_period_plan' (74800.00) exceeds limit 'subprogram_annual_plan' (0.00) by 74800.00 for ՀՀ վարչապետի  աշխատակազմ | 1091 | 32002
+- Subprogram violation: 'subprogram_period_plan' (33000.00) exceeds limit 'subprogram_annual_plan' (0.00) by 33000.00 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31005
+- Subprogram violation: 'subprogram_period_plan' (164988.10) exceeds limit 'subprogram_annual_plan' (0.00) by 164988.10 for ՀՀ էկոնոմիկայի նախարարություն | 1190 | 11007
+- Subprogram violation: 'subprogram_period_plan' (4190.30) exceeds limit 'subprogram_annual_plan' (0.00) by 4190.30 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1160 | 12006
+- Subprogram violation: 'subprogram_period_plan' (7000.00) exceeds limit 'subprogram_annual_plan' (4000.00) by 3000.00 for ՀՀ ֆինանսների նախարարություն | 1006 | 11003
+- Subprogram violation: 'subprogram_period_plan' (254225.40) exceeds limit 'subprogram_annual_plan' (0.00) by 254225.40 for ՀՀ ֆինանսների նախարարություն | 1108 | 31002
+
 ## ❌ Errors
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_actual: expected 1633520314.1000001, got 1633934950.7, diff 414636.59999990463 (tolerance 5.0)
+- Overall overall_actual: expected 1633520314.1000001, got 1633934950.7, diff 414636.59999990463 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (1 failures)
 
@@ -124,7 +134,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_annual_plan: expected 2590581177.900001, got 2590973151.1, diff 391973.1999988556 (tolerance 5.0)
+- Overall overall_annual_plan: expected 2590581177.900001, got 2590973151.1, diff 391973.1999988556 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (1 failures)
 
@@ -132,7 +142,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_period_plan: expected 1856599083.8, got 1856878132.4, diff 279048.60000014305 (tolerance 5.0)
+- Overall overall_period_plan: expected 1856599083.8, got 1856878132.4, diff 279048.60000014305 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (1 failures)
 
@@ -140,7 +150,7 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_rev_annual_plan: expected 2591707984.400001, got 2592621698.9, diff 913714.4999990463 (tolerance 5.0)
+- Overall overall_rev_annual_plan: expected 2591707984.400001, got 2592621698.9, diff 913714.4999990463 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (1 failures)
 
@@ -148,39 +158,13 @@
 
 ### ❌ hierarchical_totals (1 failures)
 
-- Overall overall_rev_period_plan: expected 1931118870.9, got 1931646856.8, diff 527985.899999857 (tolerance 5.0)
+- Overall overall_rev_period_plan: expected 1931118870.9, got 1931646856.8, diff 527985.899999857 (tolerance 2000.0)
 
 ### ❌ hierarchical_totals (1 failures)
 
 - ՀՀ ներքին գործերի նախարարություն: expected 13386385.5, got 12858399.4, diff 527986.0999999996
 
-### ❌ period_vs_annual (12 failures)
-
-- Program violation: 'program_period_plan' (-5145485.30) > 'program_annual_plan' (-8683502.80) by 3538017.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001
-- Program violation: 'program_period_plan' (-5145485.30) > 'program_annual_plan' (-8683502.80) by 3538017.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003
-- Program violation: 'program_period_plan' (-5145485.30) > 'program_annual_plan' (-8683502.80) by 3538017.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11007
-- Program violation: 'program_period_plan' (-5145485.30) > 'program_annual_plan' (-8683502.80) by 3538017.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11015
-- Program violation: 'program_period_plan' (-5145485.30) > 'program_annual_plan' (-8683502.80) by 3538017.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31001
-- Program violation: 'program_period_plan' (-5145485.30) > 'program_annual_plan' (-8683502.80) by 3538017.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
-- Program violation: 'program_rev_period_plan' (-19359766.90) > 'program_rev_annual_plan' (-22897444.40) by 3537677.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001
-- Program violation: 'program_rev_period_plan' (-19359766.90) > 'program_rev_annual_plan' (-22897444.40) by 3537677.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003
-- Program violation: 'program_rev_period_plan' (-19359766.90) > 'program_rev_annual_plan' (-22897444.40) by 3537677.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11007
-- Program violation: 'program_rev_period_plan' (-19359766.90) > 'program_rev_annual_plan' (-22897444.40) by 3537677.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11015
-- Program violation: 'program_rev_period_plan' (-19359766.90) > 'program_rev_annual_plan' (-22897444.40) by 3537677.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31001
-- Program violation: 'program_rev_period_plan' (-19359766.90) > 'program_rev_annual_plan' (-22897444.40) by 3537677.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
-
-### ❌ period_vs_annual (8 failures)
-
-- Subprogram violation: 'subprogram_period_plan' (74800.00) > 'subprogram_annual_plan' (0.00) by 74800.00 for ՀՀ վարչապետի  աշխատակազմ | 1091 | 32002
-- Subprogram violation: 'subprogram_period_plan' (33000.00) > 'subprogram_annual_plan' (0.00) by 33000.00 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31005
-- Subprogram violation: 'subprogram_period_plan' (-6077179.60) > 'subprogram_annual_plan' (-10000000.00) by 3922820.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
-- Subprogram violation: 'subprogram_period_plan' (164988.10) > 'subprogram_annual_plan' (0.00) by 164988.10 for ՀՀ էկոնոմիկայի նախարարություն | 1190 | 11007
-- Subprogram violation: 'subprogram_period_plan' (4190.30) > 'subprogram_annual_plan' (0.00) by 4190.30 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1160 | 12006
-- Subprogram violation: 'subprogram_period_plan' (7000.00) > 'subprogram_annual_plan' (4000.00) by 3000.00 for ՀՀ ֆինանսների նախարարություն | 1006 | 11003
-- Subprogram violation: 'subprogram_period_plan' (254225.40) > 'subprogram_annual_plan' (0.00) by 254225.40 for ՀՀ ֆինանսների նախարարություն | 1108 | 31002
-- Subprogram violation: 'subprogram_rev_period_plan' (-20314737.80) > 'subprogram_rev_annual_plan' (-24237558.20) by 3922820.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
-
 ---
 
 For detailed information about validation checks and how to interpret results,
-see [docs/validation.md](https://github.com/gituzh/armenian-budget-tools/blob/main/docs/validation.md).
+see [docs/validation.md](../../docs/validation.md).

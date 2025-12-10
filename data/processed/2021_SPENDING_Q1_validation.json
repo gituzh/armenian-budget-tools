@@ -3,15 +3,15 @@
     "source_type": "SPENDING_Q1",
     "csv_path": "2021_SPENDING_Q1.csv",
     "overall_path": "2021_SPENDING_Q1_overall.json",
-    "generated_at": "2025-11-24T18:40:32.375038"
+    "generated_at": "2025-12-10T23:40:11.530592"
   },
   "summary": {
     "total_rules": 47,
-    "passed": 36,
-    "with_warnings": 4,
-    "with_errors": 7,
-    "errors": 13,
-    "warnings": 21
+    "passed": 42,
+    "with_warnings": 5,
+    "with_errors": 0,
+    "errors": 0,
+    "warnings": 26
   },
   "passed_checks": [
     {
@@ -90,6 +90,36 @@
       "messages": []
     },
     {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
       "check_id": "missing_financial_data",
       "severity": "error",
       "messages": []
@@ -186,7 +216,7 @@
     },
     {
       "check_id": "period_vs_annual",
-      "severity": "error",
+      "severity": "warning",
       "messages": []
     },
     {
@@ -244,70 +274,19 @@
         "Subprogram field 'subprogram_rev_annual_plan' has negative value: -1276.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
         "Subprogram field 'subprogram_actual' has negative value: -557746.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002"
       ]
-    }
-  ],
-  "error_checks": [
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "ՀՀ ոստիկանություն: expected 13179134.299999999, got 13180551.2, diff 1416.9000000003725"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "ՀՀ ոստիկանություն/Ոստիկանության ոլորտի քաղաքականության մշակում, կառավարում, կենտրոնացված միջոցառումներ, մոնիտորինգ և վերահսկողություն: expected 12919567.6, got 12918150.6, diff 1417.0"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "ՀՀ ոստիկանություն: expected 65014056.9, got 65015473.8, diff 1416.8999999985099"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "ՀՀ ոստիկանություն/Ոստիկանության ոլորտի քաղաքականության մշակում, կառավարում, կենտրոնացված միջոցառումներ, մոնիտորինգ և վերահսկողություն: expected 63449572.1, got 63448155.1, diff 1417.0"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "ՀՀ ոստիկանություն: expected 15024380.7, got 15025797.6, diff 1416.9000000003725"
-      ]
-    },
-    {
-      "check_id": "hierarchical_totals",
-      "severity": "error",
-      "fail_count": 1,
-      "messages": [
-        "ՀՀ ոստիկանություն/Ոստիկանության ոլորտի քաղաքականության մշակում, կառավարում, կենտրոնացված միջոցառումներ, մոնիտորինգ և վերահսկողություն: expected 14634322.200000001, got 14632905.2, diff 1417.0000000018626"
-      ]
     },
     {
       "check_id": "period_vs_annual",
-      "severity": "error",
-      "fail_count": 7,
+      "severity": "warning",
+      "fail_count": 5,
       "messages": [
-        "Subprogram violation: 'subprogram_period_plan' (272450.40) > 'subprogram_annual_plan' (0.00) by 272450.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1004 | 11012",
-        "Subprogram violation: 'subprogram_period_plan' (227272.00) > 'subprogram_annual_plan' (0.00) by 227272.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1072 | 11003",
-        "Subprogram violation: 'subprogram_period_plan' (0.00) > 'subprogram_annual_plan' (-1276.00) by 1276.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
-        "Subprogram violation: 'subprogram_period_plan' (165000.00) > 'subprogram_annual_plan' (0.00) by 165000.00 for ՀՀ առողջապահության նախարարություն | 1053 | 32004",
-        "Subprogram violation: 'subprogram_period_plan' (500000.00) > 'subprogram_annual_plan' (387693.00) by 112307.00 for ՀՀ ֆինանսների նախարարություն | 1006 | 11002",
-        "Subprogram violation: 'subprogram_period_plan' (25000.00) > 'subprogram_annual_plan' (0.00) by 25000.00 for ՀՀ ֆինանսների նախարարություն | 1108 | 11008",
-        "Subprogram violation: 'subprogram_rev_period_plan' (0.00) > 'subprogram_rev_annual_plan' (-1276.00) by 1276.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002"
+        "Subprogram violation: 'subprogram_period_plan' (272450.40) exceeds limit 'subprogram_annual_plan' (0.00) by 272450.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1004 | 11012",
+        "Subprogram violation: 'subprogram_period_plan' (227272.00) exceeds limit 'subprogram_annual_plan' (0.00) by 227272.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1072 | 11003",
+        "Subprogram violation: 'subprogram_period_plan' (165000.00) exceeds limit 'subprogram_annual_plan' (0.00) by 165000.00 for ՀՀ առողջապահության նախարարություն | 1053 | 32004",
+        "Subprogram violation: 'subprogram_period_plan' (500000.00) exceeds limit 'subprogram_annual_plan' (387693.00) by 112307.00 for ՀՀ ֆինանսների նախարարություն | 1006 | 11002",
+        "Subprogram violation: 'subprogram_period_plan' (25000.00) exceeds limit 'subprogram_annual_plan' (0.00) by 25000.00 for ՀՀ ֆինանսների նախարարություն | 1108 | 11008"
       ]
     }
-  ]
+  ],
+  "error_checks": []
 }

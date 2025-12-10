@@ -2,7 +2,7 @@
 
 **Source Type:** SPENDING_Q1234
 **File:** 2021_SPENDING_Q1234.csv
-**Generated:** 2025-11-24 18:40:32
+**Generated:** 2025-12-10 23:40:11
 
 ## Summary
 
@@ -101,4 +101,4 @@
 ---
 
 For detailed information about validation checks and how to interpret results,
-see [docs/validation.md](https://github.com/gituzh/armenian-budget-tools/blob/main/docs/validation.md).
+see [docs/validation.md](../../docs/validation.md).
