@@ -117,45 +117,57 @@ def test_mtep_parsing(sample_mtep_file):
 
 **Key insight:** If your data has a different structure (like MTEP), create a separate parser. Don't force it into existing parsers.
 
-## Validation vs Tests
+## Validation Framework
+
+Production validation system with check registry, configurable tolerances, and structured reporting.
+
+### Architecture
+
+Four modules in `src/armenian_budget/validation/`:
+
+- `config.py` - Tolerance constants (BUDGET_LAW_ABS_TOL=1.0, SPENDING_ABS_TOL=2000.0, MTEP_ABS_TOL=0.5) and severity rules
+- `models.py` - CheckResult and ValidationReport dataclasses
+- `registry.py` - Check orchestration via ALL_CHECKS list
+- `checks/` - Individual check implementations (11 checks)
+
+### Adding New Checks
+
+1. Create `validation/checks/my_check.py` - see `hierarchical_structure_sanity.py` for pattern
+2. Add severity config to `validation/config.py` _SEVERITY_MAP
+3. Register in `validation/registry.py` ALL_CHECKS list
+4. Write tests in `tests/validation/test_my_check.py`
+5. Document in `docs/validation.md` and developer_guide.md
+
+**Check interface** (convention-based, duck-typed):
+
+- `validate(df, overall, source_type) -> List[CheckResult]` - run validation logic
+- `applies_to_source_type(source_type) -> bool` - filter by data type
+
+**Example:** See `validation/checks/hierarchical_totals.py` for multi-level check pattern.
+
+### Configuration
+
+```python
+from armenian_budget.validation.config import get_tolerance_for_source, get_severity
+
+tolerance = get_tolerance_for_source(SourceType.BUDGET_LAW)  # 1.0 AMD
+severity = get_severity("hierarchical_totals", "program")    # "error"
+```
+
+See `validation/config.py` for all tolerance constants and severity maps.
+
+### Validation vs Tests
 
 **Validation** = Production code in `src/armenian_budget/validation/`
 
-- Runs during data processing
-- Reusable business logic with check registry pattern
-- Returns `CheckResult` and `ValidationReport` objects
-- Core modules: `config.py` (tolerances), `models.py` (data structures), `registry.py` (orchestration), `checks/` (individual validations)
+- Runs during data processing and on-demand
+- Returns structured CheckResult and ValidationReport objects
+- Configurable via config.py
 
 **Tests** = Development verification in `tests/`
 
 - Uses pytest framework
 - Verifies both parsers AND validation logic
-- Examples: `test_spending_validation.py`, `test_budget_law_validation.py`
-
-**Pattern:**
-
-```python
-# src/armenian_budget/validation/checks/hierarchical_totals.py
-from typing import List
-from ..models import CheckResult
-from ..config import get_tolerance_for_source, get_severity
-
-class HierarchicalTotalsCheck:
-    def validate(self, df: pd.DataFrame, overall: dict, source_type: SourceType) -> List[CheckResult]:
-        # Reusable production validation
-        tolerance = get_tolerance_for_source(source_type)
-        # ... validation logic ...
-        return [CheckResult(...)]
-
-    def applies_to_source_type(self, source_type: SourceType) -> bool:
-        return True  # Applies to all source types
-
-# tests/data_validation/test_hierarchical_totals.py
-def test_hierarchical_totals_valid_data(sample_budget_data):
-    check = HierarchicalTotalsCheck()
-    results = check.validate(sample_budget_data.df, sample_budget_data.overall, SourceType.BUDGET_LAW)
-    assert all(r.passed for r in results)
-```
 
 ## Testing
 
@@ -222,37 +234,43 @@ df, overall, rowtype_stats, statetrans_stats = flatten_mtep_excel(
 
 ### Validation
 
+**Run validation:**
+
 ```python
-from armenian_budget.validation import run_validation, print_report, SourceType
-import pandas as pd
+from armenian_budget.validation.registry import run_validation, print_report
+from armenian_budget.core.enums import SourceType
 from pathlib import Path
 
-# Run validation on a CSV file
-df = pd.read_csv("data/processed/2023_BUDGET_LAW.csv")
-report = run_validation(df, Path("data/processed/2023_BUDGET_LAW.csv"), SourceType.BUDGET_LAW)
-
-# Print results to console
-print_report(report)
-
-# Access results programmatically
-print(f"Total checks: {report.total_checks}")
-print(f"Failed checks: {report.failed_count}")
-print(f"Errors: {report.error_count}")
-print(f"Warnings: {report.warning_count}")
-
-# Get only failed checks
-for result in report.get_failed_checks():
-    print(f"{result.check_id}: {result.fail_count} failures")
-
-# Tolerance configuration
-from armenian_budget.validation.config import (
-    get_tolerance_for_source,
-    BUDGET_LAW_ABS_TOL,
-    SPENDING_ABS_TOL,
-)
-
-tolerance = get_tolerance_for_source(SourceType.BUDGET_LAW)  # 1.0 AMD
+report = run_validation(year=2023, source_type=SourceType.BUDGET_LAW,
+                       processed_root=Path("data/processed"))
+print_report(report)  # Console output
 ```
+
+**Check results:**
+
+```python
+if report.has_errors():
+    errors = report.get_failed_checks(severity="error")
+    # Process errors...
+```
+
+**Generate reports:**
+
+```python
+Path("report.md").write_text(report.to_markdown())
+Path("report.json").write_text(report.to_json())
+```
+
+**Access config:**
+
+```python
+from armenian_budget.validation.config import get_tolerance_for_source, get_severity
+
+tol = get_tolerance_for_source(SourceType.BUDGET_LAW)  # 1.0
+sev = get_severity("hierarchical_totals", "program")   # "error"
+```
+
+See `validation/models.py` for ValidationReport methods, `validation/config.py` for all constants.
 
 ### Discovery
 
