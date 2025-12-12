@@ -8,14 +8,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Comprehensive data validation system with 10+ validation checks (module: `armenian_budget.validation`)
+  - Hierarchical totals consistency
+  - Financial data completeness
+  - Support for negative annual plan values in spending validation
+  - Execution rate verification (≤100%)
+  - Period vs annual plan comparisons
+  - Required fields validation
+- CLI `validate` command with multi-year support and flexible reporting (module: `armenian_budget.interfaces.cli.main`)
+  - `--report` flag for Markdown validation reports
+  - `--report-json` flag for JSON validation reports
+  - Optional custom directory path for validation reports (via `--report` and `--report-json` flags)
+- Extended data coverage through 2026 (includes 2024 MTEP, 2025 Q123 spending, 2026 budget, configurations, processed data)
+- Validation reports with row-level details and context
+- Documentation: `docs/validation.md` for validation usage guide
+- Documentation: `docs/validation_known_issues.md` tracking source data anomalies (split state bodies from government reorganizations, formatting inconsistencies)
+
 ### Changed
 
 - **BREAKING**: Processed data now written to `data/processed/` instead of `data/processed/csv/`
   - CSV files, overall JSON files, and validation reports now stored directly in `data/processed/`
   - MCP server and CLI automatically use new location
   - Old `csv/` directory preserved with placeholder file for GitHub users with bookmarks
-- Validation markdown reports now show only filename (not absolute paths) for better portability
+- CLI standardized on `--years` across all commands (removed `--year`)
+- Updated `CLAUDE.md` with code quality principles (clarity, simplicity, performance)
+- Validation tolerances: `SPENDING_ABS_TOL = 5.0` AMD, `BUDGET_LAW_ABS_TOL = 0.0`
+- Spending validation: period vs annual subprogram violations downgraded from error to warning
+- Validation reports now use relative paths (filenames only) for portability
 - Internal refactoring: renamed `_processed_csv_dir()` → `_processed_data_dir()` and `csv_dir` → `data_dir` variables where appropriate
+
+### Fixed
+
+- CLI `validate` command exit code handling for invalid source types
+- CLI `extract` command to support all source types (budget laws, MTEP, spending reports) instead of only spending reports
+- Percentage calculation comparison robustness in validation checks
 
 ## [0.3.0] - 2025-08-24
 
