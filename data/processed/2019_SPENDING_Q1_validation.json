@@ -1,0 +1,276 @@
+{
+  "metadata": {
+    "source_type": "SPENDING_Q1",
+    "csv_path": "2019_SPENDING_Q1.csv",
+    "overall_path": "2019_SPENDING_Q1_overall.json",
+    "generated_at": "2025-12-10T23:40:10.593492"
+  },
+  "summary": {
+    "total_rules": 47,
+    "passed": 43,
+    "with_warnings": 4,
+    "with_errors": 0,
+    "errors": 0,
+    "warnings": 12
+  },
+  "passed_checks": [
+    {
+      "check_id": "empty_identifiers",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "empty_identifiers",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "empty_identifiers",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "period_vs_annual",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "period_vs_annual",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "period_vs_annual",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "period_vs_annual",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "required_fields",
+      "severity": "error",
+      "messages": []
+    }
+  ],
+  "warning_checks": [
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "fail_count": 4,
+      "messages": [
+        "Row 15: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (145.90%) in ՀՀ վարչապետի  աշխատակազմ | 1019 | 12002",
+        "Row 231: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (9933.20%) in ՀՀ տնտեսական զարգացման և ներդրումների նախարարություն | 1079 | 31002",
+        "Row 15: Execution > 100% for 'subprogram_actual_vs_rev_period_plan' (145.90%) in ՀՀ վարչապետի  աշխատակազմ | 1019 | 12002",
+        "Row 16: Execution > 100% for 'subprogram_actual_vs_rev_period_plan' (446.00%) in ՀՀ վարչապետի  աշխատակազմ | 1019 | 12003"
+      ]
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "fail_count": 1,
+      "messages": [
+        "State_body field 'state_body_actual' has negative value: -7565.86 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարության պետական գույքի կառավարման կոմիտե | 9975 | 99100"
+      ]
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "fail_count": 2,
+      "messages": [
+        "Program field 'program_actual' has negative value: -94.85 for ՀՀ արտակարգ իրավիճակների նախարարություն | 9995 | 99100",
+        "Program field 'program_actual' has negative value: -7565.86 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարության պետական գույքի կառավարման կոմիտե | 9975 | 99100"
+      ]
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "fail_count": 5,
+      "messages": [
+        "Subprogram field 'subprogram_annual_plan' has negative value: -1276.00 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարություն | 1079 | 31002",
+        "Subprogram field 'subprogram_rev_annual_plan' has negative value: -1276.00 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարություն | 1079 | 31002",
+        "Subprogram field 'subprogram_actual' has negative value: -126747.38 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարություն | 1079 | 31002",
+        "Subprogram field 'subprogram_actual' has negative value: -94.85 for ՀՀ արտակարգ իրավիճակների նախարարություն | 9995 | 99100",
+        "Subprogram field 'subprogram_actual' has negative value: -7565.86 for ՀՀ տնտեսական զարգացման և ներդրումների նախարարության պետական գույքի կառավարման կոմիտե | 9975 | 99100"
+      ]
+    }
+  ],
+  "error_checks": []
+}

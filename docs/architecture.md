@@ -89,24 +89,22 @@ The processing pipeline transforms government archives into validated datasets:
 
 - `data/original/` - Downloaded archives with checksums
 - `data/extracted/` - Unarchived Excel files + discovery index
-- `data/processed/csv/` - Final CSV outputs + overall totals JSON
+- `data/processed/` - Final CSV outputs + overall totals JSON
 
 ## 5. Repository Structure
 
 ```text
 src/armenian_budget/
-├── core/                   # Core data models and types
+├── core/                   # Core data models, types, schemas, and shared utilities
 ├── ingestion/              # Parsing and discovery
 ├── validation/             # Business rules
 ├── sources/                # Download and registry
 ├── storage/                # Persistence layer
-├── interfaces/             # CLI, API, MCP
-└── utils/                  # Shared utilities
+└── interfaces/             # CLI, API, MCP
 
 config/                     # Configuration files
 ├── sources.yaml
-├── parsers.yaml
-└── validation_rules.yaml
+└── parsers.yaml
 
 data/                       # Data directories
 ├── original/               # Downloaded archives

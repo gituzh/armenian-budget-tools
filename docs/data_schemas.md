@@ -86,127 +86,35 @@ Official download URLs and metadata for all government archives are maintained i
 
 ### 3.3 Archive Contents and Future Components
 
-Budget law archives contain extensive budget documentation beyond just the program breakdown. The current `BUDGET_LAW` source type only processes the program summary, but many other components are available for future parsing.
+Archives contain multiple budget components beyond the currently parsed program summaries:
 
-**Budget Law Archive Structure (Example 2023):**
+**Budget Law Archives:**
+- **Currently Parsed**: Program summary (Ամփոփ ըստ ծրագրերի) → `BUDGET_LAW`
+- **Available for Future**: Capital expenditures, loan programs, grants, subsidies, deficit financing, administrative costs, environmental fees, and other budget components
 
-```text
-ORENQI HAVELVACNER/
-├── 1.Հավելված N1 աղյուսակ N1.Ամփոփ ըստ ծրագրերի.xls
-│   └── 💡 Currently parsed as BUDGET_LAW
-├── 2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xls
-├── 3.Հավելված N1 աղյուսակ N3. կապիտալ ծախսեր.xlsx
-├── 4.Հավելված N1 աղյուսակ N4 վարկային ծրագրեր.xlsx
-├── 5.Հավելված N1 աղյուսակ N5 դրամաշնորհային ծրագրեր.xlsx
-├── 6.Հավելված N1 աղյուսակ N6. ճանապարհների ընթացիկ պահպանություն.xlsx
-├── 7.Հավելված N1 աղյուսակ N7 սուբվենցիաներ համայնքներին.xlsx
-├── 8.Հավելված N1 աղյուսակ N8 սահմանամերձ.xlsx
-├── 9.Հավելված N2. Դոտացիա.xlsx
-├── 10.Հավելված N3.Դեֆիցիտի ֆինանսավորման աղբյուրներ.xlsx
-├── 11.Հավելված N4.ԿԲ վարչական ծախսեր.xlsx
-├── 12.Հավելված N5, Ռադիոհաճախականություն.docx
-├── 13.Հավելված N 6Աջնահերթություն.xlsx
-└── 14.Հավելված N 7 բնապահպանական վճարներ.xlsx
-```
-
-**Spending Report Archive Structure (Example 2023 Q123):**
-
-```text
-4.Հավելվածներ/
-├── 1. 2023_9 ամիս_ամփոփ ըստ ծրագրերի.xls
-├── 2. 2023_9 ամիս_ պատասխանատու,ծրագիր,միջոցառում.xls
-├── 3. 2023_9 ամիս_վարկ.xls
-├── 4. 2023_9 ամիս_դրամաշնորհ.xls
-└── 5. 2023_9-ամիս_դեֆիցիտ.xls
-```
+**Spending Report Archives:**
+- **Currently Parsed**: Program summary (ամփոփ ըստ ծրագրերի)
+- **Available for Future**: Detailed breakdowns by responsible entity and activity, loan programs, grants, deficit financing
 
 ## 4. Original Table Organization
 
 ### 4.1 BUDGET_LAW Tables (Currently Parsed)
 
-**Discovery Pattern:** Files are discovered using regex patterns from `config/parsers.yaml` that match the Armenian word fragments "ծրագ" (from ծրագիր/program) and "միջոց" (from միջոցառում/measure)
-**Purpose:** Annual budget allocations broken down by programs and subprograms
-**Structure:** 3-level organizational hierarchy with Armenian language headers
+**Discovery Pattern:** `config/parsers.yaml` patterns match Armenian word fragments "ծրագ" (program) and "միջոց" (measure)
 
-**Table Structure:**
-
-- **State Body** (Պետական մարմին): State body, ministry or agency name
-- **Program** (Ծրագիր): Budget program with code and description
-- **Subprogram** (Միջոցառում): Detailed subprogram with code and description
-- **Allocated Amount** (Հատկացված գումար): Budget amount in AMD
-
-**Key Characteristics:**
-
-- **Hierarchy**: 3-level structure (State Body → Program → Subprogram) with hierarchical totals
-- Consistent structure across 2019-2024
-- 2025 format includes extended program codes (`program_code_ext`)
-
-*[Screenshot needed: Hierarchical budget table showing state body/program/subprogram structure]*
+**Structure:** 3-level hierarchy (State Body → Program → Subprogram) with Armenian headers and hierarchical totals. Annual budget allocations in AMD. 2025 format adds extended program codes (`program_code_ext`).
 
 ### 4.2 SPENDING Tables (Execution Reports)
 
-**Discovery Pattern:** Files are discovered using the same regex patterns from `config/parsers.yaml` as budget law files (matching "ծրագ" and "միջոց" word fragments)
+**Discovery Pattern:** Same `config/parsers.yaml` patterns as budget law files
 
-**Key File Types:**
-
-- **Main Summaries**: `1. {year}_{period}_ամփոփ ըստ ծրագրերի.xls` - Program-by-program spending overview
-- **Detailed Breakdowns**: `2. {year}_{period}_պատասխանատու,ծրագիր,միջոցառում.xls` - By responsible entity and activity
-- **Specialized Reports**: Loan programs (`վարկ.xls`), grants (`դրամաշնորհ.xls`), deficit financing (`դեֆիցիտ.xls`)
-
-**Table Structure:**
-
-- **State Body** (Պետական մարմին): State body, ministry or agency name
-- **Program** (Ծրագիր): Budget program with code and description
-- **Subprogram** (Միջոցառում): Detailed subprogram with code and description
-- **Original Plan** (Սկզբնական պլան): Initial annual budget allocation
-- **Revised Plan** (Վերանայված պլան): Mid-year budget adjustments
-- **Actual Spending** (Իրական կատարում): Year-to-date actual expenditures
-- **Execution Rate** (Կատարման տոկոս): Actual vs Revised Plan (%)
-
-**Key Characteristics:**
-
-- **Hierarchy**: Same 3-level structure (State Body → Program → Subprogram) as budget laws
-- Multiple plan/actual columns for year-to-date and period-specific metrics
-- Q1234 reports lack period-specific columns (only annual metrics)
-- Complex cross-referencing between original/revised/actual amounts
-
-*[Screenshot needed: Spending report table showing plan vs actual columns]*
+**Structure:** 3-level hierarchy (State Body → Program → Subprogram) with plan vs actual columns. Includes original/revised annual plans, period plans (Q1/Q12/Q123 only), actual spending, and execution rates (%). Q1234 reports contain only annual metrics.
 
 ### 4.3 MTEP Tables (Mid-Term Expenditure Program)
 
-**Discovery Pattern:** Files are discovered using Armenian pattern "միջնաժամկետ.*ծախսերի.*ծրագիր" from `config/parsers.yaml`
+**Discovery Pattern:** `config/parsers.yaml` pattern "միջնաժամկետ.*ծախսերի.*ծրագիր"
 
-**Purpose:** Multi-year budget projections (3-year horizon) for medium-term fiscal planning
-
-**Structure:** 2-level organizational hierarchy (State Body → Program only)
-
-**Table Structure:**
-
-- **State Body** (Պետական մարմին): State body, ministry or agency name
-- **Program** (Ծրագիր): Budget program with code and description
-- **Goal** (Նպատակ): Program objective (optional)
-- **Result** (Արդյունք): Expected outcomes (optional)
-- **Year 0 Amount**: Base year allocation
-- **Year 1 Amount**: First projection year
-- **Year 2 Amount**: Second projection year
-
-**Key Characteristics:**
-
-- **Hierarchy**: 2-level structure (State Body → Program) - **no subprograms**
-- Different column structure from budget laws and spending reports
-- Multi-year allocations with year-specific columns (y0, y1, y2 suffixes)
-- Overall JSON contains `plan_years` array with calendar years (e.g., [2024, 2025, 2026])
-- Available starting from 2024 format
-
-*[Screenshot needed: MTEP table showing multi-year projections]*
-
-### 4.4 Data Organization Notes
-
-- **Language**: All tables use Armenian headers and content
-- **Year Variations**: 2017-2018 are PDF-only; 2019+ are Excel-based
-- **Multiple Worksheets**: Some files contain multiple tabs for different categories
-- **Data Quality**: Some cells may be merged or contain notes/comments
-- **Currency**: All amounts in Armenian Dram (AMD)
+**Structure:** 2-level hierarchy (State Body → Program only, no subprograms). Multi-year projections (3-year horizon) with year-specific columns (y0, y1, y2). Overall JSON contains `plan_years` array with calendar years. Available from 2024+.
 
 ## 5. Extracted Data
 
@@ -233,7 +141,7 @@ ORENQI HAVELVACNER/
 
 **CSV Files:**
 
-- **Location**: `data/processed/csv/`
+- **Location**: `data/processed/`
 - **Naming**: `{year}_{SOURCE_TYPE}.csv`
 - **Format**: UTF-8 encoded CSV with Armenian text support
 
@@ -245,198 +153,78 @@ ORENQI HAVELVACNER/
 
 ### 6.2 Data Structure
 
-**Standard 3-level sources (BUDGET_LAW, SPENDING):**
+**CSV Structure:** Flattened rows with hierarchical totals (no joins needed for analysis).
 
-Each row represents one **subprogram** with aggregated totals from parent levels:
+- **3-level sources (BUDGET_LAW, SPENDING):** Each row = one subprogram with parent totals
+- **2-level source (MTEP):** Each row = one program (subprogram columns empty for compatibility)
 
-```text
-state_body | program_code | program_name | subprogram_code | subprogram_total | program_total | state_body_total
-```
-
-**MTEP (2-level source):**
-
-Each row represents one **program** (no subprograms). Subprogram columns are retained for schema compatibility but left empty. Instead of single `*_total` columns, MTEP has `*_total_y0`, `*_total_y1`, `*_total_y2` for multi-year projections:
-
-```text
-state_body | program_code | program_name | program_total_y0 | program_total_y1 | program_total_y2 | state_body_total_y0 | ...
-```
-
-**Benefits of Flattened Structure:**
-
-- No complex joins needed for hierarchical analysis
-- Consistent schema approach across all source types and years
-- Easy filtering by any level (state body, program, or subprogram)
-- Compatible with Excel, BI tools, and data analysis software
-
-**Parser Output per File:**
-
-Each parsed Excel file produces two outputs:
-
-1. **CSV file** with the flattened data structure described above
-2. **Overall totals** (`overall_values`) for validation and cross-checking
-
-#### Budget Law Overall Totals
-
-For BUDGET_LAW files, `overall_values` is a float representing the total budget amount across all state bodies, programs, and subprograms.
-
-**Example Value:** `1234567890.0` (AMD)
-
-**Purpose:** Sum of all `subprogram_total` values in the dataset for validation and cross-checking.
-
-#### Spending Report Overall Totals
-
-For SPENDING files, `overall_values` is a dictionary containing multiple aggregated totals:
-
-**Example Structure:**
-
-```json
-{
-    "total_annual_plan": 1234567890.0,      // Sum of all annual_plan values
-    "total_rev_annual_plan": 1234567890.0,  // Sum of all rev_annual_plan values
-    "total_actual": 1234567890.0,           // Sum of all actual spending values
-    "total_actual_vs_rev_annual_plan": 0.95 // Overall execution rate (95%)
-}
-```
-
-**Purpose:** Aggregated totals for cross-validation against individual row calculations and reporting.
-
-**Note:** Overall totals are **not included in the CSV output** but are available in the processing pipeline for validation, reporting, and debugging purposes.
+**Overall JSON:** Each processed file produces a companion `*_overall.json` with grand totals for validation. Budget Law contains a single total; Spending contains multiple aggregates (annual_plan, rev_annual_plan, actual, execution rates); MTEP contains multi-year totals and plan_years array.
 
 ## 7. Complete Column Reference
 
-### Common Columns (All Source Types)
+### BUDGET_LAW Fields
 
-| Column | Description | Type | Required |
-|--------|-------------|------|----------|
-| `state_body` | State body/ministry/agency name | string | ✓ |
-| `program_code` | Program identifier | string | ✓ |
-| `program_name` | Program name | string | ✓ |
-| `program_goal` | Program goal description | string | ✓ |
-| `program_result_desc` | Program result description | string | ✓ |
-| `subprogram_code` | Subprogram identifier | string | ✓ |
-| `subprogram_name` | Subprogram name | string | ✓ |
-| `subprogram_desc` | Subprogram description | string | ✓ |
-| `subprogram_type` | Subprogram type/category | string | ✓ |
+| Field | Description | Type | Availability |
+|-------|-------------|------|--------------|
+| `state_body` | State body/ministry/agency name | string | 2019+ |
+| `program_code` | Program identifier | string | 2019+ |
+| `program_code_ext` | Extended program code (e.g., "12-345") | string | 2025+ |
+| `program_name` | Program name | string | 2019+ |
+| `program_goal` | Program goal description | string | 2019+ |
+| `program_result_desc` | Program result description | string | 2019+ |
+| `subprogram_code` | Subprogram identifier | string | 2019+ |
+| `subprogram_name` | Subprogram name | string | 2019+ |
+| `subprogram_desc` | Subprogram description | string | 2019+ |
+| `subprogram_type` | Subprogram type/category | string | 2019+ |
+| `*_total` | Total allocated amount | numeric | 2019+ |
 
-### BUDGET_LAW Columns (2019-2024)
+**Wildcard (`*`) represents:** `state_body`, `program`, `subprogram` (CSV); `overall` (JSON)
 
-| Column | Description | Type |
-|--------|-------------|------|
-| `state_body_total` | Total allocated for state body | numeric |
-| `program_total` | Total allocated for program | numeric |
-| `subprogram_total` | Allocated amount for subprogram | numeric |
+### SPENDING Fields
 
-### BUDGET_LAW Columns (2025)
+| Field | Description | Type | Availability |
+|-------|-------------|------|--------------|
+| `state_body` | State body/ministry/agency name | string | 2019+ |
+| `program_code` | Program identifier | string | 2019+ |
+| `program_code_ext` | Extended program code (e.g., "12-345") | string | 2025+ |
+| `program_name` | Program name | string | 2019+ |
+| `program_goal` | Program goal description | string | 2019+ |
+| `program_result_desc` | Program result description | string | 2019+ |
+| `subprogram_code` | Subprogram identifier | string | 2019+ |
+| `subprogram_name` | Subprogram name | string | 2019+ |
+| `subprogram_desc` | Subprogram description | string | 2019+ |
+| `subprogram_type` | Subprogram type/category | string | 2019+ |
+| `*_annual_plan` | Original annual allocation | numeric | 2019+ |
+| `*_rev_annual_plan` | Revised annual plan | numeric | 2019+ |
+| `*_period_plan` | Original period allocation | numeric | Q1, Q12, Q123 (2019+) |
+| `*_rev_period_plan` | Revised period plan | numeric | Q1, Q12, Q123 (2019+) |
+| `*_actual` | Actual spending | numeric | 2019+ |
+| `*_actual_vs_rev_annual_plan` | Execution rate vs revised annual plan (%) | numeric | 2019+ |
+| `*_actual_vs_rev_period_plan` | Execution rate vs revised period plan (%) | numeric | Q1, Q12, Q123 (2019+) |
 
-| Column | Description | Type |
-|--------|-------------|------|
-| `state_body_total` | Total allocated for state body | numeric |
-| `program_code_ext` | Extended program code (e.g., "12-345") | string |
-| `program_total` | Total allocated for program | numeric |
-| `subprogram_total` | Allocated amount for subprogram | numeric |
+**Wildcard (`*`) represents:** `state_body`, `program`, `subprogram` (CSV); `overall` (JSON)
 
-### SPENDING_Q1/Q12/Q123 Columns (2019-2024)
+### MTEP Fields
 
-**Annual Metrics (Year-to-Date):**
+**Structure:** 2-level hierarchy (State Body → Program). Subprogram fields retained for schema compatibility but left empty. Multi-year projections with year-specific columns (y0, y1, y2).
 
-- `*_annual_plan`: Original annual allocation
-- `*_rev_annual_plan`: Revised annual plan
-- `*_actual`: Actual spending year-to-date
-- `*_actual_vs_rev_annual_plan`: Execution rate vs revised annual plan (%)
+| Field | Description | Type | Availability |
+|-------|-------------|------|--------------|
+| `state_body` | State body/ministry/agency name | string | 2024+ |
+| `program_code` | Program identifier | string | 2024+ |
+| `program_name` | Program name | string | 2024+ |
+| `program_goal` | Program goal description (optional) | string | 2024+ |
+| `program_result_desc` | Program result description (optional) | string | 2024+ |
+| `*_total_y0` | Total allocated amount (base year) | numeric | 2024+ |
+| `*_total_y1` | Total allocated amount (base year + 1) | numeric | 2024+ |
+| `*_total_y2` | Total allocated amount (base year + 2) | numeric | 2024+ |
+| `plan_years` | Calendar years array (e.g., [2024, 2025, 2026]) (JSON only) | array | 2024+ |
 
-**Period-Specific Metrics (Quarter/Half-Year):**
-
-- `*_period_plan`: Original period allocation
-- `*_rev_period_plan`: Revised period plan
-- `*_actual_vs_rev_period_plan`: Execution rate vs revised period plan (%)
-
-**Wildcard (`*`) represents:** `state_body_`, `program_`, `subprogram_`
-
-### SPENDING_Q1234 Columns (2019-2024)
-
-- `*_annual_plan`: Original annual allocation
-- `*_rev_annual_plan`: Final revised annual plan
-- `*_actual`: Actual spending for full year
-- `*_actual_vs_rev_annual_plan`: Final execution rate vs revised annual plan (%)
-
-### SPENDING_Q1/Q12 Columns (2025)
-
-Same as SPENDING_Q1/Q12/Q123 (2019-2024) but with added:
-
-- `program_code_ext`: Extended program code field
-
-### MTEP Columns (2024 format)
-
-Two-level hierarchy (state body → program). Subprogram fields are retained for schema compatibility and left empty. Amounts are provided for three consecutive plan years, exposed as `y0` (base year), `y1`, and `y2`.
-
-| Column | Description | Type |
-|--------|-------------|------|
-| `state_body` | State body/ministry/agency name | string |
-| `program_code` | Program identifier | string |
-| `program_name` | Program name | string |
-| `program_goal` | Program goal description (optional) | string |
-| `program_result_desc` | Program result description (optional) | string |
-| `state_body_total_y0` | State body total (base year) | numeric |
-| `state_body_total_y1` | State body total (base year + 1) | numeric |
-| `state_body_total_y2` | State body total (base year + 2) | numeric |
-| `program_total_y0` | Program total (base year) | numeric |
-| `program_total_y1` | Program total (base year + 1) | numeric |
-| `program_total_y2` | Program total (base year + 2) | numeric |
-
-#### MTEP Overall JSON
-
-Saved as `{year}_MTEP_overall.json` with calendar years and totals by horizon:
-
-```json
-{
-  "plan_years": [2024, 2025, 2026],
-  "overall_total_y0": 1234567890.0,
-  "overall_total_y1": 1250000000.0,
-  "overall_total_y2": 1300000000.0
-}
-```
-
-Validation checks ensure per-year rollups: for each of `y0/y1/y2`, the sum of
-`program_total_yk` per state body equals `state_body_total_yk`, and the sum of
-`state_body_total_yk` across state bodies equals `overall_total_yk`.
+**Wildcard (`*`) represents:** `state_body`, `program` (CSV); `overall` (JSON)
 
 ## 8. Data Quality and Validation
 
-### Validation Rules
-
-**Hierarchical Consistency:**
-
-- State body total = sum of program totals
-- Program total = sum of subprogram totals
-- Cross-year structural validation
-
-**Financial Validation:**
-
-- Execution rates between 0% and 200%
-- Period spending ≤ annual spending
-- Revised plans ≥ original plans (logical constraint)
-
-**Structural Validation:**
-
-- Required columns present
-- Data types consistent
-- Armenian text encoding valid
-
-### Known Data Quality Issues
-
-- Some merged cells in original Excel files
-- Inconsistent formatting across years
-- Occasional manual corrections in spending reports
-- PDF-only format for 2017-2018 budget laws
-
-## 9. Future Expansion Opportunities
-
-### Enhanced Processing Features
-
-- **Cross-year Analysis**: Program equivalency mapping and trend analysis
-- **Data Quality Scoring**: Automated validation and quality metrics
-- **Advanced Discovery**: Pattern recognition for additional file types
-- **Metadata Enrichment**: Extended processing reports with more detailed lineage
+Comprehensive validation checks are performed on all processed data. See [validation.md](validation.md) for complete validation rules and how to run validation reports.
 
 ---
 

@@ -5,178 +5,150 @@ checksums:
   url: https://minfin.am/website/images/website/byuje%20ev%20krknaki%20harkum/Mijnajamket/Orenqi%20havelvacner_Excel.rar
   checksum: ce84f26ab8ddddc718f3e0e8562191aa3b1bf35e3d611be04cf7da4c36ac7b4d
   checksum_updated_at: '2025-08-10T14:36:05.152796+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/budget_laws/2019/Orenqi
-    havelvacner_Excel.rar
 - name: 2019_spending_q1
   year: 2019
   source_type: spending_q1
   url: https://minfin.am/website/images/files/ebb39f5f.rar
   checksum: df8e41dd83849d37fa53895e14d716894ea2d8634d5d2a2f2163c5a15b13ca45
   checksum_updated_at: '2025-08-10T14:36:05.154475+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2019/Q1/ebb39f5f.rar
 - name: 2019_spending_q12
   year: 2019
   source_type: spending_q12
   url: https://minfin.am/website/images/files/46e5e267.rar
   checksum: c07d6b126488b1931ab2d7a59b5edf31dbd951c6fcce1ecc9fe801e62ae93b1f
   checksum_updated_at: '2025-08-10T14:36:05.155895+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2019/Q12/46e5e267.rar
 - name: 2019_spending_q123
   year: 2019
   source_type: spending_q123
   url: https://minfin.am/website/images/files/8fc37ef0.rar
   checksum: 0983d0814a51f7194292bbaa9524ae3c73351e0a692e11a56bc67d9e2cfec017
   checksum_updated_at: '2025-08-10T14:36:05.157387+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2019/Q123/8fc37ef0.rar
 - name: 2019_spending_q1234
   year: 2019
   source_type: spending_q1234
   url: https://minfin.am/website/images/files/38b4849d.rar
   checksum: 6132c3b37782c3049ee51138336269ec4ea204d06c18605881b40a3904aad2c7
   checksum_updated_at: '2025-08-10T14:36:05.158444+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2019/Q1234/38b4849d.rar
 - name: 2020_budget_law
   year: 2020
   source_type: budget_law
   url: https://minfin.am/website/images/website/byuje%20ev%20krknaki%20harkum/Mijnajamket/Orenqi%20havelvacner_Excel.rar
   checksum: ce84f26ab8ddddc718f3e0e8562191aa3b1bf35e3d611be04cf7da4c36ac7b4d
   checksum_updated_at: '2025-08-10T14:36:05.159087+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/budget_laws/2020/Orenqi
-    havelvacner_Excel.rar
 - name: 2020_spending_q1
   year: 2020
   source_type: spending_q1
   url: https://minfin.am/website/images/files/e35aa8b2.rar
   checksum: 4820bb4c79b2af1c79d6b56026f809d0374a9b5b3c773a25258e93d2fe4889ab
   checksum_updated_at: '2025-08-10T14:36:05.160294+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2020/Q1/e35aa8b2.rar
 - name: 2020_spending_q12
   year: 2020
   source_type: spending_q12
   url: https://minfin.am/website/images/files/fae8ace8.zip
   checksum: 8e762da6bef8922637a128ff0cb15ad8a42d701b09bff74d36e32fa68c9d8256
   checksum_updated_at: '2025-08-10T14:36:05.162421+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2020/Q12/fae8ace8.zip
 - name: 2020_spending_q123
   year: 2020
   source_type: spending_q123
   url: https://minfin.am/website/images/files/20209.zip
   checksum: 739d20f86323de779264dd4e00aaea48191ea65a73ea1980069a375b32107dbf
   checksum_updated_at: '2025-08-10T14:36:05.164178+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2020/Q123/20209.zip
 - name: 2020_spending_q1234
   year: 2020
   source_type: spending_q1234
   url: https://minfin.am/website/images/files/03addb4d.zip
   checksum: bcc2644f9e218e56efbb4df872dd214f165d679bb5ede310f4577bee335d1275
   checksum_updated_at: '2025-08-10T14:36:05.165048+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2020/Q1234/03addb4d.zip
 - name: 2021_spending_q1
   year: 2021
   source_type: spending_q1
   url: https://minfin.am/website/images/files/9134c724.rar
   checksum: be6adfc0187c10208d0f53b8cf81d25d271d373f0d038ca5d63d8c3a131f35b4
   checksum_updated_at: '2025-08-10T14:36:05.166357+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2021/Q1/9134c724.rar
 - name: 2021_spending_q12
   year: 2021
   source_type: spending_q12
   url: https://minfin.am/website/images/files/9fbf73d2.rar
   checksum: 893e95a3987df7e5397ac25098fded0bda4392aeb310d824ce79e3bf29f8e06f
   checksum_updated_at: '2025-08-10T14:36:05.169596+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2021/Q12/9fbf73d2.rar
 - name: 2021_spending_q123
   year: 2021
   source_type: spending_q123
   url: https://minfin.am/website/images/files/2449c06b%201.zip
   checksum: 0371bcc278a059019918f24067e23de08e05439efeb801283ca7e061275462c1
   checksum_updated_at: '2025-08-10T14:36:05.171502+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2021/Q123/2449c06b
-    1.zip
 - name: 2021_spending_q1234
   year: 2021
   source_type: spending_q1234
   url: https://minfin.am/website/images/files/d3462f75.rar
   checksum: 658bc9dc17705b0f5d79c1a48f8dd7ba45a4d83e7a957d5a34579fd608920a90
   checksum_updated_at: '2025-08-10T14:36:05.172355+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2021/Q1234/d3462f75.rar
 - name: 2022_spending_q1
   year: 2022
   source_type: spending_q1
   url: https://minfin.am/website/images/files/46670e22.rar
   checksum: 853409c3dc34c92645ea8972bb018ec2e199d076ed4e6ef19cbc874630c0aa4e
   checksum_updated_at: '2025-08-10T14:36:05.172811+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2022/Q1/46670e22.rar
 - name: 2022_spending_q12
   year: 2022
   source_type: spending_q12
   url: https://minfin.am/website/images/files/2c396593.rar
   checksum: 490c8787b242b6bb53f321c580be4a2c1d1ed90ce65fea6c3802f91cf700d68d
   checksum_updated_at: '2025-08-10T14:36:05.173317+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2022/Q12/2c396593.rar
 - name: 2022_spending_q123
   year: 2022
   source_type: spending_q123
   url: https://minfin.am/website/images/files/efbe8db6.rar
   checksum: 31003242d7ba3447887c6c3927bbb057d868e5d9a92219b76f172b4b56fcb369
   checksum_updated_at: '2025-08-10T14:36:05.173796+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2022/Q123/efbe8db6.rar
 - name: 2022_spending_q1234
   year: 2022
   source_type: spending_q1234
   url: https://minfin.am/website/images/files/65b6c5b5.rar
   checksum: a67283004b01c530bd3ee72e3093da7356992a909be9c0b554d5609ccc247fb8
   checksum_updated_at: '2025-08-10T14:36:05.174700+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2022/Q1234/65b6c5b5.rar
 - name: 2023_spending_q1
   year: 2023
   source_type: spending_q1
   url: https://minfin.am/website/images/files/1973b22e.rar
   checksum: 8b2483333f5a367a369d73312845d28e63b30ef6cd48c50bfc33caf23eb44634
   checksum_updated_at: '2025-08-10T14:36:05.175172+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2023/Q1/1973b22e.rar
 - name: 2023_spending_q12
   year: 2023
   source_type: spending_q12
   url: https://minfin.am/website/images/files/f601731c.rar
   checksum: 23da2778eb74fc77ef0ec13a24847c2add2fe973c0c6cd3efcd5d22e7716df20
   checksum_updated_at: '2025-08-10T14:36:05.175614+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2023/Q12/f601731c.rar
 - name: 2023_spending_q123
   year: 2023
   source_type: spending_q123
   url: https://minfin.am/website/images/files/49c3ab4d.rar
   checksum: 0779c3b4463e38b25cdde1c2e2c9c5d54e3a0673a1ada7f872d6858080cd5106
   checksum_updated_at: '2025-08-10T14:36:05.176118+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2023/Q123/49c3ab4d.rar
 - name: 2023_spending_q1234
   year: 2023
   source_type: spending_q1234
   url: https://minfin.am/website/images/files/eeb4fff4.rar
   checksum: affc33105a82a3400bd8085abe575a834018b67d363d1ab5ca8a51eef2b59094
   checksum_updated_at: '2025-08-10T14:36:05.177002+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2023/Q1234/eeb4fff4.rar
 - name: 2024_spending_q1
   year: 2024
   source_type: spending_q1
   url: https://minfin.am/website/images/files/1600a624.rar
   checksum: c71c8837133cd9632b06add5bcc9cf3ab45b61144397b0dbcb751c9f59582a7a
   checksum_updated_at: '2025-08-10T14:36:05.177463+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2024/Q1/1600a624.rar
 - name: 2024_spending_q12
   year: 2024
   source_type: spending_q12
   url: https://minfin.am/website/images/files/4151505e.rar
   checksum: 17cc44ee5bf5d21a617583c03036d1ca8a86ee4fb855a3358ecf7423e0c6a937
   checksum_updated_at: '2025-08-10T14:36:05.177928+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2024/Q12/4151505e.rar
 - name: 2024_spending_q123
   year: 2024
   source_type: spending_q123
   url: https://minfin.am/website/images/files/3ec82128.rar
   checksum: ea2497f9d0320bff20ceb342e9e925dd94fc2a2e183df3b0428ff7ce48dbfb52
   checksum_updated_at: '2025-08-10T14:36:05.178433+00:00'
-  path: /Users/tigran/Workspace/_gituzh/budget-am/data/original/spending_reports/2024/Q123/3ec82128.rar
 - name: 2024_spending_q1234
   year: 2024
   source_type: spending_q1234
@@ -237,3 +209,21 @@ checksums:
   url: https://minfin.am/website/images/website/637cb1feeb346546589329b6ac4a9320ba2c7db0a30054205ddaf02f2be116a4.rar
   checksum: 1b1d49a05c7fd979be62aebb2d90755ecbaac48c72c851c605213128433548f6
   checksum_updated_at: '2025-09-15T02:20:52.789149+00:00'
+- name: 2025_mtep
+  year: 2025
+  source_type: mtep
+  url: https://minfin.am/website/images/website/%D5%84%D4%BA%D4%BE%D4%BE-%D5%B0%D5%A1%D5%BE%D5%A5%D5%AC%D5%BE%D5%A1%D5%AE%D5%B6%D5%A5%D6%80%20(1).rar
+  checksum: f5e42c3b486b1742907ea4ba1489a2e5fede5faa65cabe17641daaeeddf4bac2
+  checksum_updated_at: '2025-10-31T07:44:16.165308+00:00'
+- name: 2025_spending_q123
+  year: 2025
+  source_type: spending_q123
+  url: https://minfin.am/website/images/files/2025_9%20%D5%A1%D5%B4%D5%AB%D5%BD_%D5%B0%D5%A1%D5%B7%D5%BE%D5%A5%D5%BF%D5%BE%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.rar
+  checksum: 2e854f980f350957683090b797b7fd13cd0751099e78220c1b4916c7529b7c17
+  checksum_updated_at: '2025-11-11T16:22:09.363595+00:00'
+- name: 2026_budget_law
+  year: 2026
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/copy_5_%D6%85%D6%80%D5%A5%D5%B6%D6%84%D5%AB%20%D5%B0%D5%A1%D5%BE%D5%A5%D5%AC%D5%BE%D5%A1%D5%AE%D5%B6%D5%A5%D6%80.rar
+  checksum: e2ba02af5f26127afaf9e3610517e0ed16d756ac32b7978e19e4603c2b479965
+  checksum_updated_at: '2025-12-07T18:42:06.574102+00:00'

@@ -2,6 +2,33 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Code Quality Principles
+
+**IMPORTANT:** Apply these principles to ALL code in this project.
+
+### Clarity
+- Use descriptive names for variables, functions, and classes
+- Write self-documenting code that explains *what* it does through structure
+- Add docstrings (Google style) explaining *why* and *how* when not obvious
+- Keep functions focused on a single responsibility
+- Prefer explicit over implicit (clear imports, no magic)
+
+### Simplicity
+- Write the simplest solution that solves the problem
+- Avoid premature abstraction and over-engineering
+- Don't add features or flexibility not currently needed
+- Remove dead code and unnecessary complexity
+- Question every line: "Is this essential?"
+
+### Performance
+- Choose appropriate data structures and algorithms (O(n) vs O(n²))
+- Avoid repeated work (move constants out of loops, cache results)
+- Minimize memory allocations (count without creating lists, use generators)
+- Profile before optimizing complex code, but write efficient code from the start
+- Single-pass operations when possible
+
+**When in doubt:** Clarity > Simplicity > Performance (in that order)
+
 ## Common Development Commands
 
 ### Installation and Setup
@@ -40,10 +67,10 @@ pytest -vv tests/data_validation/test_spending_validation.py::test_spending_perc
 
 ```bash
 # Process all sources for a year
-armenian-budget process --year 2023
+armenian-budget process --years 2023
 
 # Process specific source type
-armenian-budget process --year 2023 --source-type BUDGET_LAW
+armenian-budget process --years 2023 --source-type BUDGET_LAW
 
 # Process multiple years
 armenian-budget process --years 2019-2024
@@ -95,7 +122,7 @@ The processing pipeline follows 6 steps:
 3. **Discover** - Build discovery index matching year/source to best file → `discovery_index.json`
 4. **Parse** - State-machine parsing with Armenian text detection
 5. **Validate** - Business rule checks with tolerance handling
-6. **Persist** - Write clean CSVs with metadata → `data/processed/csv/`
+6. **Persist** - Write clean CSVs with metadata → `data/processed/`
 
 ### Source Types
 
@@ -235,8 +262,9 @@ The project maintains a simple, focused documentation structure designed to avoi
 3. **`docs/architecture.md`** - System design (high-level only, no implementation details)
 4. **`docs/developer_guide.md`** - Implementation patterns, API reference, and code examples
 5. **`docs/data_schemas.md`** - Data formats and column specifications
-6. **`docs/mcp.md`** - MCP server integration guide
-7. **`docs/roadmap.md`** - Development milestones
+6. **`docs/validation.md`** - Data validation checks reference (user-facing)
+7. **`docs/mcp.md`** - MCP server integration guide
+8. **`docs/roadmap.md`** - Development milestones
 
 **Navigation Guide:**
 
@@ -244,6 +272,7 @@ The project maintains a simple, focused documentation structure designed to avoi
 - **Architects/Tech Leads** → See `docs/architecture.md` for design decisions
 - **Contributors/Developers** → Use `docs/developer_guide.md` for implementation and API
 - **Data Analysts** → Refer to `docs/data_schemas.md` for schema details
+- **Data Users/Auditors** → See `docs/validation.md` for quality checks and trustworthiness
 - **AI Integration** → Use `docs/mcp.md` for MCP server
 - **Product Team** → Review `docs/prd.md` for requirements
 
@@ -276,7 +305,7 @@ The project maintains a simple, focused documentation structure designed to avoi
 
 - **Validation rules/behavior and guarantees**
   - Impacted paths: `src/armenian_budget/validation/**`, tolerance changes
-  - Update: `docs/developer_guide.md` Validation Framework section
+  - Update: `docs/validation.md` (user-facing explanations) AND `docs/developer_guide.md` Validation Framework section (technical reference)
 
 - **Implementation patterns and code structure**
   - Impacted: parser patterns, testing strategies, development workflows
