@@ -7,6 +7,8 @@
 **Clean, validated Armenian budget data** - Budget laws, spending reports, and mid-term expenditure program (MTEP)
 
 > ⚠️ **Project Status:** Active development - APIs and data schemas may change
+>
+> ⚠️ **Known Data Issues:** The source data contains structural anomalies (split state bodies, formatting inconsistencies). See [validation_known_issues.md](docs/validation_known_issues.md) for details and current validation exceptions.
 
 Parses official Armenian government budget documents into analysis-ready CSVs with full validation and lineage tracking.
 
