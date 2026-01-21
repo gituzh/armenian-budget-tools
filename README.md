@@ -1,407 +1,144 @@
 # Armenian State Budget Tools
 
-Parse, validate, and analyze Armenian state budget laws and spending reports. Outputs clean, analysis-ready CSVs.
+[![Donate](https://img.shields.io/badge/💝_Donate-Support_Gituzh-ff69b4)](https://gituzh.am/donate?utm_id=gh-abt)
+[![Sponsors](https://img.shields.io/badge/🌟_Our-Supporters-orange)](https://gituzh.am/en/supporters/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Table of Contents
+**Clean, validated Armenian budget data** - Budget laws, spending reports, and mid-term expenditure program (MTEP)
 
-- [Armenian State Budget Tools](#armenian-state-budget-tools)
-  - [Table of Contents](#table-of-contents)
-  - [At a glance](#at-a-glance)
-  - [Quickstart](#quickstart)
-    - [Analysts (Excel/BI)](#analysts-excelbi)
-    - [CLI users](#cli-users)
-    - [Python API](#python-api)
-    - [MCP server](#mcp-server)
-  - [Installation](#installation)
-  - [Usage — CLI](#usage--cli)
-    - [Data setup: download, extract, discover](#data-setup-download-extract-discover)
-    - [Process datasets](#process-datasets)
-    - [Validate outputs](#validate-outputs)
-    - [Defaults and behavior](#defaults-and-behavior)
-    - [Logging filters (optional)](#logging-filters-optional)
-    - [Legacy script (optional)](#legacy-script-optional)
-    - [Provenance and integrity](#provenance-and-integrity)
-  - [Usage — Python API](#usage--python-api)
-    - [Parse budget law (2019–2024)](#parse-budget-law-20192024)
-    - [Parse spending report](#parse-spending-report)
-    - [Parse budget law (2025)](#parse-budget-law-2025)
-    - [Discover input programmatically (optional)](#discover-input-programmatically-optional)
-  - [Configuration](#configuration)
-  - [Data locations and column roles](#data-locations-and-column-roles)
-  - [Troubleshooting](#troubleshooting)
-  - [Known issues](#known-issues)
-  - [Contributing](#contributing)
-  - [Testing](#testing)
-  - [Changelog](#changelog)
-  - [License](#license)
-  - [Further reading](#further-reading)
+> ⚠️ **Project Status:** Active development - APIs and data schemas may change
+>
+> ⚠️ **Known Data Issues:** The source data contains structural anomalies (split state bodies, formatting inconsistencies). See [validation_known_issues.md](docs/validation_known_issues.md) for details and current validation exceptions.
 
-## At a glance
+Parses official Armenian government budget documents into analysis-ready CSVs with full validation and lineage tracking.
 
-- Who it’s for:
-  - Analysts using Excel/BI
-  - Developers/data scientists using Python/Wolfram
-  - Auditors who need source traceability
-  - Users who prefer AI‑assisted analysis via the MCP server
-- What it does: Parses and validates Armenian state budget laws (2019–2025) and spending reports (Q1/Q12/Q123/Q1234, 2019–2024 when available), producing clean CSVs for analysis.
-- Where outputs go:
-  - `data/original` (downloaded)
-  - `data/extracted` (unarchived)
-  - `data/processed/csv` (results)
-  - Optional end‑of‑run JSON report and recorded checksums for provenance
-- Why trust it: Deterministic, validation‑first processing with clear warnings vs errors, tolerance‑aware checks, discovery index for input selection, and traceability to original files.
+**Data Coverage:**
+- **Budget Laws**: 2019-2026
+- **Spending Reports**: 2019-2024 (Q1, Q12, Q123, Q1234); 2025 (Q1, Q12, Q123)
+- **MTEP**: 2024
 
-## Quickstart
+---
 
-### Analysts (Excel/BI)
+## Quick Start
 
-- Open processed CSVs directly in your tool of choice.
+### 💾 Just Want the Data?
 
-- Example paths: `./data/processed/csv/2023_BUDGET_LAW.csv`, `./data/processed/csv/2021_SPENDING_Q12.csv`
-- For schema/columns, see [Data locations and column roles](#data-locations-and-column-roles).
+Pre-processed CSVs ready to use:
 
-### CLI users
+- **Budget Laws** (2019-2026): `data/processed/{year}_BUDGET_LAW.csv`
+- **Spending Reports** (2019-2025): `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
+- **MTEP** (2024): `data/processed/2024_MTEP.csv`
 
-1. Create and activate a virtual environment, then install the package.
+→ See [data_schemas.md](docs/data_schemas.md) for column details
+
+### ✅ How We Ensure Data Quality
+
+This project:
+
+1. **Downloads** official data from minfin.am (checksummed)
+2. **Parses** Excel files with Armenian text handling
+3. **Validates** hierarchical totals, execution rates, and structural integrity
+4. **Outputs** clean CSVs with full lineage tracking
+
+**Validation checks:**
+
+- **Financial**: Hierarchical totals, execution rates (0-200%), period ≤ annual
+- **Structural**: Required columns, data types, encoding
+- **Cross-temporal**: Program consistency across years
+
+→ See full validation list in [validation.md](docs/validation.md)
+→ Source-data anomalies and current validation exceptions: [validation_known_issues.md](docs/validation_known_issues.md)
+
+### 🛠️ Run the Data Processing Pipeline Yourself
+
+> **Note:** Processed data is already included in this repo. This section shows how to regenerate it from scratch.
+
+#### 1. Install
 
 ```bash
-python -m venv venv
-source venv/bin/activate
+git clone https://github.com/gituzh/armenian-budget-tools.git
+cd armenian-budget-tools
+python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -U -e .
 ```
 
-1. Process a year (uses discovery when inputs exist under `./data/extracted`).
+#### 2. Run the pipeline
 
 ```bash
-armenian-budget process --year 2023
+armenian-budget download --years 2019-2024 --extract
+armenian-budget discover --years 2019-2024
+armenian-budget process --years 2019-2024
+armenian-budget validate --years 2019-2024  # Optional: validate processed data
+
+# Find outputs in ./data/processed/
+
+# Optional: process specific source type only
+armenian-budget process --years 2023 --source-type BUDGET_LAW
 ```
 
-1. Find outputs in `./data/processed/csv`.
+### 👩‍💻 For Developers & Contributors
 
-- Need to fetch and extract official files first? See [Usage — CLI](#usage--cli).
+**Documentation Philosophy:** We keep docs minimal and purposeful. They serve humans and AI agents who need context to understand, extend, and audit the system. Only document what cannot be understood from code alone.
 
-### Python API
+- **User expectations** → [prd.md](docs/prd.md)
+- **System design** → [architecture.md](docs/architecture.md)
+- **Implementation details** → [developer_guide.md](docs/developer_guide.md)
+- **Data formats** → [data_schemas.md](docs/data_schemas.md)
 
-After installation and venv activation, use the parsers directly:
+## Citation & Attribution
 
-```python
-from armenian_budget.ingestion.parsers import (
-    flatten_budget_excel_2019_2024,
-    flatten_budget_excel_2025,
-    SourceType,
-)
+If you use this data or code in your research, publications, or projects, please cite:
 
-# Budget law (2019–2024 format)
-df, overall, *_ = flatten_budget_excel_2019_2024(
-    "./data/extracted/budget_laws/2023/file.xlsx", SourceType.BUDGET_LAW
-)
-```
+**BibTeX:**
 
-- More examples: see [Usage — Python API](#usage--python-api).
-
-### MCP server
-
-1. Create and activate a virtual environment, then install the package.
-
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -U -e .
-```
-
-1. Claude Desktop (local stdio) — add a server configuration.
-
-Create or edit `~/Library/Application Support/Claude/claude_desktop_config.json` with absolute paths:
-
-```json
-{
-  "mcpServers": {
-    "budget-am": {
-      "command": "/absolute/path/to/repo/venv/bin/armenian-budget",
-      "args": [
-        "mcp-server",
-        "--data-path",
-        "/absolute/path/to/repo/data/processed"
-      ],
-      "env": {}
-    }
-  }
+```bibtex
+@software{armenian_budget_tools,
+  title = {Armenian State Budget Tools},
+  author = {The Gituzh Initiative},
+  url = {https://github.com/gituzh/armenian-budget-tools},
+  year = {2025}
 }
 ```
 
-1. Restart Claude Desktop, start a new chat, and use the tools (e.g., “Run tool list_available_data”).
+**Plain text:**
 
-1. Optional: run the server directly from a shell.
-
-```bash
-armenian-budget mcp-server --data-path ./data/processed
+```text
+The Gituzh Initiative. (2025). Armenian State Budget Tools.
+https://github.com/gituzh/armenian-budget-tools
 ```
 
-- More: see `docs/mcp.md` for resources, tools, and HTTP/HTTPS options.
-- More integration details and HTTPS setup: see [Further reading](#further-reading).
+When using the parsed data, please acknowledge the source to help others discover this resource and support transparency in government data.
 
-## Installation
-
-Requirements:
+## Requirements
 
 - Python 3.10+
-- macOS/Linux supported; Windows best‑effort
-- Optional (for spending report extraction): `unar` recommended, `unrar` fallback
+- `unar` or `unrar` for RAR extraction
 
-1. Clone the repository.
+For installation steps, see [Run the Data Processing Pipeline Yourself](#️-run-the-data-processing-pipeline-yourself) above.
 
-```bash
-git clone https://github.com/gituzh/budget-am.git
-cd budget-am
-```
+Need help? See [developer_guide.md](docs/developer_guide.md#common-development-tasks)
 
-1. Create and activate a virtual environment.
+## Data Sources
 
-```bash
-python -m venv venv
-source venv/bin/activate  # macOS/Linux
-# On Windows: .\\venv\\Scripts\\activate
-```
+Official government sources:
 
-1. Install in editable mode.
+- **Budget Laws**: [minfin.am/hy/page/petakan_byuj/](https://minfin.am/hy/page/petakan_byuj/)
+- **Spending Reports**: [minfin.am/hy/page/hy_hashvetvutyunner/](https://minfin.am/hy/page/hy_hashvetvutyunner/)
+- **MTEP (Mid-Term Expenditures Program)**: [minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/](https://minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/)
 
-```bash
-pip install -U -e .
-```
+→ See [config/sources.yaml](config/sources.yaml) for complete registry with URLs
 
-1. Verify the CLI entrypoint.
+→ See [data_schemas.md](docs/data_schemas.md) for data formats and column details
 
-```bash
-armenian-budget --help | head -n 5
-```
+## Support This Project
 
-Optional extractors (for `.rar` archives used by spending reports):
+If you find this project valuable, consider supporting Gituzh's work on civic technology and open data:
 
-- macOS (Homebrew):
+- **[Donate](https://gituzh.am/donate)** - Support our mission
+- **[Our Supporters](https://gituzh.am/en/supporters/)** - See who makes this work possible
 
-```bash
-brew install unar  # preferred
-brew install unrar # optional fallback
-```
-
-- Ubuntu/Debian:
-
-```bash
-sudo apt update && sudo apt install -y unar
-sudo apt install -y unrar || sudo apt install -y unrar-free
-```
-
-- Arch Linux:
-
-```bash
-sudo pacman -S unar
-```
-
-## Usage — CLI
-
-### Data setup: download, extract, discover
-
-- Download official sources configured in `config/sources.yaml` and extract archives when available.
-
-```bash
-# Download and extract for a range of years
-armenian-budget download --years 2019-2024 --extract
-
-# Extract only (if files already exist under data/original)
-armenian-budget extract --years 2019-2024
-armenian-budget extract  # auto-detect available years
-
-# Build/refresh discovery index (maps year/source → best workbook)
-armenian-budget discover --years 2019-2024 --dest-root ./data --parsers-config ./config/parsers.yaml
-```
-
-### Process datasets
-
-```bash
-# All sources for a year (outputs → ./data/processed/csv)
-armenian-budget process --year 2019
-
-# Single source type
-armenian-budget process --year 2019 --source-type BUDGET_LAW
-
-# Multiple years (comma-separated or range)
-armenian-budget process --years 2019,2020,2021
-armenian-budget process --years 2019-2021
-
-# Explicit input (requires single --year and --source-type)
-armenian-budget process --year 2023 --source-type BUDGET_LAW \
-  --input ./data/extracted/budget_laws/2023/file.xlsx
-
-# Advanced discovery knobs
-armenian-budget process --year 2023 --source-type BUDGET_LAW \
-  --deep-validate --dest-root ./data --parsers-config ./config/parsers.yaml
-```
-
-### Validate outputs
-
-```bash
-# Minimal checks for a produced CSV
-armenian-budget validate --csv ./data/processed/csv/2023_BUDGET_LAW.csv
-```
-
-Note: Validation via the CLI is currently minimal and not fully implemented. For comprehensive data checks, run the test suite with pytest (see [Testing](#testing)).
-
-### Defaults and behavior
-
-- Output directory default: `./data/processed/csv` (override with `--out`)
-- When `--source-type` is omitted, all supported source types are processed
-- When `--input` is omitted, discovery is automatic
-- `--auto` is deprecated; do not use (kept for backward compatibility)
-- End-of-run report: prints statuses; save with `--report-json <path>`
-
-### Logging filters (optional)
-
-```bash
-armenian-budget --warnings-only process --year 2023
-armenian-budget --errors-only process --year 2023
-```
-
-### Legacy script (optional)
-
-```bash
-python extract_budget_articles.py
-```
-
-### Provenance and integrity
-
-- Discovery index: `./data/extracted/discovery_index.json` (maps year/source → input path)
-- Checksums: recorded in `./config/checksums.yaml` after downloads
-- End-of-run processing report (optional): `--report-json ./data/processed/processing_report.json`
-
-## Usage — Python API
-
-All examples assume the project is installed in a virtual environment.
-
-### Parse budget law (2019–2024)
-
-```python
-from armenian_budget.ingestion.parsers import (
-    flatten_budget_excel_2019_2024,
-    SourceType,
-)
-
-df, overall, rowtype_stats, statetrans_stats = flatten_budget_excel_2019_2024(
-    "./data/extracted/budget_laws/2023/file.xlsx", SourceType.BUDGET_LAW
-)
-
-# df: flattened subprogram-level DataFrame
-# overall: dict with overall totals (e.g., {"overall_total": 123.45})
-# rowtype_stats/statetrans_stats: parsing diagnostics
-```
-
-### Parse spending report
-
-```python
-from armenian_budget.ingestion.parsers import flatten_budget_excel_2019_2024, SourceType
-
-df, overall, *_ = flatten_budget_excel_2019_2024(
-    "./data/extracted/spending_reports/2019/Q1/file.xlsx", SourceType.SPENDING_Q1
-)
-```
-
-### Parse budget law (2025)
-
-```python
-from armenian_budget.ingestion.parsers import flatten_budget_excel_2025
-
-df, overall, *_ = flatten_budget_excel_2025(
-    "./data/extracted/budget_laws/2025/file.xlsx"
-)
-```
-
-### Discover input programmatically (optional)
-
-```python
-from armenian_budget.ingestion.discovery import discover_best_file
-from armenian_budget.ingestion.parsers import flatten_budget_excel_2019_2024, SourceType
-
-best = discover_best_file(year=2023, source_type=SourceType.BUDGET_LAW)
-df, overall, *_ = flatten_budget_excel_2019_2024(best.path, SourceType.BUDGET_LAW)
-```
-
-For column roles and structures by source type, see [Data locations and column roles](#data-locations-and-column-roles).
-
-## Configuration
-
-- `config/sources.yaml`: official sources and URLs
-  - `file_format` optionally overrides extension inferred from URL
-  - Quarter subfolders (Q1/Q12/Q123/Q1234) are derived from `source_type`
-- `config/parsers.yaml`: discovery patterns and optional per-year overrides
-  - Pattern precedence: exact `year/quarter` > exact `year` > global
-  - Use `--deep-validate` during discover/process for stricter matching
-- `config/program_patterns.yaml`: keyword patterns consumed by MCP tools
-- `config/program_equivalencies.yaml`: manual cross-year program mappings used by MCP tools
-- `config/checksums.yaml`: recorded SHA-256 for downloads
-
-## Data locations and column roles
-
-Data roots:
-
-- `data/original`: downloaded files
-- `data/extracted`: unarchived workbooks
-- `data/processed/csv`: processed outputs
-
-Column roles by source type (subprogram grain):
-
-- BUDGET_LAW: allocated → `subprogram_total`
-- SPENDING_Q1, SPENDING_Q12, SPENDING_Q123:
-  - allocated → `subprogram_annual_plan`
-  - revised → `subprogram_rev_annual_plan`
-  - actual → `subprogram_actual`
-  - execution_rate → `subprogram_actual_vs_rev_annual_plan`
-- SPENDING_Q1234:
-  - allocated → `subprogram_annual_plan`
-  - revised → `subprogram_rev_annual_plan`
-  - actual → `subprogram_actual`
-
-## Troubleshooting
-
-- Discovery finds nothing: ensure archives are extracted under `./data/extracted/...`; try `--force-discover` or `--deep-validate`.
-- Extractor missing: install `unar` (preferred) or `unrar`; see Installation.
-- Wrong `--year`/`--input` combo: explicit `--input` requires a single `--year` and `--source-type`.
-- Checksum mismatch on download: the partial file is removed and retried; verify URL and network.
-- Validation failures: see which rule failed; for full checks run [Testing](#testing).
-- MCP can’t see data: confirm `--data-path ./data/processed` and that CSVs exist.
-
-## Known issues
-
-- Some automated tests are currently failing. This may reflect intentional behavior changes or data edge cases, but requires review. Track failures using `pytest -q -k <pattern>` and prioritize by impact.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Testing
-
-Always use the project venv.
-
-```bash
-source venv/bin/activate
-pytest -q                 # run all tests
-pytest -q -k spending     # run spending tests only
-pytest --cov=.            # coverage
-```
-
-Comprehensive data validations currently live in the test suite. Use these tests for full checks until the CLI `validate` command is expanded.
-
-For test structure, fixtures, and tips, see `tests/README.md`.
-
-## Changelog
-
-See `CHANGELOG.md` for recent updates.
+Your support helps maintain this project and enables us to build more tools for government transparency and civic engagement.
 
 ## License
 
-MIT License — see `LICENSE`.
-
-## Further reading
-
-- Architecture: `docs/architecture.md`
-- MCP server: `docs/mcp.md`
-- Product Requirements: `docs/prd.md`
-- Roadmap: `docs/roadmap.md`
+MIT License - See [LICENSE](LICENSE)

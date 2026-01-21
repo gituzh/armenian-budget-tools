@@ -2,115 +2,263 @@
 
 This roadmap is pragmatic and incremental. Each milestone should be shippable and keep current functionality working.
 
-## Milestone v0.1 — Structure + CLI MVP (Weeks 1–2)
+> **Note:** For completed releases, see [CHANGELOG.md](../CHANGELOG.md). This roadmap focuses on upcoming milestones.
 
-- **Repo structure**: create `src/armenian_budget/{parsers,validation,storage,cli,utils,core}`
-- **Parser migration**: move existing Excel parsers (2019–2024, 2025) into `parsers/` as-is
-- **Error handling**: replace `sys.exit` with typed exceptions
-- **Validation**: extract from `tests/utils/validation_helpers.py` → `validation/financial.py`
-- **Column registry**: utility mapping measure roles to dataset columns (allocated/revised/actual/% when present)
-- **Storage**: write CSV only (defer Parquet and metadata.json)
-- **CLI**: `armenian-budget process|validate` (minimal)
-- **CI**: GitHub Actions for tests + lint; add pre-commit (ruff/black)
+## Milestone v0.4.0 — MTEP + Validation Refactor + Documentation
 
-Exit criteria:
+**Focus:** Complete MTEP integration, separate validation from tests, improve documentation governance
 
-- All existing tests pass with imports updated
-- CLI can process 1 year and validate successfully
+### Features
 
-Suggested steps:
+- **MTEP data type**: Complete integration of Medium-Term Expenditure Program (MTEP) data
+  - 2-level hierarchy (state body → program, no subprograms)
+  - Multi-year planning horizon (y0, y1, y2 columns)
+  - JSON overall format with `plan_years` array
+  - Validation rules specific to MTEP structure
+  - Update `config/sources.yaml` with complete MTEP URLs
 
-```bash
-# 1. Create new folder structure
-mkdir -p src/armenian_budget/{core,ingestion/parsers,validation,storage,cli,utils}
+- **Validation/Tests separation**: Move production validation logic out of `tests/` into `validation/`
+  - Extract reusable validation functions from test utilities
+  - Create `validation/runner.py` for orchestration
+  - Maintain test coverage while separating concerns
+  - Update imports across codebase
 
-# 2. Move existing parser code and split by year
-mv src/budget-am/budget/__init__.py src/armenian_budget/ingestion/parsers/
-# Split the large __init__.py into excel_2019_2024.py and excel_2025.py
+- **Documentation improvements**:
+  - Formalize documentation governance (see `CLAUDE.md`)
+  - Enhance `developer_guide.md` with MTEP examples
+  - Update `data_schemas.md` with MTEP column specifications
+  - Ensure all docs reflect actual codebase structure
 
-# 3. Extract validation logic from tests
-cp tests/utils/validation_helpers.py src/armenian_budget/validation/financial.py
+### Exit Criteria
 
-# 4. Move current data to new structure  
-mkdir -p data/{original,extracted,processed}
-mv raw_data/* data/original/
-mv output/* data/processed/csv/
-```
+- MTEP data processes end-to-end with validation
+- All production validation logic in `src/armenian_budget/validation/`
+- Tests use validation module, not duplicated logic
+- Documentation accurately reflects codebase (verified with actual files)
 
-## Milestone v0.2 — Validation & DX (Weeks 3–4)
-
-- **Validation**: add cross-source and cross-year checks (previously in tests)
-- **Logging**: human-friendly logs in v0.2; JSON logs deferred until v0.5
-- **Docs**: `architecture.md`, `prd.md`, `roadmap.md` updated and linked from README
-- **Packaging**: PEP 621 metadata, console scripts
-
-Exit criteria:
-
-- Deterministic processing with saved validation report (human-readable)
-
-CLI tasks:
+### CLI Examples
 
 ```bash
-armenian-budget process --year 2023
-armenian-budget validate --all
+# Download MTEP sources
+armenian-budget download --years 2024 --source-type mtep
+
+# Extract archives
+armenian-budget extract --years 2024 --source-type mtep
+
+# Parse MTEP data
+armenian-budget parse --years 2024 --source-type MTEP
+
+# Validate MTEP output
+armenian-budget validate --csv data/processed/2024_MTEP.csv
 ```
 
-## Milestone v0.3 — MCP Phase 1 (Weeks 5–6)
+## Milestone v0.5.0 — MCP Server Redesign
 
-- **MCP server**: implement tools
-  - `list_available_data`
-  - `get_data_schema`
-  - `filter_budget_data`
-  - `get_ministry_spending_summary`
+**Focus:** Simplified, more powerful MCP server with flexible query engine
 
-Exit criteria:
+### Features
 
-- Basic AI chat flows can discover data, inspect schema, and get filtered CSV/Parquet paths
+- **Simplified architecture**:
+  - Reduce number of specialized tools (consolidate similar functionality)
+  - Improve query planning and execution
+  - Better separation between resource and tool APIs
 
-Server tasks:
+- **More flexible tools**:
+  - Generic query interface with composable filters
+  - Support for cross-year and cross-source queries
+  - Aggregation and grouping capabilities
+  - Time-series analysis primitives
+
+- **Improved result handling**:
+  - Smart inline vs file path decision logic
+  - Configurable size thresholds
+  - Streaming support for large results
+  - Better error messages and diagnostics
+
+- **Enhanced query engine**:
+  - Declarative query planning
+  - Optimized execution strategies
+  - Caching for repeated queries
+  - Performance monitoring
+
+### Exit Criteria
+
+- MCP server supports all previous use cases with fewer, more powerful tools
+- Query performance improved (benchmarked)
+- Example notebooks demonstrate new capabilities
+
+### API Examples
+
+```python
+# New unified query interface
+mcp_client.query(
+    years=range(2019, 2025),
+    source_types=["BUDGET_LAW", "SPENDING_Q1234"],
+    filters={"state_body": "Ministry of Education"},
+    aggregations={"sum": "allocated_amount"},
+    group_by=["year"]
+)
+```
+
+## Milestone v0.6.0 — Government Target Metrics
+
+**Focus:** Add government performance target metrics as new data type
+
+### Features
+
+- **New data type**: `GOVERNMENT_TARGETS`
+  - Annual performance targets by ministry/program
+  - Actual achievement metrics
+  - Target vs actual comparison analytics
+
+- **Parser implementation**:
+  - Excel parser for government target reports
+  - Handle target-specific column structures
+  - Extract both quantitative and qualitative metrics
+  - Support multi-year target tracking
+
+- **Integration**:
+  - Add to existing pipeline (`parse`, `validate`, `download`)
+  - Cross-reference with budget allocations
+  - Enable budget vs performance analysis
+
+- **Analytics**:
+  - Target achievement rates
+  - Budget efficiency metrics (spending vs target achievement)
+  - Trend analysis across years
+  - Anomaly detection for underperforming programs
+
+### Exit Criteria
+
+- Government target data processes end-to-end
+- Validation rules for target metrics implemented
+- MCP tools support target queries
+- Example analysis: budget allocation vs target achievement
+
+### Use Cases
 
 ```bash
-armenian-budget mcp-server --port 8000
-# Test prompts: "What data do you have available?", "Show the schema for 2023 budget law"
+# Parse government targets
+armenian-budget parse --years 2023 --source-type GOVERNMENT_TARGETS
+
+# Analyze budget efficiency
+armenian-budget analyze --years 2023 --metric budget-efficiency \
+  --compare BUDGET_LAW GOVERNMENT_TARGETS
 ```
 
-## Milestone v0.4 — Source Management + Config (Weeks 7–8)
+## Milestone v0.7.0 — CLI Redesign
 
-- **Registry**: minimal `config/sources.yaml` with known URLs
-- **Downloader**: optional download + extract (zip, rar) with graceful errors
-- **Discovery**: file discovery under `data/{original,extracted}`
-- **Parser config**: externalize parser label/column configs → `config/parsers.yaml`; add label tolerance in config
+**Focus:** Clean Unix philosophy with single-responsibility commands + convenient meta-command
 
-Exit criteria:
+### Features
 
-- `armenian-budget download --year 2025` fetches and organizes files or gives a clear instruction to provide local files
-- Users can configure label tolerance via YAML
+- **Pure Unix-style individual commands**:
+  - Rename `process` → `parse` (clearer naming for the parsing step)
+  - Remove `--extract` flag from `download` command
+  - Each command does one thing well: `download`, `extract`, `discover`, `parse`, `validate`
+  - Clear separation of concerns with no flag proliferation
 
-## Milestone v0.5 — Quality & Insights (Weeks 9–10)
+- **Meta-command for full pipeline**:
+  - Add new `process` command that runs the full workflow: download → extract → discover → parse
+  - Support `--skip-*` flags for partial workflows (e.g., `--skip-validate`)
+  - Support `--from-step` for resuming from a specific point
+  - Fail fast with clear error messages
 
-- **Analytics**: simple trends/anomaly detectors (warnings, not hard errors)
-- **JSON logs**: structured logging and machine-readable validation reports
-- **Telemetry**: anonymized, opt-in MCP request telemetry to identify common analytics
-- **Docs & examples**: notebooks and examples for typical analyses
-- **Stability**: tighten types, error messages, and performance of hot paths
+- **Improved user experience**:
+  - Better error handling for missing/corrupted archives
+  - Progress reporting for downloads and extraction
+  - Clear logging showing which step is running
+  - Helpful suggestions when commands fail
 
-Exit criteria:
+- **Documentation updates**:
+  - Document both individual commands (for flexibility) and meta-command (for convenience)
+  - Add workflow examples to README
+  - Update all CLI examples across docs
 
-- Example notebooks run end-to-end on processed Parquet
+### Exit Criteria
+
+- All individual commands follow single-responsibility principle
+- Meta `process` command works end-to-end for common workflows
+- Error messages provide actionable guidance
+- Documentation clearly explains both approaches
+
+### CLI Examples
+
+```bash
+# Individual commands (Unix philosophy - maximum control)
+armenian-budget download --years 2023-2024
+armenian-budget extract --years 2023-2024
+armenian-budget discover --years 2023-2024
+armenian-budget parse --years 2023-2024
+armenian-budget validate --csv data/processed/2023_BUDGET_LAW.csv
+
+# Meta-command (convenience - common workflow)
+armenian-budget process --years 2023-2024                    # full pipeline
+armenian-budget process --years 2023 --skip-validate         # skip validation
+armenian-budget process --years 2023 --source-type mtep      # MTEP only
+armenian-budget process --years 2023 --from-step extract     # resume from extract
+```
 
 ## Backlog / Stretch
 
-- PDF parsing for historical years
+**Data Sources:**
+
+- Budget draft support with version tagging system
+  - Optional version tag in `config/sources.yaml` (e.g., `version: "draft"`, `version: "first_reading"`)
+  - Missing version tag defaults to "final"
+  - Version suffix in output files: `{year}_{SOURCE_TYPE}_{version}.csv` (e.g., `2026_BUDGET_LAW_draft.csv`)
+  - Supports multiple versions per year (draft, first reading, second reading, final)
+  - Backup archive URLs for versions that may be deleted from minfin.am after final adoption
+- PDF parsing for historical years (2017-2018)
+- OCR integration with quality scoring
+- Additional data types (procurement, grants, debt)
+
+**Analytics & Insights:**
+
+- Advanced analytics module (trends, anomalies, forecasting)
+- JSON structured logging and machine-readable reports
+- Opt-in telemetry to identify common use cases
+- Example notebooks and typical analysis templates
+
+**Normalization & Compatibility:**
+
 - Multilingual field names (EN/AM) and harmonization helpers
 - Common Core normalization (optional, non-destructive)
-- Integer luma representation (dram subunits) to avoid rounding issues
-- Analytics module informed by telemetry (if adopted)
+- Integer representation for exact arithmetic (dram subunits)
+- Cross-year program tracking and identifier harmonization
+
+**Infrastructure:**
+
 - Web/API service for hosted access
-- Extended MCP analytics tools
+
+**Documentation:**
+
+- Armenian README translation (README.hy.md)
+- Consider translating key user-facing docs (data_schemas.md, mcp.md)
 
 ## Risks & Mitigations
 
-- **Excel format drift**: Parameterize with YAML and tolerant label matching
-- **Large files**: Prefer Parquet-first workflows; revisit engine choices later if needed
-- **RAR extraction on Windows**: Document prerequisites; allow manual placement of extracted files
-- **Data quality issues**: Make validations configurable; default to warn where domain allows
+**Technical Risks:**
+
+- **Excel format drift**: Parameterized parsers with YAML configs and tolerant label matching; version detection logic
+- **Performance degradation**: Profile critical paths; optimize with vectorization; consider Parquet/DuckDB for large datasets
+- **Dependency conflicts**: Pin critical dependencies; test across Python 3.10-3.12; maintain compatibility matrix
+
+**Data Quality Risks:**
+
+- **Source data errors**: Configurable validation levels (strict/lenient); clear error reporting with file/row context
+- **Missing or incomplete data**: Graceful degradation; document data availability per year/source; provide fallback strategies
+- **Cross-source inconsistencies**: Cross-validation warnings; manual review workflow; document known issues
+
+**Operational Risks:**
+
+- **Archive extraction failures**: Support manual file placement; document prerequisites per platform; checksum verification
+- **URL changes**: Monitor official sources; maintain fallback URLs; version source registry
+- **Breaking changes**: Semantic versioning; deprecation warnings; migration guides; maintain backward compatibility
+
+**Mitigation Strategy:**
+
+- Extensive test coverage with real data
+- Configuration-driven design for flexibility
+- Clear error messages with remediation steps
+- Regular validation against official sources

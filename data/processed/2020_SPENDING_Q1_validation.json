@@ -1,0 +1,274 @@
+{
+  "metadata": {
+    "source_type": "SPENDING_Q1",
+    "csv_path": "2020_SPENDING_Q1.csv",
+    "overall_path": "2020_SPENDING_Q1_overall.json",
+    "generated_at": "2025-12-10T23:40:11.069912"
+  },
+  "summary": {
+    "total_rules": 47,
+    "passed": 44,
+    "with_warnings": 3,
+    "with_errors": 0,
+    "errors": 0,
+    "warnings": 12
+  },
+  "passed_checks": [
+    {
+      "check_id": "empty_identifiers",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "empty_identifiers",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "empty_identifiers",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "hierarchical_totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "missing_financial_data",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_percentages",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "percentage_calculation",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "period_vs_annual",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "period_vs_annual",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "period_vs_annual",
+      "severity": "warning",
+      "messages": []
+    },
+    {
+      "check_id": "required_fields",
+      "severity": "error",
+      "messages": []
+    }
+  ],
+  "warning_checks": [
+    {
+      "check_id": "execution_exceeds_100",
+      "severity": "warning",
+      "fail_count": 1,
+      "messages": [
+        "Row 178: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (916.10%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002"
+      ]
+    },
+    {
+      "check_id": "negative_totals",
+      "severity": "warning",
+      "fail_count": 3,
+      "messages": [
+        "Subprogram field 'subprogram_annual_plan' has negative value: -20066.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
+        "Subprogram field 'subprogram_rev_annual_plan' has negative value: -20066.40 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002",
+        "Subprogram field 'subprogram_actual' has negative value: -183833.20 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002"
+      ]
+    },
+    {
+      "check_id": "period_vs_annual",
+      "severity": "warning",
+      "fail_count": 8,
+      "messages": [
+        "Subprogram violation: 'subprogram_period_plan' (1393274.90) exceeds limit 'subprogram_annual_plan' (0.00) by 1393274.90 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 11011",
+        "Subprogram violation: 'subprogram_period_plan' (113280.00) exceeds limit 'subprogram_annual_plan' (0.00) by 113280.00 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31004",
+        "Subprogram violation: 'subprogram_period_plan' (100000.00) exceeds limit 'subprogram_annual_plan' (0.00) by 100000.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1049 | 11015",
+        "Subprogram violation: 'subprogram_period_plan' (158350.10) exceeds limit 'subprogram_annual_plan' (0.00) by 158350.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1167 | 11006",
+        "Subprogram violation: 'subprogram_period_plan' (2250.00) exceeds limit 'subprogram_annual_plan' (0.00) by 2250.00 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 11007",
+        "Subprogram violation: 'subprogram_period_plan' (110000.00) exceeds limit 'subprogram_annual_plan' (70000.00) by 40000.00 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1088 | 12013",
+        "Subprogram violation: 'subprogram_period_plan' (602.00) exceeds limit 'subprogram_annual_plan' (0.00) by 602.00 for ՀՀ աշխատանքի և սոցիալական հարցերի նախարարություն | 1098 | 12003",
+        "Subprogram violation: 'subprogram_rev_period_plan' (25005.00) exceeds limit 'subprogram_rev_annual_plan' (0.00) by 25005.00 for ՀՀ առողջապահության նախարարություն | 1099 | 11002"
+      ]
+    }
+  ],
+  "error_checks": []
+}

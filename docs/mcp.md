@@ -1,11 +1,60 @@
 # MCP Server
 
+> ⚠️ **DEPRECATION NOTICE**: The MCP server is currently broken and will be either fixed in a future release or removed entirely in favor of a Agent Skill implementation. This documentation is kept for reference purposes only.
+
 This project exposes a Model Context Protocol (MCP) server that provides direct access to processed Armenian budget datasets and higher-level analysis utilities.
 
 The server offers:
 
 - Addressable resources via URI templates that return CSV content directly
 - Tools for schema/query/aggregation/analysis, returning JSON or CSV text
+
+## Quick Setup
+
+### Option 1: Claude Desktop (Recommended)
+
+1. **Clone and setup:**
+
+   ```bash
+   git clone https://github.com/gituzh/armenian-budget-tools.git
+   cd armenian-budget-tools
+   python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
+   pip install -U -e .
+   ```
+
+2. **Download and process data:**
+
+   ```bash
+   armenian-budget download --years 2019-2024 --extract
+   armenian-budget process --years 2019-2024
+   ```
+
+3. **Add to Claude Desktop config:**
+
+   **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+   **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+   ```json
+   {
+     "mcpServers": {
+       "armenian-budget": {
+         "command": "python",
+         "args": ["-m", "armenian_budget.interfaces.mcp.server"],
+         "cwd": "/absolute/path/to/armenian-budget-tools",
+         "env": {
+           "ARMENIAN_BUDGET_DATA_PATH": "/absolute/path/to/armenian-budget-tools/data/processed"
+         }
+       }
+     }
+   }
+   ```
+
+   **Note**: Use absolute paths for both `cwd` and `ARMENIAN_BUDGET_DATA_PATH`
+
+4. **Restart Claude Desktop** - Server will start automatically
+
+### Option 2: Command Line (Testing)
 
 ## Protocol and runtime
 
@@ -21,7 +70,7 @@ Stdio (recommended for MCP clients):
 python -c "from armenian_budget.interfaces.mcp import server; server.run()"
 ```
 
-Specify a data path (root containing a `csv/` subdirectory):
+Specify a data path (root containing CSV files):
 
 ```bash
 python -c "from armenian_budget.interfaces.mcp import server; server.run('data/processed')"
@@ -42,7 +91,7 @@ python -c "from armenian_budget.interfaces.mcp import server; server.run_https('
 ## Data directory layout
 
 - Default root: `data/processed`
-- Processed CSVs under: `data/processed/csv`
+- Processed CSVs directly in: `data/processed/`
 - Expected filenames: `{year}_{SOURCE}.csv`, e.g. `2025_BUDGET_LAW.csv`, `2024_SPENDING_Q12.csv`
 
 ## Resources (CSV content)

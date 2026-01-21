@@ -6,6 +6,11 @@ import importlib
 import colorlog
 import yaml
 
+from armenian_budget.core.enums import SourceType
+
+# Source type choices for argparse - used across all commands
+SOURCE_TYPE_CHOICES = list(SourceType.__members__.keys())
+
 try:
     # Prefer package-defined version
     from armenian_budget import __version__ as _PACKAGE_VERSION
@@ -48,27 +53,54 @@ def setup_logging(
         logger.setLevel(logging.DEBUG if verbose else logging.INFO)
 
 
+def resolve_path_with_default(arg_value: Optional[str], default: str) -> Path:
+    """Resolve optional path argument with default fallback.
+
+    Args:
+        arg_value: The argument value from argparse (may be None)
+        default: Default path to use if arg_value is None
+
+    Returns:
+        Resolved absolute Path object
+    """
+    return Path(arg_value or default).resolve()
+
+
 def cmd_process(args: argparse.Namespace) -> int:
     """Process one or more years of budget data.
 
-    Supports either --year or --years; when multiple years are provided,
-    any missing year/source-type inputs only emit warnings and the
-    command succeeds if at least one dataset was processed overall.
+    When multiple years are provided, any missing year/source-type inputs
+    only emit warnings and the command succeeds if at least one dataset
+    was processed overall.
     """
 
-    # Resolve output directory with default
-    out_dir = Path(args.out or Path("data/processed/csv")).resolve()
+    # Resolve roots
+    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
+    input_provided = args.input is not None
+    # When discovery is used, extracted_root must exist; if explicitly provided, processed_root must be provided too
+    if not input_provided:
+        if not extracted_root.exists() or not extracted_root.is_dir():
+            logging.error("Extracted root not found or not a directory: %s", extracted_root)
+            return 2
+        if args.extracted_root is not None and args.processed_root is None:
+            logging.error("--processed-root is required when --extracted-root is provided")
+            return 2
+    # Determine processed output directory (processed files are written to this root)
+    processed_root = resolve_path_with_default(args.processed_root, "data/processed")
+    out_dir = processed_root.resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Dynamic import of parsers to avoid static resolution issues in some IDEs
     # Predeclare for linters
     flatten_budget_excel_2019_2024 = None  # type: ignore[assignment]
     flatten_budget_excel_2025 = None  # type: ignore[assignment]
+    flatten_mtep_excel = None  # type: ignore[assignment]
     SourceType = None  # type: ignore[assignment]
     try:
         parsers_pkg = importlib.import_module("armenian_budget.ingestion.parsers")
         flatten_budget_excel_2019_2024 = getattr(parsers_pkg, "flatten_budget_excel_2019_2024")
         flatten_budget_excel_2025 = getattr(parsers_pkg, "flatten_budget_excel_2025")
+        flatten_mtep_excel = getattr(parsers_pkg, "flatten_mtep_excel")
         SourceType = getattr(parsers_pkg, "SourceType")
     except (ModuleNotFoundError, AttributeError, ImportError) as e:
         logging.error("Failed to import parsers: %s", e)
@@ -79,10 +111,8 @@ def cmd_process(args: argparse.Namespace) -> int:
     if getattr(args, "years", None):
         parsed = _parse_years_arg(args.years)
         years = parsed or []
-    elif getattr(args, "year", None):
-        years = [int(args.year)]
     else:
-        logging.error("One of --year or --years is required")
+        logging.error("--years is required")
         return 2
 
     # Determine which source types to process
@@ -96,6 +126,7 @@ def cmd_process(args: argparse.Namespace) -> int:
             "SPENDING_Q12",
             "SPENDING_Q123",
             "SPENDING_Q1234",
+            "MTEP",
         ]
 
     # If user provided a single explicit input, require a single source type
@@ -105,14 +136,12 @@ def cmd_process(args: argparse.Namespace) -> int:
 
     # If user provided --input and multiple years, reject as ambiguous
     if getattr(args, "input", None) and len(years) != 1:
-        logging.error(
-            "When --input is provided, only a single --year may be specified (not --years)."
-        )
+        logging.error("When --input is provided, only a single year may be specified in --years.")
         return 2
 
     # Lazy import discovery if needed
     discover_best_file = None
-    if not getattr(args, "input", None):
+    if not input_provided:
         try:
             ingestion_pkg = importlib.import_module("armenian_budget.ingestion")
             discover_best_file = getattr(ingestion_pkg, "discover_best_file")
@@ -121,7 +150,6 @@ def cmd_process(args: argparse.Namespace) -> int:
             return 1
 
     parsers_yaml = Path(args.parsers_config or Path("config/parsers.yaml").resolve())
-    dest_root = Path(args.dest_root or Path.cwd() / "data")
 
     total_successes = 0
     # Collect per year/source results for end-of-run report
@@ -144,7 +172,7 @@ def cmd_process(args: argparse.Namespace) -> int:
                 continue
 
             # Determine input path: prefer explicit, else discover
-            if getattr(args, "input", None):
+            if input_provided:
                 input_path = Path(args.input)
                 if not input_path.exists():
                     msg = f"input file missing: {input_path}"
@@ -166,12 +194,12 @@ def cmd_process(args: argparse.Namespace) -> int:
             else:
                 try:
                     input_path = discover_best_file(
-                        dest_root=dest_root,
+                        extracted_root=extracted_root,
                         year=year,
                         source_type=st_name,
                         parsers_config_path=parsers_yaml,
-                        force_discover=bool(getattr(args, "force_discover", False)),
-                        deep_validate=bool(getattr(args, "deep_validate", False)),
+                        force_discover=args.force_discover,
+                        deep_validate=args.deep_validate,
                     )
                 except (
                     AssertionError,
@@ -194,8 +222,13 @@ def cmd_process(args: argparse.Namespace) -> int:
 
             # Run appropriate parser
             try:
-                if year == 2025 and st_enum == SourceType.BUDGET_LAW:
-                    df, overall, _, _ = flatten_budget_excel_2025(str(input_path))
+                if st_enum.name == "MTEP":
+                    df, overall, _, _ = flatten_mtep_excel(str(input_path), year=int(year))
+                elif year >= 2025:
+                    # Use 2025+ parser for all 2025 and later sources, passing source_type for spending
+                    df, overall, _, _ = flatten_budget_excel_2025(
+                        str(input_path), source_type=st_enum
+                    )
                 else:
                     df, overall, _, _ = flatten_budget_excel_2019_2024(
                         str(input_path), source_type=st_enum, year=int(year)
@@ -265,17 +298,16 @@ def cmd_process(args: argparse.Namespace) -> int:
     # End-of-run processing report
     if report_entries:
         # Optional JSON report path
-        report_path = getattr(args, "report_json", None)
-        if report_path:
+        if args.report_json:
             try:
                 import json
 
                 ordered = sorted(report_entries, key=lambda r: (int(r["year"]), str(r["source"])))
-                with open(report_path, "w", encoding="utf-8") as f:
+                with open(args.report_json, "w", encoding="utf-8") as f:
                     json.dump(ordered, f, ensure_ascii=False, indent=2)
-                logging.info("Saved processing report JSON: %s", report_path)
+                logging.info("Saved processing report JSON: %s", args.report_json)
             except (OSError, ValueError) as e:
-                logging.error("Failed to write report JSON %s: %s", report_path, e)
+                logging.error("Failed to write report JSON %s: %s", args.report_json, e)
 
         logging.info("Processing report:")
         # Stable order: by year, then by source name
@@ -297,21 +329,241 @@ def cmd_process(args: argparse.Namespace) -> int:
 
 
 def cmd_validate(args: argparse.Namespace) -> int:
-    # Validation: run structural and financial checks
-    csv_path = Path(args.csv)
-    if not csv_path.exists():
-        logging.error("CSV not found: %s", csv_path)
+    """Validate one or more years of processed budget data.
+
+    When multiple years are provided, validation runs for each year independently.
+    Any missing year/source-type combinations emit warnings, and the command
+    succeeds if at least one dataset was validated successfully (with or without errors).
+
+    Returns:
+        0 if all validations passed without errors
+        1 if no datasets were validated
+        2 if any validation errors were found
+    """
+    # Import validation module and utilities
+    from armenian_budget.core.enums import SourceType
+    from armenian_budget.core.utils import get_processed_paths
+
+    registry = importlib.import_module("armenian_budget.validation.registry")
+
+    # Parse years argument
+    years: List[int] = []
+    if getattr(args, "years", None):
+        parsed = _parse_years_arg(args.years)
+        years = parsed or []
+    else:
+        logging.error("--years is required")
         return 2
 
-    import pandas as pd
+    # Determine which source types to validate
+    if args.source_type:
+        source_types: list[str] = [args.source_type]
+    else:
+        # Validate all supported types when not specified
+        source_types = [
+            "BUDGET_LAW",
+            "SPENDING_Q1",
+            "SPENDING_Q12",
+            "SPENDING_Q123",
+            "SPENDING_Q1234",
+            "MTEP",
+        ]
 
-    df = pd.read_csv(csv_path)
+    # Determine processed_root
+    processed_root = resolve_path_with_default(args.processed_root, "data/processed")
 
-    # Dynamic import to avoid path resolution issues during dev
-    runner = importlib.import_module("armenian_budget.validation.runner")
-    report = runner.run_all_checks(df, csv_path)
-    runner.print_report(report)
-    return 2 if report.has_errors(strict=False) else 0
+    # Check that processed_root exists
+    if not processed_root.exists():
+        logging.error(
+            "Processed root not found: %s. Run 'armenian-budget process' first.",
+            processed_root,
+        )
+        return 2
+
+    # Track results for end-of-run summary
+    validation_results: List[dict] = []
+    total_errors = 0
+    successful_validations = 0
+
+    # Validate each year and source type combination
+    for year in years:
+        for st_name in source_types:
+            try:
+                source_type = SourceType[st_name]
+            except KeyError:
+                valid_types = ", ".join(SourceType.__members__.keys())
+                logging.error(
+                    "Invalid source type: %s. Valid types: %s",
+                    st_name,
+                    valid_types,
+                )
+                total_errors += 1
+                validation_results.append(
+                    {
+                        "year": year,
+                        "source_type": st_name,
+                        "status": "ERROR",
+                        "errors": 1,
+                        "warnings": 0,
+                        "reason": "invalid source type",
+                    }
+                )
+                continue
+
+            logging.info("Validating %s/%s...", year, source_type.value)
+
+            try:
+                # Run validation for this year
+                report = registry.run_validation(year, source_type, processed_root)
+
+                # Track results
+                has_errors = report.has_errors(strict=False)
+                error_count = report.get_error_count()
+                warning_count = report.get_warning_count()
+
+                if has_errors:
+                    total_errors += error_count
+                    logging.warning(
+                        "Validation failed for %s/%s: %d errors, %d warnings",
+                        year,
+                        source_type.value,
+                        error_count,
+                        warning_count,
+                    )
+                else:
+                    logging.info(
+                        "Validation passed for %s/%s",
+                        year,
+                        source_type.value,
+                    )
+
+                # Print console report
+                registry.print_report(report)
+
+                # Generate markdown report if requested
+                if args.report:
+                    if args.report is True:
+                        # Default location: next to CSV file
+                        csv_path, _ = get_processed_paths(year, source_type, processed_root)
+                        report_dir = csv_path.parent
+                        report_path = report_dir / f"{year}_{source_type.value}_validation.md"
+                    else:
+                        # Custom directory provided - create per-year files
+                        report_dir = Path(args.report)
+                        report_dir.mkdir(parents=True, exist_ok=True)
+                        report_path = report_dir / f"{year}_{source_type.value}_validation.md"
+
+                    # Write markdown report
+                    markdown_content = report.to_markdown()
+                    report_path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(report_path, "w", encoding="utf-8") as f:
+                        f.write(markdown_content)
+
+                    logging.info("Markdown report saved: %s", report_path)
+
+                # Generate JSON report if requested
+                if args.report_json:
+                    if args.report_json is True:
+                        # Default location: next to CSV file
+                        csv_path, _ = get_processed_paths(year, source_type, processed_root)
+                        report_dir = csv_path.parent
+                        report_path = report_dir / f"{year}_{source_type.value}_validation.json"
+                    else:
+                        # Custom directory provided - create per-year files
+                        report_dir = Path(args.report_json)
+                        report_dir.mkdir(parents=True, exist_ok=True)
+                        report_path = report_dir / f"{year}_{source_type.value}_validation.json"
+
+                    # Write JSON report
+                    json_content = report.to_json()
+                    report_path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(report_path, "w", encoding="utf-8") as f:
+                        f.write(json_content)
+
+                    logging.info("JSON report saved: %s", report_path)
+
+                # Track success
+                successful_validations += 1
+                validation_results.append(
+                    {
+                        "year": year,
+                        "source_type": source_type.value,
+                        "status": "FAIL" if has_errors else "OK",
+                        "errors": error_count,
+                        "warnings": warning_count,
+                    }
+                )
+
+            except FileNotFoundError as e:
+                logging.warning(
+                    "Dataset not found for %s/%s: %s",
+                    year,
+                    source_type.value,
+                    e,
+                )
+                validation_results.append(
+                    {
+                        "year": year,
+                        "source_type": source_type.value,
+                        "status": "MISSING",
+                        "errors": 0,
+                        "warnings": 0,
+                        "reason": str(e),
+                    }
+                )
+                continue
+            except (ValueError, OSError) as e:
+                logging.error(
+                    "Error validating %s/%s: %s",
+                    year,
+                    source_type.value,
+                    e,
+                )
+                validation_results.append(
+                    {
+                        "year": year,
+                        "source_type": source_type.value,
+                        "status": "ERROR",
+                        "errors": 0,
+                        "warnings": 0,
+                        "reason": str(e),
+                    }
+                )
+                continue
+
+    # Print summary if multiple years or source types
+    if (len(years) > 1 or len(source_types) > 1) and validation_results:
+        logging.info("Validation Summary:")
+        for entry in validation_results:
+            if entry["status"] == "OK":
+                logging.info("%s %s: PASSED", entry["year"], entry["source_type"])
+            elif entry["status"] == "FAIL":
+                logging.info(
+                    "%s %s: FAILED (%d errors, %d warnings)",
+                    entry["year"],
+                    entry["source_type"],
+                    entry["errors"],
+                    entry["warnings"],
+                )
+            else:
+                logging.info(
+                    "%s %s: %s (%s)",
+                    entry["year"],
+                    entry["source_type"],
+                    entry["status"],
+                    entry.get("reason", ""),
+                )
+
+    # Determine exit code (strict: fail if ANY errors found)
+    if total_errors > 0:
+        logging.error("Validation found %d errors across all datasets.", total_errors)
+        return 2
+
+    if successful_validations == 0:
+        logging.error("No datasets were validated.")
+        return 1
+
+    return 0
 
 
 def _parse_years_arg(years_arg: Optional[str]) -> Optional[List[int]]:
@@ -346,7 +598,10 @@ def cmd_download(args: argparse.Namespace) -> int:
     extract_zip_files = getattr(organizer_mod, "extract_zip_files")
 
     cfg_path = Path(args.config)
-    dest_root = Path(args.dest_root or Path.cwd() / "data")
+    original_root = resolve_path_with_default(args.original_root, "data/original")
+    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
+    if not original_root.exists():
+        original_root.mkdir(parents=True, exist_ok=True)
 
     try:
         registry = SourceRegistry(cfg_path)
@@ -356,19 +611,30 @@ def cmd_download(args: argparse.Namespace) -> int:
 
     years = _parse_years_arg(args.years)
     sources = registry.all() if years is None else registry.for_years(years)
-    # Keep budget laws and spending sources
-    sources = [
-        s for s in sources if s.source_type.startswith("spending_") or s.source_type == "budget_law"
-    ]
+
+    # Filter by source type if specified
+    if args.source_type:
+        # argparse already uppercased it via type=str.upper
+        requested_type = args.source_type.lower()  # Convert to lowercase for source comparison
+        sources = [s for s in sources if s.source_type == requested_type]
+    else:
+        # Keep budget laws, spending sources, and MTEP sources
+        sources = [
+            s
+            for s in sources
+            if s.source_type.startswith("spending_")
+            or s.source_type == "budget_law"
+            or s.source_type == "mtep"
+        ]
     if not sources:
         logging.warning("No matching sources to download.")
         return 0
 
     results = download_sources(
         sources,
-        dest_root,
-        skip_existing=(not bool(args.force)),
-        overwrite_existing=bool(getattr(args, "overwrite", False)),
+        original_root,
+        skip_existing=(not args.force),
+        overwrite_existing=args.overwrite,
     )
     # Always record checksums for successful results into config/checksums.yaml
     import hashlib
@@ -458,10 +724,23 @@ def cmd_download(args: argparse.Namespace) -> int:
     if args.extract:
         years_to_extract = sorted({r.year for r in results if r.ok})
         for y in years_to_extract:
-            input_dir = dest_root / "original" / "spending_reports" / str(y)
-            output_dir = dest_root / "extracted" / "spending_reports" / str(y)
+            # Extract spending reports
+            input_dir = original_root / "spending_reports" / str(y)
+            output_dir = extracted_root / "spending_reports" / str(y)
             extract_rar_files(input_dir, output_dir)
             extract_zip_files(input_dir, output_dir)
+
+            # Extract MTEP files
+            mtep_input_dir = original_root / "mtep" / str(y)
+            mtep_output_dir = extracted_root / "mtep" / str(y)
+            extract_rar_files(mtep_input_dir, mtep_output_dir)
+            extract_zip_files(mtep_input_dir, mtep_output_dir)
+
+            # Extract budget law files
+            budget_law_input_dir = original_root / "budget_laws" / str(y)
+            budget_law_output_dir = extracted_root / "budget_laws" / str(y)
+            extract_rar_files(budget_law_input_dir, budget_law_output_dir)
+            extract_zip_files(budget_law_input_dir, budget_law_output_dir)
 
     return 0 if fail == 0 else 1
 
@@ -472,26 +751,57 @@ def cmd_extract(args: argparse.Namespace) -> int:
     extract_rar_files = getattr(organizer_mod, "extract_rar_files")
     extract_zip_files = getattr(organizer_mod, "extract_zip_files")
 
-    dest_root = Path(args.dest_root or Path.cwd() / "data")
+    original_root = resolve_path_with_default(args.original_root, "data/original")
+    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
     years = _parse_years_arg(args.years)
+
+    # Determine which source types to extract
+    source_type_filter = args.source_type
+    source_type_dirs = []
+    if source_type_filter:
+        # Map the filter to directory name
+        # argparse already uppercased it via type=str.upper, so convert to lowercase
+        type_to_dir = {
+            "BUDGET_LAW": "budget_laws",
+            "SPENDING_Q1": "spending_reports",
+            "SPENDING_Q12": "spending_reports",
+            "SPENDING_Q123": "spending_reports",
+            "SPENDING_Q1234": "spending_reports",
+            "MTEP": "mtep",
+        }
+        dir_name = type_to_dir.get(source_type_filter)
+        if dir_name:
+            source_type_dirs = [dir_name]
+    else:
+        # Extract all types
+        source_type_dirs = ["spending_reports", "mtep", "budget_laws"]
+
     if years is None:
-        # Auto-detect years from data/original/spending_reports/*
-        base = dest_root / "original" / "spending_reports"
-        if base.exists():
-            years = sorted(int(p.name) for p in base.iterdir() if p.is_dir() and p.name.isdigit())
+        # Auto-detect years from all source type directories
+        years_set = set()
+        for dir_name in source_type_dirs:
+            base = original_root / dir_name
+            if base.exists():
+                for p in base.iterdir():
+                    if p.is_dir() and p.name.isdigit():
+                        years_set.add(int(p.name))
+        if years_set:
+            years = sorted(years_set)
         else:
-            logging.warning("No original spending_reports directory found: %s", base)
+            logging.warning("No original source directories found in: %s", original_root)
             return 0
 
     if not years:
         logging.warning("No years to extract.")
         return 0
 
+    # Extract from each source type directory
     for y in years:
-        input_dir = dest_root / "original" / "spending_reports" / str(y)
-        output_dir = dest_root / "extracted" / "spending_reports" / str(y)
-        extract_rar_files(input_dir, output_dir)
-        extract_zip_files(input_dir, output_dir)
+        for dir_name in source_type_dirs:
+            input_dir = original_root / dir_name / str(y)
+            output_dir = extracted_root / dir_name / str(y)
+            extract_rar_files(input_dir, output_dir)
+            extract_zip_files(input_dir, output_dir)
 
     return 0
 
@@ -515,15 +825,25 @@ def cmd_mcp_server(args: argparse.Namespace) -> int:
         display_path = rel.as_posix()
     except (ValueError, OSError):
         display_path = str(Path(data_path))
-    port = getattr(args, "port", None)
-    host = getattr(args, "host", None) or "127.0.0.1"
-    https = bool(getattr(args, "https", False))
-    certfile = getattr(args, "certfile", None)
-    keyfile = getattr(args, "keyfile", None)
+    port = args.port
+    host = args.host or "127.0.0.1"
+    https = args.https
+    certfile = args.certfile
+    keyfile = args.keyfile
     if port and https:
-        logging.info("Starting MCP HTTPS server on %s:%s (data path: %s)", host, port, display_path)
+        logging.info(
+            "Starting MCP HTTPS server on %s:%s (data path: %s)",
+            host,
+            port,
+            display_path,
+        )
     elif port:
-        logging.info("Starting MCP HTTP server on %s:%s (data path: %s)", host, port, display_path)
+        logging.info(
+            "Starting MCP HTTP server on %s:%s (data path: %s)",
+            host,
+            port,
+            display_path,
+        )
     else:
         logging.info("Starting MCP stdio server with data path: %s", display_path)
     try:
@@ -557,8 +877,11 @@ def cmd_discover(args: argparse.Namespace) -> int:
         logging.error("--years is required for discover")
         return 2
 
-    dest_root = Path(args.dest_root or Path.cwd() / "data")
-    parsers_yaml = Path(args.parsers_config or Path("config/parsers.yaml").resolve())
+    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
+    if not extracted_root.exists() or not extracted_root.is_dir():
+        logging.error("Extracted root not found or not a directory: %s", extracted_root)
+        return 2
+    parsers_yaml = resolve_path_with_default(args.parsers_config, "config/parsers.yaml")
     src_types: List[str]
     if args.source_type:
         src_types = [args.source_type]
@@ -575,12 +898,12 @@ def cmd_discover(args: argparse.Namespace) -> int:
         for st in src_types:
             try:
                 path = discover_best_file(
-                    dest_root=dest_root,
+                    extracted_root=extracted_root,
                     year=int(y),
                     source_type=st,
                     parsers_config_path=parsers_yaml,
-                    force_discover=bool(getattr(args, "force_discover", False)),
-                    deep_validate=bool(getattr(args, "deep_validate", False)),
+                    force_discover=args.force_discover,
+                    deep_validate=args.deep_validate,
                 )
                 logging.info("Discovered %s/%s → %s", y, st, path)
                 ok += 1
@@ -615,36 +938,135 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub = p.add_subparsers(dest="command", required=True)
 
+    p_download = sub.add_parser("download", help="Download spending reports from sources.yaml")
+    p_download.add_argument(
+        "--years",
+        help="Comma-separated years (e.g. 2019,2020) or range (2019-2024). Defaults to all in YAML.",
+    )
+    p_download.add_argument(
+        "--config",
+        default=str(Path("config/sources.yaml").resolve()),
+        help="Path to sources.yaml",
+    )
+    p_download.add_argument(
+        "--original-root",
+        default=None,
+        help="Original sources root (defaults to ./data/original)",
+    )
+    p_download.add_argument(
+        "--extracted-root",
+        default=None,
+        help="Extracted data root for --extract (defaults to ./data/extracted)",
+    )
+    p_download.add_argument(
+        "--extract",
+        action="store_true",
+        help="Extract downloaded RAR archives into data/extracted/spending_reports/{year}",
+    )
+    p_download.add_argument(
+        "--force",
+        action="store_true",
+        help="Force re-download even if file already exists",
+    )
+    p_download.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite existing files after successful download (even if same size)",
+    )
+    p_download.add_argument(
+        "--source-type",
+        type=str.upper,
+        choices=SOURCE_TYPE_CHOICES,
+        help="Limit download to a specific source type (case insensitive)",
+    )
+    p_download.set_defaults(func=cmd_download)
+
+    p_extract = sub.add_parser("extract", help="Extract already downloaded spending archives")
+    p_extract.add_argument(
+        "--years",
+        help="Comma-separated years (e.g. 2019,2020) or range (2019-2024). If omitted, auto-detect from data/original.",
+    )
+    p_extract.add_argument(
+        "--source-type",
+        type=str.upper,
+        choices=SOURCE_TYPE_CHOICES,
+        help="Limit extraction to a specific source type (case insensitive). If omitted, all types are extracted.",
+    )
+    p_extract.add_argument(
+        "--original-root",
+        default=None,
+        help="Original sources root (defaults to ./data/original)",
+    )
+    p_extract.add_argument(
+        "--extracted-root",
+        default=None,
+        help="Extracted data root (defaults to ./data/extracted)",
+    )
+    p_extract.set_defaults(func=cmd_extract)
+
+    p_discover = sub.add_parser(
+        "discover",
+        help="Discover and cache input files from extracted archives",
+    )
+    p_discover.add_argument(
+        "--years",
+        required=True,
+        help="Comma-separated years (e.g. 2019,2020) or range (2019-2024)",
+    )
+    p_discover.add_argument(
+        "--source-type",
+        type=str.upper,
+        choices=SOURCE_TYPE_CHOICES,
+        help="Limit discovery to a specific source type",
+    )
+    p_discover.add_argument(
+        "--extracted-root",
+        default=None,
+        help="Extracted data root (defaults to ./data/extracted)",
+    )
+    p_discover.add_argument(
+        "--parsers-config",
+        default=None,
+        help="Path to parsers.yaml (defaults to config/parsers.yaml)",
+    )
+    p_discover.add_argument(
+        "--force-discover",
+        action="store_true",
+        help="Force re-discovery even if a cached mapping exists",
+    )
+    p_discover.add_argument(
+        "--deep-validate",
+        action="store_true",
+        help="Probe-parse candidates during discovery to validate content (slower)",
+    )
+    p_discover.set_defaults(func=cmd_discover)
+
     p_process = sub.add_parser("process", help="Process one or more source Excels and write CSV")
-    p_process.add_argument("--year", required=False, help="Year, e.g., 2023")
     p_process.add_argument(
         "--years",
-        required=False,
+        required=True,
         help=(
             "Comma-separated years (e.g. 2019,2020) or range (2019-2024). "
-            "When provided, processes all listed years."
+            "For a single year, use --years 2023. When provided, processes all listed years."
         ),
     )
     p_process.add_argument(
         "--source-type",
-        required=False,
-        choices=[
-            "BUDGET_LAW",
-            "SPENDING_Q1",
-            "SPENDING_Q12",
-            "SPENDING_Q123",
-            "SPENDING_Q1234",
-        ],
+        choices=SOURCE_TYPE_CHOICES,
         help=(
-            "Source type. If omitted, all supported source types for the year will be processed."
+            "Source type (case insensitive). If omitted, all supported source types for the year will be processed."
         ),
     )
-    p_process.add_argument("--input", required=False, help="Path to source Excel file")
     p_process.add_argument(
-        "--out",
+        "--input",
+        required=False,
+        help="Path to source Excel file (when provided, discovery is bypassed and --extracted-root is ignored)",
+    )
+    p_process.add_argument(
+        "--processed-root",
         required=False,
         default=None,
-        help="Output directory for CSV/JSON (defaults to ./data/processed/csv)",
+        help="Processed outputs root. Defaults to ./data/processed",
     )
     p_process.add_argument(
         "--auto",
@@ -672,59 +1094,48 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write end-of-run processing report to this JSON file",
     )
     p_process.add_argument(
-        "--dest-root",
+        "--extracted-root",
         default=None,
-        help="Data root (defaults to ./data) where original/ and extracted/ live",
+        help="Extracted data root (defaults to ./data/extracted). Required if discovery is used and you provide a non-default location.",
     )
     p_process.set_defaults(func=cmd_process)
 
-    p_validate = sub.add_parser("validate", help="Validate a processed CSV (minimal checks)")
-    p_validate.add_argument("--csv", required=True, help="Path to CSV produced by process")
+    p_validate = sub.add_parser("validate", help="Validate processed budget data")
+    p_validate.add_argument(
+        "--years",
+        required=True,
+        help=(
+            "Comma-separated years (e.g. 2019,2020) or range (2019-2024). "
+            "For a single year, use --years 2023."
+        ),
+    )
+    p_validate.add_argument(
+        "--source-type",
+        type=str.upper,
+        choices=SOURCE_TYPE_CHOICES,
+        help="Source type to validate (case insensitive). If omitted, all supported source types will be validated.",
+    )
+    p_validate.add_argument(
+        "--processed-root",
+        required=False,
+        default=None,
+        help="Processed data root. Defaults to ./data/processed",
+    )
+    p_validate.add_argument(
+        "--report",
+        nargs="?",
+        const=True,
+        default=False,
+        help="Generate detailed Markdown report (one per year). Optionally specify custom directory path.",
+    )
+    p_validate.add_argument(
+        "--report-json",
+        nargs="?",
+        const=True,
+        default=False,
+        help="Generate detailed JSON report (one per year). Optionally specify custom directory path.",
+    )
     p_validate.set_defaults(func=cmd_validate)
-
-    p_download = sub.add_parser("download", help="Download spending reports from sources.yaml")
-    p_download.add_argument(
-        "--years",
-        help="Comma-separated years (e.g. 2019,2020) or range (2019-2024). Defaults to all in YAML.",
-    )
-    p_download.add_argument(
-        "--config",
-        default=str(Path("config/sources.yaml").resolve()),
-        help="Path to sources.yaml",
-    )
-    p_download.add_argument(
-        "--dest-root",
-        default=None,
-        help="Destination root (defaults to ./data) containing original/ and extracted/",
-    )
-    p_download.add_argument(
-        "--extract",
-        action="store_true",
-        help="Extract downloaded RAR archives into data/extracted/spending_reports/{year}",
-    )
-    p_download.add_argument(
-        "--force",
-        action="store_true",
-        help="Force re-download even if file already exists",
-    )
-    p_download.add_argument(
-        "--overwrite",
-        action="store_true",
-        help="Overwrite existing files after successful download (even if same size)",
-    )
-    p_download.set_defaults(func=cmd_download)
-
-    p_extract = sub.add_parser("extract", help="Extract already downloaded spending archives")
-    p_extract.add_argument(
-        "--years",
-        help="Comma-separated years (e.g. 2019,2020) or range (2019-2024). If omitted, auto-detect from data/original.",
-    )
-    p_extract.add_argument(
-        "--dest-root",
-        default=None,
-        help="Destination root (defaults to ./data) containing original/ and extracted/",
-    )
-    p_extract.set_defaults(func=cmd_extract)
 
     p_mcp = sub.add_parser("mcp-server", help="Run minimal MCP server (stdio or HTTP)")
     p_mcp.add_argument(
@@ -733,14 +1144,20 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to data/processed directory (defaults to ./data/processed)",
     )
     p_mcp.add_argument(
-        "--port", default=None, help="If set, run HTTP/HTTPS transport on the given port"
+        "--port",
+        default=None,
+        help="If set, run HTTP/HTTPS transport on the given port",
     )
     p_mcp.add_argument(
-        "--host", default=None, help="Host to bind for HTTP transport (default 127.0.0.1)"
+        "--host",
+        default=None,
+        help="Host to bind for HTTP transport (default 127.0.0.1)",
     )
     p_mcp.add_argument("--https", action="store_true", help="Enable HTTPS (requires cert and key)")
     p_mcp.add_argument(
-        "--certfile", default=None, help="Path to TLS cert PEM (default config/certs/localhost.pem)"
+        "--certfile",
+        default=None,
+        help="Path to TLS cert PEM (default config/certs/localhost.pem)",
     )
     p_mcp.add_argument(
         "--keyfile",
@@ -748,48 +1165,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to TLS key PEM (default config/certs/localhost-key.pem)",
     )
     p_mcp.set_defaults(func=cmd_mcp_server)
-
-    p_discover = sub.add_parser(
-        "discover",
-        help="Discover and cache input files from extracted archives",
-    )
-    p_discover.add_argument(
-        "--years",
-        required=True,
-        help="Comma-separated years (e.g. 2019,2020) or range (2019-2024)",
-    )
-    p_discover.add_argument(
-        "--source-type",
-        choices=[
-            "BUDGET_LAW",
-            "SPENDING_Q1",
-            "SPENDING_Q12",
-            "SPENDING_Q123",
-            "SPENDING_Q1234",
-        ],
-        help="Limit discovery to a specific source type",
-    )
-    p_discover.add_argument(
-        "--dest-root",
-        default=None,
-        help="Data root (defaults to ./data) where original/ and extracted/ live",
-    )
-    p_discover.add_argument(
-        "--parsers-config",
-        default=None,
-        help="Path to parsers.yaml (defaults to config/parsers.yaml)",
-    )
-    p_discover.add_argument(
-        "--force-discover",
-        action="store_true",
-        help="Force re-discovery even if a cached mapping exists",
-    )
-    p_discover.add_argument(
-        "--deep-validate",
-        action="store_true",
-        help="Probe-parse candidates during discovery to validate content (slower)",
-    )
-    p_discover.set_defaults(func=cmd_discover)
 
     return p
 

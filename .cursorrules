@@ -1,0 +1,89 @@
+# Cursor Rules — Documentation Sync and Governance
+
+**Philosophy:** Documentation is minimal and purposeful—it provides context for humans and AI agents to understand, extend, and audit the system. Document only what cannot be understood from reading the code itself.
+
+These rules guide assistants and contributors working in this repository to keep user-facing documentation accurate and in sync with code changes. Follow the triggers and required updates below in the same change (commit/PR) whenever applicable.
+
+## Always-maintained docs
+
+- README: `README.md`
+- Product requirements: `docs/prd.md`
+- Architecture: `docs/architecture.md`
+- Developer guide: `docs/developer_guide.md`
+- Data schemas: `docs/data_schemas.md`
+- MCP server: `docs/mcp.md`
+- Roadmap: `docs/roadmap.md`
+
+## Impact → required documentation updates
+
+- CLI commands, flags, entrypoints
+  - Impacted paths: `src/armenian_budget/interfaces/cli/**`, `src/armenian_budget/**/cli/**`, `pyproject.toml` ([project.scripts]), packaging/entrypoint changes
+  - Update: README sections “Quickstart → CLI users”, “Usage — CLI” (all examples and flags), “Installation” (entrypoint), “Troubleshooting” if behavior shifts
+
+- Internal Python API (internal functions, parameters, return values, exceptions)
+  - Impacted paths: `src/armenian_budget/**` where internal library APIs change
+  - Update: `docs/developer_guide.md` API reference and examples
+  - Note: Python API is for internal use only; public interfaces are CLI and MCP server
+
+- MCP server tools, resources, runtime
+  - Impacted paths: `src/armenian_budget/interfaces/mcp/**`
+  - Update: `docs/mcp.md` (tools list, parameters, return shapes, URI templates, size/format policy, payload limits, pagination/streaming behavior, run commands) and README “MCP server” section
+
+- Output schema or column roles change (names added/removed/renamed, role mapping changes, new source types/years)
+  - Impacted paths: `ingestion/parsers/**`, `core/query/**`, `validation/**`, any transformation altering outputs
+  - Update: README "Data locations and column roles" and "Complete column reference"; `docs/data_schemas.md` (column definitions, data structures, validation rules); call out 2025-specific fields, roles, and differences; adjust notes and examples
+
+- Data locations, filenames, directory layout, temp/output policy, naming conventions
+  - Impacted paths: storage/output code, file naming conventions, `data/**`, `processed/**`, temp directory policies
+  - Naming conventions to maintain and document if changed: processed CSV `{year}_{SOURCE_TYPE}.csv` (e.g., `2023_BUDGET_LAW.csv`), overall JSON `{year}_{SOURCE_TYPE}_overall.json`, discovery index `discovery_index.json`
+  - Update: README “At a glance” (Where outputs go), “Usage — CLI” output notes, and any affected sections in `docs/mcp.md` (paths used by server)
+
+- Configuration semantics (YAML files, flags, precedence)
+  - Impacted paths: `config/*.yaml`, config loaders, discovery behavior, label tolerance
+  - Update: README “Configuration”; document new/changed keys and precedence; include examples
+
+- Validation rules/behavior and guarantees
+  - Impacted paths: `src/armenian_budget/validation/**`, checks moved from tests, tolerance changes
+  - Update: `docs/architecture.md` (validation modules and responsibilities) and README “Validate outputs” notes/limitations
+
+- Architectural structure and responsibilities
+  - Impacted: module moves/renames, new subsystems, interface boundaries
+  - Update: `docs/architecture.md` diagrams/sections and cross-links from README “Further reading”
+
+- Scope, goals, deliverables, or timelines
+  - Impacted: feature scope decisions, planned milestones
+  - Update: `docs/prd.md` (goals/non-goals/scope) and `docs/roadmap.md` (milestones, exit criteria)
+
+## Authoring and style rules
+
+- Prefer relative paths in docs and examples (avoid absolute local paths).
+- Use editable installation in examples: `pip install -U -e ".[dev]"` for development (includes pytest, pytest-cov, jupyter) or `pip install -U -e .` for end-users (MCP server only). Explicitly activate the project venv before Python commands.
+- Keep names consistent: repository `armenian-budget-tools`, package `armenian-budget-tools`, import namespace `armenian_budget`, CLI entrypoint `armenian-budget`.
+- Verify that README ToC anchors remain valid after section edits.
+- Keep examples runnable; validate CLI examples against current flags.
+- Use Google Python Style Guide for docstrings in code examples/snippets.
+
+## Assistant workflow expectations
+
+- When making any impacted code change, produce matching documentation edits in the same PR. Do not defer doc updates.
+- If a change touches multiple areas (e.g., CLI + schema), update all relevant docs listed above.
+- When modifying MCP tools, update both `docs/mcp.md` (detailed) and README (quickstart) consistently.
+- If columns or roles change, regenerate README column reference snippets and update `docs/data_schemas.md`.
+- When changing data schemas, validation rules, or processing logic, update `docs/data_schemas.md` comprehensively.
+
+## PR body and review checklist (enforced culturally; see template)
+
+- Confirm which of the six docs were updated and why.
+- Call out breaking changes in CLI/API/MCP and link to updated sections.
+- Note any migration steps users must take (paths, config keys, flags).
+- Ensure examples use relative paths and editable installs; validate commands in the project venv.
+
+## Exceptions
+
+- Pure refactors that do not change behavior, interfaces, outputs, or layout may skip documentation edits, but reviewers should double-check and explicitly acknowledge the exemption in the PR.
+
+## Release governance
+
+- During release preparation, verify all relevant docs above are updated for user-visible changes.
+- Ensure `CHANGELOG.md` reflects the release and references updated sections when applicable.
+- Confirm versioned CLI/API/MCP examples remain valid against the release artifacts.

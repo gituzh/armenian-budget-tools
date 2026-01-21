@@ -16,6 +16,7 @@ class SourceType(str, Enum):
     SPENDING_Q12 = "SPENDING_Q12"
     SPENDING_Q123 = "SPENDING_Q123"
     SPENDING_Q1234 = "SPENDING_Q1234"
+    MTEP = "MTEP"
 
 
 __all__ = ["SourceType"]

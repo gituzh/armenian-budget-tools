@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
 from dataclasses import dataclass
+from armenian_budget.core.enums import SourceType
 
 
 @dataclass
@@ -24,12 +25,12 @@ def get_available_data_by_type() -> Dict[str, List[Tuple[int, str]]]:
     """
     Get all available data organized by source type.
 
-    Scans the new processed location: data/processed/csv
+    Scans the processed location: data/processed
 
     Returns:
         Dict mapping source_type to list of (year, source_type) tuples
     """
-    output_dir = Path(__file__).parent.parent / "data" / "processed" / "csv"
+    output_dir = Path(__file__).parent.parent / "data" / "processed"
     data_by_type = {
         "BUDGET_LAW": [],
         "SPENDING_Q1": [],
@@ -62,8 +63,11 @@ def get_available_data_by_type() -> Dict[str, List[Tuple[int, str]]]:
 
 
 def get_all_available_data() -> List[Tuple[int, str]]:
-    """Get all available budget data (year, source_type) combinations from data/processed/csv."""
-    output_dir = Path(__file__).parent.parent / "data" / "processed" / "csv"
+    """Get all available budget data (year, source_type) combinations from data/processed.
+
+    Only returns data for source types that are defined in the SourceType enum.
+    """
+    output_dir = Path(__file__).parent.parent / "data" / "processed"
     data_combinations: List[Tuple[int, str]] = []
 
     if not output_dir.exists():
@@ -79,6 +83,13 @@ def get_all_available_data() -> List[Tuple[int, str]]:
             source_type = type_part_with_ext[:-4]  # strip .csv
         except Exception:
             continue
+
+        # Only include source types that are valid enum members
+        try:
+            SourceType(source_type)
+        except ValueError:
+            continue
+
         overall_path = output_dir / f"{year}_{source_type}_overall.json"
         if overall_path.exists():
             data_combinations.append((year, source_type))
@@ -87,10 +98,10 @@ def get_all_available_data() -> List[Tuple[int, str]]:
 
 
 def load_budget_data(year: int, source_type: str) -> BudgetDataInfo:
-    """Load budget data for a specific year and source type from data/processed/csv."""
+    """Load budget data for a specific year and source type from data/processed."""
     base_dir = Path(__file__).parent.parent
-    file_path = base_dir / f"data/processed/csv/{year}_{source_type}.csv"
-    overall_path = base_dir / f"data/processed/csv/{year}_{source_type}_overall.json"
+    file_path = base_dir / f"data/processed/{year}_{source_type}.csv"
+    overall_path = base_dir / f"data/processed/{year}_{source_type}_overall.json"
 
     df = pd.read_csv(file_path, encoding="utf-8-sig")
 

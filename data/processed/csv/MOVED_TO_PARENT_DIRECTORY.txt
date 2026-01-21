@@ -1,0 +1,26 @@
+NOTICE: Processed Data Files Have Been Moved
+============================================
+
+The processed data files have been moved one level up to data/processed/
+
+Old location: data/processed/csv/*.csv
+New location: data/processed/*.csv
+
+This change was made to better organize the data directory since it contains
+multiple file types (CSV, JSON, validation reports), not just CSV files.
+
+File types now in data/processed/:
+  - *.csv - Processed budget data files
+  - *_overall.json - Overall totals and metadata
+  - *_validation.json - Validation reports (JSON format)
+  - *_validation.md - Validation reports (Markdown format)
+
+If you have bookmarks or scripts pointing to the old location:
+  - Update file paths from data/processed/csv/ to data/processed/
+  - Re-run the armenian-budget process command to generate new files
+  - Or run the migration script: python scripts/migrate_processed_data.py
+
+For the latest data and documentation, visit:
+https://github.com/armeniandatalab/armenian-budget-tools
+
+Last updated: 2025-01-24

@@ -1,5 +1,6 @@
-venv/
-__pycache__/
+*venv/
+**/__pycache__/
+.ruff_cache/
 
 *.pyc
 *.pyo
@@ -13,6 +14,7 @@ __pycache__/
 .ipynb_checkpoints/
 .pytest_cache/
 .vscode/
+.coverage
 
 raw_data/
 
@@ -27,3 +29,10 @@ data/extracted/*
 !data/extracted/discovery_index.json
 data/processed/tmp
 data/processed/processing_report.json
+
+docs/__*
+scripts/_*
+scripts/*.html
+scripts/*.csv
+chats/
+build/
