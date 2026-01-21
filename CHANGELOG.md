@@ -114,8 +114,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release: add standalone script `extract_budget_articles.py` to extract 2025 budget articles; include sample output under `output/2025/`
 
-[Unreleased]: <https://github.com/gituzh/budget-am/compare/0.4.0...HEAD>
-[0.4.0]: <https://github.com/gituzh/budget-am/compare/0.3.0...0.4.0>
-[0.3.0]: <https://github.com/gituzh/budget-am/compare/0.2.0...0.3.0>
-[0.2.0]: <https://github.com/gituzh/budget-am/compare/0.1.0...0.2.0>
-[0.1.0]: <https://github.com/gituzh/budget-am/releases/tag/0.1.0>
+[Unreleased]: <https://github.com/gituzh/armenian-budget-tools/compare/0.4.0...HEAD>
+[0.4.0]: <https://github.com/gituzh/armenian-budget-tools/compare/0.3.0...0.4.0>
+[0.3.0]: <https://github.com/gituzh/armenian-budget-tools/compare/0.2.0...0.3.0>
+[0.2.0]: <https://github.com/gituzh/armenian-budget-tools/compare/0.1.0...0.2.0>
+[0.1.0]: <https://github.com/gituzh/armenian-budget-tools/releases/tag/0.1.0>
