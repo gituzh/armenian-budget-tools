@@ -59,8 +59,8 @@ def mock_validation_report(mock_check_results):  # pylint: disable=redefined-out
     return ValidationReport(
         results=mock_check_results,
         source_type=SourceType.SPENDING_Q1,
-        csv_path=Path("data/processed/csv/2023_SPENDING_Q1.csv"),
-        overall_path=Path("data/processed/csv/2023_SPENDING_Q1_overall.json"),
+        csv_path=Path("data/processed/2023_SPENDING_Q1.csv"),
+        overall_path=Path("data/processed/2023_SPENDING_Q1_overall.json"),
     )
 
 
@@ -73,8 +73,8 @@ def mock_validation_report_all_passed():  # pylint: disable=redefined-outer-name
             CheckResult(check_id="negative_totals", severity="warning", passed=True, fail_count=0),
         ],
         source_type=SourceType.BUDGET_LAW,
-        csv_path=Path("data/processed/csv/2024_BUDGET_LAW.csv"),
-        overall_path=Path("data/processed/csv/2024_BUDGET_LAW_overall.json"),
+        csv_path=Path("data/processed/2024_BUDGET_LAW.csv"),
+        overall_path=Path("data/processed/2024_BUDGET_LAW_overall.json"),
     )
 
 

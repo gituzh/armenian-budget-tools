@@ -6,6 +6,6 @@ from real Excel files. They are integration tests that check:
 - Correct data types (integer codes, etc.)
 - Correct structural relationships (code/name pairing, etc.)
 
-These tests use actual parsed data from data/processed/csv/ and verify
+These tests use actual parsed data from data/processed/ and verify
 parser output quality, not semantic validation rules.
 """
