@@ -10,40 +10,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Comprehensive data validation system with 10+ validation checks (module: `armenian_budget.validation`)
-  - Hierarchical totals consistency
-  - Financial data completeness
+- **MTEP (Mid-Term Expenditure Program) support**
+  - New `SourceType.MTEP` for 3-year expenditure plans
+  - FSM-based parser for MTEP Excel files
+  - 2024 MTEP data included in processed data
+- **Extended data coverage** through 2026
+  - 2024 Q1234 spending report
+  - 2025 Q1, Q12, Q123 spending reports
+  - 2026 budget law (final and draft versions)
+  - Budget laws for 2021-2025 (previously missing)
+- **Comprehensive validation system overhaul**
+  - Modular check-based architecture with 10 specialized checks:
+    - `empty_identifiers` - No empty codes or names
+    - `execution_exceeds_100` - Execution rates ≤100%
+    - `hierarchical_structure_sanity` - Parent-child relationships
+    - `hierarchical_totals` - Hierarchical sum consistency
+    - `missing_financial_data` - Required financial columns non-null
+    - `negative_percentages` - No negative percentage values
+    - `negative_totals` - Non-negative financial totals
+    - `percentage_calculation` - Calculated vs reported percentages match
+    - `period_vs_annual` - Period totals vs annual plans
+    - `required_fields` - Mandatory fields present
+  - Registry-based validation framework with structured result models
+  - Configurable tolerances: `SPENDING_ABS_TOL = 5.0` AMD, `BUDGET_LAW_ABS_TOL = 0.0`
   - Support for negative annual plan values in spending validation
-  - Execution rate verification (≤100%)
-  - Period vs annual plan comparisons
-  - Required fields validation
-- CLI `validate` command with multi-year support and flexible reporting (module: `armenian_budget.interfaces.cli.main`)
-  - `--report` flag for Markdown validation reports
-  - `--report-json` flag for JSON validation reports
-  - Optional custom directory path for validation reports (via `--report` and `--report-json` flags)
-- Extended data coverage through 2026 (includes 2024 MTEP, 2025 Q123 spending, 2026 budget, configurations, processed data)
-- Validation reports with row-level details and context
-- Documentation: `docs/validation.md` for validation usage guide
-- Documentation: `docs/validation_known_issues.md` tracking source data anomalies (split state bodies from government reorganizations, formatting inconsistencies)
+- **Field schema system**
+  - Centralized field definitions for all source types
+  - Column role mappings for consistent data access
+  - Required field specifications for CSV and JSON outputs
+- **CLI enhancements**
+  - Multi-year `validate` command with `--report` (Markdown) and `--report-json` flags
+  - `--source-type` filter for `download` and `validate` commands (optional in validate)
+  - Standardized `--years` flag across all commands (removed `--year`)
+  - Improved error handling and exit codes
+- **Documentation additions**
+  - `docs/developer_guide.md` - API reference and implementation patterns
+  - `docs/data_schemas.md` - Column specifications and schemas
+  - `docs/validation.md` - Validation usage guide and check reference
+  - `docs/validation_known_issues.md` - Source data anomalies tracking
+- **Citation support** - Structured metadata in `CITATION.cff` for academic use
+- **Funding links** - GitHub Sponsors integration with donation badges
+- **Enhanced parser support** - Extended 2025 parser for spending reports with improved Armenian text handling
 
 ### Changed
 
-- **BREAKING**: Processed data now written to `data/processed/` instead of `data/processed/csv/`
-  - CSV files, overall JSON files, and validation reports now stored directly in `data/processed/`
+- **BREAKING**: Processed data location changed from `data/processed/csv/` to `data/processed/`
   - MCP server and CLI automatically use new location
-  - Old `csv/` directory preserved with placeholder file for GitHub users with bookmarks
-- CLI standardized on `--years` across all commands (removed `--year`)
-- Updated `CLAUDE.md` with code quality principles (clarity, simplicity, performance)
-- Validation tolerances: `SPENDING_ABS_TOL = 5.0` AMD, `BUDGET_LAW_ABS_TOL = 0.0`
-- Spending validation: period vs annual subprogram violations downgraded from error to warning
+  - Old `csv/` directory has placeholder file for users with bookmarks
+- **BREAKING**: Validation API changed from file-based to year/source-type based
+  - `run_validation()` now accepts `year` and `source_type` instead of file paths
+  - Returns structured `ValidationResult` objects instead of boolean/list tuples
+- CLI standardized on `--years` across all commands (removed `--year` single-year flag)
 - Validation reports now use relative paths (filenames only) for portability
-- Internal refactoring: renamed `_processed_csv_dir()` → `_processed_data_dir()` and `csv_dir` → `data_dir` variables where appropriate
+- Spending validation: period vs annual subprogram violations downgraded from error to warning
+- Documentation restructured for clarity (simplified `architecture.md`, `prd.md`, `roadmap.md`)
+- Updated `CLAUDE.md` with code quality principles and documentation governance
+- Test organization restructured: `tests/data_validation/` → `tests/validation/` with modular check tests; new `tests/parser/` directory
+- Moved dev dependencies from `requirements.txt` to `pyproject.toml`
 
 ### Fixed
 
-- CLI `validate` command exit code handling for invalid source types
-- CLI `extract` command to support all source types (budget laws, MTEP, spending reports) instead of only spending reports
-- Percentage calculation comparison robustness in validation checks
+- CLI `validate` command exit codes for invalid source types
+- CLI `extract` command now supports all source types (was only spending reports)
+- Percentage calculation comparison robustness in validation
+- SSL handshake failure for minfin.am downloads
 
 ## [0.3.0] - 2025-08-24
 
