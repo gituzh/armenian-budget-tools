@@ -1,5 +1,7 @@
 # MCP Server
 
+> ⚠️ **DEPRECATION NOTICE**: The MCP server is currently broken and will be either fixed in a future release or removed entirely in favor of a Agent Skill implementation. This documentation is kept for reference purposes only.
+
 This project exposes a Model Context Protocol (MCP) server that provides direct access to processed Armenian budget datasets and higher-level analysis utilities.
 
 The server offers:
@@ -68,7 +70,7 @@ Stdio (recommended for MCP clients):
 python -c "from armenian_budget.interfaces.mcp import server; server.run()"
 ```
 
-Specify a data path (root containing a `csv/` subdirectory):
+Specify a data path (root containing CSV files):
 
 ```bash
 python -c "from armenian_budget.interfaces.mcp import server; server.run('data/processed')"
@@ -89,7 +91,7 @@ python -c "from armenian_budget.interfaces.mcp import server; server.run_https('
 ## Data directory layout
 
 - Default root: `data/processed`
-- Processed CSVs under: `data/processed/csv`
+- Processed CSVs directly in: `data/processed/`
 - Expected filenames: `{year}_{SOURCE}.csv`, e.g. `2025_BUDGET_LAW.csv`, `2024_SPENDING_Q12.csv`
 
 ## Resources (CSV content)

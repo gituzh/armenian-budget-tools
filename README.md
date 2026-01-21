@@ -4,11 +4,16 @@
 [![Sponsors](https://img.shields.io/badge/🌟_Our-Supporters-orange)](https://gituzh.am/en/supporters/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Clean, validated Armenian budget data** - Budget laws, spending reports, and mid-term expenditure program (MTEP) (2019-2025)
+**Clean, validated Armenian budget data** - Budget laws, spending reports, and mid-term expenditure program (MTEP)
 
 > ⚠️ **Project Status:** Active development - APIs and data schemas may change
 
 Parses official Armenian government budget documents into analysis-ready CSVs with full validation and lineage tracking.
+
+**Data Coverage:**
+- **Budget Laws**: 2019-2026
+- **Spending Reports**: 2019-2024 (Q1, Q12, Q123, Q1234); 2025 (Q1, Q12, Q123)
+- **MTEP**: 2024
 
 ---
 
@@ -18,9 +23,9 @@ Parses official Armenian government budget documents into analysis-ready CSVs wi
 
 Pre-processed CSVs ready to use:
 
-- **Budget Laws** (2019-2025): `data/processed/{year}_BUDGET_LAW.csv`
-- **Spending Reports** (2019-2024): `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
-- **MTEP** (2024+): `data/processed/{year}_MTEP.csv`
+- **Budget Laws** (2019-2026): `data/processed/{year}_BUDGET_LAW.csv`
+- **Spending Reports** (2019-2025): `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
+- **MTEP** (2024): `data/processed/2024_MTEP.csv`
 
 → See [data_schemas.md](docs/data_schemas.md) for column details
 
@@ -39,57 +44,21 @@ This project:
 - **Structural**: Required columns, data types, encoding
 - **Cross-temporal**: Program consistency across years
 
-→ See full validation list in [validation.md](docs/validation.md)  
+→ See full validation list in [validation.md](docs/validation.md)
 → Source-data anomalies and current validation exceptions: [validation_known_issues.md](docs/validation_known_issues.md)
-
-### 🤖 AI-Assisted Analysis (MCP Server)
-
-> 🚧 **Status:** In active development
-
-**Easiest setup (Claude Desktop):**
-
-#### 1. Download or clone this repo
-
-- **Download**: [Latest release](https://github.com/gituzh/armenian-budget-tools/releases/latest) or [current branch archive](https://github.com/gituzh/armenian-budget-tools/archive/refs/heads/main.zip) → extract the ZIP
-- **Clone**: `git clone https://github.com/gituzh/armenian-budget-tools.git`
-
-#### 2. Install
-
-```bash
-cd armenian-budget-tools
-python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -U -e .
-```
-
-#### 3. Add to your Claude Desktop config
-
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-
-```json
-{
-  "mcpServers": {
-    "armenian-budget": {
-      "command": "python",
-      "args": ["-m", "armenian_budget.interfaces.mcp.server"],
-      "cwd": "/absolute/path/to/armenian-budget-tools",
-      "env": {
-        "ARMENIAN_BUDGET_DATA_PATH": "/absolute/path/to/armenian-budget-tools/data/processed"
-      }
-    }
-  }
-}
-```
-
-#### 4. Restart Claude Desktop
-
-→ See [mcp.md](docs/mcp.md) for detailed setup and available tools
 
 ### 🛠️ Run the Data Processing Pipeline Yourself
 
 > **Note:** Processed data is already included in this repo. This section shows how to regenerate it from scratch.
 
-#### 1. Download/clone and install (see steps 1-2 in "AI-Assisted Analysis" above)
+#### 1. Install
+
+```bash
+git clone https://github.com/gituzh/armenian-budget-tools.git
+cd armenian-budget-tools
+python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -U -e .
+```
 
 #### 2. Run the pipeline
 
@@ -97,8 +66,12 @@ pip install -U -e .
 armenian-budget download --years 2019-2024 --extract
 armenian-budget discover --years 2019-2024
 armenian-budget process --years 2019-2024
+armenian-budget validate --years 2019-2024  # Optional: validate processed data
 
 # Find outputs in ./data/processed/
+
+# Optional: process specific source type only
+armenian-budget process --years 2023 --source-type BUDGET_LAW
 ```
 
 ### 👩‍💻 For Developers & Contributors
@@ -139,7 +112,7 @@ When using the parsed data, please acknowledge the source to help others discove
 - Python 3.10+
 - `unar` or `unrar` for RAR extraction
 
-For installation steps, see [AI-Assisted Analysis](#-ai-assisted-analysis-mcp-server) above.
+For installation steps, see [Run the Data Processing Pipeline Yourself](#️-run-the-data-processing-pipeline-yourself) above.
 
 Need help? See [developer_guide.md](docs/developer_guide.md#common-development-tasks)
 
