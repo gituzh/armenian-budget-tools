@@ -7,17 +7,23 @@ It also includes a meta-test to ensure all expected check IDs are present in the
 
 import pytest
 from armenian_budget.core.enums import SourceType
-from armenian_budget.validation.config import get_tolerance_for_source, get_severity
+from armenian_budget.validation.config import (
+    get_tolerance_for_source,
+    get_severity,
+    BUDGET_LAW_ABS_TOL,
+    SPENDING_ABS_TOL,
+    MTEP_ABS_TOL,
+)
 
 
 def test_get_tolerance_for_source():
     """Test that get_tolerance_for_source() returns the expected values for each source type."""
-    assert get_tolerance_for_source(SourceType.BUDGET_LAW) == 1.0
-    assert get_tolerance_for_source(SourceType.MTEP) == 0.5
-    assert get_tolerance_for_source(SourceType.SPENDING_Q1) == 5.0
-    assert get_tolerance_for_source(SourceType.SPENDING_Q12) == 5.0
-    assert get_tolerance_for_source(SourceType.SPENDING_Q123) == 5.0
-    assert get_tolerance_for_source(SourceType.SPENDING_Q1234) == 5.0
+    assert get_tolerance_for_source(SourceType.BUDGET_LAW) == BUDGET_LAW_ABS_TOL
+    assert get_tolerance_for_source(SourceType.MTEP) == MTEP_ABS_TOL
+    assert get_tolerance_for_source(SourceType.SPENDING_Q1) == SPENDING_ABS_TOL
+    assert get_tolerance_for_source(SourceType.SPENDING_Q12) == SPENDING_ABS_TOL
+    assert get_tolerance_for_source(SourceType.SPENDING_Q123) == SPENDING_ABS_TOL
+    assert get_tolerance_for_source(SourceType.SPENDING_Q1234) == SPENDING_ABS_TOL
 
 
 def test_get_severity_valid():

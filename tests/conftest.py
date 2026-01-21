@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
 from dataclasses import dataclass
+from armenian_budget.core.enums import SourceType
 
 
 @dataclass
@@ -62,7 +63,10 @@ def get_available_data_by_type() -> Dict[str, List[Tuple[int, str]]]:
 
 
 def get_all_available_data() -> List[Tuple[int, str]]:
-    """Get all available budget data (year, source_type) combinations from data/processed."""
+    """Get all available budget data (year, source_type) combinations from data/processed.
+
+    Only returns data for source types that are defined in the SourceType enum.
+    """
     output_dir = Path(__file__).parent.parent / "data" / "processed"
     data_combinations: List[Tuple[int, str]] = []
 
@@ -79,6 +83,13 @@ def get_all_available_data() -> List[Tuple[int, str]]:
             source_type = type_part_with_ext[:-4]  # strip .csv
         except Exception:
             continue
+
+        # Only include source types that are valid enum members
+        try:
+            SourceType(source_type)
+        except ValueError:
+            continue
+
         overall_path = output_dir / f"{year}_{source_type}_overall.json"
         if overall_path.exists():
             data_combinations.append((year, source_type))

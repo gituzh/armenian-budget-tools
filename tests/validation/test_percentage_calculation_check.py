@@ -11,6 +11,7 @@ import pytest
 import numpy as np
 from armenian_budget.core.enums import SourceType
 from armenian_budget.validation.checks.percentage_calculation import PercentageCalculationCheck
+from armenian_budget.validation.config import PERCENTAGE_TOL
 
 
 @pytest.fixture
@@ -97,9 +98,9 @@ def test_percentage_calculation_fail_program(valid_percentage_calc_data):  # pyl
 @pytest.mark.parametrize(
     "diff, expect_pass",
     [
-        (0.001, True),  # On tolerance boundary
-        (0.0009, True),  # Inside tolerance
-        (0.0011, False),  # Outside tolerance
+        (PERCENTAGE_TOL, True),  # On tolerance boundary
+        (PERCENTAGE_TOL * 0.9, True),  # Inside tolerance
+        (PERCENTAGE_TOL * 1.1, False),  # Outside tolerance
     ],
     ids=["on_boundary", "inside_boundary", "outside_boundary"],
 )

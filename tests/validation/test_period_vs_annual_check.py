@@ -10,6 +10,7 @@ import pandas as pd
 import pytest
 from armenian_budget.core.enums import SourceType
 from armenian_budget.validation.checks.period_vs_annual import PeriodVsAnnualCheck
+from armenian_budget.validation.config import get_severity
 
 
 @pytest.fixture
@@ -85,7 +86,7 @@ def test_period_vs_annual_fail_program_revised(valid_period_data):  # pylint: di
         "'program_rev_annual_plan' "
         "(1100.00) by 1.00" in program_result.messages[0]
     )
-    assert program_result.severity == "error"
+    assert program_result.severity == get_severity("period_vs_annual", "program")
 
 
 def test_period_vs_annual_fail_subprogram_warning(valid_period_data):  # pylint: disable=redefined-outer-name
