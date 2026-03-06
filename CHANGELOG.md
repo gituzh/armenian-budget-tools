@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-03-06
+
+### Added
+
+- Add a repo-owned `armenian-budget-analyst` workflow for AI-assisted analysis of parsed `data/processed`, with dataset availability inspection, source-cited outputs, provenance sidecars for generated artifacts, and an example R&D chart
+
+### Changed
+
+- Reposition the documentation around the repo-owned analysis skill as the primary AI-facing workflow, and reframe the MCP server docs as a legacy reference
+
 ## [0.4.0] - 2026-01-21
 
 ### Added
@@ -114,7 +124,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release: add standalone script `extract_budget_articles.py` to extract 2025 budget articles; include sample output under `output/2025/`
 
-[Unreleased]: <https://github.com/gituzh/armenian-budget-tools/compare/0.4.0...HEAD>
+[Unreleased]: <https://github.com/gituzh/armenian-budget-tools/compare/0.4.1...HEAD>
+[0.4.1]: <https://github.com/gituzh/armenian-budget-tools/compare/0.4.0...0.4.1>
 [0.4.0]: <https://github.com/gituzh/armenian-budget-tools/compare/0.3.0...0.4.0>
 [0.3.0]: <https://github.com/gituzh/armenian-budget-tools/compare/0.2.0...0.3.0>
 [0.2.0]: <https://github.com/gituzh/armenian-budget-tools/compare/0.1.0...0.2.0>
