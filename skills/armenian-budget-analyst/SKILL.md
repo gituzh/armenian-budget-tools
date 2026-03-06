@@ -37,10 +37,13 @@ Use this skill for analysis of parsed Armenian budget data in `data/processed`.
 ## Hard rules
 
 - Do not mix program-level and subprogram-level numbers silently.
+- Do not sum repeated `program_*` or `state_body_*` totals across every subprogram row; deduplicate parent totals before aggregating above `subprogram` grain.
 - Do not compare partial-year actuals with full-year actuals without labeling the mismatch.
+- Do not substitute a missing factual series with an estimate, forecast, expected value, or external hardcoded number unless the user explicitly asks for that.
 - Do not treat `MTEP` as executed spending.
 - Do not use `assets/` as a live data mirror.
 - If a mapping is manual or topic-specific, state it explicitly in `filters_or_mappings`.
+- If a topic mapping is reused across years or outputs, keep it as a separate explicit mapping artifact or script rather than implying it as a native dataset fact.
 
 ## References
 

@@ -40,8 +40,10 @@ Caveats that must be stated:
 
 - `2019` crosses an institutional transition, so continuity is manual rather than automatic.
 - `2025` factual spending is only available through `Q123`; it must be labeled as partial-year.
+- Do not replace `2025` parsed factuals with an expected or forecast value unless the user explicitly asks for a projected series.
 - `2026` has budget data but no parsed factual spending file.
 - GDP-share versions of the chart need an external GDP denominator and are not derivable from parsed files alone.
+- The topical R&D classification is a mapping layer on top of parsed budget facts; keep that mapping separate and explicit in provenance.
 
 Minimum provenance for the chart:
 

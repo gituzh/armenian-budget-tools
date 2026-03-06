@@ -5,8 +5,15 @@
 1. Run `scripts/data_availability.py` to see which datasets exist.
 2. Choose the source type that matches the question.
 3. State the aggregation grain and metric before aggregating.
-4. Compute the result from parsed files only.
-5. Add provenance inline for text outputs and as sidecar JSON for generated files.
+4. Aggregate from raw parsed values first; round only for display.
+5. Compute the result from parsed files only unless the user explicitly asks for an external denominator or estimate.
+6. Add provenance inline for text outputs and as sidecar JSON for generated files.
+
+## Aggregation discipline
+
+- When working from subprogram-grain files, `program_*` and `state_body_*` totals repeat on every child row. Deduplicate parent identifiers before summing parent-level measures.
+- If a preferred factual dataset is missing, mark the value or year as unavailable. Do not silently replace it with an expected, forecast, or extrapolated value.
+- If an output uses scaled display units, state the scale factor in the chart note or `Sources & derivation`.
 
 ## Repeatable patterns
 
@@ -20,6 +27,7 @@
 - Pick one source type and one metric.
 - Aggregate at one grain only.
 - State whether the result is allocation, revised plan, period plan, or actual.
+- If the selected metric is unavailable for the requested year, say so directly instead of substituting another horizon or an estimate.
 
 ### Budget vs actual comparison
 
@@ -32,12 +40,14 @@
 - Keep the metric definition stable across years.
 - If a year is missing the preferred source type, either omit the year or clearly mark it as unavailable.
 - Note reorganizations, code changes, or manual mappings when continuity is not trivial.
+- Keep topic mappings separate from parsed facts: describe the mapping rule explicitly and do not present the classification as if it were native to the dataset.
 
 ### Chart or report generation
 
 - The skill does not force a charting stack or report format.
 - Whatever the output, embed or accompany it with provenance.
 - For file artifacts, write `<artifact_filename>.provenance.json` next to the artifact.
+- Compute totals from raw parsed values, then round. Do not sum already-rounded display values unless approximate display totals are acceptable and labeled as such.
 
 ## Sources & derivation section
 
@@ -69,6 +79,7 @@ Required fields:
 - `metrics`
 - `filters_or_mappings`
 - `caveats`
+- `display_units` when the artifact rescales raw values
 
 Example:
 
@@ -88,6 +99,7 @@ Example:
   "filters_or_mappings": [
     "program_code == 1162"
   ],
+  "display_units": "raw values shown as millions of AMD",
   "caveats": [
     "None"
   ]
@@ -98,6 +110,7 @@ Example:
 
 - Missing dataset coverage for some years
 - Partial-year vs full-year mismatches
+- Missing factual data that was intentionally left unavailable instead of estimated
 - Institutional reorganizations and renamed state bodies
 - Program or subprogram continuity that required manual mapping
 - External denominators or classifications not present in parsed files

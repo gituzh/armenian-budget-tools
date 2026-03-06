@@ -27,8 +27,10 @@
 ## Comparability rules
 
 - Keep the aggregation grain consistent. If the budget side uses `program_total`, compare it to `program_actual`, not `subprogram_actual`.
+- `program_*` and `state_body_*` totals repeat on every subprogram row in `BUDGET_LAW` and `SPENDING_*`. Deduplicate parent totals before aggregating above `subprogram` grain.
 - `BUDGET_LAW` and `SPENDING_*` are comparable only when the metric and grain are aligned.
 - `SPENDING_Q1`, `SPENDING_Q12`, and `SPENDING_Q123` are not full-year actuals.
+- If `SPENDING_Q1234` is missing, do not silently replace full-year actuals with a forecast or expected value. Use a partial-year source only when that mixed horizon is explicitly labeled.
 - `MTEP` is a planning dataset. Do not compare it to factual execution as if it were actual spend.
 - Some topics require manual continuity mappings across reorganizations or program-code changes. Treat those mappings as explicit assumptions, not implicit facts.
 
@@ -36,6 +38,8 @@
 
 - Mixing annual and period measures in one series without saying so
 - Mixing original and revised annual plans without naming the metric
+- Summing repeated parent totals without deduplicating the parent rows first
+- Replacing missing actuals with expected or forecast values without labeling the substitution
 - Treating `MTEP` totals as actual spending
 - Comparing program totals with subprogram actuals
 - Assuming a complete year panel instead of checking availability
