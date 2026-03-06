@@ -22,11 +22,11 @@
 - Contribute validation rules
 - Improve error handling and discovery logic
 
-**AI agents (via MCP server):**
+**AI agents (via repo-owned skill):**
 
 - List available datasets by year/source
-- Filter budget data by ministry, program, or criteria
-- Generate spending summaries and comparisons
+- Perform cross-year budget and spending analysis
+- Generate source-cited tables, charts, and reports
 
 ## Success Criteria
 
@@ -44,9 +44,14 @@
 
 **Integration:**
 
-- MCP server provides AI agents access to processed data
+- Repo-owned skill provides AI agents access to processed data with explicit source citations
 - CLI integrates into automated workflows
+- Generated artifacts can carry sidecar provenance metadata
 - Outputs compatible with standard analysis tools
+
+**Legacy compatibility:**
+
+- MCP server remains available only as a deprecated reference path for older integrations
 
 ## Key Decisions
 

@@ -1,0 +1,57 @@
+{
+  "artifact": "/Users/tigran/Workspace/_gituzh/armenian-budget-tools/artifacts/rd_allocations_and_spending_by_year.svg",
+  "generated_at": "2026-03-06T13:30:21.579160+00:00",
+  "data_root": "/Users/tigran/Workspace/_gituzh/armenian-budget-tools/data/processed",
+  "source_files": [
+    "2019_BUDGET_LAW.csv",
+    "2019_SPENDING_Q1234.csv",
+    "2020_BUDGET_LAW.csv",
+    "2020_SPENDING_Q1234.csv",
+    "2021_BUDGET_LAW.csv",
+    "2021_SPENDING_Q1234.csv",
+    "2022_BUDGET_LAW.csv",
+    "2022_SPENDING_Q1234.csv",
+    "2023_BUDGET_LAW.csv",
+    "2023_SPENDING_Q1234.csv",
+    "2024_BUDGET_LAW.csv",
+    "2024_SPENDING_Q1234.csv",
+    "2025_BUDGET_LAW.csv",
+    "2025_SPENDING_Q123.csv",
+    "2026_BUDGET_LAW.csv"
+  ],
+  "years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "source_types": [
+    "BUDGET_LAW",
+    "SPENDING_Q1234",
+    "SPENDING_Q123"
+  ],
+  "grain": "mixed: program for MinESCS/HESC; subprogram for MIC/MinHTI",
+  "metrics": [
+    "program_total",
+    "subprogram_total",
+    "program_actual",
+    "subprogram_actual"
+  ],
+  "filters_or_mappings": [
+    "MinESCS/HESC allocation and spending: state_body contains 'կրթ' AND program_code == '1162'; take program_total from BUDGET_LAW and program_actual from SPENDING files.",
+    "MIC/MinHTI allocation continuity: 2019 BUDGET_LAW uses state_body contains 'պաշտպան', program_code == '1119', subprogram_code == '11001'; 2020-2023 BUDGET_LAW uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1119', subprogram_code == '11001'; 2024-2026 BUDGET_LAW uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1220', subprogram_code == '11001'.",
+    "MIC/MinHTI spending continuity: 2019-2023 spending uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1119', subprogram_code == '11001'; 2024-2025 spending uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1220', subprogram_code == '11001'.",
+    "The combined R&D topic is a manual mapping layer over parsed budget facts, following the repo's own R&D example and MCP extraction logic."
+  ],
+  "display_units": "chart labels use billions of AMD; source CSV values remain in thousand AMD",
+  "caveats": [
+    "2019 includes an institutional transition: the budget-side MIC continuity row is under the defense ministry, while the spending-side row appears under the high-tech ministry.",
+    "2019-2024 spending is full-year actual from SPENDING_Q1234.",
+    "2025 spending is partial-year actual from SPENDING_Q123 and is intentionally shown as mixed-horizon against the annual budget allocation.",
+    "2026 budget data is included from BUDGET_LAW, while spending remains unavailable because no parsed 2026 spending file exists."
+  ]
+}
