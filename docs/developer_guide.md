@@ -24,7 +24,6 @@ src/armenian_budget/
 │   ├── enums.py              # SourceType enum
 │   ├── schemas.py            # Field definitions per source type
 │   ├── utils.py              # Shared utilities (filename parsing)
-│   └── query/                # MCP query engine
 ├── ingestion/
 │   ├── parsers/
 │   │   ├── _common.py        # ProcessingState, RowType enums
@@ -34,7 +33,7 @@ src/armenian_budget/
 │   └── discovery.py          # File discovery
 ├── interfaces/
 │   ├── cli/main.py           # CLI entrypoint
-│   └── mcp/server.py         # MCP server
+│   └── mcp/server.py         # Legacy MCP server
 ├── sources/
 │   ├── registry.py           # Source URLs
 │   ├── downloader.py
@@ -46,13 +45,17 @@ src/armenian_budget/
 config/
 ├── sources.yaml              # Official source URLs and metadata
 ├── parsers.yaml              # Parser patterns and discovery rules
-├── program_patterns.yaml     # Keyword patterns for MCP tools
+├── program_patterns.yaml     # Keyword patterns for legacy MCP tools
 └── checksums.yaml            # SHA-256 hashes for integrity verification
 
+skills/
+├── armenian-budget-analyst/  # AI analysis skill for parsed datasets
+└── keep-a-changelog/         # Repo-local changelog skill
+
 tests/
-├── unit/
-├── integration/
-└── data_validation/
+├── cli/
+├── parser/
+└── validation/
 ```
 
 ## Parser Implementation
@@ -202,13 +205,29 @@ armenian-budget process --years 2023 --source-type BUDGET_LAW
 armenian-budget validate --years 2023
 armenian-budget validate --years 2023 --source-type BUDGET_LAW
 
-# MCP server
+# Legacy MCP server reference
 armenian-budget mcp-server --data-path ./data/processed
+```
+
+## AI-Assisted Analysis
+
+The recommended AI-facing workflow is the repo-owned skill at
+`skills/armenian-budget-analyst/SKILL.md`.
+
+- It analyzes parsed files in `data/processed`
+- It includes `scripts/data_availability.py` for year/source inventory
+- It expects source files to be cited in answers
+- Generated artifacts should have sidecar provenance metadata
+
+Example helper command:
+
+```bash
+python skills/armenian-budget-analyst/scripts/data_availability.py --format both
 ```
 
 ## Python API Reference
 
-> **Note:** The Python API is for internal library use only. The public interfaces are CLI and MCP server. This section documents internal functions for contributors and developers extending the system.
+> **Note:** The Python API is for internal library use only. The primary public interfaces are the CLI and the repo-owned analysis skill. The MCP server remains as a deprecated legacy interface. This section documents internal functions for contributors and developers extending the system.
 
 ### Parsing
 
@@ -364,4 +383,4 @@ class SourceType(str, Enum):
 
 **For detailed architecture** → See [`architecture.md`](architecture.md)
 **For data schemas** → See [`data_schemas.md`](data_schemas.md)
-**For MCP integration** → See [`mcp.md`](mcp.md)
+**For legacy MCP reference** → See [`mcp.md`](mcp.md)

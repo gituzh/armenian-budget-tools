@@ -24,7 +24,7 @@ Armenian Budget Tools transforms official Armenian state budget data into openly
 - **Open data accessibility**: Clean, validated CSV outputs ready for public use and analysis
 - **Data quality assurance**: Rigorous validation to minimize errors and ensure financial integrity
 - **Data provenance**: Complete lineage tracking from original government sources to processed outputs
-- **Multiple access methods**: CLI for automation, MCP server for AI assistance
+- **Multiple access methods**: CLI for automation, a repo-owned agent skill for AI assistance, and a legacy MCP server reference
 
 ## 2. Design Principles
 
@@ -44,7 +44,7 @@ Armenian Budget Tools transforms official Armenian state budget data into openly
 
 **Core components:**
 
-- **Interfaces**: CLI commands and MCP server tools (public interfaces)
+- **Interfaces**: CLI commands, a repo-owned analysis skill, and a deprecated MCP server reference
 - **Ingestion**: Excel parsers with state-machine row detection, discovery system for file finding
 - **Validation**: Business rules (hierarchical totals, spending percentages, cross-validation)
 - **Storage**: CSV writer with metadata, JSON for overall totals
@@ -97,14 +97,17 @@ The processing pipeline transforms government archives into validated datasets:
 src/armenian_budget/
 ├── core/                   # Core data models, types, schemas, and shared utilities
 ├── ingestion/              # Parsing and discovery
-├── validation/             # Business rules
+├── interfaces/             # CLI and legacy MCP server
 ├── sources/                # Download and registry
-├── storage/                # Persistence layer
-└── interfaces/             # CLI, API, MCP
+└── validation/             # Business rules
+
+skills/                     # Repo-owned AI skills
+└── armenian-budget-analyst/
 
 config/                     # Configuration files
 ├── sources.yaml
-└── parsers.yaml
+├── parsers.yaml
+└── program_patterns.yaml
 
 data/                       # Data directories
 ├── original/               # Downloaded archives
@@ -114,7 +117,7 @@ data/                       # Data directories
 
 ## 6. Access Methods
 
-The system provides two public interfaces:
+The system provides two primary public interfaces and one legacy reference path:
 
 **CLI (Command-line interface):**
 
@@ -122,9 +125,15 @@ The system provides two public interfaces:
 - Commands: `download`, `extract`, `discover`, `process`, `validate`, `mcp-server`
 - Exit codes from typed exceptions, structured logging with progress reporting
 
-**MCP Server:**
+**Agent Skill:**
 
-- Public interface for AI-assisted analysis via Model Context Protocol
+- Primary AI-facing interface for analysis of parsed data in `data/processed`
+- Supports dataset availability checks, cross-year analysis, and source-cited tables, charts, and reports
+- Encourages provenance-aware outputs, including sidecar metadata for generated artifacts
+
+**MCP Server (legacy reference):**
+
+- Deprecated path retained for legacy Model Context Protocol integrations
 - Resources for static data (state bodies, programs, subprograms)
 - Tools for dynamic queries (spending analysis, budget comparisons)
 - Returns inline data for small results, file paths for large datasets
@@ -132,7 +141,7 @@ The system provides two public interfaces:
 **Internal Python API:**
 
 - For internal library use only (not a public interface)
-- Type-hinted functions for CLI and MCP implementations
+- Type-hinted functions for CLI and legacy MCP implementations
 - See `docs/developer_guide.md` for internal API reference
 
 ## 7. Future Considerations
@@ -151,7 +160,8 @@ Post-v1 enhancements under consideration:
 | **[docs/prd.md](prd.md)** | Product requirements | Product team |
 | **[docs/developer_guide.md](developer_guide.md)** | Implementation patterns and code | Contributors |
 | **[docs/data_schemas.md](data_schemas.md)** | Data formats and schemas | Data analysts |
-| **[docs/mcp.md](mcp.md)** | MCP server integration | AI developers |
+| **[skills/armenian-budget-analyst/SKILL.md](../skills/armenian-budget-analyst/SKILL.md)** | AI analysis workflow and provenance rules | AI agents and developers |
+| **[docs/mcp.md](mcp.md)** | Legacy MCP server reference | AI developers maintaining older integrations |
 | **[docs/roadmap.md](roadmap.md)** | Development milestones | All contributors |
 
 ---

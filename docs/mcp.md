@@ -1,8 +1,14 @@
 # MCP Server
 
-> ⚠️ **DEPRECATION NOTICE**: The MCP server is currently broken and will be either fixed in a future release or removed entirely in favor of a Agent Skill implementation. This documentation is kept for reference purposes only.
+> ⚠️ **DEPRECATION NOTICE**: The MCP server is currently broken and will be either fixed in a future release or removed entirely in favor of an Agent Skill implementation. This documentation is kept for reference purposes only.
 
-This project exposes a Model Context Protocol (MCP) server that provides direct access to processed Armenian budget datasets and higher-level analysis utilities.
+The recommended AI-facing workflow for this repo is the repo-owned skill at
+[`skills/armenian-budget-analyst/SKILL.md`](../skills/armenian-budget-analyst/SKILL.md).
+Use that skill for dataset availability checks, cross-year analysis, and
+source-cited tables, charts, and reports against `data/processed`.
+
+This page documents the legacy Model Context Protocol (MCP) server that remains
+in the repository as a reference for older integrations.
 
 The server offers:
 
@@ -11,7 +17,7 @@ The server offers:
 
 ## Quick Setup
 
-### Option 1: Claude Desktop (Recommended)
+### Option 1: Claude Desktop (Legacy)
 
 1. **Clone and setup:**
 
@@ -54,7 +60,7 @@ The server offers:
 
 4. **Restart Claude Desktop** - Server will start automatically
 
-### Option 2: Command Line (Testing)
+### Option 2: Command Line (Legacy testing)
 
 ## Protocol and runtime
 

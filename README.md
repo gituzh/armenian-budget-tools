@@ -31,6 +31,38 @@ Pre-processed CSVs ready to use:
 
 → See [data_schemas.md](docs/data_schemas.md) for column details
 
+### 🤖 AI-Assisted Analysis
+
+The recommended AI analysis path is the repo-owned skill
+[`skills/armenian-budget-analyst/SKILL.md`](skills/armenian-budget-analyst/SKILL.md).
+
+- Works directly against `data/processed`
+- Is designed for source-cited tables, charts, and reports
+- Uses bundled helper scripts internally when needed
+
+Example workflow:
+
+```bash
+git clone https://github.com/gituzh/armenian-budget-tools.git
+cd armenian-budget-tools
+```
+
+Launch Codex in the repo root and prompt it with:
+
+```text
+Use $armenian-budget-analyst to create an R&D allocations and spending plot by year from parsed files only. Save the chart as ./artifacts/rd_allocations_and_spending_by_year.svg and include exact source file references plus provenance metadata.
+```
+
+Example artifact:
+
+![Example R&D allocations and spending plot](docs/examples/rd_allocations_and_spending_by_year.svg)
+
+Provenance metadata:
+[`docs/examples/rd_allocations_and_spending_by_year.svg.provenance.json`](docs/examples/rd_allocations_and_spending_by_year.svg.provenance.json)
+
+The MCP server remains in the repo as a legacy reference. See
+[docs/mcp.md](docs/mcp.md).
+
 ### ✅ How We Ensure Data Quality
 
 This project:
