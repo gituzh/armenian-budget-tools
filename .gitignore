@@ -1,6 +1,7 @@
 *venv/
 **/__pycache__/
 .ruff_cache/
+.uv_cache/
 
 *.pyc
 *.pyo
@@ -31,6 +32,7 @@ data/processed/tmp
 data/processed/processing_report.json
 
 docs/__*
+docs/generated
 scripts/_*
 scripts/*.html
 scripts/*.csv

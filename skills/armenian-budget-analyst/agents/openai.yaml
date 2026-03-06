@@ -1,0 +1,4 @@
+interface:
+  display_name: "Armenian Budget Analyst"
+  short_description: "Analyze Armenian budget data and outputs"
+  default_prompt: "Use $armenian-budget-analyst to analyze parsed Armenian budget CSVs and produce source-cited tables, charts, or reports."
