@@ -38,3 +38,6 @@ scripts/*.html
 scripts/*.csv
 chats/
 build/
+artifacts/
+
+.claude/settings.local.json
