@@ -22,6 +22,7 @@ data/
 │   └── spending_reports/ # Original .rar/.zip files from execution reports
 │       └── 2023/
 │           └── f601731c.rar  # Original archive name (hash-based)
+│           └── .revisions/   # Prior copies when --force detects changed content
 ├── extracted/          # Unarchived source files
 │   ├── budget_laws/    # Year folders with .xlsx/.xls files
 │   │   ├── 2023/
@@ -125,7 +126,8 @@ Archives contain multiple budget components beyond the currently parsed program 
 - **File Discovery**: Pattern-based matching to identify relevant Excel files
 - **Intermediate Format**: Preserves original .xlsx/.xls files before processing
 - **Integrity Verification**: SHA-256 checksums recorded in `config/checksums.yaml` after downloads
-- **Download Optimization**: Checksums enable skip_existing logic to avoid redundant downloads
+- **Change Tracking**: `download --force` re-fetches existing archives, preserves changed prior copies under `.revisions/`, and records checksum changes in `config/checksum_history.yaml`
+- **Download Optimization**: Existing archives are skipped unless `--force` is used
 
 **Discovery Strategy:**
 
@@ -148,7 +150,7 @@ Archives contain multiple budget components beyond the currently parsed program 
 **Metadata:**
 
 - **Processing Report**: `data/processed/processing_report.json`
-- **Checksums**: SHA-256 hashes recorded in `config/checksums.yaml` for download integrity verification
+- **Checksums**: Current SHA-256 hashes in `config/checksums.yaml`; same-URL content changes in `config/checksum_history.yaml`
 - **Discovery Index**: `data/extracted/discovery_index.json`
 
 ### 6.2 Data Structure

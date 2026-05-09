@@ -94,12 +94,15 @@ pip install -U -e .
 #### 2. Run the pipeline
 
 ```bash
-armenian-budget download --years 2019-2024 --extract
-armenian-budget discover --years 2019-2024
-armenian-budget process --years 2019-2024
-armenian-budget validate --years 2019-2024  # Optional: validate processed data
+armenian-budget download --years 2019-2026 --extract
+armenian-budget discover --years 2019-2026
+armenian-budget process --years 2019-2026
+armenian-budget validate --years 2019-2026  # Optional: validate processed data
 
 # Find outputs in ./data/processed/
+
+# Optional: re-check official archives for silent upstream changes
+armenian-budget download --years 2024-2025 --force
 
 # Optional: inspect current MinFin spending report downloads
 armenian-budget minfin-spending-reports --years 2025 --downloads-only
@@ -159,6 +162,11 @@ Official government sources:
 - **MTEP (Mid-Term Expenditures Program)**: [minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/](https://minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/)
 
 → See [config/sources.yaml](config/sources.yaml) for complete registry with URLs
+
+Downloaded archive hashes are recorded in [config/checksums.yaml](config/checksums.yaml).
+When `download --force` detects changed content at an existing URL, the prior archive
+is kept under `.revisions/` and the change is logged in
+[config/checksum_history.yaml](config/checksum_history.yaml).
 
 → See [data_schemas.md](docs/data_schemas.md) for data formats and column details
 

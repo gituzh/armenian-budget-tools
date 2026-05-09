@@ -44,7 +44,8 @@ src/armenian_budget/
 config/
 ├── sources.yaml              # Official source URLs and metadata
 ├── parsers.yaml              # Parser patterns and discovery rules
-└── checksums.yaml            # SHA-256 hashes for integrity verification
+├── checksums.yaml            # Current archive SHA-256 hashes
+└── checksum_history.yaml     # Same-URL archive content changes
 
 skills/
 ├── armenian-budget-analyst/  # AI analysis skill for parsed datasets
@@ -193,7 +194,10 @@ pytest -k spending
 
 ```bash
 # Download and extract
-armenian-budget download --years 2019-2024 --extract
+armenian-budget download --years 2019-2026 --extract
+
+# Re-check existing archives and preserve changed prior copies
+armenian-budget download --years 2024-2025 --force
 
 # Inspect current MinFin spending report downloads
 armenian-budget minfin-spending-reports --years 2025 --downloads-only

@@ -56,7 +56,7 @@ The processing pipeline transforms government archives into validated datasets:
 
 ```text
 ┌─────────────┐
-│  Download   │  1. Fetch from minfin.am with SHA-256 checksum verification
+│  Download   │  1. Fetch from minfin.am with SHA-256 checksum tracking
 └──────┬──────┘
        │
        ▼
@@ -87,7 +87,7 @@ The processing pipeline transforms government archives into validated datasets:
 
 **Data locations:**
 
-- `data/original/` - Downloaded archives with checksums
+- `data/original/` - Downloaded archives; changed prior copies live in `.revisions/`
 - `data/extracted/` - Unarchived Excel files + discovery index
 - `data/processed/` - Final CSV outputs + overall totals JSON
 

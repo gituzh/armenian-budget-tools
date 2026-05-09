@@ -1,0 +1,9 @@
+changes:
+- name: 2024_spending_q1234
+  year: 2024
+  source_type: spending_q1234
+  url: https://minfin.am/website/images/files/2024 հաշվետվություն.rar
+  previous_checksum: f56d55d056a861affe39adc394c613578c273f63ab0b20e282467ca82f59943f
+  new_checksum: 392e37eccf13fefd3dd5a987436271b7063e01b48d234ed4aa8f09f9d2571907
+  previous_checksum_updated_at: '2025-09-13T02:17:40.065321+00:00'
+  changed_detected_at: '2026-05-09T21:39:43.843198+00:00'

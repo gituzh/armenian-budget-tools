@@ -93,14 +93,14 @@ sources:
   - name: "2021_spending_q123"
     year: 2021
     source_type: "spending_q123"
-    url: "https://minfin.am/website/images/files/2449c06b%201.zip"
+    url: "https://minfin.am/website/images/files/2449c06b 1.zip"
     file_format: "zip"
     description: "2021 Q1-Q3 Spending Report"
 
   - name: "2021_spending_q1234"
     year: 2021
     source_type: "spending_q1234"
-    url: "https://minfin.am/website/images/files/d3462f75.rar"
+    url: "https://minfin.am/website/images/files/2021  1.rar"
     file_format: "rar"
     description: "2021 Q1-Q4 Spending Report"
 
@@ -114,28 +114,28 @@ sources:
   - name: "2022_spending_q1"
     year: 2022
     source_type: "spending_q1"
-    url: "https://minfin.am/website/images/files/46670e22.rar"
+    url: "https://minfin.am/website/images/files/0363acd3.rar"
     file_format: "rar"
     description: "2022 Q1 Spending Report"
 
   - name: "2022_spending_q12"
     year: 2022
     source_type: "spending_q12"
-    url: "https://minfin.am/website/images/files/2c396593.rar"
+    url: "https://minfin.am/website/images/files/2022_I _.rar"
     file_format: "rar"
     description: "2022 Q1-Q2 Spending Report"
 
   - name: "2022_spending_q123"
     year: 2022
     source_type: "spending_q123"
-    url: "https://minfin.am/website/images/files/efbe8db6.rar"
+    url: "https://minfin.am/website/images/files/09b941144171efd487ffe374a14ff92edf8beae655f834042931feab926aaf68.rar"
     file_format: "rar"
     description: "2022 Q1-Q3 Spending Report"
 
   - name: "2022_spending_q1234"
     year: 2022
     source_type: "spending_q1234"
-    url: "https://minfin.am/website/images/files/65b6c5b5.rar"
+    url: "https://minfin.am/website/images/files/2022  3.rar"
     file_format: "rar"
     description: "2022 Q1-Q4 Spending Report"
 
@@ -149,28 +149,28 @@ sources:
   - name: "2023_spending_q1"
     year: 2023
     source_type: "spending_q1"
-    url: "https://minfin.am/website/images/files/1973b22e.rar"
+    url: "https://minfin.am/website/images/files/2023_I _ 1.rar"
     file_format: "rar"
     description: "2023 Q1 Spending Report"
 
   - name: "2023_spending_q12"
     year: 2023
     source_type: "spending_q12"
-    url: "https://minfin.am/website/images/files/f601731c.rar"
+    url: "https://minfin.am/website/images/files/d9d887aa6a832d4db2e01e80a23ab24b25feb5fd9be16fd982675ed3df7e1850 1.rar"
     file_format: "rar"
     description: "2023 Q1-Q2 Spending Report"
 
   - name: "2023_spending_q123"
     year: 2023
     source_type: "spending_q123"
-    url: "https://minfin.am/website/images/files/49c3ab4d.rar"
+    url: "https://minfin.am/website/images/files/9 amisner.rar"
     file_format: "rar"
     description: "2023 Q1-Q3 Spending Report"
 
   - name: "2023_spending_q1234"
     year: 2023
     source_type: "spending_q1234"
-    url: "https://minfin.am/website/images/files/eeb4fff4.rar"
+    url: "https://minfin.am/website/images/files/2023 - 1.rar"
     file_format: "rar"
     description: "2023 Q1-Q4 Spending Report"
 

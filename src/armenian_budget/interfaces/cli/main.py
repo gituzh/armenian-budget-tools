@@ -11,6 +11,35 @@ from armenian_budget.core.enums import SourceType
 # Source type choices for argparse - used across all commands
 SOURCE_TYPE_CHOICES = list(SourceType.__members__.keys())
 
+
+def _checksum_key(item: dict) -> tuple[str | None, int, str | None, str | None]:
+    return (
+        item.get("name"),
+        int(item.get("year", 0)),
+        item.get("source_type"),
+        item.get("url"),
+    )
+
+
+def _ordered_checksum_items(checksums_by_key: dict[tuple, dict], sources: list) -> list[dict]:
+    ordered: list[dict] = []
+    emitted: set[tuple] = set()
+    for source in sources:
+        key = (
+            source.name,
+            int(source.year),
+            source.source_type,
+            source.url,
+        )
+        item = checksums_by_key.get(key)
+        if item is None:
+            continue
+        ordered.append(item)
+        emitted.add(key)
+    ordered.extend(item for key, item in checksums_by_key.items() if key not in emitted)
+    return ordered
+
+
 try:
     # Prefer package-defined version
     from armenian_budget import __version__ as _PACKAGE_VERSION
@@ -634,28 +663,30 @@ def cmd_download(args: argparse.Namespace) -> int:
         sources,
         original_root,
         skip_existing=(not args.force),
-        overwrite_existing=args.overwrite,
     )
     # Always record checksums for successful results into config/checksums.yaml
     import hashlib
     from datetime import datetime, timezone
 
     checksums_path = Path(cfg_path).with_name("checksums.yaml")
+    checksum_history_path = Path(cfg_path).with_name("checksum_history.yaml")
     existing_index: dict[tuple, dict] = {}
+    checksum_history: list[dict] = []
     try:
         if checksums_path.exists():
             with checksums_path.open("r", encoding="utf-8") as f:
                 existing = yaml.safe_load(f) or {}
             for item in existing.get("checksums", []) or []:
-                key = (
-                    item.get("name"),
-                    int(item.get("year", 0)),
-                    item.get("source_type"),
-                    item.get("url"),
-                )
-                existing_index[key] = item
+                existing_index[_checksum_key(item)] = item
     except (OSError, ValueError, yaml.YAMLError, TypeError):
         existing_index = {}
+    try:
+        if checksum_history_path.exists():
+            with checksum_history_path.open("r", encoding="utf-8") as f:
+                history = yaml.safe_load(f) or {}
+            checksum_history = list(history.get("changes", []) or [])
+    except (OSError, ValueError, yaml.YAMLError, TypeError):
+        checksum_history = []
 
     recorded = 0
     for source_def, dl_result in zip(sources, results):
@@ -681,6 +712,21 @@ def cmd_download(args: argparse.Namespace) -> int:
         )
         prev = existing_index.get(key)
         if not prev or prev.get("checksum") != digest:
+            if prev and prev.get("checksum"):
+                change_record = {
+                    "name": source_def.name,
+                    "year": int(source_def.year),
+                    "source_type": source_def.source_type,
+                    "url": source_def.url,
+                    "previous_checksum": prev.get("checksum"),
+                    "new_checksum": digest,
+                    "previous_checksum_updated_at": prev.get("checksum_updated_at"),
+                    "changed_detected_at": ts,
+                }
+                archived_path = getattr(dl_result, "archived_path", None)
+                if archived_path:
+                    change_record["archived_path"] = str(archived_path)
+                checksum_history.append(change_record)
             existing_index[key] = {
                 "name": source_def.name,
                 "year": int(source_def.year),
@@ -694,12 +740,21 @@ def cmd_download(args: argparse.Namespace) -> int:
     try:
         with checksums_path.open("w", encoding="utf-8") as f:
             yaml.safe_dump(
-                {"checksums": list(existing_index.values())},
+                {"checksums": _ordered_checksum_items(existing_index, registry.all())},
                 f,
                 sort_keys=False,
                 allow_unicode=True,
                 indent=2,
             )
+        if checksum_history:
+            with checksum_history_path.open("w", encoding="utf-8") as f:
+                yaml.safe_dump(
+                    {"changes": checksum_history},
+                    f,
+                    sort_keys=False,
+                    allow_unicode=True,
+                    indent=2,
+                )
     except (OSError, ValueError, yaml.YAMLError, TypeError):
         pass
     ok = sum(1 for r in results if r.ok)
@@ -943,12 +998,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_download.add_argument(
         "--force",
         action="store_true",
-        help="Force re-download even if file already exists",
-    )
-    p_download.add_argument(
-        "--overwrite",
-        action="store_true",
-        help="Overwrite existing files after successful download (even if same size)",
+        help="Re-download existing files and archive changed prior copies",
     )
     p_download.add_argument(
         "--source-type",
