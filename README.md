@@ -60,9 +60,6 @@ Example artifact:
 Provenance metadata:
 [`docs/examples/rd_allocations_and_spending_by_year.svg.provenance.json`](docs/examples/rd_allocations_and_spending_by_year.svg.provenance.json)
 
-The MCP server remains in the repo as a legacy reference. See
-[docs/mcp.md](docs/mcp.md).
-
 ### ✅ How We Ensure Data Quality
 
 This project:

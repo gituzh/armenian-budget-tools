@@ -806,64 +806,6 @@ def cmd_extract(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_mcp_server(args: argparse.Namespace) -> int:
-    """Start the MCP server.
-
-    Default: stdio. If --port is set, run HTTP transport at host:port.
-    """
-    try:
-        mcp_server = importlib.import_module("armenian_budget.interfaces.mcp.server")
-    except (ModuleNotFoundError, AttributeError, ImportError) as e:
-        logging.error(
-            "Failed to import MCP server. Ensure 'mcp' is installed. Error: %s",
-            e,
-        )
-        return 3
-    data_path = args.data_path or "data/processed"
-    try:
-        rel = Path(data_path).resolve().relative_to(Path.cwd().resolve())
-        display_path = rel.as_posix()
-    except (ValueError, OSError):
-        display_path = str(Path(data_path))
-    port = args.port
-    host = args.host or "127.0.0.1"
-    https = args.https
-    certfile = args.certfile
-    keyfile = args.keyfile
-    if port and https:
-        logging.info(
-            "Starting MCP HTTPS server on %s:%s (data path: %s)",
-            host,
-            port,
-            display_path,
-        )
-    elif port:
-        logging.info(
-            "Starting MCP HTTP server on %s:%s (data path: %s)",
-            host,
-            port,
-            display_path,
-        )
-    else:
-        logging.info("Starting MCP stdio server with data path: %s", display_path)
-    try:
-        if port and https:
-            getattr(mcp_server, "run_https")(
-                data_path,
-                host=host,
-                port=int(port),
-                certfile=certfile or "config/certs/localhost.pem",
-                keyfile=keyfile or "config/certs/localhost-key.pem",
-            )
-        elif port:
-            getattr(mcp_server, "run_http")(data_path, host=host, port=int(port))
-        else:
-            mcp_server.run(data_path)
-    except KeyboardInterrupt:
-        pass
-    return 0
-
-
 def cmd_discover(args: argparse.Namespace) -> int:
     try:
         ingestion_pkg = importlib.import_module("armenian_budget.ingestion")
@@ -1136,35 +1078,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Generate detailed JSON report (one per year). Optionally specify custom directory path.",
     )
     p_validate.set_defaults(func=cmd_validate)
-
-    p_mcp = sub.add_parser("mcp-server", help="Run minimal MCP server (stdio or HTTP)")
-    p_mcp.add_argument(
-        "--data-path",
-        default=None,
-        help="Path to data/processed directory (defaults to ./data/processed)",
-    )
-    p_mcp.add_argument(
-        "--port",
-        default=None,
-        help="If set, run HTTP/HTTPS transport on the given port",
-    )
-    p_mcp.add_argument(
-        "--host",
-        default=None,
-        help="Host to bind for HTTP transport (default 127.0.0.1)",
-    )
-    p_mcp.add_argument("--https", action="store_true", help="Enable HTTPS (requires cert and key)")
-    p_mcp.add_argument(
-        "--certfile",
-        default=None,
-        help="Path to TLS cert PEM (default config/certs/localhost.pem)",
-    )
-    p_mcp.add_argument(
-        "--keyfile",
-        default=None,
-        help="Path to TLS key PEM (default config/certs/localhost-key.pem)",
-    )
-    p_mcp.set_defaults(func=cmd_mcp_server)
 
     return p
 

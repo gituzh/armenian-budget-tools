@@ -32,8 +32,7 @@ src/armenian_budget/
 │   │   └── excel_mtep.py     # MTEP parser (2-level hierarchy, JSON overall)
 │   └── discovery.py          # File discovery
 ├── interfaces/
-│   ├── cli/main.py           # CLI entrypoint
-│   └── mcp/server.py         # Legacy MCP server
+│   └── cli/main.py           # CLI entrypoint
 ├── sources/
 │   ├── registry.py           # Source URLs
 │   ├── downloader.py
@@ -45,7 +44,6 @@ src/armenian_budget/
 config/
 ├── sources.yaml              # Official source URLs and metadata
 ├── parsers.yaml              # Parser patterns and discovery rules
-├── program_patterns.yaml     # Keyword patterns for legacy MCP tools
 └── checksums.yaml            # SHA-256 hashes for integrity verification
 
 skills/
@@ -205,8 +203,6 @@ armenian-budget process --years 2023 --source-type BUDGET_LAW
 armenian-budget validate --years 2023
 armenian-budget validate --years 2023 --source-type BUDGET_LAW
 
-# Legacy MCP server reference
-armenian-budget mcp-server --data-path ./data/processed
 ```
 
 ## AI-Assisted Analysis
@@ -227,7 +223,7 @@ python skills/armenian-budget-analyst/scripts/data_availability.py --format both
 
 ## Python API Reference
 
-> **Note:** The Python API is for internal library use only. The primary public interfaces are the CLI and the repo-owned analysis skill. The MCP server remains as a deprecated legacy interface. This section documents internal functions for contributors and developers extending the system.
+> **Note:** The Python API is for internal library use only. The primary public interfaces are the CLI and the repo-owned analysis skill. This section documents internal functions for contributors and developers extending the system.
 
 ### Parsing
 
@@ -361,7 +357,6 @@ pytest
 - CLI commands change → Update README + this guide
 - Python API changes → Update this guide
 - Data schemas change → Update `data_schemas.md`
-- MCP tools change → Update `mcp.md`
 
 See `CLAUDE.md` for complete documentation governance and impact mapping.
 
@@ -383,4 +378,3 @@ class SourceType(str, Enum):
 
 **For detailed architecture** → See [`architecture.md`](architecture.md)
 **For data schemas** → See [`data_schemas.md`](data_schemas.md)
-**For legacy MCP reference** → See [`mcp.md`](mcp.md)

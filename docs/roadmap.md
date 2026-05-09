@@ -52,54 +52,6 @@ armenian-budget parse --years 2024 --source-type MTEP
 armenian-budget validate --csv data/processed/2024_MTEP.csv
 ```
 
-## Milestone v0.5.0 — MCP Server Redesign
-
-**Focus:** Simplified, more powerful MCP server with flexible query engine
-
-### Features
-
-- **Simplified architecture**:
-  - Reduce number of specialized tools (consolidate similar functionality)
-  - Improve query planning and execution
-  - Better separation between resource and tool APIs
-
-- **More flexible tools**:
-  - Generic query interface with composable filters
-  - Support for cross-year and cross-source queries
-  - Aggregation and grouping capabilities
-  - Time-series analysis primitives
-
-- **Improved result handling**:
-  - Smart inline vs file path decision logic
-  - Configurable size thresholds
-  - Streaming support for large results
-  - Better error messages and diagnostics
-
-- **Enhanced query engine**:
-  - Declarative query planning
-  - Optimized execution strategies
-  - Caching for repeated queries
-  - Performance monitoring
-
-### Exit Criteria
-
-- MCP server supports all previous use cases with fewer, more powerful tools
-- Query performance improved (benchmarked)
-- Example notebooks demonstrate new capabilities
-
-### API Examples
-
-```python
-# New unified query interface
-mcp_client.query(
-    years=range(2019, 2025),
-    source_types=["BUDGET_LAW", "SPENDING_Q1234"],
-    filters={"state_body": "Ministry of Education"},
-    aggregations={"sum": "allocated_amount"},
-    group_by=["year"]
-)
-```
-
 ## Milestone v0.6.0 — Government Target Metrics
 
 **Focus:** Add government performance target metrics as new data type
@@ -132,7 +84,6 @@ mcp_client.query(
 
 - Government target data processes end-to-end
 - Validation rules for target metrics implemented
-- MCP tools support target queries
 - Example analysis: budget allocation vs target achievement
 
 ### Use Cases
@@ -234,7 +185,7 @@ armenian-budget process --years 2023 --from-step extract     # resume from extra
 **Documentation:**
 
 - Armenian README translation (README.hy.md)
-- Consider translating key user-facing docs (data_schemas.md, mcp.md)
+- Consider translating key user-facing docs (data_schemas.md, validation.md)
 
 ## Risks & Mitigations
 

@@ -45,7 +45,7 @@
     "MinESCS/HESC allocation and spending: state_body contains 'կրթ' AND program_code == '1162'; take program_total from BUDGET_LAW and program_actual from SPENDING files.",
     "MIC/MinHTI allocation continuity: 2019 BUDGET_LAW uses state_body contains 'պաշտպան', program_code == '1119', subprogram_code == '11001'; 2020-2023 BUDGET_LAW uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1119', subprogram_code == '11001'; 2024-2026 BUDGET_LAW uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1220', subprogram_code == '11001'.",
     "MIC/MinHTI spending continuity: 2019-2023 spending uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1119', subprogram_code == '11001'; 2024-2025 spending uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1220', subprogram_code == '11001'.",
-    "The combined R&D topic is a manual mapping layer over parsed budget facts, following the repo's own R&D example and MCP extraction logic."
+    "The combined R&D topic is a manual mapping layer over parsed budget facts, following the repo's own R&D example logic."
   ],
   "display_units": "chart labels use billions of AMD; source CSV values remain in thousand AMD",
   "caveats": [

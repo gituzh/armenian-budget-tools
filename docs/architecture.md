@@ -24,7 +24,7 @@ Armenian Budget Tools transforms official Armenian state budget data into openly
 - **Open data accessibility**: Clean, validated CSV outputs ready for public use and analysis
 - **Data quality assurance**: Rigorous validation to minimize errors and ensure financial integrity
 - **Data provenance**: Complete lineage tracking from original government sources to processed outputs
-- **Multiple access methods**: CLI for automation, a repo-owned agent skill for AI assistance, and a legacy MCP server reference
+- **Multiple access methods**: CLI for automation and a repo-owned agent skill for AI assistance
 
 ## 2. Design Principles
 
@@ -44,7 +44,7 @@ Armenian Budget Tools transforms official Armenian state budget data into openly
 
 **Core components:**
 
-- **Interfaces**: CLI commands, a repo-owned analysis skill, and a deprecated MCP server reference
+- **Interfaces**: CLI commands and a repo-owned analysis skill
 - **Ingestion**: Excel parsers with state-machine row detection, discovery system for file finding
 - **Validation**: Business rules (hierarchical totals, spending percentages, cross-validation)
 - **Storage**: CSV writer with metadata, JSON for overall totals
@@ -97,7 +97,7 @@ The processing pipeline transforms government archives into validated datasets:
 src/armenian_budget/
 ├── core/                   # Core data models, types, schemas, and shared utilities
 ├── ingestion/              # Parsing and discovery
-├── interfaces/             # CLI and legacy MCP server
+├── interfaces/             # CLI
 ├── sources/                # Download and registry
 └── validation/             # Business rules
 
@@ -117,12 +117,12 @@ data/                       # Data directories
 
 ## 6. Access Methods
 
-The system provides two primary public interfaces and one legacy reference path:
+The system provides two primary public interfaces:
 
 **CLI (Command-line interface):**
 
 - Primary public interface for batch processing and automation
-- Commands: `download`, `extract`, `discover`, `process`, `validate`, `mcp-server`
+- Commands: `download`, `extract`, `discover`, `process`, `validate`
 - Exit codes from typed exceptions, structured logging with progress reporting
 
 **Agent Skill:**
@@ -131,17 +131,10 @@ The system provides two primary public interfaces and one legacy reference path:
 - Supports dataset availability checks, cross-year analysis, and source-cited tables, charts, and reports
 - Encourages provenance-aware outputs, including sidecar metadata for generated artifacts
 
-**MCP Server (legacy reference):**
-
-- Deprecated path retained for legacy Model Context Protocol integrations
-- Resources for static data (state bodies, programs, subprograms)
-- Tools for dynamic queries (spending analysis, budget comparisons)
-- Returns inline data for small results, file paths for large datasets
-
 **Internal Python API:**
 
 - For internal library use only (not a public interface)
-- Type-hinted functions for CLI and legacy MCP implementations
+- Type-hinted functions used by CLI and internal workflows
 - See `docs/developer_guide.md` for internal API reference
 
 ## 7. Future Considerations
@@ -161,7 +154,6 @@ Post-v1 enhancements under consideration:
 | **[docs/developer_guide.md](developer_guide.md)** | Implementation patterns and code | Contributors |
 | **[docs/data_schemas.md](data_schemas.md)** | Data formats and schemas | Data analysts |
 | **[skills/armenian-budget-analyst/SKILL.md](../skills/armenian-budget-analyst/SKILL.md)** | AI analysis workflow and provenance rules | AI agents and developers |
-| **[docs/mcp.md](mcp.md)** | Legacy MCP server reference | AI developers maintaining older integrations |
 | **[docs/roadmap.md](roadmap.md)** | Development milestones | All contributors |
 
 ---
