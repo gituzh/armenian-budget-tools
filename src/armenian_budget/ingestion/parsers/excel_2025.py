@@ -214,10 +214,10 @@ def flatten_budget_excel_2025(
                         row_data[7] if len(row_data) > 7 else ""
                     ),
                     "overall_actual": _to_float(
-                        row_data[10] if len(row_data) > 10 else ""
+                        row_data[8] if len(row_data) > 8 else ""
                     ),
                     "overall_actual_vs_rev_annual_plan": _to_frac(
-                        row_data[11] if len(row_data) > 11 else ""
+                        row_data[9] if len(row_data) > 9 else ""
                     ),
                 }
             logger.info("Found overall row: %s", overall_values)
@@ -277,7 +277,7 @@ def flatten_budget_excel_2025(
                     float(row_data[7]) if is_numeric(row_data[7]) else 0.0
                 )
                 current_context["state_body_actual"] = (
-                    float(row_data[10]) if is_numeric(row_data[10]) else 0.0
+                    float(row_data[8]) if is_numeric(row_data[8]) else 0.0
                 )
 
                 def _frac(v: str) -> float:
@@ -288,7 +288,7 @@ def flatten_budget_excel_2025(
                         return 0.0
 
                 current_context["state_body_actual_vs_rev_annual_plan"] = _frac(
-                    row_data[11] if len(row_data) > 11 else ""
+                    row_data[9] if len(row_data) > 9 else ""
                 )
 
             # Reset program context
@@ -351,7 +351,7 @@ def flatten_budget_excel_2025(
                     float(row_data[7]) if is_numeric(row_data[7]) else 0.0
                 )
                 current_context["program_actual"] = (
-                    float(row_data[10]) if is_numeric(row_data[10]) else 0.0
+                    float(row_data[8]) if is_numeric(row_data[8]) else 0.0
                 )
 
                 def _frac(v: str) -> float:
@@ -362,7 +362,7 @@ def flatten_budget_excel_2025(
                         return 0.0
 
                 current_context["program_actual_vs_rev_annual_plan"] = _frac(
-                    row_data[11] if len(row_data) > 11 else ""
+                    row_data[9] if len(row_data) > 9 else ""
                 )
             logger.debug("New program: %s", current_context["program_code"])
 
@@ -527,11 +527,11 @@ def flatten_budget_excel_2025(
                         "subprogram_rev_annual_plan": float(row_data[7])
                         if is_numeric(row_data[7])
                         else 0.0,
-                        "subprogram_actual": float(row_data[10])
-                        if is_numeric(row_data[10])
+                        "subprogram_actual": float(row_data[8])
+                        if is_numeric(row_data[8])
                         else 0.0,
                         "subprogram_actual_vs_rev_annual_plan": _frac(
-                            row_data[11] if len(row_data) > 11 else ""
+                            row_data[9] if len(row_data) > 9 else ""
                         ),
                     }
 

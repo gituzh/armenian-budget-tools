@@ -289,6 +289,42 @@ class TestMockDataExtraction:
         finally:
             os.unlink(tmp_file)
 
+    def test_spending_q1234_2025_column_mapping(self):
+        """Test 2025 annual spending extraction uses the shorter full-year layout."""
+        data = [
+            ["", "", "", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", "", "", ""],
+            ["ԲԳԿ", "Ծրագրային դասիչը", "", "Ծրագրի/Միջոցառման անվանումը", "Ծրագրի նպատակը/Միջոցառման նկարագրությունը", "Վերջնական արդյունքի նկարագրությունը/Միջոցառման տեսակը", "Տարեկան պլան¹", "Տարեկան ճշտված պլան²", "Փաստ", "Կատարման %-ը տարեկան ճշտված պլանի նկատմամբ"],
+            ["", "Ծրագիր", "Միջոցառում", "", "", "", "", "", "", ""],
+            ["ԸՆԴԱՄԵՆԸ", "", "", "", "", "", 1000, 1100, 990, "90"],
+            ["State Body 1", "", "", "", "", "", 600, 650, 590, "90.8"],
+            ["", "1001", "", "Program 1", "Goal 1", "Result 1", 600, 650, 590, "90.8"],
+            ["", "", "1001-10001", "Subprogram 1", "Description 1", "Type 1", 600, 650, 590, "90.8"],
+        ]
+
+        with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
+            pd.DataFrame(data).to_excel(tmp.name, index=False, header=False)
+            tmp_path = tmp.name
+
+        try:
+            df, overall, _, _ = flatten_budget_excel_2025(
+                tmp_path, SourceType.SPENDING_Q1234
+            )
+
+            assert overall["overall_actual"] == 990
+            assert overall["overall_actual_vs_rev_annual_plan"] == 0.9
+            assert len(df) == 1
+            assert df.iloc[0]["state_body_actual"] == 590
+            assert df.iloc[0]["program_actual"] == 590
+            assert df.iloc[0]["subprogram_actual"] == 590
+            assert df.iloc[0]["subprogram_actual_vs_rev_annual_plan"] == pytest.approx(0.908)
+        finally:
+            os.unlink(tmp_path)
+
 
 class TestErrorHandling:
     """Test error handling in extraction functions."""
