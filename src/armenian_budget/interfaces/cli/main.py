@@ -861,6 +861,41 @@ def cmd_discover(args: argparse.Namespace) -> int:
     return 0 if ok > 0 else 1
 
 
+def cmd_minfin_spending_reports(args: argparse.Namespace) -> int:
+    try:
+        reports_mod = importlib.import_module(
+            "armenian_budget.sources.minfin_spending_reports"
+        )
+    except (ModuleNotFoundError, AttributeError) as e:
+        logging.error("Unable to load MinFin spending report lister: %s", e)
+        return 3
+
+    years = set(_parse_years_arg(args.years) or []) if args.years else None
+    reports = reports_mod.list_minfin_spending_reports(years)
+    if args.quarter:
+        reports = [report for report in reports if report["quarter"] == args.quarter]
+    if args.downloads_only:
+        downloads = []
+        for report in reports:
+            for item in report["downloads"]:
+                downloads.append(
+                    {
+                        "year": report["year"],
+                        "quarter": report["quarter"],
+                        **item,
+                    }
+                )
+        import json
+
+        print(json.dumps(downloads, ensure_ascii=False, indent=2))
+        return 0
+
+    import json
+
+    print(json.dumps(reports, ensure_ascii=False, indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="armenian-budget",
@@ -982,6 +1017,29 @@ def build_parser() -> argparse.ArgumentParser:
         help="Probe-parse candidates during discovery to validate content (slower)",
     )
     p_discover.set_defaults(func=cmd_discover)
+
+    p_minfin = sub.add_parser(
+        "minfin-spending-reports",
+        help="List spending report files advertised on minfin.am",
+    )
+    p_minfin.add_argument(
+        "--years",
+        help=(
+            "Comma-separated years (e.g. 2024,2025) or range (2024-2025). "
+            "Defaults to all listed years."
+        ),
+    )
+    p_minfin.add_argument(
+        "--quarter",
+        choices=["Q1", "Q12", "Q123", "Q1234"],
+        help="Limit output to one spending report period.",
+    )
+    p_minfin.add_argument(
+        "--downloads-only",
+        action="store_true",
+        help="Return a flat list of downloadable items instead of period records.",
+    )
+    p_minfin.set_defaults(func=cmd_minfin_spending_reports)
 
     p_process = sub.add_parser("process", help="Process one or more source Excels and write CSV")
     p_process.add_argument(

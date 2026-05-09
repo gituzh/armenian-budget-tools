@@ -52,6 +52,31 @@ armenian-budget parse --years 2024 --source-type MTEP
 armenian-budget validate --csv data/processed/2024_MTEP.csv
 ```
 
+## Milestone v0.5.0 — Source Discovery Utilities
+
+**Focus:** Improve source maintenance and make current MinFin spending report links easier to audit
+
+### Features
+
+- **MinFin spending report lister**:
+  - Add `armenian-budget minfin-spending-reports`
+  - Support year and quarter filters
+  - Support flat JSON output for downloadable files
+  - Keep live source listing separate from `config/sources.yaml` updates
+
+### Exit Criteria
+
+- CLI lists spending report files advertised on minfin.am
+- Tests cover HTML extraction and CLI JSON output without live network calls
+- README and developer guide include the command
+
+### CLI Examples
+
+```bash
+armenian-budget minfin-spending-reports --years 2025
+armenian-budget minfin-spending-reports --years 2025 --quarter Q1234 --downloads-only
+```
+
 ## Milestone v0.6.0 — Government Target Metrics
 
 **Focus:** Add government performance target metrics as new data type

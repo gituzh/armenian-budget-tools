@@ -4,4 +4,5 @@ __all__ = [
     "registry",
     "downloader",
     "organizer",
+    "minfin_spending_reports",
 ]

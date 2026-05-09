@@ -101,6 +101,9 @@ armenian-budget validate --years 2019-2024  # Optional: validate processed data
 
 # Find outputs in ./data/processed/
 
+# Optional: inspect current MinFin spending report downloads
+armenian-budget minfin-spending-reports --years 2025 --downloads-only
+
 # Optional: process specific source type only
 armenian-budget process --years 2023 --source-type BUDGET_LAW
 ```

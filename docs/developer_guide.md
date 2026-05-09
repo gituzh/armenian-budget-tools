@@ -195,6 +195,9 @@ pytest -k spending
 # Download and extract
 armenian-budget download --years 2019-2024 --extract
 
+# Inspect current MinFin spending report downloads
+armenian-budget minfin-spending-reports --years 2025 --downloads-only
+
 # Process
 armenian-budget process --years 2023
 armenian-budget process --years 2023 --source-type BUDGET_LAW
