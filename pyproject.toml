@@ -33,6 +33,7 @@ dev = [
   "pytest",
   "pytest-cov",
   "jupyter",
+  "ruff"
 ]
 
 [tool.setuptools.packages.find]
