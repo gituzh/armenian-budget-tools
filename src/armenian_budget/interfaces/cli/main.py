@@ -12,25 +12,47 @@ from armenian_budget.core.enums import SourceType
 SOURCE_TYPE_CHOICES = list(SourceType.__members__.keys())
 
 
-def _checksum_key(item: dict) -> tuple[str | None, int, str | None, str | None]:
+def _checksum_key(item: dict) -> tuple[int, str | None, str | None]:
     return (
-        item.get("name"),
         int(item.get("year", 0)),
         item.get("source_type"),
         item.get("url"),
     )
 
 
+def _source_checksum_key(source: object) -> tuple[int, str | None, str | None]:
+    return (
+        int(getattr(source, "year")),
+        getattr(source, "source_type"),
+        getattr(source, "url"),
+    )
+
+
+def _checksum_record(
+    source: object,
+    checksum: str,
+    previous: dict | None,
+    timestamp: str,
+) -> dict:
+    return {
+        "name": getattr(source, "name"),
+        "year": int(getattr(source, "year")),
+        "source_type": getattr(source, "source_type"),
+        "url": getattr(source, "url"),
+        "checksum": checksum,
+        "checksum_updated_at": (
+            previous.get("checksum_updated_at")
+            if previous and previous.get("checksum") == checksum
+            else timestamp
+        ),
+    }
+
+
 def _ordered_checksum_items(checksums_by_key: dict[tuple, dict], sources: list) -> list[dict]:
     ordered: list[dict] = []
     emitted: set[tuple] = set()
     for source in sources:
-        key = (
-            source.name,
-            int(source.year),
-            source.source_type,
-            source.url,
-        )
+        key = _source_checksum_key(source)
         item = checksums_by_key.get(key)
         if item is None:
             continue
@@ -38,6 +60,22 @@ def _ordered_checksum_items(checksums_by_key: dict[tuple, dict], sources: list) 
         emitted.add(key)
     ordered.extend(item for key, item in checksums_by_key.items() if key not in emitted)
     return ordered
+
+
+def _merge_checksum_item(
+    index: dict[tuple, dict],
+    item: dict,
+    source_names_by_key: dict[tuple, set[str]],
+) -> None:
+    key = _checksum_key(item)
+    active_names = source_names_by_key.get(key, set())
+    current_name = index.get(key, {}).get("name")
+    item_name = item.get("name")
+    if (
+        key not in index
+        or (item_name in active_names and current_name not in active_names)
+    ):
+        index[key] = item
 
 
 try:
@@ -672,12 +710,15 @@ def cmd_download(args: argparse.Namespace) -> int:
     checksum_history_path = Path(cfg_path).with_name("checksum_history.yaml")
     existing_index: dict[tuple, dict] = {}
     checksum_history: list[dict] = []
+    source_names_by_key: dict[tuple, set[str]] = {}
+    for source in registry.all():
+        source_names_by_key.setdefault(_source_checksum_key(source), set()).add(source.name)
     try:
         if checksums_path.exists():
             with checksums_path.open("r", encoding="utf-8") as f:
                 existing = yaml.safe_load(f) or {}
             for item in existing.get("checksums", []) or []:
-                existing_index[_checksum_key(item)] = item
+                _merge_checksum_item(existing_index, item, source_names_by_key)
     except (OSError, ValueError, yaml.YAMLError, TypeError):
         existing_index = {}
     try:
@@ -704,12 +745,7 @@ def cmd_download(args: argparse.Namespace) -> int:
         except (OSError, ValueError):
             continue
         ts = datetime.now(timezone.utc).isoformat()
-        key = (
-            source_def.name,
-            int(source_def.year),
-            source_def.source_type,
-            source_def.url,
-        )
+        key = _source_checksum_key(source_def)
         prev = existing_index.get(key)
         if not prev or prev.get("checksum") != digest:
             if prev and prev.get("checksum"):
@@ -727,15 +763,8 @@ def cmd_download(args: argparse.Namespace) -> int:
                 if archived_path:
                     change_record["archived_path"] = str(archived_path)
                 checksum_history.append(change_record)
-            existing_index[key] = {
-                "name": source_def.name,
-                "year": int(source_def.year),
-                "source_type": source_def.source_type,
-                "url": source_def.url,
-                "checksum": digest,
-                "checksum_updated_at": ts,
-            }
             recorded += 1
+        existing_index[key] = _checksum_record(source_def, digest, prev, ts)
 
     try:
         with checksums_path.open("w", encoding="utf-8") as f:

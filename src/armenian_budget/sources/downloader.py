@@ -64,6 +64,10 @@ def _safe_file_name(url: str, default_ext: Optional[str]) -> str:
     return f"download_{digest}.{ext}"
 
 
+def _configured_file_name(filename: str) -> str:
+    return Path(filename).name
+
+
 def _quarter_dir(source_type: str) -> str:
     st = (source_type or "").lower()
     if st == "spending_q1":
@@ -160,7 +164,11 @@ def download_sources(
             subdir, quarter = _category_and_subdir(original_root, s.year, s.source_type)
             subdir.mkdir(parents=True, exist_ok=True)
             # If override format is provided, force the extension; otherwise infer from URL
-            file_name = _safe_file_name(s.url, s.file_format)
+            file_name = (
+                _configured_file_name(s.filename)
+                if s.filename
+                else _safe_file_name(s.url, s.file_format)
+            )
             if s.file_format:
                 # Force extension to provided override
                 from pathlib import PurePath
