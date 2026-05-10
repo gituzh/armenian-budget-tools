@@ -106,8 +106,7 @@ skills/                     # Repo-owned AI skills
 
 config/                     # Configuration files
 ├── sources.yaml
-├── parsers.yaml
-└── program_patterns.yaml
+└── parsers.yaml
 
 data/                       # Data directories
 ├── original/               # Downloaded archives
