@@ -207,6 +207,13 @@ armenian-budget minfin-spending-reports --years 2025 --downloads-only
 armenian-budget process --years 2023
 armenian-budget process --years 2023 --source-type BUDGET_LAW
 
+# Macro/GDP indicators
+armenian-budget macro-indicators --years 2024-2025
+armenian-budget gdp-extract --years 2021-2026
+armenian-budget gdp-extract --years 2024 --source-type SPENDING_Q1234
+armenian-budget gdp-report
+armenian-budget gdp-report --years 2024-2025 --source-type BUDGET_LAW
+
 # Validate (all source types or specific one)
 armenian-budget validate --years 2023
 armenian-budget validate --years 2023 --source-type BUDGET_LAW

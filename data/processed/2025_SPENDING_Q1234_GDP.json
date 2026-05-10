@@ -1,0 +1,435 @@
+{
+  "year": 2025,
+  "source_type": "SPENDING_Q1234",
+  "metric_set": "GDP",
+  "source_file": "12.Մակրոտնտեսական և հարկաբյուջետային ցուց_2025.docx",
+  "tables": [
+    {
+      "caption": "",
+      "table_title": "",
+      "table_index": 0,
+      "records": [
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 6991.8
+        },
+        {
+          "target_year": 2022,
+          "status": "պատմական",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 8501.4
+        },
+        {
+          "target_year": 2023,
+          "status": "պատմական",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 9492.5
+        },
+        {
+          "target_year": 2024,
+          "status": "պատմական",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 10193.4
+        },
+        {
+          "target_year": 2025,
+          "status": "պետական բյուջե",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 10891.5
+        },
+        {
+          "target_year": 2025,
+          "status": "փաստ",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 11317.5
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": 5.8
+        },
+        {
+          "target_year": 2022,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": 12.6
+        },
+        {
+          "target_year": 2023,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": 8.3
+        },
+        {
+          "target_year": 2024,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": 5.9
+        },
+        {
+          "target_year": 2025,
+          "status": "պետական բյուջե",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": 5.1
+        },
+        {
+          "target_year": 2025,
+          "status": "փաստ",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": 7.2
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 6.9
+        },
+        {
+          "target_year": 2022,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 8.0
+        },
+        {
+          "target_year": 2023,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 3.1
+        },
+        {
+          "target_year": 2024,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 1.4
+        },
+        {
+          "target_year": 2025,
+          "status": "պետական բյուջե",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 2.5
+        },
+        {
+          "target_year": 2025,
+          "status": "փաստ",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 3.6
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": 7.7
+        },
+        {
+          "target_year": 2022,
+          "status": "պատմական",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": 8.3
+        },
+        {
+          "target_year": 2023,
+          "status": "պատմական",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": -0.6
+        },
+        {
+          "target_year": 2024,
+          "status": "պատմական",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": 1.5
+        },
+        {
+          "target_year": 2025,
+          "status": "պետական բյուջե",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": 4.0
+        },
+        {
+          "target_year": 2025,
+          "status": "փաստ",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": 3.3
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 7.2
+        },
+        {
+          "target_year": 2022,
+          "status": "պատմական",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 8.6
+        },
+        {
+          "target_year": 2023,
+          "status": "պատմական",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 2.0
+        },
+        {
+          "target_year": 2024,
+          "status": "պատմական",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 0.3
+        },
+        {
+          "target_year": 2025,
+          "status": "պետական բյուջե",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 3.6
+        },
+        {
+          "target_year": 2025,
+          "status": "փաստ",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 3.3
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Գործազրկության մակարդակ",
+          "unit": "",
+          "value": 15.5
+        },
+        {
+          "target_year": 2022,
+          "status": "պատմական",
+          "indicator": "Գործազրկության մակարդակ",
+          "unit": "",
+          "value": 13.5
+        },
+        {
+          "target_year": 2023,
+          "status": "պատմական",
+          "indicator": "Գործազրկության մակարդակ",
+          "unit": "",
+          "value": 12.4
+        },
+        {
+          "target_year": 2024,
+          "status": "պատմական",
+          "indicator": "Գործազրկության մակարդակ",
+          "unit": "",
+          "value": 13.4
+        },
+        {
+          "target_year": 2025,
+          "status": "պետական բյուջե",
+          "indicator": "Գործազրկության մակարդակ",
+          "unit": "",
+          "value": null
+        },
+        {
+          "target_year": 2025,
+          "status": "փաստ",
+          "indicator": "Գործազրկության մակարդակ",
+          "unit": "",
+          "value": 12.8
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 4685.0
+        },
+        {
+          "target_year": 2022,
+          "status": "պատմական",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 6661.0
+        },
+        {
+          "target_year": 2023,
+          "status": "պատմական",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 8159.0
+        },
+        {
+          "target_year": 2024,
+          "status": "պատմական",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 8556.0
+        },
+        {
+          "target_year": 2025,
+          "status": "պետական բյուջե",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 8863.0
+        },
+        {
+          "target_year": 2025,
+          "status": "փաստ",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 9474.0
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 21.2
+        },
+        {
+          "target_year": 2022,
+          "status": "պատմական",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 21.1
+        },
+        {
+          "target_year": 2023,
+          "status": "պատմական",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 20.6
+        },
+        {
+          "target_year": 2024,
+          "status": "պատմական",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 21.3
+        },
+        {
+          "target_year": 2025,
+          "status": "պետական բյուջե",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 22.1
+        },
+        {
+          "target_year": 2025,
+          "status": "փաստ",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 21.4
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 35.9
+        },
+        {
+          "target_year": 2022,
+          "status": "պատմական",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 53.0
+        },
+        {
+          "target_year": 2023,
+          "status": "պատմական",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 60.9
+        },
+        {
+          "target_year": 2024,
+          "status": "պատմական",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 73.5
+        },
+        {
+          "target_year": 2025,
+          "status": "պետական բյուջե",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 39.9
+        },
+        {
+          "target_year": 2025,
+          "status": "փաստ",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 50.1
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": -3.4
+        },
+        {
+          "target_year": 2022,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": 0.7
+        },
+        {
+          "target_year": 2023,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": -2.8
+        },
+        {
+          "target_year": 2024,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": -4.6
+        },
+        {
+          "target_year": 2025,
+          "status": "պետական բյուջե",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": -5.3
+        },
+        {
+          "target_year": 2025,
+          "status": "փաստ",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": -7.2
+        }
+      ]
+    }
+  ]
+}

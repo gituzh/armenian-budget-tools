@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="hy">
+
+<head>
+  <meta charset="utf-8">
+  <title>GDP report</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 32px;
+      color: #1f2933;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin: 0 0 24px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 28px 0 6px;
+    }
+
+    .meta {
+      color: #5c6b73;
+      font-size: 13px;
+      margin: 0 0 12px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 12px 0 28px;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      border: 1px solid #d7dee3;
+      padding: 7px 8px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f4f7f9;
+      text-align: left;
+      position: sticky;
+      top: 0;
+    }
+
+    td.num {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .status {
+      display: block;
+      color: #52616a;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .status-actual {
+      background: #edf7ed;
+    }
+
+    .status-expected {
+      background: #fff7df;
+    }
+
+    .status-planned {
+      background: #eaf3ff;
+    }
+
+    .status-forecast {
+      background: #f1ecfa;
+    }
+
+    .status-history {
+      background: #f7f8fa;
+    }
+
+    .missing {
+      color: #9aa5ad;
+    }
+
+    .source {
+      min-width: 150px;
+      font-weight: 600;
+    }
+
+    .file {
+      color: #5c6b73;
+      font-size: 12px;
+      max-width: 320px;
+      overflow-wrap: anywhere;
+    }
+
+    .cell-value {
+      border-radius: 4px;
+      display: block;
+      margin: 2px 0;
+      padding: 4px 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>GDP report</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Source</th>
+        <th>Source file</th>
+        <th>2017</th>
+        <th>2018</th>
+        <th>2019</th>
+        <th>2020</th>
+        <th>2021</th>
+        <th>2022</th>
+        <th>2023</th>
+        <th>2024</th>
+        <th>2025</th>
+        <th>2026</th>
+        <th>2027</th>
+        <th>2028</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="source">2021 BUDGET_LAW</td>
+        <td class="file">2021_Uxerdz.docx</td>
+        <td class="num"><span class="cell-value status-actual">5,564.5<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">6,017<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">6,569<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-expected">6,075.9<span class="status">սպասում</span></span></td>
+        <td class="num"><span class="cell-value status-planned">6,395.3<span class="status">ծրագիր</span></span></td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+      </tr>
+      <tr>
+        <td class="source">2022 BUDGET_LAW</td>
+        <td class="file">copy_1_2.Uxerdz_bacatragir.docx</td>
+        <td class="num missing">-</td>
+        <td class="num"><span class="cell-value status-actual">6,017<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">6,543.3<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">6,181.7<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-expected">7,031.2<span class="status">սպասում</span></span></td>
+        <td class="num"><span class="cell-value status-planned">7,869.4<span class="status">ծրագիր</span></span></td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+      </tr>
+      <tr>
+        <td class="source">2022 SPENDING_Q1234</td>
+        <td class="file">19.Մակրոտնտեսական և հարկաբյուջետային ցուցանիշներ.docx</td>
+        <td class="num missing">-</td>
+        <td class="num"><span class="cell-value status-history">6,017<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">6,543.3<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">6,181.9<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">6,983<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-forecast">7,869.4<span class="status">կանխ.</span></span><span
+            class="cell-value status-actual">8,069.5<span class="status">փաստ</span></span></td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+      </tr>
+      <tr>
+        <td class="source">2023 BUDGET_LAW</td>
+        <td class="file">2.Uxerdz_bacatragir (1).docx</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num"><span class="cell-value status-actual">6,543.3<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">6,181.9<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">6,983<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-expected">8,293.7<span class="status">սպասում</span></span></td>
+        <td class="num"><span class="cell-value status-planned">9,317.9<span class="status">ծրագիր</span></span></td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+      </tr>
+      <tr>
+        <td class="source">2023 SPENDING_Q1234</td>
+        <td class="file">21.Մակրոտնտեսական և հարկաբյուջետային ցուցանիշներ.docx</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num"><span class="cell-value status-history">6,543.3<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">6,181.9<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">6,991.8<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">8,501.4<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-forecast">9,317.9<span class="status">կանխ.</span></span><span
+            class="cell-value status-actual">9,533<span class="status">փաստ</span></span></td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+      </tr>
+      <tr>
+        <td class="source">2024 BUDGET_LAW</td>
+        <td class="file">2.Uxerdz_bacatragir_2024.docx</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num"><span class="cell-value status-actual">6,181.9<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">6,991.8<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">8,501.4<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-expected">9,450.1<span class="status">սպասում</span></span></td>
+        <td class="num"><span class="cell-value status-planned">10,516.1<span class="status">ծրագիր</span></span></td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+      </tr>
+      <tr>
+        <td class="source">2024 SPENDING_Q1234</td>
+        <td class="file">12.Մակրոտնտեսական և հարկաբյուջետային ցուցանիշներ.docx</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num"><span class="cell-value status-history">6,181.9<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">6,991.8<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">8,501.4<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">9,453.2<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-planned">10,516.1<span class="status">պետական
+              բյուջե</span></span><span class="cell-value status-actual">10,127.2<span class="status">փաստ</span></span>
+        </td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+      </tr>
+      <tr>
+        <td class="source">2025 BUDGET_LAW</td>
+        <td class="file">ՀՀ կառավարության 2025 թվականի բյուջետային ուղերձ-բացատրագիր.docx</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num"><span class="cell-value status-actual">6,991.8<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">8,501.4<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">9,453.2<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-expected">10,110.2<span class="status">սպասում</span></span></td>
+        <td class="num"><span class="cell-value status-planned">10,891.5<span class="status">ծրագիր</span></span></td>
+        <td class="num"><span class="cell-value status-forecast">11,916.2<span class="status">կանխ.</span></span></td>
+        <td class="num"><span class="cell-value status-forecast">13,037<span class="status">կանխ.</span></span></td>
+        <td class="num missing">-</td>
+      </tr>
+      <tr>
+        <td class="source">2025 SPENDING_Q1234</td>
+        <td class="file">12.Մակրոտնտեսական և հարկաբյուջետային ցուց_2025.docx</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num"><span class="cell-value status-history">6,991.8<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">8,501.4<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">9,492.5<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-history">10,193.4<span class="status">պատմական</span></span></td>
+        <td class="num"><span class="cell-value status-planned">10,891.5<span class="status">պետական
+              բյուջե</span></span><span class="cell-value status-actual">11,317.5<span class="status">փաստ</span></span>
+        </td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+      </tr>
+      <tr>
+        <td class="source">2026 BUDGET_LAW</td>
+        <td class="file">copy_1_ՀՀ կառավարության 2026 թվականի բյուջետային ուղերձ-բացատրագիր.docx</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num missing">-</td>
+        <td class="num"><span class="cell-value status-actual">8,501.4<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">9,492.5<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-actual">10,193.4<span class="status">փաստ</span></span></td>
+        <td class="num"><span class="cell-value status-expected">10,997.1<span class="status">սպասում</span></span></td>
+        <td class="num"><span class="cell-value status-planned">11,933.7<span class="status">ծրագիր</span></span></td>
+        <td class="num"><span class="cell-value status-forecast">12,952.8<span class="status">կանխ.</span></span></td>
+        <td class="num"><span class="cell-value status-forecast">14,050.8<span class="status">կանխ.</span></span></td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+
+</html>

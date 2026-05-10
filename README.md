@@ -28,6 +28,8 @@ Pre-processed CSVs ready to use:
 - **Budget Laws** (2019-2026): `data/processed/{year}_BUDGET_LAW.csv`
 - **Spending Reports** (2019-2025): `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
 - **MTEP** (2024): `data/processed/2024_MTEP.csv`
+- **GDP snapshots**: `data/processed/{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`
+- **GDP report**: `data/processed/GDP_report.html`
 
 → See [data_schemas.md](docs/data_schemas.md) for column details
 
@@ -110,6 +112,13 @@ armenian-budget minfin-spending-reports --years 2025 --downloads-only
 
 # Optional: process specific source type only
 armenian-budget process --years 2023 --source-type BUDGET_LAW
+
+# Optional: extract GDP snapshots and render the GDP review report
+armenian-budget gdp-extract --years 2021-2026
+armenian-budget gdp-report
+
+# Optional: extract macro/fiscal indicator history from annual spending reports
+armenian-budget macro-indicators --years 2024-2025
 ```
 
 ### 👩‍💻 For Developers & Contributors
