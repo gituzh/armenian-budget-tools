@@ -18,6 +18,11 @@ from armenian_budget.sources.minfin_spending_reports import (
 
 PAGE_URL = "https://minfin.am/hy/page/petakan_byuj/"
 BUDGET_YEAR_PATTERN = re.compile(r"(20\d{2})")
+BUDGET_YEAR_PAGE_PATHS = ("/hy/page/petakan_byuje_", "/hy/page/byuje_")
+
+
+def is_budget_year_page_url(url: str) -> bool:
+    return any(path in url for path in BUDGET_YEAR_PAGE_PATHS)
 
 
 def extract_budget_year_pages(html: str, page_url: str = PAGE_URL) -> list[dict[str, Any]]:
@@ -31,7 +36,7 @@ def extract_budget_year_pages(html: str, page_url: str = PAGE_URL) -> list[dict[
             continue
 
         url = urljoin(page_url, anchor["href"])
-        if "/hy/page/petakan_byuje_" not in url:
+        if not is_budget_year_page_url(url):
             continue
 
         pages_by_url[url] = {
@@ -67,6 +72,22 @@ def budget_download_name(anchor: Any, page_url: str) -> str:
     return name
 
 
+def is_hidden_download_anchor(anchor: Any, scope: Any) -> bool:
+    node = anchor
+    while node is not None and node is not scope:
+        attrs = getattr(node, "attrs", {})
+        if "hidden" in attrs or attrs.get("aria-hidden") == "true":
+            return True
+
+        style = str(attrs.get("style", "")).replace(" ", "").lower()
+        if "display:none" in style or "visibility:hidden" in style:
+            return True
+
+        node = node.parent
+
+    return False
+
+
 def extract_budget_page_downloads(html: str, page_url: str) -> list[dict[str, Any]]:
     soup = BeautifulSoup(html, "html.parser")
     scope = soup.select_one(".app_block") or soup.select_one(".content")
@@ -84,6 +105,9 @@ def extract_budget_page_downloads(html: str, page_url: str) -> list[dict[str, An
 
         name = budget_download_name(anchor, page_url)
         item = download_item(name, url, "budget_page")
+        if not name or is_hidden_download_anchor(anchor, scope):
+            item["hidden"] = True
+
         existing = downloads_by_url.get(url)
         if existing is None or len(item["name"]) > len(existing["name"]):
             downloads_by_url[url] = item

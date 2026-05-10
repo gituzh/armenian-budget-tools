@@ -8,12 +8,18 @@ from armenian_budget.sources import minfin_budget as budget
 
 def test_extract_budget_year_pages_reads_landing_links():
     html = """
+    <a href="/hy/page/byuje_2018">Պետական բյուջե 2018թ.</a>
     <a href="/hy/page/petakan_byuje_2026t">Պետական բյուջե 2026թ.</a>
     <a href="/hy/page/petakan_byuje_2025t">Պետական բյուջե 2025թ.</a>
     <a href="/hy/page/not_budget_2024">Other 2024</a>
     """
 
     assert budget.extract_budget_year_pages(html) == [
+        {
+            "year": 2018,
+            "name": "Պետական բյուջե 2018թ.",
+            "page_url": "https://minfin.am/hy/page/byuje_2018",
+        },
         {
             "year": 2025,
             "name": "Պետական բյուջե 2025թ.",
@@ -108,6 +114,50 @@ def test_extract_budget_page_downloads_does_not_split_sibling_letter():
             "file_format": "docx",
             "download_url": "https://minfin.am/website/images/website/explanation.docx",
             "source": "budget_page",
+        }
+    ]
+
+
+def test_extract_budget_page_downloads_marks_unlabeled_links_hidden():
+    html = """
+    <div class="app_block">
+      <a href="/website/images/website/byujei_havelvac-2018.rar"></a>
+    </div>
+    """
+
+    assert budget.extract_budget_page_downloads(
+        html,
+        "https://minfin.am/hy/page/byuje_2018",
+    ) == [
+        {
+            "name": "byujei_havelvac-2018.rar",
+            "file_name": "byujei_havelvac-2018.rar",
+            "file_format": "rar",
+            "download_url": "https://minfin.am/website/images/website/byujei_havelvac-2018.rar",
+            "source": "budget_page",
+            "hidden": True,
+        }
+    ]
+
+
+def test_extract_budget_page_downloads_marks_css_hidden_links_hidden():
+    html = """
+    <div class="app_block">
+      <a href="/website/images/website/hidden.pdf" style="display: none">Hidden</a>
+    </div>
+    """
+
+    assert budget.extract_budget_page_downloads(
+        html,
+        "https://minfin.am/hy/page/petakan_byuje_2025t",
+    ) == [
+        {
+            "name": "Hidden",
+            "file_name": "hidden.pdf",
+            "file_format": "pdf",
+            "download_url": "https://minfin.am/website/images/website/hidden.pdf",
+            "source": "budget_page",
+            "hidden": True,
         }
     ]
 
