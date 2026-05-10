@@ -199,7 +199,8 @@ armenian-budget download --years 2019-2026 --extract
 # Re-check existing archives and preserve changed prior copies
 armenian-budget download --years 2024-2025 --force
 
-# Inspect current MinFin spending report downloads
+# Inspect current MinFin budget law and spending report downloads
+armenian-budget minfin-budget --years 2025 --downloads-only
 armenian-budget minfin-spending-reports --years 2025 --downloads-only
 
 # Process

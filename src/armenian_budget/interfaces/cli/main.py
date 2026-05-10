@@ -951,6 +951,38 @@ def cmd_minfin_spending_reports(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_minfin_budget(args: argparse.Namespace) -> int:
+    try:
+        budget_mod = importlib.import_module("armenian_budget.sources.minfin_budget")
+    except (ModuleNotFoundError, AttributeError) as e:
+        logging.error("Unable to load MinFin budget lister: %s", e)
+        return 3
+
+    years = set(_parse_years_arg(args.years) or []) if args.years else None
+    records = budget_mod.list_minfin_budget(years)
+    if args.downloads_only:
+        downloads = []
+        for record in records:
+            for item in record["downloads"]:
+                downloads.append(
+                    {
+                        "year": record["year"],
+                        "source_type": record["source_type"],
+                        "page_url": record["page_url"],
+                        **item,
+                    }
+                )
+        import json
+
+        print(json.dumps(downloads, ensure_ascii=False, indent=2))
+        return 0
+
+    import json
+
+    print(json.dumps(records, ensure_ascii=False, indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="armenian-budget",
@@ -1090,6 +1122,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="Return a flat list of downloadable items instead of period records.",
     )
     p_minfin.set_defaults(func=cmd_minfin_spending_reports)
+
+    p_minfin_budget = sub.add_parser(
+        "minfin-budget",
+        help="List budget files advertised on minfin.am",
+    )
+    p_minfin_budget.add_argument(
+        "--years",
+        help=(
+            "Comma-separated years (e.g. 2024,2025) or range (2024-2025). "
+            "Defaults to all listed years."
+        ),
+    )
+    p_minfin_budget.add_argument(
+        "--downloads-only",
+        action="store_true",
+        help="Return a flat list of downloadable items instead of year records.",
+    )
+    p_minfin_budget.set_defaults(func=cmd_minfin_budget)
 
     p_process = sub.add_parser("process", help="Process one or more source Excels and write CSV")
     p_process.add_argument(

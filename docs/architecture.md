@@ -122,7 +122,7 @@ The system provides two primary public interfaces:
 **CLI (Command-line interface):**
 
 - Primary public interface for batch processing and automation
-- Commands: `download`, `extract`, `discover`, `process`, `validate`
+- Commands: `download`, `extract`, `discover`, `process`, `validate`, plus MinFin listing helpers
 - Exit codes from typed exceptions, structured logging with progress reporting
 
 **Agent Skill:**

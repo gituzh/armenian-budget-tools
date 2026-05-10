@@ -104,7 +104,8 @@ armenian-budget validate --years 2019-2026  # Optional: validate processed data
 # Optional: re-check official archives for silent upstream changes
 armenian-budget download --years 2024-2025 --force
 
-# Optional: inspect current MinFin spending report downloads
+# Optional: inspect current MinFin budget law and spending report downloads
+armenian-budget minfin-budget --years 2025 --downloads-only
 armenian-budget minfin-spending-reports --years 2025 --downloads-only
 
 # Optional: process specific source type only
