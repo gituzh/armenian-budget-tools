@@ -20,6 +20,7 @@ WORD_NS = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
 MACRO_DOC_RE = re.compile(r"Մակրոտնտեսական.*հարկաբյուջետային.*ցուց", re.IGNORECASE)
 YEAR_RE = re.compile(r"(20\d{2})")
 GDP_SOURCE_TYPES = ("BUDGET_LAW", "SPENDING_Q1234")
+SPENDING_GDP_BUDGET_STATUSES = {"պետական բյուջե", "ծրագիր", "կանխ.", "սպասում"}
 
 
 @dataclass(frozen=True)
@@ -233,7 +234,7 @@ def load_gdp_snapshots(
         if source_type_upper and snapshot.get("source_type") != source_type_upper:
             continue
         snapshots.append(snapshot)
-    snapshots.sort(key=lambda item: (int(item["year"]), str(item["source_type"])))
+    snapshots.sort(key=_gdp_snapshot_display_key)
     return snapshots
 
 
@@ -545,6 +546,7 @@ def _caption_title(caption: str) -> str:
 
 
 def _render_gdp_html(snapshots: list[dict[str, Any]]) -> str:
+    explorer = _render_nominal_gdp_explorer(snapshots)
     table = _render_nominal_gdp_report_table(snapshots)
     return f"""<!doctype html>
 <html lang="hy">
@@ -570,20 +572,283 @@ def _render_gdp_html(snapshots: list[dict[str, Any]]) -> str:
     .source {{ min-width: 150px; font-weight: 600; }}
     .file {{ color: #5c6b73; font-size: 12px; max-width: 320px; overflow-wrap: anywhere; }}
     .cell-value {{ border-radius: 4px; display: block; margin: 2px 0; padding: 4px 5px; }}
+    .gdp-explorer {{
+      border: 1px solid #d7dee3;
+      margin: 0 0 28px;
+      padding: 16px;
+    }}
+    .gdp-explorer h2 {{ margin-top: 0; }}
+    .chart-wrap {{ overflow-x: auto; }}
+    .gdp-chart {{ display: block; min-width: 760px; width: 100%; height: 420px; }}
+    .series-line {{ fill: none; stroke-width: 2.2; opacity: 0.24; }}
+    .series-point {{ stroke: #ffffff; stroke-width: 1.4; opacity: 0.36; }}
+    .series-active .series-line {{ opacity: 1; stroke-width: 3.2; }}
+    .series-active .series-point {{ opacity: 1; }}
+    .series-muted .series-line {{ opacity: 0.09; }}
+    .series-muted .series-point {{ opacity: 0.14; }}
+    .axis {{ stroke: #9aa5ad; stroke-width: 1; }}
+    .grid {{ stroke: #e7ecef; stroke-width: 1; }}
+    .tick {{ fill: #52616a; font-size: 12px; }}
+    .chart-note {{ fill: #52616a; font-size: 12px; }}
+    .chart-controls {{
+      align-items: center;
+      border-top: 1px solid #d7dee3;
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+    }}
+    .chart-controls button {{
+      background: #ffffff;
+      border: 1px solid #bcccdc;
+      color: #243b53;
+      cursor: pointer;
+      font-size: 18px;
+      height: 32px;
+      line-height: 1;
+      width: 36px;
+    }}
+    .chart-controls button:hover {{ background: #f4f7f9; }}
+    .chart-controls button:focus {{ outline: 2px solid #627d98; outline-offset: 2px; }}
+    .chart-current {{ font-size: 13px; font-weight: 700; min-width: 180px; }}
+    .detail-panel {{
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(180px, 260px) 1fr;
+      margin-top: 12px;
+      padding-top: 12px;
+    }}
+    .detail-title {{ font-weight: 700; margin-bottom: 4px; }}
+    .detail-file {{ color: #5c6b73; font-size: 12px; overflow-wrap: anywhere; }}
+    .detail-values {{ display: flex; flex-wrap: wrap; gap: 6px; }}
+    .detail-value {{ border-radius: 4px; padding: 5px 7px; font-size: 12px; }}
+    .detail-year {{ font-weight: 700; margin-right: 4px; }}
+    tr[data-series-id] {{ cursor: pointer; }}
+    tr[data-series-id]:hover {{ background: #f8fafc; }}
+    tr[data-series-id]:focus {{ outline: 2px solid #627d98; outline-offset: -2px; }}
+    tr.is-selected {{ background: #eef5fb; outline: 2px solid #334e68; outline-offset: -2px; }}
   </style>
 </head>
 <body>
   <h1>GDP report</h1>
+  {explorer}
   {table}
 </body>
 </html>
 """
 
 
+def _render_nominal_gdp_explorer(snapshots: list[dict[str, Any]]) -> str:
+    series = _nominal_gdp_series(snapshots)
+    if not series:
+        return ""
+
+    payload = json.dumps(series, ensure_ascii=False).replace("</", "<\\/")
+    return f"""
+  <section class="gdp-explorer" aria-label="Nominal GDP source snapshot explorer">
+    <h2>Nominal GDP source snapshots</h2>
+    <p class="meta">Use the controls below the chart or a table row to inspect one source while keeping every snapshot visible.</p>
+    <div class="chart-wrap">
+      <svg id="gdp-chart" class="gdp-chart" viewBox="0 0 960 420" role="img" aria-label="Nominal GDP values by source snapshot"></svg>
+    </div>
+    <div class="chart-controls" aria-label="Nominal GDP source controls">
+      <button type="button" id="gdp-prev" aria-label="Previous source">↑</button>
+      <button type="button" id="gdp-next" aria-label="Next source">↓</button>
+      <span id="gdp-current" class="chart-current"></span>
+    </div>
+    <div id="gdp-detail" class="detail-panel" aria-live="polite"></div>
+  </section>
+  <script id="gdp-series-data" type="application/json">{payload}</script>
+  <script>
+  (() => {{
+    const series = JSON.parse(document.getElementById("gdp-series-data").textContent);
+    const svg = document.getElementById("gdp-chart");
+    const detail = document.getElementById("gdp-detail");
+    const current = document.getElementById("gdp-current");
+    const prev = document.getElementById("gdp-prev");
+    const next = document.getElementById("gdp-next");
+    const ns = "http://www.w3.org/2000/svg";
+    const width = 960;
+    const height = 420;
+    const margin = {{ top: 24, right: 28, bottom: 48, left: 72 }};
+    const plotWidth = width - margin.left - margin.right;
+    const plotHeight = height - margin.top - margin.bottom;
+    const years = [...new Set(series.flatMap((item) => item.records.map((record) => record.year)))].sort((a, b) => a - b);
+    const values = series.flatMap((item) => item.records.map((record) => record.value));
+    const minYear = Math.min(...years);
+    const maxYear = Math.max(...years);
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+    const yPad = Math.max((maxValue - minValue) * 0.08, 100);
+    const yMin = minValue - yPad;
+    const yMax = maxValue + yPad;
+    const colors = {{ BUDGET_LAW: "#2f6f9f", SPENDING_Q1234: "#8a5a9e" }};
+    const statusColors = {{
+      "փաստ": "#2f855a",
+      "սպասում": "#b7791f",
+      "ծրագիր": "#2b6cb0",
+      "պետական բյուջե": "#2b6cb0",
+      "կանխ.": "#805ad5"
+    }};
+
+    function xScale(year) {{
+      if (maxYear === minYear) return margin.left + plotWidth / 2;
+      return margin.left + ((year - minYear) / (maxYear - minYear)) * plotWidth;
+    }}
+
+    function yScale(value) {{
+      return margin.top + ((yMax - value) / (yMax - yMin)) * plotHeight;
+    }}
+
+    function createSvg(name, attrs = {{}}, text = "") {{
+      const node = document.createElementNS(ns, name);
+      Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+      if (text) node.textContent = text;
+      return node;
+    }}
+
+    function formatNumber(value) {{
+      return new Intl.NumberFormat("en-US", {{ maximumFractionDigits: 1 }}).format(value);
+    }}
+
+    function pathFor(records) {{
+      return records
+        .map((record, index) => `${{index === 0 ? "M" : "L"}} ${{xScale(record.year)}} ${{yScale(record.value)}}`)
+        .join(" ");
+    }}
+
+    function drawAxes() {{
+      const yTicks = 5;
+      for (let index = 0; index <= yTicks; index += 1) {{
+        const value = yMin + ((yMax - yMin) * index) / yTicks;
+        const y = yScale(value);
+        svg.appendChild(createSvg("line", {{ class: "grid", x1: margin.left, x2: width - margin.right, y1: y, y2: y }}));
+        svg.appendChild(createSvg("text", {{ class: "tick", x: margin.left - 10, y: y + 4, "text-anchor": "end" }}, formatNumber(value)));
+      }}
+      years.forEach((year) => {{
+        const x = xScale(year);
+        svg.appendChild(createSvg("line", {{ class: "grid", x1: x, x2: x, y1: margin.top, y2: height - margin.bottom }}));
+        svg.appendChild(createSvg("text", {{ class: "tick", x, y: height - 18, "text-anchor": "middle" }}, String(year)));
+      }});
+      svg.appendChild(createSvg("line", {{ class: "axis", x1: margin.left, x2: width - margin.right, y1: height - margin.bottom, y2: height - margin.bottom }}));
+      svg.appendChild(createSvg("line", {{ class: "axis", x1: margin.left, x2: margin.left, y1: margin.top, y2: height - margin.bottom }}));
+      svg.appendChild(createSvg("text", {{ class: "chart-note", x: margin.left, y: 14 }}, "մլրդ դրամ"));
+    }}
+
+    function renderDetail(selected) {{
+      const valuesHtml = selected.records.map((record) => {{
+        const cls = statusColors[record.status] ? "" : " status-history";
+        return `<span class="detail-value${{cls}}" style="background:${{statusColors[record.status] || "#f7f8fa"}}22"><span class="detail-year">${{record.year}}</span>${{formatNumber(record.value)}} <span class="status">${{record.status}}</span></span>`;
+      }}).join("");
+      detail.innerHTML = `
+        <div>
+          <div class="detail-title">${{selected.label}}</div>
+          <div class="detail-file">${{selected.source_file || ""}}</div>
+        </div>
+        <div class="detail-values">${{valuesHtml}}</div>
+      `;
+    }}
+
+    function selectSeries(id) {{
+      const selected = series.find((item) => item.id === id) || series[0];
+      selectedSeriesId = selected.id;
+      current.textContent = selected.label;
+      svg.querySelectorAll("[data-series-id]").forEach((node) => {{
+        const match = node.dataset.seriesId === selected.id;
+        node.classList.toggle("series-active", match);
+        node.classList.toggle("series-muted", !match);
+      }});
+      document.querySelectorAll("tr[data-series-id]").forEach((node) => {{
+        const match = node.dataset.seriesId === selected.id;
+        node.classList.toggle("is-selected", match);
+      }});
+      renderDetail(selected);
+    }}
+
+    function stepSeries(delta) {{
+      const selectedIndex = series.findIndex((item) => item.id === selectedSeriesId);
+      const nextIndex = (selectedIndex + delta + series.length) % series.length;
+      selectSeries(series[nextIndex].id);
+    }}
+
+    let selectedSeriesId = series[series.length - 1].id;
+    drawAxes();
+    series.forEach((item) => {{
+      const group = createSvg("g", {{ "data-series-id": item.id }});
+      const color = colors[item.source_type] || "#334e68";
+      const line = createSvg("path", {{
+        class: "series-line",
+        d: pathFor(item.records),
+        stroke: color,
+        "stroke-dasharray": item.source_type === "SPENDING_Q1234" ? "6 5" : "0"
+      }});
+      line.appendChild(createSvg("title", {{}}, item.label));
+      group.appendChild(line);
+      item.records.forEach((record) => {{
+        const point = createSvg("circle", {{
+          class: "series-point",
+          cx: xScale(record.year),
+          cy: yScale(record.value),
+          r: 4.6,
+          fill: statusColors[record.status] || color
+        }});
+        point.appendChild(createSvg("title", {{}}, `${{item.label}}\\n${{record.year}}: ${{formatNumber(record.value)}} (${{record.status}})`));
+        group.appendChild(point);
+      }});
+      svg.appendChild(group);
+    }});
+    prev.addEventListener("click", () => stepSeries(-1));
+    next.addEventListener("click", () => stepSeries(1));
+    document.addEventListener("click", (event) => {{
+      if (!(event.target instanceof Element)) return;
+      const row = event.target.closest("tr[data-series-id]");
+      if (row) selectSeries(row.dataset.seriesId);
+    }});
+    document.addEventListener("keydown", (event) => {{
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (!(event.target instanceof Element)) return;
+      const row = event.target.closest("tr[data-series-id]");
+      if (!row) return;
+      event.preventDefault();
+      selectSeries(row.dataset.seriesId);
+    }});
+    selectSeries(selectedSeriesId);
+    document.addEventListener("DOMContentLoaded", () => selectSeries(selectedSeriesId));
+  }})();
+  </script>
+"""
+
+
+def _nominal_gdp_series(snapshots: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    series = []
+    for index, snapshot in enumerate(sorted(snapshots, key=_gdp_snapshot_display_key)):
+        records = _nominal_gdp_records(snapshot)
+        if not records:
+            continue
+        series.append(
+            {
+                "id": f"series-{index}",
+                "label": f"{snapshot['year']} {snapshot['source_type']}",
+                "source_type": str(snapshot["source_type"]),
+                "source_file": str(snapshot.get("source_file", "")),
+                "records": [
+                    {
+                        "year": int(record["target_year"]),
+                        "status": str(record.get("status", "")),
+                        "value": float(record["value"]),
+                    }
+                    for record in records
+                    if record.get("value") is not None
+                ],
+            }
+        )
+    return [item for item in series if item["records"]]
+
+
 def _render_nominal_gdp_report_table(snapshots: list[dict[str, Any]]) -> str:
     rows = [
-        (snapshot, _nominal_gdp_records(snapshot))
-        for snapshot in snapshots
+        (index, snapshot, _nominal_gdp_records(snapshot))
+        for index, snapshot in enumerate(sorted(snapshots, key=_gdp_snapshot_display_key))
         if _nominal_gdp_records(snapshot)
     ]
     if not rows:
@@ -592,13 +857,13 @@ def _render_nominal_gdp_report_table(snapshots: list[dict[str, Any]]) -> str:
     years = sorted(
         {
             int(record["target_year"])
-            for _snapshot, records in rows
+            for _index, _snapshot, records in rows
             for record in records
         }
     )
     header = "".join(f"<th>{year}</th>" for year in years)
     body_rows = []
-    for snapshot, records in rows:
+    for index, snapshot, records in rows:
         records_by_year: dict[int, list[dict[str, Any]]] = {}
         for record in records:
             records_by_year.setdefault(int(record["target_year"]), []).append(record)
@@ -613,7 +878,7 @@ def _render_nominal_gdp_report_table(snapshots: list[dict[str, Any]]) -> str:
         source = f"{snapshot['year']} {snapshot['source_type']}"
         source_file = str(snapshot.get("source_file", ""))
         body_rows.append(
-            "<tr>"
+            f'<tr data-series-id="series-{index}" tabindex="0">'
             f'<td class="source">{escape(source)}</td>'
             f'<td class="file">{escape(source_file)}</td>'
             + "".join(cells)
@@ -633,9 +898,28 @@ def _nominal_gdp_records(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
     for table in snapshot.get("tables", []):
         for record in table.get("records", []):
             if str(record.get("indicator")) == "Անվանական ՀՆԱ":
+                if _skip_nominal_gdp_report_record(snapshot, record):
+                    continue
                 records.append(record)
     records.sort(key=lambda record: (int(record["target_year"]), str(record.get("status", ""))))
     return records
+
+
+def _gdp_snapshot_display_key(snapshot: dict[str, Any]) -> tuple[int, int, int, str]:
+    year = int(snapshot["year"])
+    source_type = str(snapshot["source_type"])
+    comparison_year = year + 1 if source_type == "SPENDING_Q1234" else year
+    source_order = 1 if source_type == "SPENDING_Q1234" else 0
+    return (comparison_year, source_order, year, source_type)
+
+
+def _skip_nominal_gdp_report_record(
+    snapshot: dict[str, Any], record: dict[str, Any]
+) -> bool:
+    return (
+        snapshot.get("source_type") == "SPENDING_Q1234"
+        and record.get("status") in SPENDING_GDP_BUDGET_STATUSES
+    )
 
 
 def _render_gdp_value(record: dict[str, Any]) -> str:

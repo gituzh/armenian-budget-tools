@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from armenian_budget.ingestion.macro_indicators import (
+    _nominal_gdp_records,
     extract_macro_indicator_history,
     extract_macro_indicators_from_docx,
     find_macro_indicator_docx,
@@ -76,3 +77,37 @@ def test_extract_macro_indicator_history_keeps_report_snapshot_context():
     assert warnings == []
     assert report_2024_value == 9453.2
     assert report_2025_value == 9492.5
+
+
+def test_nominal_gdp_report_skips_spending_budget_plan_value():
+    snapshot = {
+        "source_type": "SPENDING_Q1234",
+        "tables": [
+            {
+                "records": [
+                    {
+                        "target_year": 2025,
+                        "status": "պետական բյուջե",
+                        "indicator": "Անվանական ՀՆԱ",
+                        "value": 10891.5,
+                    },
+                    {
+                        "target_year": 2025,
+                        "status": "կանխ.",
+                        "indicator": "Անվանական ՀՆԱ",
+                        "value": 10900.0,
+                    },
+                    {
+                        "target_year": 2025,
+                        "status": "փաստ",
+                        "indicator": "Անվանական ՀՆԱ",
+                        "value": 11317.5,
+                    },
+                ]
+            }
+        ],
+    }
+
+    records = _nominal_gdp_records(snapshot)
+
+    assert [record["status"] for record in records] == ["փաստ"]

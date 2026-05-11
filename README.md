@@ -29,7 +29,7 @@ Pre-processed CSVs ready to use:
 - **Spending Reports** (2019-2025): `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
 - **MTEP** (2024): `data/processed/2024_MTEP.csv`
 - **GDP snapshots**: `data/processed/{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`
-- **GDP report**: `data/processed/GDP_report.html`
+- **GDP report**: `data/reports/gdp_report.html`
 
 → See [data_schemas.md](docs/data_schemas.md) for column details
 
@@ -101,7 +101,7 @@ armenian-budget discover --years 2019-2026
 armenian-budget process --years 2019-2026
 armenian-budget validate --years 2019-2026  # Optional: validate processed data
 
-# Find outputs in ./data/processed/
+# Find parsed outputs in ./data/processed/ and HTML reports in ./data/reports/
 
 # Optional: re-check official archives for silent upstream changes
 armenian-budget download --years 2024-2025 --force

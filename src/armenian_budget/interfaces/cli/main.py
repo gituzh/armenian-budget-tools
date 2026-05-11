@@ -1038,9 +1038,9 @@ def cmd_gdp_report(args: argparse.Namespace) -> int:
 
     has_filter = bool(args.years or args.source_type)
     default_output = (
-        "data/processed/GDP_report_partial.html"
+        "data/reports/gdp_report_partial.html"
         if has_filter
-        else "data/processed/GDP_report.html"
+        else "data/reports/gdp_report.html"
     )
     output_path = resolve_path_with_default(args.output, default_output)
     macro_mod.write_gdp_html_report(snapshots, output_path)
@@ -1413,8 +1413,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--output",
         default=None,
         help=(
-            "HTML output path. Defaults to GDP_report.html without filters and "
-            "GDP_report_partial.html with filters."
+            "HTML output path. Defaults to ./data/reports/gdp_report.html without "
+            "filters and ./data/reports/gdp_report_partial.html with filters."
         ),
     )
     p_gdp_report.set_defaults(func=cmd_gdp_report)

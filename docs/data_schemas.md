@@ -40,8 +40,9 @@ data/
 └── processed/          # Normalized outputs
     ├── {year}_{SOURCE_TYPE}.csv
     ├── {year}_{SOURCE_TYPE}_GDP.json
-    ├── GDP_report.html
     └── processing_report.json
+└── reports/            # Rendered HTML reports
+    └── gdp_report.html
 ```
 
 **Naming Conventions:**
@@ -158,7 +159,7 @@ Archives contain multiple budget components beyond the currently parsed program 
 
 **GDP HTML Report:**
 
-- **Location**: `data/processed/GDP_report.html`
+- **Location**: `data/reports/gdp_report.html`
 - **Scope**: Review table built from available GDP JSON snapshots
 
 **Metadata:**
