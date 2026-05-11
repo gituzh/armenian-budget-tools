@@ -1,0 +1,1023 @@
+{
+  "year": 2022,
+  "source_type": "SPENDING_Q1234",
+  "metric_set": "GDP",
+  "source_file": "19.Մակրոտնտեսական և հարկաբյուջետային ցուցանիշներ.docx",
+  "tables": [
+    {
+      "caption": "",
+      "table_title": "",
+      "table_index": 0,
+      "records": [
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 6017.0
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 6543.3
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 6181.9
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 6983.0
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 7869.4
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 8069.5
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": 5.2
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": 7.6
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": -7.2
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": 5.7
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": 7.0
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "ՀՆԱ-ի իրական աճ",
+          "unit": "%",
+          "value": 7.0
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 2.8
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 1.0
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 1.8
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 6.9
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 4.6
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 8.0
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": 1.8
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": 0.7
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": 3.7
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": 7.7
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": 5.2
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Գնաճ (ժամանակաշրջանի վերջ)",
+          "unit": "%",
+          "value": 8.2
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 2.5
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 1.4
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 1.2
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 7.2
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 5.6
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 8.0
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Գործազրկության մակարդակը",
+          "unit": "",
+          "value": null
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Գործազրկության մակարդակը",
+          "unit": "",
+          "value": 18.3
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Գործազրկության մակարդակը",
+          "unit": "",
+          "value": 18.2
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Գործազրկության մակարդակը",
+          "unit": "",
+          "value": 15.5
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Գործազրկության մակարդակը",
+          "unit": "",
+          "value": null
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Գործազրկության մակարդակը",
+          "unit": "",
+          "value": null
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 4196.0
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 4597.0
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 4269.0
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 4679.0
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 5148.0
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "1 շնչին ընկնող ՀՆԱ",
+          "unit": "ԱՄՆ դոլար",
+          "value": 5609.0
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 16.7
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 15.8
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 17.8
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 18.3
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 18.7
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Հիմնական միջոցներում ներդրումներ / ՀՆԱ",
+          "unit": "%",
+          "value": 19.8
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 39.4
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 41.4
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 29.8
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 35.3
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 34.5
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Արտահանում / ՀՆԱ",
+          "unit": "%",
+          "value": 35.3
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": -7.4
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": -7.3
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": -3.8
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": -3.7
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": -3.0
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ընթացիկ հաշիվ / ՀՆԱ",
+          "unit": "%",
+          "value": -4.5
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 1341.7
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 1565.5
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 1560.7
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 1683.8
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 1947.8
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 2020.9
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 1258.1
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 1464.3
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 1385.2
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 1586.9
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 1843.9
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 1900.0
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 1447.1
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 1629.4
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 1894.6
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 2004.3
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 2184.0
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 2192.2
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 1299.0
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 1437.1
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 1668.5
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 1788.0
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 1842.2
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 1842.2
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 148.1
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 192.3
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 226.2
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 216.3
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 341.9
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 350.0
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 105.4
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 63.9
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 334.0
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 320.5
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 236.3
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 171.3
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 3082.5
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 3277.3
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 3923.9
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 4209.8
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 4740.8
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 4709.9
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 22.3
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 23.9
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 25.2
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 24.1
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 24.8
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Պետական բյուջեի եկամուտներ",
+          "unit": "",
+          "value": 25.0
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 20.9
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 22.4
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 22.4
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 22.7
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 23.4
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Հարկային եկամուտներ",
+          "unit": "",
+          "value": 23.5
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 24.0
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 24.9
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 30.6
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 28.7
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 27.8
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Պետական բյուջեի ծախսեր",
+          "unit": "",
+          "value": 27.2
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 21.6
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 22.0
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 27.0
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 25.6
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 23.4
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ընթացիկ ծախսեր",
+          "unit": "",
+          "value": 22.8
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 2.5
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 2.9
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 3.7
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 3.1
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 4.3
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ոչ ֆինանսական ակտիվների հետ գործառնություններ",
+          "unit": "",
+          "value": 4.3
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 1.8
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 1.0
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 5.4
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 4.6
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 3.0
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Պետական բյուջեի պակասուրդ",
+          "unit": "",
+          "value": 2.1
+        },
+        {
+          "target_year": 2018,
+          "status": "պատմական",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 51.2
+        },
+        {
+          "target_year": 2019,
+          "status": "պատմական",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 50.1
+        },
+        {
+          "target_year": 2020,
+          "status": "պատմական",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 63.5
+        },
+        {
+          "target_year": 2021,
+          "status": "պատմական",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 60.3
+        },
+        {
+          "target_year": 2022,
+          "status": "կանխ.",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 60.2
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "ՀՀ կառավարության պարտք",
+          "unit": "",
+          "value": 58.4
+        }
+      ]
+    }
+  ]
+}

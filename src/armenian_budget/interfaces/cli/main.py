@@ -12,25 +12,47 @@ from armenian_budget.core.enums import SourceType
 SOURCE_TYPE_CHOICES = list(SourceType.__members__.keys())
 
 
-def _checksum_key(item: dict) -> tuple[str | None, int, str | None, str | None]:
+def _checksum_key(item: dict) -> tuple[int, str | None, str | None]:
     return (
-        item.get("name"),
         int(item.get("year", 0)),
         item.get("source_type"),
         item.get("url"),
     )
 
 
+def _source_checksum_key(source: object) -> tuple[int, str | None, str | None]:
+    return (
+        int(getattr(source, "year")),
+        getattr(source, "source_type"),
+        getattr(source, "url"),
+    )
+
+
+def _checksum_record(
+    source: object,
+    checksum: str,
+    previous: dict | None,
+    timestamp: str,
+) -> dict:
+    return {
+        "name": getattr(source, "name"),
+        "year": int(getattr(source, "year")),
+        "source_type": getattr(source, "source_type"),
+        "url": getattr(source, "url"),
+        "checksum": checksum,
+        "checksum_updated_at": (
+            previous.get("checksum_updated_at")
+            if previous and previous.get("checksum") == checksum
+            else timestamp
+        ),
+    }
+
+
 def _ordered_checksum_items(checksums_by_key: dict[tuple, dict], sources: list) -> list[dict]:
     ordered: list[dict] = []
     emitted: set[tuple] = set()
     for source in sources:
-        key = (
-            source.name,
-            int(source.year),
-            source.source_type,
-            source.url,
-        )
+        key = _source_checksum_key(source)
         item = checksums_by_key.get(key)
         if item is None:
             continue
@@ -38,6 +60,22 @@ def _ordered_checksum_items(checksums_by_key: dict[tuple, dict], sources: list) 
         emitted.add(key)
     ordered.extend(item for key, item in checksums_by_key.items() if key not in emitted)
     return ordered
+
+
+def _merge_checksum_item(
+    index: dict[tuple, dict],
+    item: dict,
+    source_names_by_key: dict[tuple, set[str]],
+) -> None:
+    key = _checksum_key(item)
+    active_names = source_names_by_key.get(key, set())
+    current_name = index.get(key, {}).get("name")
+    item_name = item.get("name")
+    if (
+        key not in index
+        or (item_name in active_names and current_name not in active_names)
+    ):
+        index[key] = item
 
 
 try:
@@ -672,12 +710,15 @@ def cmd_download(args: argparse.Namespace) -> int:
     checksum_history_path = Path(cfg_path).with_name("checksum_history.yaml")
     existing_index: dict[tuple, dict] = {}
     checksum_history: list[dict] = []
+    source_names_by_key: dict[tuple, set[str]] = {}
+    for source in registry.all():
+        source_names_by_key.setdefault(_source_checksum_key(source), set()).add(source.name)
     try:
         if checksums_path.exists():
             with checksums_path.open("r", encoding="utf-8") as f:
                 existing = yaml.safe_load(f) or {}
             for item in existing.get("checksums", []) or []:
-                existing_index[_checksum_key(item)] = item
+                _merge_checksum_item(existing_index, item, source_names_by_key)
     except (OSError, ValueError, yaml.YAMLError, TypeError):
         existing_index = {}
     try:
@@ -704,12 +745,7 @@ def cmd_download(args: argparse.Namespace) -> int:
         except (OSError, ValueError):
             continue
         ts = datetime.now(timezone.utc).isoformat()
-        key = (
-            source_def.name,
-            int(source_def.year),
-            source_def.source_type,
-            source_def.url,
-        )
+        key = _source_checksum_key(source_def)
         prev = existing_index.get(key)
         if not prev or prev.get("checksum") != digest:
             if prev and prev.get("checksum"):
@@ -727,15 +763,8 @@ def cmd_download(args: argparse.Namespace) -> int:
                 if archived_path:
                     change_record["archived_path"] = str(archived_path)
                 checksum_history.append(change_record)
-            existing_index[key] = {
-                "name": source_def.name,
-                "year": int(source_def.year),
-                "source_type": source_def.source_type,
-                "url": source_def.url,
-                "checksum": digest,
-                "checksum_updated_at": ts,
-            }
             recorded += 1
+        existing_index[key] = _checksum_record(source_def, digest, prev, ts)
 
     try:
         with checksums_path.open("w", encoding="utf-8") as f:
@@ -914,6 +943,109 @@ def cmd_discover(args: argparse.Namespace) -> int:
                 logging.warning("No match for %s/%s: %s", y, st, e)
                 continue
     return 0 if ok > 0 else 1
+
+
+def cmd_macro_indicators(args: argparse.Namespace) -> int:
+    try:
+        macro_mod = importlib.import_module("armenian_budget.ingestion.macro_indicators")
+    except (ModuleNotFoundError, AttributeError) as e:
+        logging.error("Unable to load macro indicator extractor: %s", e)
+        return 3
+
+    years = _parse_years_arg(args.years)
+    if not years:
+        logging.error("--years is required for macro-indicators")
+        return 2
+
+    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
+    output_path = resolve_path_with_default(
+        args.output,
+        "data/processed/macro_fiscal_indicators.csv",
+    )
+    records, warnings = macro_mod.extract_macro_indicator_history(extracted_root, years)
+    for warning in warnings:
+        logging.warning(warning)
+
+    if not records:
+        logging.error("No macro/fiscal indicator tables extracted.")
+        return 1
+
+    macro_mod.write_macro_indicator_csv(records, output_path)
+    logging.info("Saved %d macro/fiscal indicator rows: %s", len(records), output_path)
+    return 0
+
+
+def cmd_gdp_extract(args: argparse.Namespace) -> int:
+    try:
+        macro_mod = importlib.import_module("armenian_budget.ingestion.macro_indicators")
+    except (ModuleNotFoundError, AttributeError) as e:
+        logging.error("Unable to load GDP extractor: %s", e)
+        return 3
+
+    years = _parse_years_arg(args.years)
+    if not years:
+        logging.error("--years is required for gdp-extract")
+        return 2
+
+    original_root = resolve_path_with_default(args.original_root, "data/original")
+    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
+    processed_root = resolve_path_with_default(args.processed_root, "data/processed")
+    sources_config = resolve_path_with_default(args.config, "config/sources.yaml")
+
+    source_types = [args.source_type] if args.source_type else list(macro_mod.GDP_SOURCE_TYPES)
+    ok = 0
+    failed = 0
+    for year in years:
+        for source_type in source_types:
+            try:
+                snapshot = macro_mod.extract_gdp_snapshot(
+                    year=int(year),
+                    source_type=source_type,
+                    original_root=original_root,
+                    extracted_root=extracted_root,
+                    sources_config=sources_config,
+                )
+                output_path = macro_mod.write_gdp_snapshot(snapshot, processed_root)
+                logging.info("Saved GDP snapshot: %s", output_path)
+                ok += 1
+            except (FileNotFoundError, ValueError, KeyError, OSError) as exc:
+                logging.warning("%s %s: %s", year, source_type, exc)
+                failed += 1
+
+    if ok == 0:
+        logging.error("No GDP snapshots extracted.")
+        return 1
+    return 0 if failed == 0 else 1
+
+
+def cmd_gdp_report(args: argparse.Namespace) -> int:
+    try:
+        macro_mod = importlib.import_module("armenian_budget.ingestion.macro_indicators")
+    except (ModuleNotFoundError, AttributeError) as e:
+        logging.error("Unable to load GDP reporter: %s", e)
+        return 3
+
+    years = _parse_years_arg(args.years) if args.years else None
+    processed_root = resolve_path_with_default(args.processed_root, "data/processed")
+    snapshots = macro_mod.load_gdp_snapshots(
+        processed_root,
+        years=years,
+        source_type=args.source_type,
+    )
+    if not snapshots:
+        logging.error("No GDP JSON snapshots found.")
+        return 1
+
+    has_filter = bool(args.years or args.source_type)
+    default_output = (
+        "data/reports/gdp_report_partial.html"
+        if has_filter
+        else "data/reports/gdp_report.html"
+    )
+    output_path = resolve_path_with_default(args.output, default_output)
+    macro_mod.write_gdp_html_report(snapshots, output_path)
+    logging.info("Saved GDP report: %s", output_path)
+    return 0
 
 
 def cmd_minfin_spending_reports(args: argparse.Namespace) -> int:
@@ -1199,6 +1331,93 @@ def build_parser() -> argparse.ArgumentParser:
         help="Extracted data root (defaults to ./data/extracted). Required if discovery is used and you provide a non-default location.",
     )
     p_process.set_defaults(func=cmd_process)
+
+    p_macro = sub.add_parser(
+        "macro-indicators",
+        help="Extract macro/fiscal indicator history from annual spending reports",
+    )
+    p_macro.add_argument(
+        "--years",
+        required=True,
+        help="Comma-separated years (e.g. 2024,2025) or range (2024-2025)",
+    )
+    p_macro.add_argument(
+        "--extracted-root",
+        default=None,
+        help="Extracted data root (defaults to ./data/extracted)",
+    )
+    p_macro.add_argument(
+        "--output",
+        default=None,
+        help="Output CSV path (defaults to ./data/processed/macro_fiscal_indicators.csv)",
+    )
+    p_macro.set_defaults(func=cmd_macro_indicators)
+
+    p_gdp_extract = sub.add_parser(
+        "gdp-extract",
+        help="Extract GDP indicator JSON snapshots from budget source documents",
+    )
+    p_gdp_extract.add_argument(
+        "--years",
+        required=True,
+        help="Comma-separated years (e.g. 2024,2025) or range (2024-2025)",
+    )
+    p_gdp_extract.add_argument(
+        "--source-type",
+        type=str.upper,
+        choices=["BUDGET_LAW", "SPENDING_Q1234"],
+        help="Limit extraction to one GDP-supported source type",
+    )
+    p_gdp_extract.add_argument(
+        "--config",
+        default=None,
+        help="Path to sources.yaml (defaults to config/sources.yaml)",
+    )
+    p_gdp_extract.add_argument(
+        "--original-root",
+        default=None,
+        help="Original sources root (defaults to ./data/original)",
+    )
+    p_gdp_extract.add_argument(
+        "--extracted-root",
+        default=None,
+        help="Extracted data root (defaults to ./data/extracted)",
+    )
+    p_gdp_extract.add_argument(
+        "--processed-root",
+        default=None,
+        help="Processed outputs root (defaults to ./data/processed)",
+    )
+    p_gdp_extract.set_defaults(func=cmd_gdp_extract)
+
+    p_gdp_report = sub.add_parser(
+        "gdp-report",
+        help="Render an HTML report from GDP JSON snapshots",
+    )
+    p_gdp_report.add_argument(
+        "--years",
+        help="Comma-separated years (e.g. 2024,2025) or range (2024-2025)",
+    )
+    p_gdp_report.add_argument(
+        "--source-type",
+        type=str.upper,
+        choices=["BUDGET_LAW", "SPENDING_Q1234"],
+        help="Limit report to one GDP-supported source type",
+    )
+    p_gdp_report.add_argument(
+        "--processed-root",
+        default=None,
+        help="Processed data root (defaults to ./data/processed)",
+    )
+    p_gdp_report.add_argument(
+        "--output",
+        default=None,
+        help=(
+            "HTML output path. Defaults to ./data/reports/gdp_report.html without "
+            "filters and ./data/reports/gdp_report_partial.html with filters."
+        ),
+    )
+    p_gdp_report.set_defaults(func=cmd_gdp_report)
 
     p_validate = sub.add_parser("validate", help="Validate processed budget data")
     p_validate.add_argument(

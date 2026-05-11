@@ -89,7 +89,8 @@ The processing pipeline transforms government archives into validated datasets:
 
 - `data/original/` - Downloaded archives; changed prior copies live in `.revisions/`
 - `data/extracted/` - Unarchived Excel files + discovery index
-- `data/processed/` - Final CSV outputs + overall totals JSON
+- `data/processed/` - Final CSV outputs, GDP JSON snapshots, and overall totals JSON
+- `data/reports/` - Rendered HTML reports
 
 ## 5. Repository Structure
 
@@ -106,8 +107,7 @@ skills/                     # Repo-owned AI skills
 
 config/                     # Configuration files
 ├── sources.yaml
-├── parsers.yaml
-└── program_patterns.yaml
+└── parsers.yaml
 
 data/                       # Data directories
 ├── original/               # Downloaded archives
@@ -122,7 +122,7 @@ The system provides two primary public interfaces:
 **CLI (Command-line interface):**
 
 - Primary public interface for batch processing and automation
-- Commands: `download`, `extract`, `discover`, `process`, `validate`, plus MinFin listing helpers
+- Commands: `download`, `extract`, `discover`, `process`, `validate`, macro/GDP indicator helpers, plus MinFin listing helpers
 - Exit codes from typed exceptions, structured logging with progress reporting
 
 **Agent Skill:**
