@@ -35,8 +35,8 @@ Pre-processed CSVs ready to use:
 
 ### 🤖 AI-Assisted Analysis
 
-The recommended AI analysis path is the repo-owned skill
-[`skills/armenian-budget-analyst/SKILL.md`](skills/armenian-budget-analyst/SKILL.md).
+The recommended AI analysis path is the
+[`armenian-budget-analyst`](skills/armenian-budget-analyst/SKILL.md) skill.
 
 - Works directly against `data/processed`
 - Is designed for source-cited tables, charts, and reports
