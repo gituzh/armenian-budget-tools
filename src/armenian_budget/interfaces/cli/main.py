@@ -945,39 +945,9 @@ def cmd_discover(args: argparse.Namespace) -> int:
     return 0 if ok > 0 else 1
 
 
-def cmd_macro_indicators(args: argparse.Namespace) -> int:
-    try:
-        macro_mod = importlib.import_module("armenian_budget.ingestion.macro_indicators")
-    except (ModuleNotFoundError, AttributeError) as e:
-        logging.error("Unable to load macro indicator extractor: %s", e)
-        return 3
-
-    years = _parse_years_arg(args.years)
-    if not years:
-        logging.error("--years is required for macro-indicators")
-        return 2
-
-    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
-    output_path = resolve_path_with_default(
-        args.output,
-        "data/processed/macro_fiscal_indicators.csv",
-    )
-    records, warnings = macro_mod.extract_macro_indicator_history(extracted_root, years)
-    for warning in warnings:
-        logging.warning(warning)
-
-    if not records:
-        logging.error("No macro/fiscal indicator tables extracted.")
-        return 1
-
-    macro_mod.write_macro_indicator_csv(records, output_path)
-    logging.info("Saved %d macro/fiscal indicator rows: %s", len(records), output_path)
-    return 0
-
-
 def cmd_gdp_extract(args: argparse.Namespace) -> int:
     try:
-        macro_mod = importlib.import_module("armenian_budget.ingestion.macro_indicators")
+        gdp_mod = importlib.import_module("armenian_budget.ingestion.gdp_indicators")
     except (ModuleNotFoundError, AttributeError) as e:
         logging.error("Unable to load GDP extractor: %s", e)
         return 3
@@ -992,20 +962,20 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
     processed_root = resolve_path_with_default(args.processed_root, "data/processed")
     sources_config = resolve_path_with_default(args.config, "config/sources.yaml")
 
-    source_types = [args.source_type] if args.source_type else list(macro_mod.GDP_SOURCE_TYPES)
+    source_types = [args.source_type] if args.source_type else list(gdp_mod.GDP_SOURCE_TYPES)
     ok = 0
     failed = 0
     for year in years:
         for source_type in source_types:
             try:
-                snapshot = macro_mod.extract_gdp_snapshot(
+                snapshot = gdp_mod.extract_gdp_snapshot(
                     year=int(year),
                     source_type=source_type,
                     original_root=original_root,
                     extracted_root=extracted_root,
                     sources_config=sources_config,
                 )
-                output_path = macro_mod.write_gdp_snapshot(snapshot, processed_root)
+                output_path = gdp_mod.write_gdp_snapshot(snapshot, processed_root)
                 logging.info("Saved GDP snapshot: %s", output_path)
                 ok += 1
             except (FileNotFoundError, ValueError, KeyError, OSError) as exc:
@@ -1020,14 +990,14 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
 
 def cmd_gdp_report(args: argparse.Namespace) -> int:
     try:
-        macro_mod = importlib.import_module("armenian_budget.ingestion.macro_indicators")
+        gdp_mod = importlib.import_module("armenian_budget.ingestion.gdp_indicators")
     except (ModuleNotFoundError, AttributeError) as e:
         logging.error("Unable to load GDP reporter: %s", e)
         return 3
 
     years = _parse_years_arg(args.years) if args.years else None
     processed_root = resolve_path_with_default(args.processed_root, "data/processed")
-    snapshots = macro_mod.load_gdp_snapshots(
+    snapshots = gdp_mod.load_gdp_snapshots(
         processed_root,
         years=years,
         source_type=args.source_type,
@@ -1043,7 +1013,7 @@ def cmd_gdp_report(args: argparse.Namespace) -> int:
         else "data/reports/gdp_report.html"
     )
     output_path = resolve_path_with_default(args.output, default_output)
-    macro_mod.write_gdp_html_report(snapshots, output_path)
+    gdp_mod.write_gdp_html_report(snapshots, output_path)
     logging.info("Saved GDP report: %s", output_path)
     return 0
 
@@ -1331,27 +1301,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Extracted data root (defaults to ./data/extracted). Required if discovery is used and you provide a non-default location.",
     )
     p_process.set_defaults(func=cmd_process)
-
-    p_macro = sub.add_parser(
-        "macro-indicators",
-        help="Extract macro/fiscal indicator history from annual spending reports",
-    )
-    p_macro.add_argument(
-        "--years",
-        required=True,
-        help="Comma-separated years (e.g. 2024,2025) or range (2024-2025)",
-    )
-    p_macro.add_argument(
-        "--extracted-root",
-        default=None,
-        help="Extracted data root (defaults to ./data/extracted)",
-    )
-    p_macro.add_argument(
-        "--output",
-        default=None,
-        help="Output CSV path (defaults to ./data/processed/macro_fiscal_indicators.csv)",
-    )
-    p_macro.set_defaults(func=cmd_macro_indicators)
 
     p_gdp_extract = sub.add_parser(
         "gdp-extract",

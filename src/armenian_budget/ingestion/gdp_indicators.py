@@ -1,8 +1,7 @@
-"""Extract GDP and macro indicator tables from budget source documents."""
+"""Extract GDP indicator tables from budget source documents."""
 
 from __future__ import annotations
 
-import csv
 import json
 import re
 import xml.etree.ElementTree as ET
@@ -17,21 +16,12 @@ from armenian_budget.sources.registry import SourceRegistry
 
 
 WORD_NS = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
-MACRO_DOC_RE = re.compile(r"Մակրոտնտեսական.*հարկաբյուջետային.*ցուց", re.IGNORECASE)
+SPENDING_GDP_DOC_RE = re.compile(
+    r"Մակրոտնտեսական.*հարկաբյուջետային.*ցուց", re.IGNORECASE
+)
 YEAR_RE = re.compile(r"(20\d{2})")
 GDP_SOURCE_TYPES = ("BUDGET_LAW", "SPENDING_Q1234")
 SPENDING_GDP_BUDGET_STATUSES = {"պետական բյուջե", "ծրագիր", "կանխ.", "սպասում"}
-
-
-@dataclass(frozen=True)
-class MacroIndicatorRecord:
-    report_year: int
-    target_year: int
-    scenario: str
-    indicator: str
-    unit: str
-    value: float | None
-    source_path: str
 
 
 @dataclass(frozen=True)
@@ -41,8 +31,8 @@ class DocxTable:
     preceding_paragraphs: list[str]
 
 
-def find_macro_indicator_docx(extracted_root: Path, report_year: int) -> Path:
-    """Find the annual macro/fiscal indicators DOCX for a report year."""
+def find_spending_gdp_docx(extracted_root: Path, report_year: int) -> Path:
+    """Find the annual spending-report GDP indicators DOCX for a report year."""
 
     year_root = extracted_root / "spending_reports" / str(report_year) / "Q1234"
     if not year_root.exists():
@@ -51,10 +41,10 @@ def find_macro_indicator_docx(extracted_root: Path, report_year: int) -> Path:
     candidates = [
         path
         for path in year_root.rglob("*.docx")
-        if not path.name.startswith("~$") and MACRO_DOC_RE.search(path.name)
+        if not path.name.startswith("~$") and SPENDING_GDP_DOC_RE.search(path.name)
     ]
     if not candidates:
-        raise FileNotFoundError(f"macro/fiscal indicators DOCX not found for {report_year}")
+        raise FileNotFoundError(f"GDP indicators DOCX not found for {report_year}")
     if len(candidates) > 1:
         candidates.sort(key=lambda path: (len(path.parts), str(path)))
     return candidates[0]
@@ -106,39 +96,6 @@ def find_budget_law_explanatory_note_docx(
     raise FileNotFoundError(f"budget-law explanatory note DOCX not found for {year}")
 
 
-def extract_macro_indicators_from_docx(
-    docx_path: Path, report_year: int
-) -> list[MacroIndicatorRecord]:
-    """Extract the macro/fiscal indicators table from one annual report DOCX."""
-
-    rows = _find_indicator_table(_read_docx_tables(docx_path))
-    if not rows:
-        raise ValueError(f"macro/fiscal indicators table not found: {docx_path}")
-
-    headers = rows[0][1:]
-    records: list[MacroIndicatorRecord] = []
-    for row in rows[1:]:
-        if not row or not row[0].strip():
-            continue
-        indicator, unit = _split_indicator_and_unit(row[0])
-        for header, raw_value in zip(headers, row[1:]):
-            target_year = _parse_year(header)
-            if target_year is None:
-                continue
-            records.append(
-                MacroIndicatorRecord(
-                    report_year=report_year,
-                    target_year=target_year,
-                    scenario=_parse_scenario(header),
-                    indicator=indicator,
-                    unit=unit,
-                    value=_parse_number(raw_value),
-                    source_path=str(docx_path),
-                )
-            )
-    return records
-
-
 def extract_gdp_snapshot(
     *,
     year: int,
@@ -147,7 +104,7 @@ def extract_gdp_snapshot(
     extracted_root: Path,
     sources_config: Path,
 ) -> dict[str, Any]:
-    """Extract one GDP/macro indicator JSON snapshot."""
+    """Extract one GDP indicator JSON snapshot."""
 
     normalized_source_type = source_type.upper()
     if normalized_source_type == "BUDGET_LAW":
@@ -166,7 +123,7 @@ def extract_gdp_snapshot(
         table_title = _caption_title(caption)
         table_index = table.table_index
     elif normalized_source_type == "SPENDING_Q1234":
-        docx_path = find_macro_indicator_docx(extracted_root, year)
+        docx_path = find_spending_gdp_docx(extracted_root, year)
         table = _find_spending_gdp_table(_read_docx_table_blocks(docx_path))
         if table is None:
             raise ValueError(f"spending-report GDP table not found: {docx_path.name}")
@@ -246,70 +203,6 @@ def write_gdp_html_report(snapshots: list[dict[str, Any]], output_path: Path) ->
         html_file.write(_render_gdp_html(snapshots))
 
 
-def extract_macro_indicator_history(
-    extracted_root: Path, years: list[int]
-) -> tuple[list[MacroIndicatorRecord], list[str]]:
-    """Extract all available annual macro indicator tables for the requested years."""
-
-    records: list[MacroIndicatorRecord] = []
-    warnings: list[str] = []
-    for year in years:
-        try:
-            docx_path = find_macro_indicator_docx(extracted_root, year)
-            records.extend(extract_macro_indicators_from_docx(docx_path, year))
-        except (FileNotFoundError, ValueError) as exc:
-            warnings.append(f"{year}: {exc}")
-    return records, warnings
-
-
-def write_macro_indicator_csv(records: list[MacroIndicatorRecord], output_path: Path) -> None:
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    fieldnames = [
-        "report_year",
-        "target_year",
-        "scenario",
-        "indicator",
-        "unit",
-        "value",
-        "source_path",
-    ]
-    with output_path.open("w", encoding="utf-8-sig", newline="") as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
-        for record in records:
-            row = {
-                "report_year": record.report_year,
-                "target_year": record.target_year,
-                "scenario": record.scenario,
-                "indicator": record.indicator,
-                "unit": record.unit,
-                "value": "" if record.value is None else record.value,
-                "source_path": record.source_path,
-            }
-            writer.writerow(row)
-
-
-def _read_docx_tables(docx_path: Path) -> list[list[list[str]]]:
-    with ZipFile(docx_path) as archive:
-        document_xml = archive.read("word/document.xml")
-
-    root = ET.fromstring(document_xml)
-    tables: list[list[list[str]]] = []
-    for table in root.findall(".//w:tbl", WORD_NS):
-        rows: list[list[str]] = []
-        for table_row in table.findall("./w:tr", WORD_NS):
-            cells = []
-            for table_cell in table_row.findall("./w:tc", WORD_NS):
-                text = " ".join(
-                    text_node.text or ""
-                    for text_node in table_cell.findall(".//w:t", WORD_NS)
-                )
-                cells.append(_clean_text(text))
-            rows.append(cells)
-        tables.append(rows)
-    return tables
-
-
 def _read_docx_table_blocks(docx_path: Path) -> list[DocxTable]:
     with ZipFile(docx_path) as archive:
         document_xml = archive.read("word/document.xml")
@@ -348,14 +241,6 @@ def _read_docx_table_blocks(docx_path: Path) -> list[DocxTable]:
     return tables
 
 
-def _find_indicator_table(tables: list[list[list[str]]]) -> list[list[str]]:
-    for table in tables:
-        joined = "\n".join(" | ".join(row) for row in table)
-        if "Անվանական ՀՆԱ" in joined and "ՀՆԱ-ի իրական աճ" in joined:
-            return table
-    return []
-
-
 def _find_spending_gdp_table(tables: list[DocxTable]) -> DocxTable | None:
     for table in tables:
         joined = "\n".join(" | ".join(row) for row in table.rows)
@@ -389,15 +274,6 @@ def _element_text(element: ET.Element) -> str:
 def _parse_year(header: str) -> int | None:
     match = YEAR_RE.search(header.replace(" ", ""))
     return int(match.group(1)) if match else None
-
-
-def _parse_scenario(header: str) -> str:
-    normalized = header.replace(" ", "")
-    if "պետականբյուջե" in normalized:
-        return "budget_plan"
-    if "փաստ" in normalized:
-        return "actual"
-    return "history"
 
 
 def _parse_status_label(header: str) -> str:

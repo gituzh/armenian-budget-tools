@@ -42,7 +42,7 @@ Caveats that must be stated:
 - `2025` factual spending is only available through `Q123`; it must be labeled as partial-year.
 - Do not replace `2025` parsed factuals with an expected or forecast value unless the user explicitly asks for a projected series.
 - `2026` has budget data but no parsed factual spending file.
-- GDP-share versions of the chart need an external GDP denominator and are not derivable from parsed files alone.
+- GDP-share versions can use parsed GDP snapshots when the needed year, source, and scenario/status are available; otherwise the denominator is external or unavailable and must be labeled.
 - The topical R&D classification is a mapping layer on top of parsed budget facts; keep that mapping separate and explicit in provenance.
 
 Minimum provenance for the chart:
@@ -50,5 +50,6 @@ Minimum provenance for the chart:
 - exact source CSV basenames
 - grain used for each series
 - manual filters or mappings
+- GDP denominator source, scenario/status, and unit conversion if a GDP-share chart is produced
 - the `Q123` partial-year label for `2025`
 - a sidecar JSON named after the generated chart file

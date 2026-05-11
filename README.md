@@ -116,9 +116,6 @@ armenian-budget process --years 2023 --source-type BUDGET_LAW
 # Optional: extract GDP snapshots and render the GDP review report
 armenian-budget gdp-extract --years 2021-2026
 armenian-budget gdp-report
-
-# Optional: extract macro/fiscal indicator history from annual spending reports
-armenian-budget macro-indicators --years 2024-2025
 ```
 
 ### 👩‍💻 For Developers & Contributors

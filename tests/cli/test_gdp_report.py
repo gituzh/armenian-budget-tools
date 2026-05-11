@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from armenian_budget.ingestion import macro_indicators
+from armenian_budget.ingestion import gdp_indicators
 from armenian_budget.interfaces.cli.main import cmd_gdp_report
 
 
@@ -10,12 +10,12 @@ def test_gdp_report_defaults_to_reports_root(monkeypatch, tmp_path):
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(
-        macro_indicators,
+        gdp_indicators,
         "load_gdp_snapshots",
         lambda *_args, **_kwargs: [{"year": 2025, "source_type": "BUDGET_LAW"}],
     )
     monkeypatch.setattr(
-        macro_indicators,
+        gdp_indicators,
         "write_gdp_html_report",
         lambda _snapshots, output_path: captured.setdefault("output_path", output_path),
     )
@@ -38,12 +38,12 @@ def test_filtered_gdp_report_defaults_to_partial_reports_path(monkeypatch, tmp_p
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(
-        macro_indicators,
+        gdp_indicators,
         "load_gdp_snapshots",
         lambda *_args, **_kwargs: [{"year": 2025, "source_type": "BUDGET_LAW"}],
     )
     monkeypatch.setattr(
-        macro_indicators,
+        gdp_indicators,
         "write_gdp_html_report",
         lambda _snapshots, output_path: captured.setdefault("output_path", output_path),
     )
@@ -62,7 +62,7 @@ def test_filtered_gdp_report_defaults_to_partial_reports_path(monkeypatch, tmp_p
 
 
 def test_gdp_report_table_rows_and_controls_drive_selection():
-    html = macro_indicators._render_gdp_html(
+    html = gdp_indicators._render_gdp_html(
         [
             {
                 "year": 2025,
@@ -101,7 +101,7 @@ def test_gdp_report_rows_order_prior_spending_after_current_budget():
         _gdp_snapshot(2022, "BUDGET_LAW"),
     ]
 
-    html = macro_indicators._render_gdp_html(snapshots)
+    html = gdp_indicators._render_gdp_html(snapshots)
 
     budget_2022 = html.index(">2022 BUDGET_LAW<")
     budget_2023 = html.index(">2023 BUDGET_LAW<")

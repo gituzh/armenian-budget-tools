@@ -1,11 +1,11 @@
 ---
 name: armenian-budget-analyst
-description: "Analyze parsed Armenian budget CSVs: inspect year and source availability, compare allocations and spending across ministries, programs, and subprograms, and create source-cited tables, charts, and reports from data/processed."
+description: "Analyze parsed Armenian budget and macro/GDP outputs: inspect year and source availability, compare allocations and spending across ministries, programs, subprograms, and GDP denominators, and create source-cited tables, charts, and reports from data/processed."
 ---
 
 # Armenian Budget Analyst
 
-Use this skill for analysis of parsed Armenian budget data in `data/processed`.
+Use this skill for analysis of parsed Armenian budget and macro/GDP data in `data/processed`.
 
 ## Start here
 
@@ -35,6 +35,8 @@ Use this skill for analysis of parsed Armenian budget data in `data/processed`.
 - `SPENDING_Q1234`: full-year actuals when available
 - `SPENDING_Q1`, `SPENDING_Q12`, `SPENDING_Q123`: year-to-date data only; label partial coverage explicitly
 - `MTEP`: projection and planning data only, not factual spending
+- `BUDGET_LAW_GDP`: macro/GDP assumptions from budget-law explanatory notes
+- `SPENDING_Q1234_GDP`: macro/GDP values from full-year spending report annexes; can contain budget, historical, and actual scenarios
 - `*_overall.json`: fastest path for `overall`-grain year-level tasks; prefer these sidecars over full CSVs when you only need aggregate totals
   - `BUDGET_LAW_overall.json` exposes allocation totals via `overall_total`
   - `SPENDING_Q1234_overall.json` exposes full-year actuals via `overall_actual`
@@ -45,9 +47,9 @@ Use this skill for analysis of parsed Armenian budget data in `data/processed`.
 2. Treat budget availability and spending availability independently by year.
 3. If a year has `BUDGET_LAW` but no matching full-year spending file, keep it as a budget-only year instead of dropping it silently.
 4. Name the exact source files used.
-5. State the grain explicitly: `overall`, `state_body`, `program`, or `subprogram`.
-6. State the metric explicitly: `overall_total`, `overall_actual`, `*_total`, `*_annual_plan`, `*_rev_annual_plan`, `*_actual`, or `*_total_y0/y1/y2`.
-7. Keep parsed-data facts separate from any external denominator, manual classification, or policy interpretation.
+5. State the grain explicitly: `overall`, `state_body`, `program`, `subprogram`, or `gdp_indicator`.
+6. State the metric explicitly: `overall_total`, `overall_actual`, `*_total`, `*_annual_plan`, `*_rev_annual_plan`, `*_actual`, `*_total_y0/y1/y2`, or macro fields such as `value` filtered by `indicator`, `target_year`, and `scenario`.
+7. Keep parsed-data facts separate from any denominator, manual classification, or policy interpretation. If the denominator comes from parsed GDP outputs, name the exact GDP source and scenario.
 8. Add provenance to every output:
    - inline `Sources & derivation` for text and table answers
    - sidecar JSON `<artifact_filename>.provenance.json` for generated files
@@ -65,6 +67,7 @@ Use this skill for analysis of parsed Armenian budget data in `data/processed`.
 - Do not compare partial-year actuals with full-year actuals without labeling the mismatch.
 - Do not substitute a missing factual series with an estimate, forecast, expected value, or external hardcoded number unless the user explicitly asks for that.
 - Do not treat `MTEP` as executed spending.
+- Do not treat budget-law GDP assumptions, spending-report budget scenarios, forecasts, or historical values as actual GDP; use `actual` or source-native factual statuses only when the user asks for actual GDP denominators.
 - Do not use `assets/` as a live data mirror.
 - If a mapping is manual or topic-specific, state it explicitly in `filters_or_mappings`.
 - If a topic mapping is reused across years or outputs, keep it as a separate explicit mapping artifact or script rather than implying it as a native dataset fact.

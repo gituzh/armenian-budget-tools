@@ -35,6 +35,13 @@
 - Partial-year comparison: use `SPENDING_Q1`, `SPENDING_Q12`, or `SPENDING_Q123`, and label the result as year-to-date.
 - If you compare partial-year actuals to annual budget or revised annual plan, say that the comparison is intentionally mixed-horizon.
 
+### GDP-share analysis
+
+- Use parsed GDP outputs when available: `*_GDP.json` for source-faithful snapshots.
+- Filter GDP by `indicator`, `target_year`, and scenario/status before joining it to budget or spending values.
+- Convert units before division: GDP is commonly in billion AMD (`մլրդ դրամ`), while budget/spending CSV values are commonly in thousand AMD (`հազ. դրամ`).
+- State whether the denominator is a budget-law assumption, spending-report budget scenario, forecast, historical value, or actual.
+
 ### Cross-year trend table
 
 - Keep the metric definition stable across years.
@@ -77,6 +84,7 @@ Required fields:
 - `source_types`
 - `grain`
 - `metrics`
+- `denominators` when ratios or GDP shares are computed
 - `filters_or_mappings`
 - `caveats`
 - `display_units` when the artifact rescales raw values
@@ -96,6 +104,7 @@ Example:
   "source_types": ["BUDGET_LAW", "SPENDING_Q1234"],
   "grain": "program",
   "metrics": ["program_total", "program_actual"],
+  "denominators": [],
   "filters_or_mappings": [
     "program_code == 1162"
   ],
@@ -114,3 +123,4 @@ Example:
 - Institutional reorganizations and renamed state bodies
 - Program or subprogram continuity that required manual mapping
 - External denominators or classifications not present in parsed files
+- GDP denominator source, status/scenario, and unit conversion when using parsed GDP outputs
