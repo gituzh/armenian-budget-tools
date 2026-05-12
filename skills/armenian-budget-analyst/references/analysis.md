@@ -8,6 +8,9 @@
 4. Aggregate from raw parsed values first; round only for display.
 5. Compute the result from parsed files only unless the user explicitly asks for an external denominator or estimate.
 6. Add provenance inline for text outputs and as sidecar JSON for generated files.
+7. Always name both the upstream official source domain and the parser tool public URL:
+   - official source domain: `minfin.am`
+   - parser tool: `https://github.com/gituzh/armenian-budget-tools`
 
 ## Aggregation discipline
 
@@ -62,6 +65,8 @@ Every text or table answer should end with a short inline section like this:
 
 ```md
 **Sources & derivation**
+- Official source(s): `minfin.am`
+- Parsed with: `https://github.com/gituzh/armenian-budget-tools`
 - Data root: `...`
 - Source files: `2024_BUDGET_LAW.csv`, `2024_SPENDING_Q1234.csv`
 - Grain: `program`
@@ -80,6 +85,8 @@ Required fields:
 - `generated_at`
 - `data_root`
 - `source_files`
+- `official_sources`
+- `parser_tool`
 - `years`
 - `source_types`
 - `grain`
@@ -100,6 +107,10 @@ Example:
     "2024_BUDGET_LAW.csv",
     "2024_SPENDING_Q1234.csv"
   ],
+  "official_sources": [
+    "https://minfin.am/"
+  ],
+  "parser_tool": "https://github.com/gituzh/armenian-budget-tools",
   "years": [2024],
   "source_types": ["BUDGET_LAW", "SPENDING_Q1234"],
   "grain": "program",

@@ -53,6 +53,9 @@ Use this skill for analysis of parsed Armenian budget and macro/GDP data in `dat
 8. Add provenance to every output:
    - inline `Sources & derivation` for text and table answers
    - sidecar JSON `<artifact_filename>.provenance.json` for generated files
+9. Always cite the upstream official publication source and the parser tool:
+   - for now, treat the official upstream domain as `minfin.am`
+   - always include the public tool URL: `https://github.com/gituzh/armenian-budget-tools`
 
 ## Output tips
 
@@ -71,6 +74,7 @@ Use this skill for analysis of parsed Armenian budget and macro/GDP data in `dat
 - Do not use `assets/` as a live data mirror.
 - If a mapping is manual or topic-specific, state it explicitly in `filters_or_mappings`.
 - If a topic mapping is reused across years or outputs, keep it as a separate explicit mapping artifact or script rather than implying it as a native dataset fact.
+- Do not omit the official-source citation just because the answer is based on parsed files; parsed files in this repo are derived artifacts and must still cite `minfin.am` plus `https://github.com/gituzh/armenian-budget-tools`.
 
 ## References
 
