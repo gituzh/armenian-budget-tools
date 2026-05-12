@@ -122,6 +122,12 @@ armenian-budget gdp-report
 
 **Documentation Philosophy:** We keep docs minimal and purposeful. They serve humans and AI agents who need context to understand, extend, and audit the system. Only document what cannot be understood from code alone.
 
+Build release artifacts, including the data archive and ChatGPT skill archive:
+
+```bash
+python scripts/build_artifacts.py --target all
+```
+
 - **User expectations** → [prd.md](docs/prd.md)
 - **System design** → [architecture.md](docs/architecture.md)
 - **Implementation details** → [developer_guide.md](docs/developer_guide.md)
