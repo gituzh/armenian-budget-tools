@@ -1,13 +1,13 @@
 {
   "2019/budget_law": {
     "key": "2019/budget_law",
-    "path": "budget_laws/2019/Orenqi havelvacner_Excel/2.Հավելված N1 աղյուսակ N2 ծախսերն ըստ ծրագրերի և միջոցառումների.xls",
+    "path": "budget_laws/2019/Orenqi havelvacner_Excel/Orenqi havelvacner_Excel/2.Հավելված N1 աղյուսակ N2 ծախսերն ըստ ծրագրերի և միջոցառումների.xls",
     "matched_by": "global",
     "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
-    "mtime": 1747107406.0,
+    "mtime": 1543412506.0,
     "size": 901120,
-    "checksum": "sha256:ca993049125ccb811ce1af0e14ddf2de5c47feb28ee535434d3b6b197ea27679",
-    "discovered_at": "2025-08-23T19:15:00Z"
+    "checksum": "sha256:5057c77e7283c50c5af229e6296ca4edac3b46bd31b341a1b377b92a13bf57cb",
+    "discovered_at": "2026-05-09T20:36:48Z"
   },
   "2019/spending_q1": {
     "key": "2019/spending_q1",
@@ -26,8 +26,8 @@
     "pattern": "(?i)(?=.*crag)(?=.*mij).*\\.(xlsx|xls)$",
     "mtime": 1747107407.0,
     "size": 1771008,
-    "checksum": "sha256:d5736fd62f5643dec159c73eb868c55f9457a0243e67786324d248ec7f88427d",
-    "discovered_at": "2025-08-23T19:15:00Z"
+    "checksum": "sha256:40ace482fb10e7419d3f48e3b8149b247a3766ee52ce416c20d188e0a8bac4bb",
+    "discovered_at": "2026-05-09T20:36:48Z"
   },
   "2019/spending_q123": {
     "key": "2019/spending_q123",
@@ -256,8 +256,8 @@
     "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
     "mtime": 1747107406.0,
     "size": 897024,
-    "checksum": "sha256:4c63c214aa2bfa9d465c57faa8022d7d8bbc1b0c8d1d1eba18493c33edcfe659",
-    "discovered_at": "2025-09-13T23:05:40Z"
+    "checksum": "sha256:57a9c329b56d60e1dd8cc24716bcf305287fc0f18dc18f24a3f4a0b896f3c3ca",
+    "discovered_at": "2026-05-09T20:36:59Z"
   },
   "2024/spending_q1": {
     "key": "2024/spending_q1",
@@ -358,5 +358,15 @@
     "size": 148959,
     "checksum": "sha256:d0b93f35e2a0cafac991bb70089a41fd10ef5a53b865f72159e2ec6722782132",
     "discovered_at": "2025-12-07T18:43:50Z"
+  },
+  "2025/spending_q1234": {
+    "key": "2025/spending_q1234",
+    "path": "spending_reports/2025/Q1234/2025 հաշվետվություն/2025 հաշվետվություն/2.Ծախսային քաղաքականություն/2.1.Ծախսային քաղաքականության ամփոփագիր/2.1.2..Հավելվածներ/2.Ծախսեր_ծրագիր միջոցառում_2025.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1776358825.5350227,
+    "size": 207914,
+    "checksum": "sha256:0591d3b77f3932300d3182d2d955a2e447eec32c63c5e0aafbfc893bf37a0cc2",
+    "discovered_at": "2026-05-08T16:34:44Z"
   }
 }

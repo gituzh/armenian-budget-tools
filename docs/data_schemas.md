@@ -8,8 +8,8 @@ The Armenian Budget Tools processes official government budget data through a mu
 
 - **Original sources**: Archives downloaded from minfin.am containing multiple Excel files
 - **Extraction**: Unarchiving reveals inconsistent folder structures across years
-- **Processing**: Currently parses budget program breakdowns; future expansion to other components
-- **Output**: Normalized CSVs with consistent column schemas across years
+- **Processing**: Parses budget program breakdowns and selected macro/GDP tables
+- **Output**: Normalized CSVs plus selected JSON/HTML macro indicator outputs
 
 ## 2. Data Folder Structure
 
@@ -22,6 +22,7 @@ data/
 │   └── spending_reports/ # Original .rar/.zip files from execution reports
 │       └── 2023/
 │           └── f601731c.rar  # Original archive name (hash-based)
+│           └── .revisions/   # Prior copies when --force detects changed content
 ├── extracted/          # Unarchived source files
 │   ├── budget_laws/    # Year folders with .xlsx/.xls files
 │   │   ├── 2023/
@@ -37,8 +38,11 @@ data/
 │       │   │           └── [other spending components]
 │       │   └── [Q12, Q123, Q1234]
 └── processed/          # Normalized outputs
-    ├── csv/            # {year}_{SOURCE_TYPE}.csv files
+    ├── {year}_{SOURCE_TYPE}.csv
+    ├── {year}_{SOURCE_TYPE}_GDP.json
     └── processing_report.json
+└── reports/            # Rendered HTML reports
+    └── gdp_report.html
 ```
 
 **Naming Conventions:**
@@ -46,6 +50,7 @@ data/
 - **Archives**: Original filenames from minfin.am (e.g., `Orenqi havelvacner_Excel.rar`, hash-based names)
 - **Extracted Folders**: Varies by archive structure (may preserve archive name or use internal folder names)
 - **Processed CSVs**: `{year}_{SOURCE_TYPE}.csv` (e.g., `2023_BUDGET_LAW.csv`)
+- **GDP snapshots**: `{year}_{SOURCE_TYPE}_GDP.json` for `BUDGET_LAW` and `SPENDING_Q1234`
 - **Source Types**: `BUDGET_LAW`, `SPENDING_Q1`, `SPENDING_Q12`, `SPENDING_Q123`, `SPENDING_Q1234`, `MTEP`
 
 ## 3. Original Data Archives
@@ -55,7 +60,7 @@ data/
 **Budget Law Archives:**
 
 - **Source Page**: [State Budget Law](https://minfin.am/hy/page/petakan_byuj/) - "Պետական բյուջե"
-- **Years Available**: 2019-2025
+- **Years Available**: 2019-2026
 - **Format**: RAR/ZIP archives containing multiple Excel files
 - **Current Scope**: Only parsing program summary (Ամփոփ ըստ ծրագրերի)
 
@@ -125,7 +130,8 @@ Archives contain multiple budget components beyond the currently parsed program 
 - **File Discovery**: Pattern-based matching to identify relevant Excel files
 - **Intermediate Format**: Preserves original .xlsx/.xls files before processing
 - **Integrity Verification**: SHA-256 checksums recorded in `config/checksums.yaml` after downloads
-- **Download Optimization**: Checksums enable skip_existing logic to avoid redundant downloads
+- **Change Tracking**: `download --force` re-fetches existing archives, preserves changed prior copies under `.revisions/`, and records checksum changes in `config/checksum_history.yaml`
+- **Download Optimization**: Existing archives are skipped unless `--force` is used
 
 **Discovery Strategy:**
 
@@ -145,10 +151,21 @@ Archives contain multiple budget components beyond the currently parsed program 
 - **Naming**: `{year}_{SOURCE_TYPE}.csv`
 - **Format**: UTF-8 encoded CSV with Armenian text support
 
+**GDP JSON Snapshots:**
+
+- **Location**: `data/processed/`
+- **Naming**: `{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`
+- **Scope**: GDP and related macro indicators extracted from budget-law explanatory notes and annual spending reports
+
+**GDP HTML Report:**
+
+- **Location**: `data/reports/gdp_report.html`
+- **Scope**: Review table built from available GDP JSON snapshots
+
 **Metadata:**
 
 - **Processing Report**: `data/processed/processing_report.json`
-- **Checksums**: SHA-256 hashes recorded in `config/checksums.yaml` for download integrity verification
+- **Checksums**: Current SHA-256 hashes in `config/checksums.yaml`; same-URL content changes in `config/checksum_history.yaml`
 - **Discovery Index**: `data/extracted/discovery_index.json`
 
 ### 6.2 Data Structure
@@ -159,6 +176,8 @@ Archives contain multiple budget components beyond the currently parsed program 
 - **2-level source (MTEP):** Each row = one program (subprogram columns empty for compatibility)
 
 **Overall JSON:** Each processed file produces a companion `*_overall.json` with grand totals for validation. Budget Law contains a single total; Spending contains multiple aggregates (annual_plan, rev_annual_plan, actual, execution rates); MTEP contains multi-year totals and plan_years array.
+
+**GDP JSON:** Each snapshot contains `year`, `source_type`, `metric_set`, `source_file`, and one or more `tables`. Table records use `target_year`, `status`, `indicator`, `unit`, and `value`.
 
 ## 7. Complete Column Reference
 

@@ -49,10 +49,6 @@
 - Generated artifacts can carry sidecar provenance metadata
 - Outputs compatible with standard analysis tools
 
-**Legacy compatibility:**
-
-- MCP server remains available only as a deprecated reference path for older integrations
-
 ## Key Decisions
 
 **Why CSV over database?**

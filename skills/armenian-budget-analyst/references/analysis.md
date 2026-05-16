@@ -8,6 +8,9 @@
 4. Aggregate from raw parsed values first; round only for display.
 5. Compute the result from parsed files only unless the user explicitly asks for an external denominator or estimate.
 6. Add provenance inline for text outputs and as sidecar JSON for generated files.
+7. Always name both the upstream official source domain and the parser tool public URL:
+   - official source domain: `minfin.am`
+   - parser tool: `https://github.com/gituzh/armenian-budget-tools`
 
 ## Aggregation discipline
 
@@ -35,6 +38,13 @@
 - Partial-year comparison: use `SPENDING_Q1`, `SPENDING_Q12`, or `SPENDING_Q123`, and label the result as year-to-date.
 - If you compare partial-year actuals to annual budget or revised annual plan, say that the comparison is intentionally mixed-horizon.
 
+### GDP-share analysis
+
+- Use parsed GDP outputs when available: `*_GDP.json` for source-faithful snapshots.
+- Filter GDP by `indicator`, `target_year`, and scenario/status before joining it to budget or spending values.
+- Convert units before division: GDP is commonly in billion AMD (`մլրդ դրամ`), while budget/spending CSV values are commonly in thousand AMD (`հազ. դրամ`).
+- State whether the denominator is a budget-law assumption, spending-report budget scenario, forecast, historical value, or actual.
+
 ### Cross-year trend table
 
 - Keep the metric definition stable across years.
@@ -55,6 +65,8 @@ Every text or table answer should end with a short inline section like this:
 
 ```md
 **Sources & derivation**
+- Official source(s): `minfin.am`
+- Parsed with: `https://github.com/gituzh/armenian-budget-tools`
 - Data root: `...`
 - Source files: `2024_BUDGET_LAW.csv`, `2024_SPENDING_Q1234.csv`
 - Grain: `program`
@@ -73,10 +85,13 @@ Required fields:
 - `generated_at`
 - `data_root`
 - `source_files`
+- `official_sources`
+- `parser_tool`
 - `years`
 - `source_types`
 - `grain`
 - `metrics`
+- `denominators` when ratios or GDP shares are computed
 - `filters_or_mappings`
 - `caveats`
 - `display_units` when the artifact rescales raw values
@@ -92,10 +107,15 @@ Example:
     "2024_BUDGET_LAW.csv",
     "2024_SPENDING_Q1234.csv"
   ],
+  "official_sources": [
+    "https://minfin.am/"
+  ],
+  "parser_tool": "https://github.com/gituzh/armenian-budget-tools",
   "years": [2024],
   "source_types": ["BUDGET_LAW", "SPENDING_Q1234"],
   "grain": "program",
   "metrics": ["program_total", "program_actual"],
+  "denominators": [],
   "filters_or_mappings": [
     "program_code == 1162"
   ],
@@ -114,3 +134,4 @@ Example:
 - Institutional reorganizations and renamed state bodies
 - Program or subprogram continuity that required manual mapping
 - External denominators or classifications not present in parsed files
+- GDP denominator source, status/scenario, and unit conversion when using parsed GDP outputs

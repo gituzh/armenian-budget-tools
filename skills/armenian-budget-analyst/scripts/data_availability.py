@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render a year-by-source availability matrix for parsed dataset CSVs."""
+"""Render a year-by-source availability matrix for processed datasets."""
 
 from __future__ import annotations
 
@@ -13,23 +13,48 @@ from pathlib import Path
 
 DEFAULT_COLUMN_ORDER = [
     "BUDGET_LAW",
+    "BUDGET_LAW_GDP",
     "SPENDING_Q1",
     "SPENDING_Q12",
     "SPENDING_Q123",
     "SPENDING_Q1234",
+    "SPENDING_Q1234_GDP",
     "MTEP",
 ]
 PRIMARY_DATASET_RE = re.compile(r"^(?P<year>\d{4})_(?P<source_type>.+)\.csv$")
+GDP_DATASET_RE = re.compile(
+    r"^(?P<year>\d{4})_(?P<source_type>BUDGET_LAW|SPENDING_Q1234)_GDP\.json$"
+)
+
+
+def bundled_data_root_candidates() -> list[Path]:
+    """Return parsed-data roots in preference order."""
+    skill_root = Path(__file__).resolve().parents[1]
+    repo_root = Path(__file__).resolve().parents[3]
+    return [
+        (skill_root / "assets" / "data").resolve(),
+        (skill_root / "assets" / "data" / "processed").resolve(),
+        (repo_root / "data" / "processed").resolve(),
+    ]
 
 
 def resolve_data_root(cli_value: str | None) -> Path:
-    """Resolve the active processed-data root."""
+    """Resolve the active parsed-data root."""
     if cli_value:
         data_root = Path(cli_value).expanduser()
     elif os.environ.get("ARMENIAN_BUDGET_DATA_PATH"):
         data_root = Path(os.environ["ARMENIAN_BUDGET_DATA_PATH"]).expanduser()
     else:
-        data_root = Path(__file__).resolve().parents[3] / "data" / "processed"
+        for candidate in bundled_data_root_candidates():
+            if (
+                candidate.exists()
+                and candidate.is_dir()
+                and iter_processed_datasets(candidate)
+            ):
+                data_root = candidate
+                break
+        else:
+            data_root = bundled_data_root_candidates()[-1]
 
     data_root = data_root.resolve()
     if not data_root.exists() or not data_root.is_dir():
@@ -40,30 +65,45 @@ def resolve_data_root(cli_value: str | None) -> Path:
     return data_root
 
 
-def iter_primary_datasets(data_root: Path) -> list[tuple[int, str, str]]:
-    """Collect primary parsed CSVs from the data root."""
+def iter_processed_datasets(data_root: Path) -> list[tuple[int, str, str]]:
+    """Collect parsed dataset artifacts from the data root."""
     datasets: list[tuple[int, str, str]] = []
     for path in sorted(data_root.iterdir()):
-        if not path.is_file() or path.suffix.lower() != ".csv":
+        if not path.is_file():
             continue
 
-        match = PRIMARY_DATASET_RE.match(path.name)
-        if not match:
-            continue
+        if path.suffix.lower() == ".csv":
+            match = PRIMARY_DATASET_RE.match(path.name)
+            if not match:
+                continue
 
-        source_type = match.group("source_type")
-        if source_type.endswith("_overall") or source_type.endswith("_validation"):
-            continue
+            source_type = match.group("source_type")
+            if source_type.endswith("_overall") or source_type.endswith("_validation"):
+                continue
 
-        datasets.append((int(match.group("year")), source_type, path.name))
+            datasets.append((int(match.group("year")), source_type, path.name))
+        elif path.suffix.lower() == ".json":
+            match = GDP_DATASET_RE.match(path.name)
+            if match:
+                datasets.append(
+                    (
+                        int(match.group("year")),
+                        f"{match.group('source_type')}_GDP",
+                        path.name,
+                    )
+                )
     return datasets
 
 
 def build_matrix(data_root: Path) -> tuple[list[str], list[dict[str, str | int]]]:
     """Build the availability matrix."""
-    datasets = iter_primary_datasets(data_root)
+    datasets = iter_processed_datasets(data_root)
     unknown_columns = sorted(
-        {source_type for _, source_type, _ in datasets if source_type not in DEFAULT_COLUMN_ORDER}
+        {
+            source_type
+            for _, source_type, _ in datasets
+            if source_type not in DEFAULT_COLUMN_ORDER
+        }
     )
     columns = DEFAULT_COLUMN_ORDER + unknown_columns
 
@@ -81,7 +121,9 @@ def build_matrix(data_root: Path) -> tuple[list[str], list[dict[str, str | int]]
     return columns, rows
 
 
-def render_markdown(data_root: Path, columns: list[str], rows: list[dict[str, str | int]]) -> str:
+def render_markdown(
+    data_root: Path, columns: list[str], rows: list[dict[str, str | int]]
+) -> str:
     """Render the matrix as Markdown."""
     header = ["Year"] + columns
     lines = [
@@ -96,7 +138,9 @@ def render_markdown(data_root: Path, columns: list[str], rows: list[dict[str, st
     return "\n".join(lines)
 
 
-def build_payload(data_root: Path, columns: list[str], rows: list[dict[str, str | int]]) -> dict[str, object]:
+def build_payload(
+    data_root: Path, columns: list[str], rows: list[dict[str, str | int]]
+) -> dict[str, object]:
     """Build the JSON payload."""
     return {
         "data_root": str(data_root),
@@ -107,7 +151,7 @@ def build_payload(data_root: Path, columns: list[str], rows: list[dict[str, str 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Render a year-by-source availability matrix for parsed dataset CSVs."
+        description="Render a year-by-source availability matrix for processed datasets."
     )
     parser.add_argument("--data-root", help="Override the processed data root.")
     parser.add_argument(

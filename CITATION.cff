@@ -1,7 +1,9 @@
 cff-version: 1.2.0
 message: "If you use this data or software in your research, please cite it as below."
 title: "Armenian State Budget Tools"
-abstract: "Clean, validated Armenian budget data - Budget laws, spending reports, and mid-term expenditure program (MTEP) (2019-2025). Parses official Armenian government budget documents into analysis-ready CSVs with full validation and lineage tracking."
+version: "0.5.0"
+date-released: "2026-05-16"
+abstract: "Clean, validated Armenian budget data covering budget laws for 2019-2026, spending reports for 2019-2025, and mid-term expenditure program (MTEP) data for 2024. Parses official Armenian government budget documents into analysis-ready CSVs with full validation and lineage tracking."
 authors:
   - name: "The Gituzh Initiative"
     website: "https://gituzh.am"
@@ -16,3 +18,6 @@ keywords:
   - fiscal data
   - open data
   - civic tech
+  - budget laws 2019-2026
+  - spending reports 2019-2025
+  - MTEP 2024

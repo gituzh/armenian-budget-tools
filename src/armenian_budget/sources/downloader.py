@@ -4,13 +4,14 @@ import hashlib
 import logging
 import ssl
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, List, Optional
+from urllib.parse import unquote
 
 import httpx
 
 from .registry import SourceDefinition
-from urllib.parse import unquote
 
 
 DOWNLOAD_CHUNK_SIZE = 1024 * 256
@@ -25,6 +26,26 @@ class DownloadResult:
     ok: bool
     reason: Optional[str] = None
     quarter: Optional[str] = None
+    previous_checksum: Optional[str] = None
+    downloaded_checksum: Optional[str] = None
+    archived_path: Optional[Path] = None
+
+
+def _sha256_file(path: Path) -> str:
+    sha = hashlib.sha256()
+    with path.open("rb") as checksum_file:
+        for block in iter(lambda: checksum_file.read(1024 * 1024), b""):
+            sha.update(block)
+    return sha.hexdigest()
+
+
+def _archive_existing_revision(path: Path, checksum: str) -> Path:
+    revisions_dir = path.parent / ".revisions"
+    revisions_dir.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    archive_path = revisions_dir / f"{path.stem}.{timestamp}.{checksum[:12]}{path.suffix}"
+    path.replace(archive_path)
+    return archive_path
 
 
 def _safe_file_name(url: str, default_ext: Optional[str]) -> str:
@@ -41,6 +62,10 @@ def _safe_file_name(url: str, default_ext: Optional[str]) -> str:
     # If no default extension, just use .bin
     ext = default_ext or "bin"
     return f"download_{digest}.{ext}"
+
+
+def _configured_file_name(filename: str) -> str:
+    return Path(filename).name
 
 
 def _quarter_dir(source_type: str) -> str:
@@ -85,13 +110,13 @@ def download_sources(
     original_root: Path,
     timeout_sec: float = 60.0,
     skip_existing: bool = True,
-    overwrite_existing: bool = False,
 ) -> List[DownloadResult]:
     """Download source files into the given original_root structure.
 
     - Saves to: {original_root}/spending_reports/{year}/<file>
     - Skips when URL is empty.
-    - If file already exists, re-download to a temporary file and replace only when size differs.
+    - If file already exists, replace only when SHA-256 differs.
+    - Changed existing files are preserved under a sibling .revisions directory.
     """
     logger = logging.getLogger(__name__)
     original_root.mkdir(parents=True, exist_ok=True)
@@ -139,7 +164,11 @@ def download_sources(
             subdir, quarter = _category_and_subdir(original_root, s.year, s.source_type)
             subdir.mkdir(parents=True, exist_ok=True)
             # If override format is provided, force the extension; otherwise infer from URL
-            file_name = _safe_file_name(s.url, s.file_format)
+            file_name = (
+                _configured_file_name(s.filename)
+                if s.filename
+                else _safe_file_name(s.url, s.file_format)
+            )
             if s.file_format:
                 # Force extension to provided override
                 from pathlib import PurePath
@@ -159,8 +188,7 @@ def download_sources(
                 )
                 # Skip network call if file already exists and skipping is enabled
                 if (
-                    not overwrite_existing
-                    and skip_existing
+                    skip_existing
                     and output_path.exists()
                     and output_path.stat().st_size > 0
                 ):
@@ -192,20 +220,16 @@ def download_sources(
                                 f.write(chunk)
 
                 # Optional checksum verification if provided
+                downloaded_checksum = _sha256_file(tmp_path)
                 if getattr(s, "checksum", None):
-                    sha = hashlib.sha256()
-                    with open(tmp_path, "rb") as checksum_file:
-                        for block in iter(lambda: checksum_file.read(1024 * 1024), b""):
-                            sha.update(block)
-                    digest = sha.hexdigest()
-                    if digest.lower() != str(s.checksum).lower():
+                    if downloaded_checksum.lower() != str(s.checksum).lower():
                         logging.error(
                             "Checksum mismatch for %s [%s %s]: expected=%s actual=%s",
                             s.name,
                             s.year,
                             s.source_type,
                             s.checksum,
-                            digest,
+                            downloaded_checksum,
                         )
                         # Clean up temp file and mark failure
                         tmp_path.unlink(missing_ok=True)
@@ -222,11 +246,17 @@ def download_sources(
                         )
                         continue
 
-                # Replace if target missing or overwrite is requested or sizes differ
+                archived_path = None
+                previous_checksum = None
+                reason = None
                 if output_path.exists():
-                    same_size = output_path.stat().st_size == tmp_path.stat().st_size
-                    if not same_size or overwrite_existing:
+                    previous_checksum = _sha256_file(output_path)
+                    if previous_checksum != downloaded_checksum:
+                        archived_path = _archive_existing_revision(
+                            output_path, previous_checksum
+                        )
                         tmp_path.replace(output_path)
+                        reason = "updated_changed"
                     else:
                         tmp_path.unlink(missing_ok=True)
                 else:
@@ -250,7 +280,11 @@ def download_sources(
                         url=s.url,
                         output_path=output_path,
                         ok=True,
+                        reason=reason,
                         quarter=quarter,
+                        previous_checksum=previous_checksum,
+                        downloaded_checksum=downloaded_checksum,
+                        archived_path=archived_path,
                     )
                 )
             except (httpx.HTTPError, OSError, ValueError) as e:  # narrow exceptions

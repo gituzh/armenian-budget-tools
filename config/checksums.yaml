@@ -1,10 +1,16 @@
 checksums:
-- name: 2019_budget_law
+- name: 2019_budget_law_attachments
   year: 2019
   source_type: budget_law
   url: https://minfin.am/website/images/website/byuje%20ev%20krknaki%20harkum/Mijnajamket/Orenqi%20havelvacner_Excel.rar
   checksum: ce84f26ab8ddddc718f3e0e8562191aa3b1bf35e3d611be04cf7da4c36ac7b4d
   checksum_updated_at: '2025-08-10T14:36:05.152796+00:00'
+- name: 2019_budget_law_explanatory_note
+  year: 2019
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/tej_gic/1.2019uxerc.doc
+  checksum: cf6bfbc72eab1e47ea8124699250817464ceab1658fccb07e27078e1bb602b22
+  checksum_updated_at: '2026-05-10T18:44:31.679775+00:00'
 - name: 2019_spending_q1
   year: 2019
   source_type: spending_q1
@@ -29,12 +35,19 @@ checksums:
   url: https://minfin.am/website/images/files/38b4849d.rar
   checksum: 6132c3b37782c3049ee51138336269ec4ea204d06c18605881b40a3904aad2c7
   checksum_updated_at: '2025-08-10T14:36:05.158444+00:00'
-- name: 2020_budget_law
+- name: 2020_budget_law_attachments
   year: 2020
   source_type: budget_law
   url: https://minfin.am/website/images/website/byuje%20ev%20krknaki%20harkum/Mijnajamket/Orenqi%20havelvacner_Excel.rar
   checksum: ce84f26ab8ddddc718f3e0e8562191aa3b1bf35e3d611be04cf7da4c36ac7b4d
   checksum_updated_at: '2025-08-10T14:36:05.159087+00:00'
+- name: 2020_budget_law_explanatory_note
+  year: 2020
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/byuje ev krknaki harkum/3.1.2020_Uxerdz
+    (2).docx
+  checksum: 6c68a5652b7565e5734999a73d0dbf23c77b137db389a57e1af2925c35ebb1be
+  checksum_updated_at: '2026-05-10T18:44:31.682436+00:00'
 - name: 2020_spending_q1
   year: 2020
   source_type: spending_q1
@@ -59,6 +72,18 @@ checksums:
   url: https://minfin.am/website/images/files/03addb4d.zip
   checksum: bcc2644f9e218e56efbb4df872dd214f165d679bb5ede310f4577bee335d1275
   checksum_updated_at: '2025-08-10T14:36:05.165048+00:00'
+- name: 2021_budget_law_attachments
+  year: 2021
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/byuje%20ev%20krknaki%20harkum/copy_1_Orenqo%20havelvacner.rar
+  checksum: 5ead805236e40569db956c5d2e9e88cbc7e58cd89a3448f5887ef367766e0a0a
+  checksum_updated_at: '2025-09-15T02:20:44.964024+00:00'
+- name: 2021_budget_law_explanatory_note
+  year: 2021
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/byuje ev krknaki harkum/2021_Uxerdz.docx
+  checksum: 3d4386c6c58809a06553b3bc3c534dad4227d8c0ca5c5271f965a312ea38be8b
+  checksum_updated_at: '2026-05-10T18:44:31.686713+00:00'
 - name: 2021_spending_q1
   year: 2021
   source_type: spending_q1
@@ -71,6 +96,183 @@ checksums:
   url: https://minfin.am/website/images/files/9fbf73d2.rar
   checksum: 893e95a3987df7e5397ac25098fded0bda4392aeb310d824ce79e3bf29f8e06f
   checksum_updated_at: '2025-08-10T14:36:05.169596+00:00'
+- name: 2021_spending_q123
+  year: 2021
+  source_type: spending_q123
+  url: https://minfin.am/website/images/files/2449c06b 1.zip
+  checksum: 0371bcc278a059019918f24067e23de08e05439efeb801283ca7e061275462c1
+  checksum_updated_at: '2026-05-09T21:39:43.792951+00:00'
+- name: 2021_spending_q1234
+  year: 2021
+  source_type: spending_q1234
+  url: https://minfin.am/website/images/files/2021  1.rar
+  checksum: 1a8ec696038750c15e8655b32ae0805651752a1f0f10fbdde0864adb5a4db187
+  checksum_updated_at: '2026-05-09T21:39:43.801376+00:00'
+- name: 2022_budget_law_attachments
+  year: 2022
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/documents/copy_2_1.1.ORENQI_HAVELVACNER.rar
+  checksum: 55afbad1183e4792e5f048cc1a7c9a0e378529a1b9726e294518f6366862adcf
+  checksum_updated_at: '2025-09-15T02:20:44.966057+00:00'
+- name: 2022_budget_law_explanatory_note
+  year: 2022
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/documents/copy_1_2.Uxerdz_bacatragir.docx
+  checksum: b074e49780f3c2324a968a458d862e2ad2202513c01b68e2afcc5a67856f5e3c
+  checksum_updated_at: '2026-05-10T18:44:31.690865+00:00'
+- name: 2022_spending_q1
+  year: 2022
+  source_type: spending_q1
+  url: https://minfin.am/website/images/files/0363acd3.rar
+  checksum: f4db600a5147df32566e98aeda62425222fb2addee02e80be2e9f796293dbd6b
+  checksum_updated_at: '2026-05-09T21:39:43.808224+00:00'
+- name: 2022_spending_q12
+  year: 2022
+  source_type: spending_q12
+  url: https://minfin.am/website/images/files/2022_I _.rar
+  checksum: bde1b072aaff77a0f6e4dd7f97b60fa27029dc3fb3a1e6a4f76a82fdb50481cf
+  checksum_updated_at: '2026-05-09T21:39:43.812462+00:00'
+- name: 2022_spending_q123
+  year: 2022
+  source_type: spending_q123
+  url: https://minfin.am/website/images/files/09b941144171efd487ffe374a14ff92edf8beae655f834042931feab926aaf68.rar
+  checksum: 4463e7affe643414cd3c3db6c8310803f1bd58eec922fa7b79a3340100aeacb8
+  checksum_updated_at: '2026-05-09T21:39:43.815479+00:00'
+- name: 2022_spending_q1234
+  year: 2022
+  source_type: spending_q1234
+  url: https://minfin.am/website/images/files/2022  3.rar
+  checksum: 09eb169fac4ebbacd8a260a1e0d0f280f6327be90cb7686395a4fd2a1c6eb541
+  checksum_updated_at: '2026-05-09T21:39:43.819133+00:00'
+- name: 2023_budget_law_attachments
+  year: 2023
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/copy_1_1.1.ORENQI%20HAVELVACNER.rar
+  checksum: 3c67c22c08bbc191d51496a48bad8d54ba09cc83bfb2724a1d02e9f6a079fd80
+  checksum_updated_at: '2025-09-15T02:20:44.967937+00:00'
+- name: 2023_budget_law_explanatory_note
+  year: 2023
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/2.Uxerdz_bacatragir (1).docx
+  checksum: 0c2b50648f3196ebd6c8c4824c2da2b8cdbd4f0100b762d5bcb1b364c953c443
+  checksum_updated_at: '2026-05-10T18:44:31.695886+00:00'
+- name: 2023_spending_q1
+  year: 2023
+  source_type: spending_q1
+  url: https://minfin.am/website/images/files/2023_I _ 1.rar
+  checksum: 1812563efced9e94374755bb9dbc27d14aca99b4667c1e697f7a4f40c72b4b0b
+  checksum_updated_at: '2026-05-09T21:39:43.822614+00:00'
+- name: 2023_spending_q12
+  year: 2023
+  source_type: spending_q12
+  url: https://minfin.am/website/images/files/d9d887aa6a832d4db2e01e80a23ab24b25feb5fd9be16fd982675ed3df7e1850
+    1.rar
+  checksum: 1f0d1159a1f28a11e184cfdc766ff5151de27c6832d66562270f1a8a4e85bab7
+  checksum_updated_at: '2026-05-09T21:39:43.825638+00:00'
+- name: 2023_spending_q123
+  year: 2023
+  source_type: spending_q123
+  url: https://minfin.am/website/images/files/9 amisner.rar
+  checksum: 42b757301080deeb080e3642d43202905281cda7e68a5a4a08589972592915be
+  checksum_updated_at: '2026-05-09T21:39:43.828941+00:00'
+- name: 2023_spending_q1234
+  year: 2023
+  source_type: spending_q1234
+  url: https://minfin.am/website/images/files/2023 - 1.rar
+  checksum: 101d05e8bb5f3c11e08437138dbf30cd7495d89bc649f03b607fcfafc28c85e9
+  checksum_updated_at: '2026-05-09T21:39:43.833260+00:00'
+- name: 2024_budget_law_attachments
+  year: 2024
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/ORENQ%20HAVELVACNER.rar
+  checksum: a521bcb579b22738767ac7adefda194ca5f5a21a33cb0ea2440f5267250c0d2f
+  checksum_updated_at: '2025-09-15T02:20:44.969927+00:00'
+- name: 2024_budget_law_explanatory_note
+  year: 2024
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/2.Uxerdz_bacatragir_2024.docx
+  checksum: 991f4776cec43a4582df3097d3f5f1493562445264c4dbcc760c761126c39772
+  checksum_updated_at: '2026-05-10T18:44:31.709054+00:00'
+- name: 2024_mtep
+  year: 2024
+  source_type: mtep
+  url: https://minfin.am/website/images/website/637cb1feeb346546589329b6ac4a9320ba2c7db0a30054205ddaf02f2be116a4.rar
+  checksum: 1b1d49a05c7fd979be62aebb2d90755ecbaac48c72c851c605213128433548f6
+  checksum_updated_at: '2025-09-15T02:20:52.789149+00:00'
+- name: 2024_spending_q1
+  year: 2024
+  source_type: spending_q1
+  url: https://minfin.am/website/images/files/1600a624.rar
+  checksum: c71c8837133cd9632b06add5bcc9cf3ab45b61144397b0dbcb751c9f59582a7a
+  checksum_updated_at: '2025-08-10T14:36:05.177463+00:00'
+- name: 2024_spending_q12
+  year: 2024
+  source_type: spending_q12
+  url: https://minfin.am/website/images/files/4151505e.rar
+  checksum: 17cc44ee5bf5d21a617583c03036d1ca8a86ee4fb855a3358ecf7423e0c6a937
+  checksum_updated_at: '2025-08-10T14:36:05.177928+00:00'
+- name: 2024_spending_q123
+  year: 2024
+  source_type: spending_q123
+  url: https://minfin.am/website/images/files/3ec82128.rar
+  checksum: ea2497f9d0320bff20ceb342e9e925dd94fc2a2e183df3b0428ff7ce48dbfb52
+  checksum_updated_at: '2025-08-10T14:36:05.178433+00:00'
+- name: 2024_spending_q1234
+  year: 2024
+  source_type: spending_q1234
+  url: https://minfin.am/website/images/files/2024 հաշվետվություն.rar
+  checksum: 392e37eccf13fefd3dd5a987436271b7063e01b48d234ed4aa8f09f9d2571907
+  checksum_updated_at: '2026-05-09T21:39:43.843198+00:00'
+- name: 2025_budget_law_attachments
+  year: 2025
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/%D6%85%D6%80%D5%A5%D5%B6%D6%84%D5%AB%20%D5%B0%D5%A1%D5%BE%D5%A5%D5%AC%D5%BE%D5%A1%D5%AE%D5%B6%D5%A5%D6%80.rar
+  checksum: 60682040ec5c34a5b292eb2b023837a859a92dcc66bfd00d85493c1ca921bafa
+  checksum_updated_at: '2025-09-15T02:20:44.972240+00:00'
+- name: 2025_budget_law_explanatory_note
+  year: 2025
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/ՀՀ կառավարության 2025 թվականի բյուջետային
+    ուղերձ-բացատրագիր.docx
+  checksum: 043be794d045e7e3c9a2a374f0f4025425dd8e0f75308df2ccc524281f118808
+  checksum_updated_at: '2026-05-10T18:44:31.713637+00:00'
+- name: 2025_spending_q1
+  year: 2025
+  source_type: spending_q1
+  url: https://minfin.am/website/images/files/2025_I եռամսյակ_հաշվետվություն.rar
+  checksum: e59b1668085595c9d2a9f8770ce9b04094db0006a32b1cdf27beb9041f9a19f3
+  checksum_updated_at: '2025-09-13T02:18:59.562590+00:00'
+- name: 2025_spending_q12
+  year: 2025
+  source_type: spending_q12
+  url: https://minfin.am/website/images/files/2025_I կիսամյակ_հաշվետվություն.rar
+  checksum: 6bcf76d0960efbfdd3f17436579737db80a6e862f25aa2698b24eb7154f1323d
+  checksum_updated_at: '2025-09-13T02:20:14.080701+00:00'
+- name: 2025_spending_q123
+  year: 2025
+  source_type: spending_q123
+  url: https://minfin.am/website/images/files/2025_9%20%D5%A1%D5%B4%D5%AB%D5%BD_%D5%B0%D5%A1%D5%B7%D5%BE%D5%A5%D5%BF%D5%BE%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.rar
+  checksum: 2e854f980f350957683090b797b7fd13cd0751099e78220c1b4916c7529b7c17
+  checksum_updated_at: '2025-11-11T16:22:09.363595+00:00'
+- name: 2025_spending_q1234
+  year: 2025
+  source_type: spending_q1234
+  url: https://minfin.am/website/images/files/2025%20%D5%B0%D5%A1%D5%B7%D5%BE%D5%A5%D5%BF%D5%BE%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.rar
+  checksum: e734bf4abc7c522d7ea782505d71f289afdfb85cab03e12c5c0fd01afac8f545
+  checksum_updated_at: '2026-05-08T16:34:35.011933+00:00'
+- name: 2026_budget_law_attachments
+  year: 2026
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/copy_5_%D6%85%D6%80%D5%A5%D5%B6%D6%84%D5%AB%20%D5%B0%D5%A1%D5%BE%D5%A5%D5%AC%D5%BE%D5%A1%D5%AE%D5%B6%D5%A5%D6%80.rar
+  checksum: e2ba02af5f26127afaf9e3610517e0ed16d756ac32b7978e19e4603c2b479965
+  checksum_updated_at: '2025-12-07T18:42:06.574102+00:00'
+- name: 2026_budget_law_explanatory_note
+  year: 2026
+  source_type: budget_law
+  url: https://minfin.am/website/images/website/copy_1_ՀՀ կառավարության 2026 թվականի
+    բյուջետային ուղերձ-բացատրագիր.docx
+  checksum: a2dd20e53054426481105154509538024cb52c9f0fa444e0dc1854c713c04c56
+  checksum_updated_at: '2026-05-10T18:44:31.717823+00:00'
 - name: 2021_spending_q123
   year: 2021
   source_type: spending_q123
@@ -131,99 +333,9 @@ checksums:
   url: https://minfin.am/website/images/files/eeb4fff4.rar
   checksum: affc33105a82a3400bd8085abe575a834018b67d363d1ab5ca8a51eef2b59094
   checksum_updated_at: '2025-08-10T14:36:05.177002+00:00'
-- name: 2024_spending_q1
-  year: 2024
-  source_type: spending_q1
-  url: https://minfin.am/website/images/files/1600a624.rar
-  checksum: c71c8837133cd9632b06add5bcc9cf3ab45b61144397b0dbcb751c9f59582a7a
-  checksum_updated_at: '2025-08-10T14:36:05.177463+00:00'
-- name: 2024_spending_q12
-  year: 2024
-  source_type: spending_q12
-  url: https://minfin.am/website/images/files/4151505e.rar
-  checksum: 17cc44ee5bf5d21a617583c03036d1ca8a86ee4fb855a3358ecf7423e0c6a937
-  checksum_updated_at: '2025-08-10T14:36:05.177928+00:00'
-- name: 2024_spending_q123
-  year: 2024
-  source_type: spending_q123
-  url: https://minfin.am/website/images/files/3ec82128.rar
-  checksum: ea2497f9d0320bff20ceb342e9e925dd94fc2a2e183df3b0428ff7ce48dbfb52
-  checksum_updated_at: '2025-08-10T14:36:05.178433+00:00'
-- name: 2024_spending_q1234
-  year: 2024
-  source_type: spending_q1234
-  url: https://minfin.am/website/images/files/2024 հաշվետվություն.rar
-  checksum: f56d55d056a861affe39adc394c613578c273f63ab0b20e282467ca82f59943f
-  checksum_updated_at: '2025-09-13T02:17:40.065321+00:00'
-- name: 2025_spending_q1
-  year: 2025
-  source_type: spending_q1
-  url: https://minfin.am/website/images/files/2025_I եռամսյակ_հաշվետվություն.rar
-  checksum: e59b1668085595c9d2a9f8770ce9b04094db0006a32b1cdf27beb9041f9a19f3
-  checksum_updated_at: '2025-09-13T02:18:59.562590+00:00'
-- name: 2025_spending_q12
-  year: 2025
-  source_type: spending_q12
-  url: https://minfin.am/website/images/files/2025_I կիսամյակ_հաշվետվություն.rar
-  checksum: 6bcf76d0960efbfdd3f17436579737db80a6e862f25aa2698b24eb7154f1323d
-  checksum_updated_at: '2025-09-13T02:20:14.080701+00:00'
-- name: 2025_mtep
-  year: 2024
-  source_type: mtep
-  url: https://minfin.am/website/images/website/637cb1feeb346546589329b6ac4a9320ba2c7db0a30054205ddaf02f2be116a4.rar
-  checksum: 1b1d49a05c7fd979be62aebb2d90755ecbaac48c72c851c605213128433548f6
-  checksum_updated_at: '2025-09-15T01:57:36.286620+00:00'
-- name: 2021_budget_law
-  year: 2021
-  source_type: budget_law
-  url: https://minfin.am/website/images/website/byuje%20ev%20krknaki%20harkum/copy_1_Orenqo%20havelvacner.rar
-  checksum: 5ead805236e40569db956c5d2e9e88cbc7e58cd89a3448f5887ef367766e0a0a
-  checksum_updated_at: '2025-09-15T02:20:44.964024+00:00'
-- name: 2022_budget_law
-  year: 2022
-  source_type: budget_law
-  url: https://minfin.am/website/images/website/documents/copy_2_1.1.ORENQI_HAVELVACNER.rar
-  checksum: 55afbad1183e4792e5f048cc1a7c9a0e378529a1b9726e294518f6366862adcf
-  checksum_updated_at: '2025-09-15T02:20:44.966057+00:00'
-- name: 2023_budget_law
-  year: 2023
-  source_type: budget_law
-  url: https://minfin.am/website/images/website/copy_1_1.1.ORENQI%20HAVELVACNER.rar
-  checksum: 3c67c22c08bbc191d51496a48bad8d54ba09cc83bfb2724a1d02e9f6a079fd80
-  checksum_updated_at: '2025-09-15T02:20:44.967937+00:00'
-- name: 2024_budget_law
-  year: 2024
-  source_type: budget_law
-  url: https://minfin.am/website/images/website/ORENQ%20HAVELVACNER.rar
-  checksum: a521bcb579b22738767ac7adefda194ca5f5a21a33cb0ea2440f5267250c0d2f
-  checksum_updated_at: '2025-09-15T02:20:44.969927+00:00'
-- name: 2025_budget_law
-  year: 2025
-  source_type: budget_law
-  url: https://minfin.am/website/images/website/%D6%85%D6%80%D5%A5%D5%B6%D6%84%D5%AB%20%D5%B0%D5%A1%D5%BE%D5%A5%D5%AC%D5%BE%D5%A1%D5%AE%D5%B6%D5%A5%D6%80.rar
-  checksum: 60682040ec5c34a5b292eb2b023837a859a92dcc66bfd00d85493c1ca921bafa
-  checksum_updated_at: '2025-09-15T02:20:44.972240+00:00'
-- name: 2024_mtep
-  year: 2024
-  source_type: mtep
-  url: https://minfin.am/website/images/website/637cb1feeb346546589329b6ac4a9320ba2c7db0a30054205ddaf02f2be116a4.rar
-  checksum: 1b1d49a05c7fd979be62aebb2d90755ecbaac48c72c851c605213128433548f6
-  checksum_updated_at: '2025-09-15T02:20:52.789149+00:00'
 - name: 2025_mtep
   year: 2025
   source_type: mtep
   url: https://minfin.am/website/images/website/%D5%84%D4%BA%D4%BE%D4%BE-%D5%B0%D5%A1%D5%BE%D5%A5%D5%AC%D5%BE%D5%A1%D5%AE%D5%B6%D5%A5%D6%80%20(1).rar
   checksum: f5e42c3b486b1742907ea4ba1489a2e5fede5faa65cabe17641daaeeddf4bac2
   checksum_updated_at: '2025-10-31T07:44:16.165308+00:00'
-- name: 2025_spending_q123
-  year: 2025
-  source_type: spending_q123
-  url: https://minfin.am/website/images/files/2025_9%20%D5%A1%D5%B4%D5%AB%D5%BD_%D5%B0%D5%A1%D5%B7%D5%BE%D5%A5%D5%BF%D5%BE%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.rar
-  checksum: 2e854f980f350957683090b797b7fd13cd0751099e78220c1b4916c7529b7c17
-  checksum_updated_at: '2025-11-11T16:22:09.363595+00:00'
-- name: 2026_budget_law
-  year: 2026
-  source_type: budget_law
-  url: https://minfin.am/website/images/website/copy_5_%D6%85%D6%80%D5%A5%D5%B6%D6%84%D5%AB%20%D5%B0%D5%A1%D5%BE%D5%A5%D5%AC%D5%BE%D5%A1%D5%AE%D5%B6%D5%A5%D6%80.rar
-  checksum: e2ba02af5f26127afaf9e3610517e0ed16d756ac32b7978e19e4603c2b479965
-  checksum_updated_at: '2025-12-07T18:42:06.574102+00:00'

@@ -14,7 +14,7 @@ Parses official Armenian government budget documents into analysis-ready CSVs wi
 
 **Data Coverage:**
 - **Budget Laws**: 2019-2026
-- **Spending Reports**: 2019-2024 (Q1, Q12, Q123, Q1234); 2025 (Q1, Q12, Q123)
+- **Spending Reports**: 2019-2025 (Q1, Q12, Q123, Q1234)
 - **MTEP**: 2024
 
 ---
@@ -28,13 +28,15 @@ Pre-processed CSVs ready to use:
 - **Budget Laws** (2019-2026): `data/processed/{year}_BUDGET_LAW.csv`
 - **Spending Reports** (2019-2025): `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
 - **MTEP** (2024): `data/processed/2024_MTEP.csv`
+- **GDP snapshots**: `data/processed/{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`
+- **GDP report**: `data/reports/gdp_report.html`
 
 → See [data_schemas.md](docs/data_schemas.md) for column details
 
 ### 🤖 AI-Assisted Analysis
 
-The recommended AI analysis path is the repo-owned skill
-[`skills/armenian-budget-analyst/SKILL.md`](skills/armenian-budget-analyst/SKILL.md).
+The recommended AI analysis path is the
+[`armenian-budget-analyst`](skills/armenian-budget-analyst/SKILL.md) skill.
 
 - Works directly against `data/processed`
 - Is designed for source-cited tables, charts, and reports
@@ -59,9 +61,6 @@ Example artifact:
 
 Provenance metadata:
 [`docs/examples/rd_allocations_and_spending_by_year.svg.provenance.json`](docs/examples/rd_allocations_and_spending_by_year.svg.provenance.json)
-
-The MCP server remains in the repo as a legacy reference. See
-[docs/mcp.md](docs/mcp.md).
 
 ### ✅ How We Ensure Data Quality
 
@@ -97,20 +96,37 @@ pip install -U -e .
 #### 2. Run the pipeline
 
 ```bash
-armenian-budget download --years 2019-2024 --extract
-armenian-budget discover --years 2019-2024
-armenian-budget process --years 2019-2024
-armenian-budget validate --years 2019-2024  # Optional: validate processed data
+armenian-budget download --years 2019-2026 --extract
+armenian-budget discover --years 2019-2026
+armenian-budget process --years 2019-2026
+armenian-budget validate --years 2019-2026  # Optional: validate processed data
 
-# Find outputs in ./data/processed/
+# Find parsed outputs in ./data/processed/ and HTML reports in ./data/reports/
+
+# Optional: re-check official archives for silent upstream changes
+armenian-budget download --years 2024-2025 --force
+
+# Optional: inspect current MinFin budget law and spending report downloads
+armenian-budget minfin-budget --years 2025 --downloads-only
+armenian-budget minfin-spending-reports --years 2025 --downloads-only
 
 # Optional: process specific source type only
 armenian-budget process --years 2023 --source-type BUDGET_LAW
+
+# Optional: extract GDP snapshots and render the GDP review report
+armenian-budget gdp-extract --years 2021-2026
+armenian-budget gdp-report
 ```
 
 ### 👩‍💻 For Developers & Contributors
 
 **Documentation Philosophy:** We keep docs minimal and purposeful. They serve humans and AI agents who need context to understand, extend, and audit the system. Only document what cannot be understood from code alone.
+
+Build release artifacts, including the data archive and ChatGPT skill archive:
+
+```bash
+python scripts/build_artifacts.py --target all
+```
 
 - **User expectations** → [prd.md](docs/prd.md)
 - **System design** → [architecture.md](docs/architecture.md)
@@ -128,14 +144,14 @@ If you use this data or code in your research, publications, or projects, please
   title = {Armenian State Budget Tools},
   author = {The Gituzh Initiative},
   url = {https://github.com/gituzh/armenian-budget-tools},
-  year = {2025}
+  year = {2026}
 }
 ```
 
 **Plain text:**
 
 ```text
-The Gituzh Initiative. (2025). Armenian State Budget Tools.
+The Gituzh Initiative. (2026). Armenian State Budget Tools.
 https://github.com/gituzh/armenian-budget-tools
 ```
 
@@ -159,6 +175,11 @@ Official government sources:
 - **MTEP (Mid-Term Expenditures Program)**: [minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/](https://minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/)
 
 → See [config/sources.yaml](config/sources.yaml) for complete registry with URLs
+
+Downloaded archive hashes are recorded in [config/checksums.yaml](config/checksums.yaml).
+When `download --force` detects changed content at an existing URL, the prior archive
+is kept under `.revisions/` and the change is logged in
+[config/checksum_history.yaml](config/checksum_history.yaml).
 
 → See [data_schemas.md](docs/data_schemas.md) for data formats and column details
 

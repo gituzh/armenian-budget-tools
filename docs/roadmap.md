@@ -2,103 +2,69 @@
 
 This roadmap is pragmatic and incremental. Each milestone should be shippable and keep current functionality working.
 
-> **Note:** For completed releases, see [CHANGELOG.md](../CHANGELOG.md). This roadmap focuses on upcoming milestones.
+> **Note:** For released changes, see [CHANGELOG.md](../CHANGELOG.md). This roadmap keeps the recently completed milestone visible briefly, then focuses on upcoming work.
 
-## Milestone v0.4.0 — MTEP + Validation Refactor + Documentation
+## Recently Completed
 
-**Focus:** Complete MTEP integration, separate validation from tests, improve documentation governance
+## Milestone v0.5.0 — Source Discovery, GDP Context, and Release Artifacts
+
+**Focus:** Improve source maintenance, add GDP denominator context, and make release
+artifacts easier to audit and package
 
 ### Features
 
-- **MTEP data type**: Complete integration of Medium-Term Expenditure Program (MTEP) data
-  - 2-level hierarchy (state body → program, no subprograms)
-  - Multi-year planning horizon (y0, y1, y2 columns)
-  - JSON overall format with `plan_years` array
-  - Validation rules specific to MTEP structure
-  - Update `config/sources.yaml` with complete MTEP URLs
+- **MinFin source discovery utilities**:
+  - Add `armenian-budget minfin-spending-reports`
+  - Add `armenian-budget minfin-budget`
+  - Support year filters and spending quarter filters
+  - Support flat JSON output for downloadable files via `--downloads-only`
+  - Keep live source listing separate from `config/sources.yaml` updates
 
-- **Validation/Tests separation**: Move production validation logic out of `tests/` into `validation/`
-  - Extract reusable validation functions from test utilities
-  - Create `validation/runner.py` for orchestration
-  - Maintain test coverage while separating concerns
-  - Update imports across codebase
+- **GDP indicator extraction and reporting**:
+  - Add `armenian-budget gdp-extract` for budget law and full-year spending sources
+  - Write `{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json` snapshots
+  - Add `armenian-budget gdp-report` for HTML review of available snapshots
+  - Include processed GDP snapshots for currently supported budget and spending years
 
-- **Documentation improvements**:
-  - Formalize documentation governance (see `CLAUDE.md`)
-  - Enhance `developer_guide.md` with MTEP examples
-  - Update `data_schemas.md` with MTEP column specifications
-  - Ensure all docs reflect actual codebase structure
+- **Source registry and download auditability**:
+  - Support multi-file source definitions in `config/sources.yaml`
+  - Support explicit local archive filenames in source definitions
+  - Change `download --force` to re-fetch and replace only when content differs
+  - Track SHA-256 checksums for downloaded archives
+  - Preserve changed same-URL archives under `.revisions/`
+  - Record checksum history in `config/checksum_history.yaml`
+
+- **Data and packaging updates**:
+  - Add 2025 full-year spending outputs
+  - Fix 2025 full-year spending parsing for actuals and execution percentages
+  - Add release artifact builder for data and analysis-skill bundles
+  - Extend the repo-owned analysis skill with GDP artifact awareness
+
+- **Interface cleanup**:
+  - Remove the legacy MCP server module, CLI command, dependency, and docs
+  - Keep the repo-owned analysis skill as the primary AI-facing workflow
 
 ### Exit Criteria
 
-- MTEP data processes end-to-end with validation
-- All production validation logic in `src/armenian_budget/validation/`
-- Tests use validation module, not duplicated logic
-- Documentation accurately reflects codebase (verified with actual files)
+- CLI lists spending report and budget files advertised on minfin.am
+- Tests cover HTML extraction and CLI JSON output without live network calls
+- GDP snapshots can be extracted and reviewed in an HTML report
+- Download checksum changes are archived and recorded reproducibly
+- Release data and skill artifacts can be built from a single script
+- Legacy MCP entry points and docs are removed
+- README, developer guide, and data schema docs cover the new commands and artifacts
 
 ### CLI Examples
 
 ```bash
-# Download MTEP sources
-armenian-budget download --years 2024 --source-type mtep
-
-# Extract archives
-armenian-budget extract --years 2024 --source-type mtep
-
-# Parse MTEP data
-armenian-budget parse --years 2024 --source-type MTEP
-
-# Validate MTEP output
-armenian-budget validate --csv data/processed/2024_MTEP.csv
+armenian-budget minfin-spending-reports --years 2025
+armenian-budget minfin-spending-reports --years 2025 --quarter Q1234 --downloads-only
+armenian-budget minfin-budget --years 2026 --downloads-only
+armenian-budget gdp-extract --years 2021-2026 --source-type BUDGET_LAW
+armenian-budget gdp-report
 ```
 
-## Milestone v0.5.0 — MCP Server Redesign
-
-**Focus:** Simplified, more powerful MCP server with flexible query engine
-
-### Features
-
-- **Simplified architecture**:
-  - Reduce number of specialized tools (consolidate similar functionality)
-  - Improve query planning and execution
-  - Better separation between resource and tool APIs
-
-- **More flexible tools**:
-  - Generic query interface with composable filters
-  - Support for cross-year and cross-source queries
-  - Aggregation and grouping capabilities
-  - Time-series analysis primitives
-
-- **Improved result handling**:
-  - Smart inline vs file path decision logic
-  - Configurable size thresholds
-  - Streaming support for large results
-  - Better error messages and diagnostics
-
-- **Enhanced query engine**:
-  - Declarative query planning
-  - Optimized execution strategies
-  - Caching for repeated queries
-  - Performance monitoring
-
-### Exit Criteria
-
-- MCP server supports all previous use cases with fewer, more powerful tools
-- Query performance improved (benchmarked)
-- Example notebooks demonstrate new capabilities
-
-### API Examples
-
-```python
-# New unified query interface
-mcp_client.query(
-    years=range(2019, 2025),
-    source_types=["BUDGET_LAW", "SPENDING_Q1234"],
-    filters={"state_body": "Ministry of Education"},
-    aggregations={"sum": "allocated_amount"},
-    group_by=["year"]
-)
-```
+## Upcoming
 
 ## Milestone v0.6.0 — Government Target Metrics
 
@@ -132,7 +98,6 @@ mcp_client.query(
 
 - Government target data processes end-to-end
 - Validation rules for target metrics implemented
-- MCP tools support target queries
 - Example analysis: budget allocation vs target achievement
 
 ### Use Cases
@@ -234,7 +199,7 @@ armenian-budget process --years 2023 --from-step extract     # resume from extra
 **Documentation:**
 
 - Armenian README translation (README.hy.md)
-- Consider translating key user-facing docs (data_schemas.md, mcp.md)
+- Consider translating key user-facing docs (data_schemas.md, validation.md)
 
 ## Risks & Mitigations
 

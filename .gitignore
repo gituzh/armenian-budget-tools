@@ -30,6 +30,8 @@ data/extracted/*
 !data/extracted/discovery_index.json
 data/processed/tmp
 data/processed/processing_report.json
+data/reports/*_partial.html
+data/tmp
 
 docs/__*
 docs/generated
@@ -38,3 +40,7 @@ scripts/*.html
 scripts/*.csv
 chats/
 build/
+dist/
+artifacts/
+
+.claude/settings.local.json

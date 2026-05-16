@@ -18,6 +18,8 @@ source .venv/bin/activate
 pip install -U -e ".[dev]"  # Installs package + pytest, pytest-cov, jupyter
 ```
 
+When `.venv` already exists in the repo, prefer direct invocations such as `.venv/bin/python ...` and `.venv/bin/pytest ...` over relying on shell PATH state.
+
 Use the CLI to exercise the pipeline locally:
 
 ```bash

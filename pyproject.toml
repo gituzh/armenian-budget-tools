@@ -1,6 +1,10 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "armenian-budget-tools"
-version = "0.4.1"
+version = "0.5.0"
 description = "Armenian Budget Tools: parse and validate Armenian state budget datasets"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,8 +17,9 @@ dependencies = [
   "colorlog",
   "PyYAML",
   "httpx",
-  "mcp",
   "rapidfuzz",
+  "requests",
+  "beautifulsoup4"
 ]
 
 [project.scripts]
@@ -28,6 +33,7 @@ dev = [
   "pytest",
   "pytest-cov",
   "jupyter",
+  "ruff"
 ]
 
 [tool.setuptools.packages.find]

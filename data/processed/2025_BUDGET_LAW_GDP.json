@@ -1,0 +1,1485 @@
+{
+  "year": 2025,
+  "source_type": "BUDGET_LAW",
+  "metric_set": "GDP",
+  "source_file": "ՀՀ կառավարության 2025 թվականի բյուջետային ուղերձ-բացատրագիր.docx",
+  "tables": [
+    {
+      "caption": "Աղյուսակ 1.1. 2025թ. պետական բյուջեի մակրոտնտեսական շրջանակ",
+      "table_title": "2025թ. պետական բյուջեի մակրոտնտեսական շրջանակ",
+      "table_index": 1,
+      "records": [
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 6991.8
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 8501.4
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 9453.2
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 10110.2
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 10891.5
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 11916.2
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Անվանական ՀՆԱ",
+          "unit": "մլրդ դրամ",
+          "value": 13037.0
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Տնտեսական աճ",
+          "unit": "%",
+          "value": 5.8
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Տնտեսական աճ",
+          "unit": "%",
+          "value": 12.6
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Տնտեսական աճ",
+          "unit": "%",
+          "value": 8.3
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Տնտեսական աճ",
+          "unit": "%",
+          "value": 5.8
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Տնտեսական աճ",
+          "unit": "%",
+          "value": 5.1
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Տնտեսական աճ",
+          "unit": "%",
+          "value": 5.2
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Տնտեսական աճ",
+          "unit": "%",
+          "value": 5.2
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 6.9
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 8.0
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 2.7
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 1.1
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 2.5
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 4.0
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "ՀՆԱ դեֆլյատորի աճ",
+          "unit": "%",
+          "value": 4.0
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Գնաճ (ժամանակ. վերջ)",
+          "unit": "%",
+          "value": 7.7
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Գնաճ (ժամանակ. վերջ)",
+          "unit": "%",
+          "value": 8.3
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Գնաճ (ժամանակ. վերջ)",
+          "unit": "%",
+          "value": -0.6
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Գնաճ (ժամանակ. վերջ)",
+          "unit": "%",
+          "value": 2.0
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Գնաճ (ժամանակ. վերջ)",
+          "unit": "%",
+          "value": 4.0
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Գնաճ (ժամանակ. վերջ)",
+          "unit": "%",
+          "value": 4.0
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Գնաճ (ժամանակ. վերջ)",
+          "unit": "%",
+          "value": 4.0
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 7.2
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 8.6
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 2.0
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 0.4
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 3.6
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 4.0
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Գնաճ (միջին)",
+          "unit": "%",
+          "value": 4.0
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Արդյունաբերություն",
+          "unit": "",
+          "value": 2.4
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Արդյունաբերություն",
+          "unit": "",
+          "value": 6.9
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Արդյունաբերություն",
+          "unit": "",
+          "value": -2.2
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Արդյունաբերություն",
+          "unit": "",
+          "value": 3.1
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Արդյունաբերություն",
+          "unit": "",
+          "value": 5.2
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Արդյունաբերություն",
+          "unit": "",
+          "value": 5.1
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Արդյունաբերություն",
+          "unit": "",
+          "value": 5.0
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Գյուղատնտեսություն",
+          "unit": "",
+          "value": -0.8
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Գյուղատնտեսություն",
+          "unit": "",
+          "value": -2.8
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Գյուղատնտեսություն",
+          "unit": "",
+          "value": 2.9
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Գյուղատնտեսություն",
+          "unit": "",
+          "value": 3.3
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Գյուղատնտեսություն",
+          "unit": "",
+          "value": 2.9
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Գյուղատնտեսություն",
+          "unit": "",
+          "value": 3.0
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Գյուղատնտեսություն",
+          "unit": "",
+          "value": 3.0
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Շինարարություն",
+          "unit": "",
+          "value": 3.1
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Շինարարություն",
+          "unit": "",
+          "value": 18.6
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Շինարարություն",
+          "unit": "",
+          "value": 16.0
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Շինարարություն",
+          "unit": "",
+          "value": 13.2
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Շինարարություն",
+          "unit": "",
+          "value": 6.3
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Շինարարություն",
+          "unit": "",
+          "value": 6.2
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Շինարարություն",
+          "unit": "",
+          "value": 6.0
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Ծառայություններ",
+          "unit": "",
+          "value": 8.6
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ծառայություններ",
+          "unit": "",
+          "value": 18.4
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Ծառայություններ",
+          "unit": "",
+          "value": 11.5
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Ծառայություններ",
+          "unit": "",
+          "value": 6.9
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Ծառայություններ",
+          "unit": "",
+          "value": 5.2
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Ծառայություններ",
+          "unit": "",
+          "value": 5.4
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Ծառայություններ",
+          "unit": "",
+          "value": 5.4
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Զուտ հարկեր",
+          "unit": "",
+          "value": 7.4
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Զուտ հարկեր",
+          "unit": "",
+          "value": 8.1
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Զուտ հարկեր",
+          "unit": "",
+          "value": 11.0
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Զուտ հարկեր",
+          "unit": "",
+          "value": 1.4
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Զուտ հարկեր",
+          "unit": "",
+          "value": 5.1
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Զուտ հարկեր",
+          "unit": "",
+          "value": 5.2
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Զուտ հարկեր",
+          "unit": "",
+          "value": 5.5
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Վերջնական սպառում",
+          "unit": "",
+          "value": 1.3
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Վերջնական սպառում",
+          "unit": "",
+          "value": 4.3
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Վերջնական սպառում",
+          "unit": "",
+          "value": 9.0
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Վերջնական սպառում",
+          "unit": "",
+          "value": 5.6
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Վերջնական սպառում",
+          "unit": "",
+          "value": 6.2
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Վերջնական սպառում",
+          "unit": "",
+          "value": 3.5
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Վերջնական սպառում",
+          "unit": "",
+          "value": 3.8
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": -6.2
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": -2.2
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": 28.3
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": 4.4
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": 8.3
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": -5.4
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": -4.4
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 2.8
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 5.6
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 5.6
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 5.8
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 5.7
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 5.6
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 5.5
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Հիմնական միջոցներում ներդրումներ",
+          "unit": "",
+          "value": 23.6
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Հիմնական միջոցներում ներդրումներ",
+          "unit": "",
+          "value": 14.0
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Հիմնական միջոցներում ներդրումներ",
+          "unit": "",
+          "value": 10.1
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Հիմնական միջոցներում ներդրումներ",
+          "unit": "",
+          "value": 11.5
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Հիմնական միջոցներում ներդրումներ",
+          "unit": "",
+          "value": 5.4
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Հիմնական միջոցներում ներդրումներ",
+          "unit": "",
+          "value": 11.6
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Հիմնական միջոցներում ներդրումներ",
+          "unit": "",
+          "value": 5.7
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": 33.9
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": 17.9
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": 31.5
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": 36.6
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": -2.2
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": 34.8
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Պետական",
+          "unit": "",
+          "value": 0.7
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 22.3
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 13.5
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 7.1
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 7.2
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 7.1
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 7.0
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Մասնավոր",
+          "unit": "",
+          "value": 7.0
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 18.6
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 59.9
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 30.7
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 16.8
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": -36.5
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 4.9
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 5.9
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 12.9
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 35.0
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 30.2
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 20.5
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": -33.6
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 3.8
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 5.6
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -483.0
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": 64.7
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -556.3
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -1275.1
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -1406.0
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -1403.2
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -1447.8
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -1115.2
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -147.2
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -193.7
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -845.5
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -1061.2
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -1053.4
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -1048.1
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 5039.9
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 10117.8
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 14338.3
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 16814.3
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 10589.3
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 10831.7
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 11355.7
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 30.7
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 100.8
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 41.7
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 17.3
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": -37.0
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 2.289
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 4.8
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 6155.2
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 10265.0
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 14532.1
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 17659.9
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 11650.5
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 11885.0
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 12403.8
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 20.3
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 66.8
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 41.6
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 21.5
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": -34.0
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 2.013
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Փոփոխություն",
+          "unit": "%",
+          "value": 4.4
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 1274.0
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 1449.2
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 979.0
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 637.6
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 669.7
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 695.8
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 721.8
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -3.5
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": 0.3
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -2.3
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -5.0
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -5.3
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -5.1
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Ընթացիկ հաշիվ",
+          "unit": "",
+          "value": -5.0
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -8.0
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -0.8
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -0.8
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -3.3
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -4.0
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -3.8
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Ապրանքների և ծառայությունների հաշվեկշիռ",
+          "unit": "",
+          "value": -3.7
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 36.3
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 51.9
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 59.5
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 65.6
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 39.9
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 39.6
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Արտահանում",
+          "unit": "",
+          "value": 39.5
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 44.3
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 52.6
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 60.3
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 68.9
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 43.9
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 43.4
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Ներմուծում",
+          "unit": "",
+          "value": 43.2
+        },
+        {
+          "target_year": 2021,
+          "status": "փաստ",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 9.2
+        },
+        {
+          "target_year": 2022,
+          "status": "փաստ",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 7.4
+        },
+        {
+          "target_year": 2023,
+          "status": "փաստ",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 4.1
+        },
+        {
+          "target_year": 2024,
+          "status": "սպասում",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 2.5
+        },
+        {
+          "target_year": 2025,
+          "status": "ծրագիր",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 2.5
+        },
+        {
+          "target_year": 2026,
+          "status": "կանխ.",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 2.5
+        },
+        {
+          "target_year": 2027,
+          "status": "կանխ.",
+          "indicator": "Դրամական փոխանցումներ",
+          "unit": "",
+          "value": 2.5
+        }
+      ]
+    }
+  ]
+}

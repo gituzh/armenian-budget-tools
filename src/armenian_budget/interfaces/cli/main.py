@@ -11,6 +11,73 @@ from armenian_budget.core.enums import SourceType
 # Source type choices for argparse - used across all commands
 SOURCE_TYPE_CHOICES = list(SourceType.__members__.keys())
 
+
+def _checksum_key(item: dict) -> tuple[int, str | None, str | None]:
+    return (
+        int(item.get("year", 0)),
+        item.get("source_type"),
+        item.get("url"),
+    )
+
+
+def _source_checksum_key(source: object) -> tuple[int, str | None, str | None]:
+    return (
+        int(getattr(source, "year")),
+        getattr(source, "source_type"),
+        getattr(source, "url"),
+    )
+
+
+def _checksum_record(
+    source: object,
+    checksum: str,
+    previous: dict | None,
+    timestamp: str,
+) -> dict:
+    return {
+        "name": getattr(source, "name"),
+        "year": int(getattr(source, "year")),
+        "source_type": getattr(source, "source_type"),
+        "url": getattr(source, "url"),
+        "checksum": checksum,
+        "checksum_updated_at": (
+            previous.get("checksum_updated_at")
+            if previous and previous.get("checksum") == checksum
+            else timestamp
+        ),
+    }
+
+
+def _ordered_checksum_items(checksums_by_key: dict[tuple, dict], sources: list) -> list[dict]:
+    ordered: list[dict] = []
+    emitted: set[tuple] = set()
+    for source in sources:
+        key = _source_checksum_key(source)
+        item = checksums_by_key.get(key)
+        if item is None:
+            continue
+        ordered.append(item)
+        emitted.add(key)
+    ordered.extend(item for key, item in checksums_by_key.items() if key not in emitted)
+    return ordered
+
+
+def _merge_checksum_item(
+    index: dict[tuple, dict],
+    item: dict,
+    source_names_by_key: dict[tuple, set[str]],
+) -> None:
+    key = _checksum_key(item)
+    active_names = source_names_by_key.get(key, set())
+    current_name = index.get(key, {}).get("name")
+    item_name = item.get("name")
+    if (
+        key not in index
+        or (item_name in active_names and current_name not in active_names)
+    ):
+        index[key] = item
+
+
 try:
     # Prefer package-defined version
     from armenian_budget import __version__ as _PACKAGE_VERSION
@@ -634,28 +701,33 @@ def cmd_download(args: argparse.Namespace) -> int:
         sources,
         original_root,
         skip_existing=(not args.force),
-        overwrite_existing=args.overwrite,
     )
     # Always record checksums for successful results into config/checksums.yaml
     import hashlib
     from datetime import datetime, timezone
 
     checksums_path = Path(cfg_path).with_name("checksums.yaml")
+    checksum_history_path = Path(cfg_path).with_name("checksum_history.yaml")
     existing_index: dict[tuple, dict] = {}
+    checksum_history: list[dict] = []
+    source_names_by_key: dict[tuple, set[str]] = {}
+    for source in registry.all():
+        source_names_by_key.setdefault(_source_checksum_key(source), set()).add(source.name)
     try:
         if checksums_path.exists():
             with checksums_path.open("r", encoding="utf-8") as f:
                 existing = yaml.safe_load(f) or {}
             for item in existing.get("checksums", []) or []:
-                key = (
-                    item.get("name"),
-                    int(item.get("year", 0)),
-                    item.get("source_type"),
-                    item.get("url"),
-                )
-                existing_index[key] = item
+                _merge_checksum_item(existing_index, item, source_names_by_key)
     except (OSError, ValueError, yaml.YAMLError, TypeError):
         existing_index = {}
+    try:
+        if checksum_history_path.exists():
+            with checksum_history_path.open("r", encoding="utf-8") as f:
+                history = yaml.safe_load(f) or {}
+            checksum_history = list(history.get("changes", []) or [])
+    except (OSError, ValueError, yaml.YAMLError, TypeError):
+        checksum_history = []
 
     recorded = 0
     for source_def, dl_result in zip(sources, results):
@@ -673,33 +745,45 @@ def cmd_download(args: argparse.Namespace) -> int:
         except (OSError, ValueError):
             continue
         ts = datetime.now(timezone.utc).isoformat()
-        key = (
-            source_def.name,
-            int(source_def.year),
-            source_def.source_type,
-            source_def.url,
-        )
+        key = _source_checksum_key(source_def)
         prev = existing_index.get(key)
         if not prev or prev.get("checksum") != digest:
-            existing_index[key] = {
-                "name": source_def.name,
-                "year": int(source_def.year),
-                "source_type": source_def.source_type,
-                "url": source_def.url,
-                "checksum": digest,
-                "checksum_updated_at": ts,
-            }
+            if prev and prev.get("checksum"):
+                change_record = {
+                    "name": source_def.name,
+                    "year": int(source_def.year),
+                    "source_type": source_def.source_type,
+                    "url": source_def.url,
+                    "previous_checksum": prev.get("checksum"),
+                    "new_checksum": digest,
+                    "previous_checksum_updated_at": prev.get("checksum_updated_at"),
+                    "changed_detected_at": ts,
+                }
+                archived_path = getattr(dl_result, "archived_path", None)
+                if archived_path:
+                    change_record["archived_path"] = str(archived_path)
+                checksum_history.append(change_record)
             recorded += 1
+        existing_index[key] = _checksum_record(source_def, digest, prev, ts)
 
     try:
         with checksums_path.open("w", encoding="utf-8") as f:
             yaml.safe_dump(
-                {"checksums": list(existing_index.values())},
+                {"checksums": _ordered_checksum_items(existing_index, registry.all())},
                 f,
                 sort_keys=False,
                 allow_unicode=True,
                 indent=2,
             )
+        if checksum_history:
+            with checksum_history_path.open("w", encoding="utf-8") as f:
+                yaml.safe_dump(
+                    {"changes": checksum_history},
+                    f,
+                    sort_keys=False,
+                    allow_unicode=True,
+                    indent=2,
+                )
     except (OSError, ValueError, yaml.YAMLError, TypeError):
         pass
     ok = sum(1 for r in results if r.ok)
@@ -806,64 +890,6 @@ def cmd_extract(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_mcp_server(args: argparse.Namespace) -> int:
-    """Start the MCP server.
-
-    Default: stdio. If --port is set, run HTTP transport at host:port.
-    """
-    try:
-        mcp_server = importlib.import_module("armenian_budget.interfaces.mcp.server")
-    except (ModuleNotFoundError, AttributeError, ImportError) as e:
-        logging.error(
-            "Failed to import MCP server. Ensure 'mcp' is installed. Error: %s",
-            e,
-        )
-        return 3
-    data_path = args.data_path or "data/processed"
-    try:
-        rel = Path(data_path).resolve().relative_to(Path.cwd().resolve())
-        display_path = rel.as_posix()
-    except (ValueError, OSError):
-        display_path = str(Path(data_path))
-    port = args.port
-    host = args.host or "127.0.0.1"
-    https = args.https
-    certfile = args.certfile
-    keyfile = args.keyfile
-    if port and https:
-        logging.info(
-            "Starting MCP HTTPS server on %s:%s (data path: %s)",
-            host,
-            port,
-            display_path,
-        )
-    elif port:
-        logging.info(
-            "Starting MCP HTTP server on %s:%s (data path: %s)",
-            host,
-            port,
-            display_path,
-        )
-    else:
-        logging.info("Starting MCP stdio server with data path: %s", display_path)
-    try:
-        if port and https:
-            getattr(mcp_server, "run_https")(
-                data_path,
-                host=host,
-                port=int(port),
-                certfile=certfile or "config/certs/localhost.pem",
-                keyfile=keyfile or "config/certs/localhost-key.pem",
-            )
-        elif port:
-            getattr(mcp_server, "run_http")(data_path, host=host, port=int(port))
-        else:
-            mcp_server.run(data_path)
-    except KeyboardInterrupt:
-        pass
-    return 0
-
-
 def cmd_discover(args: argparse.Namespace) -> int:
     try:
         ingestion_pkg = importlib.import_module("armenian_budget.ingestion")
@@ -919,6 +945,146 @@ def cmd_discover(args: argparse.Namespace) -> int:
     return 0 if ok > 0 else 1
 
 
+def cmd_gdp_extract(args: argparse.Namespace) -> int:
+    try:
+        gdp_mod = importlib.import_module("armenian_budget.ingestion.gdp_indicators")
+    except (ModuleNotFoundError, AttributeError) as e:
+        logging.error("Unable to load GDP extractor: %s", e)
+        return 3
+
+    years = _parse_years_arg(args.years)
+    if not years:
+        logging.error("--years is required for gdp-extract")
+        return 2
+
+    original_root = resolve_path_with_default(args.original_root, "data/original")
+    extracted_root = resolve_path_with_default(args.extracted_root, "data/extracted")
+    processed_root = resolve_path_with_default(args.processed_root, "data/processed")
+    sources_config = resolve_path_with_default(args.config, "config/sources.yaml")
+
+    source_types = [args.source_type] if args.source_type else list(gdp_mod.GDP_SOURCE_TYPES)
+    ok = 0
+    failed = 0
+    for year in years:
+        for source_type in source_types:
+            try:
+                snapshot = gdp_mod.extract_gdp_snapshot(
+                    year=int(year),
+                    source_type=source_type,
+                    original_root=original_root,
+                    extracted_root=extracted_root,
+                    sources_config=sources_config,
+                )
+                output_path = gdp_mod.write_gdp_snapshot(snapshot, processed_root)
+                logging.info("Saved GDP snapshot: %s", output_path)
+                ok += 1
+            except (FileNotFoundError, ValueError, KeyError, OSError) as exc:
+                logging.warning("%s %s: %s", year, source_type, exc)
+                failed += 1
+
+    if ok == 0:
+        logging.error("No GDP snapshots extracted.")
+        return 1
+    return 0 if failed == 0 else 1
+
+
+def cmd_gdp_report(args: argparse.Namespace) -> int:
+    try:
+        gdp_mod = importlib.import_module("armenian_budget.ingestion.gdp_indicators")
+    except (ModuleNotFoundError, AttributeError) as e:
+        logging.error("Unable to load GDP reporter: %s", e)
+        return 3
+
+    years = _parse_years_arg(args.years) if args.years else None
+    processed_root = resolve_path_with_default(args.processed_root, "data/processed")
+    snapshots = gdp_mod.load_gdp_snapshots(
+        processed_root,
+        years=years,
+        source_type=args.source_type,
+    )
+    if not snapshots:
+        logging.error("No GDP JSON snapshots found.")
+        return 1
+
+    has_filter = bool(args.years or args.source_type)
+    default_output = (
+        "data/reports/gdp_report_partial.html"
+        if has_filter
+        else "data/reports/gdp_report.html"
+    )
+    output_path = resolve_path_with_default(args.output, default_output)
+    gdp_mod.write_gdp_html_report(snapshots, output_path)
+    logging.info("Saved GDP report: %s", output_path)
+    return 0
+
+
+def cmd_minfin_spending_reports(args: argparse.Namespace) -> int:
+    try:
+        reports_mod = importlib.import_module(
+            "armenian_budget.sources.minfin_spending_reports"
+        )
+    except (ModuleNotFoundError, AttributeError) as e:
+        logging.error("Unable to load MinFin spending report lister: %s", e)
+        return 3
+
+    years = set(_parse_years_arg(args.years) or []) if args.years else None
+    reports = reports_mod.list_minfin_spending_reports(years)
+    if args.quarter:
+        reports = [report for report in reports if report["quarter"] == args.quarter]
+    if args.downloads_only:
+        downloads = []
+        for report in reports:
+            for item in report["downloads"]:
+                downloads.append(
+                    {
+                        "year": report["year"],
+                        "quarter": report["quarter"],
+                        **item,
+                    }
+                )
+        import json
+
+        print(json.dumps(downloads, ensure_ascii=False, indent=2))
+        return 0
+
+    import json
+
+    print(json.dumps(reports, ensure_ascii=False, indent=2))
+    return 0
+
+
+def cmd_minfin_budget(args: argparse.Namespace) -> int:
+    try:
+        budget_mod = importlib.import_module("armenian_budget.sources.minfin_budget")
+    except (ModuleNotFoundError, AttributeError) as e:
+        logging.error("Unable to load MinFin budget lister: %s", e)
+        return 3
+
+    years = set(_parse_years_arg(args.years) or []) if args.years else None
+    records = budget_mod.list_minfin_budget(years)
+    if args.downloads_only:
+        downloads = []
+        for record in records:
+            for item in record["downloads"]:
+                downloads.append(
+                    {
+                        "year": record["year"],
+                        "source_type": record["source_type"],
+                        "page_url": record["page_url"],
+                        **item,
+                    }
+                )
+        import json
+
+        print(json.dumps(downloads, ensure_ascii=False, indent=2))
+        return 0
+
+    import json
+
+    print(json.dumps(records, ensure_ascii=False, indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="armenian-budget",
@@ -966,12 +1132,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_download.add_argument(
         "--force",
         action="store_true",
-        help="Force re-download even if file already exists",
-    )
-    p_download.add_argument(
-        "--overwrite",
-        action="store_true",
-        help="Overwrite existing files after successful download (even if same size)",
+        help="Re-download existing files and archive changed prior copies",
     )
     p_download.add_argument(
         "--source-type",
@@ -1041,6 +1202,47 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_discover.set_defaults(func=cmd_discover)
 
+    p_minfin = sub.add_parser(
+        "minfin-spending-reports",
+        help="List spending report files advertised on minfin.am",
+    )
+    p_minfin.add_argument(
+        "--years",
+        help=(
+            "Comma-separated years (e.g. 2024,2025) or range (2024-2025). "
+            "Defaults to all listed years."
+        ),
+    )
+    p_minfin.add_argument(
+        "--quarter",
+        choices=["Q1", "Q12", "Q123", "Q1234"],
+        help="Limit output to one spending report period.",
+    )
+    p_minfin.add_argument(
+        "--downloads-only",
+        action="store_true",
+        help="Return a flat list of downloadable items instead of period records.",
+    )
+    p_minfin.set_defaults(func=cmd_minfin_spending_reports)
+
+    p_minfin_budget = sub.add_parser(
+        "minfin-budget",
+        help="List budget files advertised on minfin.am",
+    )
+    p_minfin_budget.add_argument(
+        "--years",
+        help=(
+            "Comma-separated years (e.g. 2024,2025) or range (2024-2025). "
+            "Defaults to all listed years."
+        ),
+    )
+    p_minfin_budget.add_argument(
+        "--downloads-only",
+        action="store_true",
+        help="Return a flat list of downloadable items instead of year records.",
+    )
+    p_minfin_budget.set_defaults(func=cmd_minfin_budget)
+
     p_process = sub.add_parser("process", help="Process one or more source Excels and write CSV")
     p_process.add_argument(
         "--years",
@@ -1100,6 +1302,72 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_process.set_defaults(func=cmd_process)
 
+    p_gdp_extract = sub.add_parser(
+        "gdp-extract",
+        help="Extract GDP indicator JSON snapshots from budget source documents",
+    )
+    p_gdp_extract.add_argument(
+        "--years",
+        required=True,
+        help="Comma-separated years (e.g. 2024,2025) or range (2024-2025)",
+    )
+    p_gdp_extract.add_argument(
+        "--source-type",
+        type=str.upper,
+        choices=["BUDGET_LAW", "SPENDING_Q1234"],
+        help="Limit extraction to one GDP-supported source type",
+    )
+    p_gdp_extract.add_argument(
+        "--config",
+        default=None,
+        help="Path to sources.yaml (defaults to config/sources.yaml)",
+    )
+    p_gdp_extract.add_argument(
+        "--original-root",
+        default=None,
+        help="Original sources root (defaults to ./data/original)",
+    )
+    p_gdp_extract.add_argument(
+        "--extracted-root",
+        default=None,
+        help="Extracted data root (defaults to ./data/extracted)",
+    )
+    p_gdp_extract.add_argument(
+        "--processed-root",
+        default=None,
+        help="Processed outputs root (defaults to ./data/processed)",
+    )
+    p_gdp_extract.set_defaults(func=cmd_gdp_extract)
+
+    p_gdp_report = sub.add_parser(
+        "gdp-report",
+        help="Render an HTML report from GDP JSON snapshots",
+    )
+    p_gdp_report.add_argument(
+        "--years",
+        help="Comma-separated years (e.g. 2024,2025) or range (2024-2025)",
+    )
+    p_gdp_report.add_argument(
+        "--source-type",
+        type=str.upper,
+        choices=["BUDGET_LAW", "SPENDING_Q1234"],
+        help="Limit report to one GDP-supported source type",
+    )
+    p_gdp_report.add_argument(
+        "--processed-root",
+        default=None,
+        help="Processed data root (defaults to ./data/processed)",
+    )
+    p_gdp_report.add_argument(
+        "--output",
+        default=None,
+        help=(
+            "HTML output path. Defaults to ./data/reports/gdp_report.html without "
+            "filters and ./data/reports/gdp_report_partial.html with filters."
+        ),
+    )
+    p_gdp_report.set_defaults(func=cmd_gdp_report)
+
     p_validate = sub.add_parser("validate", help="Validate processed budget data")
     p_validate.add_argument(
         "--years",
@@ -1136,35 +1404,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Generate detailed JSON report (one per year). Optionally specify custom directory path.",
     )
     p_validate.set_defaults(func=cmd_validate)
-
-    p_mcp = sub.add_parser("mcp-server", help="Run minimal MCP server (stdio or HTTP)")
-    p_mcp.add_argument(
-        "--data-path",
-        default=None,
-        help="Path to data/processed directory (defaults to ./data/processed)",
-    )
-    p_mcp.add_argument(
-        "--port",
-        default=None,
-        help="If set, run HTTP/HTTPS transport on the given port",
-    )
-    p_mcp.add_argument(
-        "--host",
-        default=None,
-        help="Host to bind for HTTP transport (default 127.0.0.1)",
-    )
-    p_mcp.add_argument("--https", action="store_true", help="Enable HTTPS (requires cert and key)")
-    p_mcp.add_argument(
-        "--certfile",
-        default=None,
-        help="Path to TLS cert PEM (default config/certs/localhost.pem)",
-    )
-    p_mcp.add_argument(
-        "--keyfile",
-        default=None,
-        help="Path to TLS key PEM (default config/certs/localhost-key.pem)",
-    )
-    p_mcp.set_defaults(func=cmd_mcp_server)
 
     return p
 

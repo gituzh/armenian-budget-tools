@@ -15,6 +15,7 @@ class SourceDefinition:
     source_type: str  # "spending_q1", "spending_q12", "spending_q123", "spending_q1234"
     url: str
     file_format: Optional[str] = None  # Optional override: "zip", "rar", "xlsx", etc.
+    filename: Optional[str] = None
     description: str = ""
     checksum: Optional[str] = None
     checksum_updated_at: Optional[str] = None
@@ -38,18 +39,30 @@ class SourceRegistry:
         entries = data.get("sources", []) or []
         sources: List[SourceDefinition] = []
         for item in entries:
-            sources.append(
-                SourceDefinition(
-                    name=str(item.get("name", "")),
-                    year=int(item.get("year")),
-                    source_type=str(item.get("source_type", "")),
-                    url=str(item.get("url", "")),
-                    file_format=str(item.get("file_format", "")),
-                    description=str(item.get("description", "")),
-                    checksum=item.get("checksum"),
-                    checksum_updated_at=item.get("checksum_updated_at"),
+            base = {
+                "name": str(item.get("name", "")),
+                "year": int(item.get("year")),
+                "source_type": str(item.get("source_type", "")),
+                "description": str(item.get("description", "")),
+            }
+            files = item.get("files")
+            if files is None:
+                files = [item]
+            for file_item in files:
+                name = file_item.get("name") or base["name"]
+                sources.append(
+                    SourceDefinition(
+                        name=str(name),
+                        year=base["year"],
+                        source_type=base["source_type"],
+                        url=str(file_item.get("url", "")),
+                        file_format=file_item.get("file_format", item.get("file_format")),
+                        filename=file_item.get("filename"),
+                        description=str(file_item.get("description", base["description"])),
+                        checksum=file_item.get("checksum"),
+                        checksum_updated_at=file_item.get("checksum_updated_at"),
+                    )
                 )
-            )
         return sources
 
     def all(self) -> List[SourceDefinition]:
