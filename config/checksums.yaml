@@ -273,6 +273,12 @@ checksums:
     բյուջետային ուղերձ-բացատրագիր.docx
   checksum: a2dd20e53054426481105154509538024cb52c9f0fa444e0dc1854c713c04c56
   checksum_updated_at: '2026-05-10T18:44:31.717823+00:00'
+- name: 2026_spending_q1
+  year: 2026
+  source_type: spending_q1
+  url: https://minfin.am/website/images/files/2026_I%20%D5%A5%D5%BC%D5%A1%D5%B4%D5%BD%D5%B5%D5%A1%D5%AF_%D5%B0%D5%A1%D5%B7%D5%BE%D5%A5%D5%BF%D5%BE%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.rar
+  checksum: 5622b7adc682dfd80e0cb479ed6a437e4af5c1f162729ce74956829ff1aa5dc0
+  checksum_updated_at: '2026-05-16T19:03:59.958768+00:00'
 - name: 2021_spending_q123
   year: 2021
   source_type: spending_q123
