@@ -7,10 +7,10 @@
 </pattern>
 </defs>
 <title id="chart-title">Armenia R&amp;D allocations and spending</title>
-<desc id="chart-desc">Grouped bar chart showing Armenian state-budget R&amp;D allocations from budget laws and spending from parsed execution reports. 2025 spending is Q1-Q3 actual and 2026 spending is unavailable in parsed data.</desc>
+<desc id="chart-desc">Grouped bar chart showing Armenian state-budget R&amp;D allocations from budget laws, full-year spending actuals through 2025, and 2026 Q1 actual spending marked as partial-year.</desc>
 <rect x="0.5" y="0.5" width="1279" height="639" fill="#ffffff" stroke="#d1d5db" stroke-width="1"/>
 <text x="88" y="50" class="title">Armenia R&amp;D allocations and spending</text>
-<text x="88" y="74" class="subtitle">Allocations come from budget laws; spending is shown only where parsed execution files exist.</text>
+<text x="88" y="74" class="subtitle">Allocations come from budget laws; spending is full-year actual through 2025 and Q1 actual for 2026.</text>
 <text x="88" y="88" class="axis">Values shown in AMD bn (source CSV values are in thousand AMD)</text>
 <line x1="88" y1="500.00" x2="1232" y2="500.00" stroke="#e5e7eb" stroke-width="1"/>
 <text x="76" y="504.00" class="tick" text-anchor="end">0</text>
@@ -64,22 +64,19 @@
 <text x="874.50" y="522.00" class="axis" text-anchor="middle">2024</text>
 <rect x="977.46" y="124.93" width="40.04" height="375.07" fill="#2563eb" rx="3" ry="3"/>
 <text x="997.48" y="116.93" class="label" text-anchor="middle">38.1</text>
-<rect x="1017.50" y="315.71" width="40.04" height="184.29" fill="url(#partialActual)" stroke="#92400e" stroke-width="1" rx="3" ry="3"/>
-<text x="1037.52" y="307.71" class="label" text-anchor="middle">18.7</text>
-<text x="1017.50" y="522.00" class="axis" text-anchor="middle">2025*</text>
+<rect x="1017.50" y="183.29" width="40.04" height="316.71" fill="#f59e0b" stroke="#b45309" stroke-width="1" rx="3" ry="3"/>
+<text x="1037.52" y="175.29" class="label" text-anchor="middle">32.2</text>
+<text x="1017.50" y="522.00" class="axis" text-anchor="middle">2025</text>
 <rect x="1120.46" y="177.06" width="40.04" height="322.94" fill="#2563eb" rx="3" ry="3"/>
 <text x="1140.48" y="169.06" class="label" text-anchor="middle">32.8</text>
-<rect x="1160.50" y="474.00" width="40.04" height="22" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 3" rx="3" ry="3"/>
-<text x="1180.52" y="489.00" class="tick" text-anchor="middle">n/a</text>
-<text x="1160.50" y="522.00" class="axis" text-anchor="middle">2026†</text>
+<rect x="1160.50" y="441.79" width="40.04" height="58.21" fill="url(#partialActual)" stroke="#92400e" stroke-width="1" rx="3" ry="3"/>
+<text x="1180.52" y="433.79" class="label" text-anchor="middle">5.9 Q1</text>
+<text x="1160.50" y="522.00" class="axis" text-anchor="middle">2026 Q1*</text>
 <rect x="88" y="537" width="18" height="18" fill="#2563eb" stroke="#2563eb" stroke-width="1" rx="3" ry="3"/>
 <text x="116" y="551" class="legend">Allocation</text>
 <rect x="318" y="537" width="18" height="18" fill="#f59e0b" stroke="#b45309" stroke-width="1" rx="3" ry="3"/>
 <text x="346" y="551" class="legend">Full-year spending actual</text>
 <rect x="548" y="537" width="18" height="18" fill="url(#partialActual)" stroke="#92400e" stroke-width="1" rx="3" ry="3"/>
-<text x="576" y="551" class="legend">Partial-year spending</text>
-<rect x="778" y="537" width="18" height="18" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1" rx="3" ry="3"/>
-<text x="806" y="551" class="legend">Spending unavailable</text>
-<text x="88" y="586" class="note">* 2025 spending is Q1-Q3 actual from SPENDING_Q123.</text>
-<text x="88" y="604" class="note">† 2026 has budget data, but no parsed spending file yet.</text>
+<text x="576" y="551" class="legend">Q1 spending actual</text>
+<text x="88" y="586" class="note">* 2026 spending is Q1 actual from SPENDING_Q1, so it is partial-year and not comparable to full-year spending actuals.</text>
 </svg>

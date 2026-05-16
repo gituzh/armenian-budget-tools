@@ -69,8 +69,8 @@ data/
 **Spending Report Archives:**
 
 - **Source Page**: [Budget Execution Reports](https://minfin.am/hy/page/hy_hashvetvutyunner/) - "Պետական բյուջեեի կատարման մասին հաշվետվություններ"
-- **Years Available**: 2019-2025
-- **Quarters**: Q1, Q12, Q123, Q1234
+- **Years Available**: 2019-2025 for all supported quarters; 2026 Q1
+- **Quarters**: Q1, Q12, Q123, Q1234 where published and packaged
 - **Format**: RAR/ZIP archives with nested folder structures
 
 **MTEP Archives:**

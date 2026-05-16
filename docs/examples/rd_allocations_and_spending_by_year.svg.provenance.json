@@ -1,7 +1,9 @@
 {
-  "artifact": "/Users/tigran/Workspace/_gituzh/armenian-budget-tools/artifacts/rd_allocations_and_spending_by_year.svg",
-  "generated_at": "2026-03-06T13:30:21.579160+00:00",
-  "data_root": "/Users/tigran/Workspace/_gituzh/armenian-budget-tools/data/processed",
+  "artifact": "docs/examples/rd_allocations_and_spending_by_year.svg",
+  "generated_at": "2026-05-16T19:47:15+00:00",
+  "data_root": "data/processed",
+  "official_source": "minfin.am",
+  "parser_tool": "https://github.com/gituzh/armenian-budget-tools",
   "source_files": [
     "2019_BUDGET_LAW.csv",
     "2019_SPENDING_Q1234.csv",
@@ -16,8 +18,9 @@
     "2024_BUDGET_LAW.csv",
     "2024_SPENDING_Q1234.csv",
     "2025_BUDGET_LAW.csv",
-    "2025_SPENDING_Q123.csv",
-    "2026_BUDGET_LAW.csv"
+    "2025_SPENDING_Q1234.csv",
+    "2026_BUDGET_LAW.csv",
+    "2026_SPENDING_Q1.csv"
   ],
   "years": [
     2019,
@@ -32,7 +35,7 @@
   "source_types": [
     "BUDGET_LAW",
     "SPENDING_Q1234",
-    "SPENDING_Q123"
+    "SPENDING_Q1"
   ],
   "grain": "mixed: program for MinESCS/HESC; subprogram for MIC/MinHTI",
   "metrics": [
@@ -44,14 +47,64 @@
   "filters_or_mappings": [
     "MinESCS/HESC allocation and spending: state_body contains 'կրթ' AND program_code == '1162'; take program_total from BUDGET_LAW and program_actual from SPENDING files.",
     "MIC/MinHTI allocation continuity: 2019 BUDGET_LAW uses state_body contains 'պաշտպան', program_code == '1119', subprogram_code == '11001'; 2020-2023 BUDGET_LAW uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1119', subprogram_code == '11001'; 2024-2026 BUDGET_LAW uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1220', subprogram_code == '11001'.",
-    "MIC/MinHTI spending continuity: 2019-2023 spending uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1119', subprogram_code == '11001'; 2024-2025 spending uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1220', subprogram_code == '11001'.",
+    "MIC/MinHTI spending continuity: 2019-2023 spending uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1119', subprogram_code == '11001'; 2024-2026 spending uses state_body contains 'բարձր տեխնոլոգիական', program_code == '1220', subprogram_code == '11001'.",
+    "2026 spending uses 2026_SPENDING_Q1.csv and is intentionally labeled as Q1 partial-year actual spending.",
     "The combined R&D topic is a manual mapping layer over parsed budget facts, following the repo's own R&D example logic."
   ],
   "display_units": "chart labels use billions of AMD; source CSV values remain in thousand AMD",
+  "chart_series": [
+    {
+      "year": 2019,
+      "allocation_amd_bn": 17.271017,
+      "spending_amd_bn": 17.299923,
+      "spending_source_type": "SPENDING_Q1234"
+    },
+    {
+      "year": 2020,
+      "allocation_amd_bn": 18.110275,
+      "spending_amd_bn": 15.947575,
+      "spending_source_type": "SPENDING_Q1234"
+    },
+    {
+      "year": 2021,
+      "allocation_amd_bn": 18.329497,
+      "spending_amd_bn": 16.310554,
+      "spending_source_type": "SPENDING_Q1234"
+    },
+    {
+      "year": 2022,
+      "allocation_amd_bn": 30.384098,
+      "spending_amd_bn": 25.127489,
+      "spending_source_type": "SPENDING_Q1234"
+    },
+    {
+      "year": 2023,
+      "allocation_amd_bn": 36.655684,
+      "spending_amd_bn": 23.766683,
+      "spending_source_type": "SPENDING_Q1234"
+    },
+    {
+      "year": 2024,
+      "allocation_amd_bn": 39.941361,
+      "spending_amd_bn": 33.518606,
+      "spending_source_type": "SPENDING_Q1234"
+    },
+    {
+      "year": 2025,
+      "allocation_amd_bn": 38.078274,
+      "spending_amd_bn": 32.153371,
+      "spending_source_type": "SPENDING_Q1234"
+    },
+    {
+      "year": 2026,
+      "allocation_amd_bn": 32.786164,
+      "spending_amd_bn": 5.909258,
+      "spending_source_type": "SPENDING_Q1"
+    }
+  ],
   "caveats": [
     "2019 includes an institutional transition: the budget-side MIC continuity row is under the defense ministry, while the spending-side row appears under the high-tech ministry.",
-    "2019-2024 spending is full-year actual from SPENDING_Q1234.",
-    "2025 spending is partial-year actual from SPENDING_Q123 and is intentionally shown as mixed-horizon against the annual budget allocation.",
-    "2026 budget data is included from BUDGET_LAW, while spending remains unavailable because no parsed 2026 spending file exists."
+    "2019-2025 spending is full-year actual from SPENDING_Q1234.",
+    "2026 spending is Q1 actual from SPENDING_Q1, so it is partial-year and not comparable to full-year spending actuals."
   ]
 }
