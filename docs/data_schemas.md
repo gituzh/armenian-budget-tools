@@ -60,7 +60,7 @@ data/
 **Budget Law Archives:**
 
 - **Source Page**: [State Budget Law](https://minfin.am/hy/page/petakan_byuj/) - "Պետական բյուջե"
-- **Years Available**: 2019-2025
+- **Years Available**: 2019-2026
 - **Format**: RAR/ZIP archives containing multiple Excel files
 - **Current Scope**: Only parsing program summary (Ամփոփ ըստ ծրագրերի)
 
