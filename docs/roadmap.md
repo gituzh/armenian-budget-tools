@@ -2,7 +2,9 @@
 
 This roadmap is pragmatic and incremental. Each milestone should be shippable and keep current functionality working.
 
-> **Note:** For completed releases, see [CHANGELOG.md](../CHANGELOG.md). This roadmap focuses on upcoming milestones.
+> **Note:** For released changes, see [CHANGELOG.md](../CHANGELOG.md). This roadmap keeps the recently completed milestone visible briefly, then focuses on upcoming work.
+
+## Recently Completed
 
 ## Milestone v0.5.0 — Source Discovery, GDP Context, and Release Artifacts
 
@@ -61,6 +63,8 @@ armenian-budget minfin-budget --years 2026 --downloads-only
 armenian-budget gdp-extract --years 2021-2026 --source-type BUDGET_LAW
 armenian-budget gdp-report
 ```
+
+## Upcoming
 
 ## Milestone v0.6.0 — Government Target Metrics
 

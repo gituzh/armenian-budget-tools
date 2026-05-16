@@ -14,7 +14,7 @@ Parses official Armenian government budget documents into analysis-ready CSVs wi
 
 **Data Coverage:**
 - **Budget Laws**: 2019-2026
-- **Spending Reports**: 2019-2024 (Q1, Q12, Q123, Q1234); 2025 (Q1, Q12, Q123)
+- **Spending Reports**: 2019-2025 (Q1, Q12, Q123, Q1234)
 - **MTEP**: 2024
 
 ---
@@ -144,14 +144,14 @@ If you use this data or code in your research, publications, or projects, please
   title = {Armenian State Budget Tools},
   author = {The Gituzh Initiative},
   url = {https://github.com/gituzh/armenian-budget-tools},
-  year = {2025}
+  year = {2026}
 }
 ```
 
 **Plain text:**
 
 ```text
-The Gituzh Initiative. (2025). Armenian State Budget Tools.
+The Gituzh Initiative. (2026). Armenian State Budget Tools.
 https://github.com/gituzh/armenian-budget-tools
 ```
 

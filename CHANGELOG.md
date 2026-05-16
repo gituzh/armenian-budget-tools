@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-16
+
 ### Added
 
 - Add GDP indicator extraction and reporting:
@@ -32,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Set package version to `0.5.0.dev0` for the next development cycle
+- Release package version `0.5.0`
 - Change `download --force` to re-fetch existing archives and replace them only when SHA-256 content differs
 - Extend the `armenian-budget-analyst` skill to cover GDP snapshots, source quoting rules, data availability for GDP artifacts, and bundled processed-data lookup
 - Update README and developer/data-schema documentation for GDP artifacts, MinFin listers, checksum history, and release artifact building
@@ -166,7 +168,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release: add standalone script `extract_budget_articles.py` to extract 2025 budget articles; include sample output under `output/2025/`
 
-[Unreleased]: <https://github.com/gituzh/armenian-budget-tools/compare/0.4.1...HEAD>
+[Unreleased]: <https://github.com/gituzh/armenian-budget-tools/compare/0.5.0...HEAD>
+[0.5.0]: <https://github.com/gituzh/armenian-budget-tools/compare/0.4.1...0.5.0>
 [0.4.1]: <https://github.com/gituzh/armenian-budget-tools/compare/0.4.0...0.4.1>
 [0.4.0]: <https://github.com/gituzh/armenian-budget-tools/compare/0.3.0...0.4.0>
 [0.3.0]: <https://github.com/gituzh/armenian-budget-tools/compare/0.2.0...0.3.0>
