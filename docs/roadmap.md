@@ -4,77 +4,62 @@ This roadmap is pragmatic and incremental. Each milestone should be shippable an
 
 > **Note:** For completed releases, see [CHANGELOG.md](../CHANGELOG.md). This roadmap focuses on upcoming milestones.
 
-## Milestone v0.4.0 — MTEP + Validation Refactor + Documentation
+## Milestone v0.5.0 — Source Discovery, GDP Context, and Release Artifacts
 
-**Focus:** Complete MTEP integration, separate validation from tests, improve documentation governance
-
-### Features
-
-- **MTEP data type**: Complete integration of Medium-Term Expenditure Program (MTEP) data
-  - 2-level hierarchy (state body → program, no subprograms)
-  - Multi-year planning horizon (y0, y1, y2 columns)
-  - JSON overall format with `plan_years` array
-  - Validation rules specific to MTEP structure
-  - Update `config/sources.yaml` with complete MTEP URLs
-
-- **Validation/Tests separation**: Move production validation logic out of `tests/` into `validation/`
-  - Extract reusable validation functions from test utilities
-  - Create `validation/runner.py` for orchestration
-  - Maintain test coverage while separating concerns
-  - Update imports across codebase
-
-- **Documentation improvements**:
-  - Formalize documentation governance (see `CLAUDE.md`)
-  - Enhance `developer_guide.md` with MTEP examples
-  - Update `data_schemas.md` with MTEP column specifications
-  - Ensure all docs reflect actual codebase structure
-
-### Exit Criteria
-
-- MTEP data processes end-to-end with validation
-- All production validation logic in `src/armenian_budget/validation/`
-- Tests use validation module, not duplicated logic
-- Documentation accurately reflects codebase (verified with actual files)
-
-### CLI Examples
-
-```bash
-# Download MTEP sources
-armenian-budget download --years 2024 --source-type mtep
-
-# Extract archives
-armenian-budget extract --years 2024 --source-type mtep
-
-# Parse MTEP data
-armenian-budget parse --years 2024 --source-type MTEP
-
-# Validate MTEP output
-armenian-budget validate --csv data/processed/2024_MTEP.csv
-```
-
-## Milestone v0.5.0 — Source Discovery Utilities
-
-**Focus:** Improve source maintenance and make current MinFin spending report links easier to audit
+**Focus:** Improve source maintenance, add GDP denominator context, and make release
+artifacts easier to audit and package
 
 ### Features
 
-- **MinFin spending report lister**:
+- **MinFin source discovery utilities**:
   - Add `armenian-budget minfin-spending-reports`
-  - Support year and quarter filters
-  - Support flat JSON output for downloadable files
+  - Add `armenian-budget minfin-budget`
+  - Support year filters and spending quarter filters
+  - Support flat JSON output for downloadable files via `--downloads-only`
   - Keep live source listing separate from `config/sources.yaml` updates
 
+- **GDP indicator extraction and reporting**:
+  - Add `armenian-budget gdp-extract` for budget law and full-year spending sources
+  - Write `{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json` snapshots
+  - Add `armenian-budget gdp-report` for HTML review of available snapshots
+  - Include processed GDP snapshots for currently supported budget and spending years
+
+- **Source registry and download auditability**:
+  - Support multi-file source definitions in `config/sources.yaml`
+  - Support explicit local archive filenames in source definitions
+  - Change `download --force` to re-fetch and replace only when content differs
+  - Track SHA-256 checksums for downloaded archives
+  - Preserve changed same-URL archives under `.revisions/`
+  - Record checksum history in `config/checksum_history.yaml`
+
+- **Data and packaging updates**:
+  - Add 2025 full-year spending outputs
+  - Fix 2025 full-year spending parsing for actuals and execution percentages
+  - Add release artifact builder for data and analysis-skill bundles
+  - Extend the repo-owned analysis skill with GDP artifact awareness
+
+- **Interface cleanup**:
+  - Remove the legacy MCP server module, CLI command, dependency, and docs
+  - Keep the repo-owned analysis skill as the primary AI-facing workflow
+
 ### Exit Criteria
 
-- CLI lists spending report files advertised on minfin.am
+- CLI lists spending report and budget files advertised on minfin.am
 - Tests cover HTML extraction and CLI JSON output without live network calls
-- README and developer guide include the command
+- GDP snapshots can be extracted and reviewed in an HTML report
+- Download checksum changes are archived and recorded reproducibly
+- Release data and skill artifacts can be built from a single script
+- Legacy MCP entry points and docs are removed
+- README, developer guide, and data schema docs cover the new commands and artifacts
 
 ### CLI Examples
 
 ```bash
 armenian-budget minfin-spending-reports --years 2025
 armenian-budget minfin-spending-reports --years 2025 --quarter Q1234 --downloads-only
+armenian-budget minfin-budget --years 2026 --downloads-only
+armenian-budget gdp-extract --years 2021-2026 --source-type BUDGET_LAW
+armenian-budget gdp-report
 ```
 
 ## Milestone v0.6.0 — Government Target Metrics
