@@ -8,6 +8,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add GDP indicator extraction and reporting:
+  - New `gdp-extract` CLI command writes `{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json` snapshots from budget-law and full-year spending sources
+  - New `gdp-report` CLI command renders an HTML review report from available GDP snapshots
+  - Add processed GDP snapshots for 2021-2026 budget laws and 2022-2025 full-year spending reports
+  - Add `data/reports/gdp_report.html`
+- Add MinFin source discovery commands:
+  - `minfin-budget` lists budget files advertised on minfin.am
+  - `minfin-spending-reports` lists spending report files advertised on minfin.am
+  - Both commands support `--downloads-only` JSON output for source registry updates
+- Add support for multi-file budget law source definitions in `config/sources.yaml`
+- Add optional `filename` support for source definitions so downloads can use an explicit local archive name when configured
+- Add download checksum revision tracking:
+  - Changed same-URL archives are preserved under sibling `.revisions/` directories
+  - Current archive hashes are recorded in `config/checksums.yaml`
+  - Changed archive history is recorded in `config/checksum_history.yaml`
+- Add 2025 full-year spending outputs, including CSV, overall totals, and validation reports
+- Add `scripts/build_artifacts.py` to build release data and skill artifacts
+- Add tests for GDP extraction/reporting, MinFin source listers, checksum revision handling, registry multi-file sources, and release artifact packaging
+- Add `ruff` to development dependencies
+
+### Changed
+
+- Set package version to `0.5.0.dev0` for the next development cycle
+- Change `download --force` to re-fetch existing archives and replace them only when SHA-256 content differs
+- Extend the `armenian-budget-analyst` skill to cover GDP snapshots, source quoting rules, data availability for GDP artifacts, and bundled processed-data lookup
+- Update README and developer/data-schema documentation for GDP artifacts, MinFin listers, checksum history, and release artifact building
+- Refresh `config/sources.yaml`, `config/checksums.yaml`, and `data/extracted/discovery_index.json` for updated official source packages
+- Reorganize local agent skill links from `.codex/skills` to `.agents/skills`
+
+### Fixed
+
+- Fix the 2025 full-year spending parser to read actuals and execution percentages from the correct columns
+- Document verified source rows for current 2019 split-body validation failures and update the current failure list to include `2019_SPENDING_Q12`
+
+### Removed
+
+- Remove the legacy MCP server module, `mcp-server` CLI command, MCP dependency, and `docs/mcp.md`
+- Remove deprecated `config/program_patterns.yaml`
+- Replace standalone `CLAUDE.md` content and `GEMINI.md` with symlinks to `AGENTS.md`
+
 ## [0.4.1] - 2026-03-06
 
 ### Added
