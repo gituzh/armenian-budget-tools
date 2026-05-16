@@ -14,8 +14,10 @@ Parses official Armenian government budget documents into analysis-ready CSVs wi
 
 **Data Coverage:**
 - **Budget Laws**: 2019-2026
-- **Spending Reports**: 2019-2025 (Q1, Q12, Q123, Q1234)
+- **Spending Reports**: 2019-2025 (Q1, Q12, Q123, Q1234) plus 2026 Q1
 - **MTEP**: 2024
+- **GDP snapshots**: budget-law sources and annual spending reports where source
+  documents expose GDP/macro tables
 
 ---
 
@@ -26,7 +28,8 @@ Parses official Armenian government budget documents into analysis-ready CSVs wi
 Pre-processed CSVs ready to use:
 
 - **Budget Laws** (2019-2026): `data/processed/{year}_BUDGET_LAW.csv`
-- **Spending Reports** (2019-2025): `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
+- **Spending Reports**: `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
+  for 2019-2025, plus `data/processed/2026_SPENDING_Q1.csv`
 - **MTEP** (2024): `data/processed/2024_MTEP.csv`
 - **GDP snapshots**: `data/processed/{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`
 - **GDP report**: `data/reports/gdp_report.html`
@@ -93,28 +96,40 @@ python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\acti
 pip install -U -e .
 ```
 
+For development and tests, install the optional dev dependencies instead:
+
+```bash
+pip install -U -e ".[dev]"
+```
+
 #### 2. Run the pipeline
 
 ```bash
 armenian-budget download --years 2019-2026 --extract
-armenian-budget discover --years 2019-2026
 armenian-budget process --years 2019-2026
 armenian-budget validate --years 2019-2026  # Optional: validate processed data
 
 # Find parsed outputs in ./data/processed/ and HTML reports in ./data/reports/
 
+# Optional: if archives were downloaded without --extract, extract them later
+armenian-budget extract --years 2019-2026
+
+# Optional: pre-cache discovered source workbooks before processing
+armenian-budget discover --years 2019-2026
+
 # Optional: re-check official archives for silent upstream changes
 armenian-budget download --years 2024-2025 --force
 
-# Optional: inspect current MinFin budget law and spending report downloads
-armenian-budget minfin-budget --years 2025 --downloads-only
-armenian-budget minfin-spending-reports --years 2025 --downloads-only
+# Optional: inspect current MinFin budget-law and spending-report downloads
+armenian-budget minfin-budget --years 2025-2026 --downloads-only
+armenian-budget minfin-spending-reports --years 2026 --quarter Q1 --downloads-only
 
 # Optional: process specific source type only
 armenian-budget process --years 2023 --source-type BUDGET_LAW
 
-# Optional: extract GDP snapshots and render the GDP review report
-armenian-budget gdp-extract --years 2021-2026
+# Optional: extract GDP snapshots from GDP-supported sources and render the GDP review report
+armenian-budget gdp-extract --years 2021-2026 --source-type BUDGET_LAW
+armenian-budget gdp-extract --years 2022-2025 --source-type SPENDING_Q1234
 armenian-budget gdp-report
 ```
 
@@ -126,6 +141,16 @@ Build release artifacts, including the data archive and ChatGPT skill archive:
 
 ```bash
 python scripts/build_artifacts.py --target all
+```
+
+For the full release checklist, see
+[developer_guide.md#release-preparation](docs/developer_guide.md#release-preparation).
+
+Run the test and lint checks used during development:
+
+```bash
+.venv/bin/pytest -q
+.venv/bin/ruff check src/ tests/
 ```
 
 - **User expectations** → [prd.md](docs/prd.md)

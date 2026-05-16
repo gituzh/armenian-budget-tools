@@ -297,3 +297,10 @@ sources:
       - name: "2026_budget_law_explanatory_note"
         url: "https://minfin.am/website/images/website/copy_1_ՀՀ կառավարության 2026 թվականի բյուջետային ուղերձ-բացատրագիր.docx"
         file_format: "docx"
+
+  - name: "2026_spending_q1"
+    year: 2026
+    source_type: "spending_q1"
+    url: "https://minfin.am/website/images/files/2026_I%20%D5%A5%D5%BC%D5%A1%D5%B4%D5%BD%D5%B5%D5%A1%D5%AF_%D5%B0%D5%A1%D5%B7%D5%BE%D5%A5%D5%BF%D5%BE%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.rar"
+    file_format: "rar"
+    description: "2026 Q1 Spending Report"
