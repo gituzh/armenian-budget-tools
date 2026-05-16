@@ -400,6 +400,14 @@ is easy to miss when a change is mostly data or documentation.
 
 9. Verify the generated manifest and artifact metadata include the release
    version and expected data files before tagging and publishing.
+10. Prepare the GitHub release text from `CHANGELOG.md` before publishing:
+    use a short title in the form `{version} - {main user-visible change}`,
+    keep the body high-signal with `Added`, `Changed`, `Fixed`, `Removed`, or
+    `Notes` sections only when they apply, and end with the compare link.
+11. Attach the generated release artifacts from `dist/` to the GitHub release
+    when the release includes packaged data or skill bundles. Current artifact
+    names follow `armenian-budget-data-{version}.zip` and
+    `armenian-budget-chatgpt-skill-{version}.zip`.
 
 ## Contributing
 
