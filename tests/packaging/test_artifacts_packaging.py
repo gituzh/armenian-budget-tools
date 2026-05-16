@@ -85,23 +85,69 @@ def test_chatgpt_skill_version_paths_exist_in_archive(
     repo_root = tmp_path
     skill_root = repo_root / "skills" / "armenian-budget-analyst"
     data_root = repo_root / "data" / "processed"
+    build_dir = tmp_path / "build"
     skill_root.mkdir(parents=True)
     data_root.mkdir(parents=True)
-    (skill_root / "SKILL.md").write_text("# Test skill\n", encoding="utf-8")
+    (skill_root / "SKILL.md").write_text(
+        "\n".join(
+            [
+                "# Test skill",
+                "2. Resolve the active parsed-data root:",
+                "   - use `ARMENIAN_BUDGET_DATA_PATH` if set",
+                "   - otherwise use bundled `assets/data` when this skill is packaged with data",
+                "   - otherwise use repo `data/processed`",
+                "   - if neither exists, fail clearly",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
     (data_root / "2024_BUDGET_LAW.csv").write_text("x\n", encoding="utf-8")
     monkeypatch.setattr(build_artifacts, "git_metadata", lambda _repo_root: {})
 
-    data_version = build_artifacts.build_data_version(repo_root, "0.1.0")
-    artifact = build_artifacts.build_chatgpt_skill(
-        repo_root, tmp_path / "dist", "0.1.0", data_version
+    context = build_artifacts.build_context(
+        repo_root, build_dir, tmp_path / "dist", "0.1.0"
     )
+    artifact = build_artifacts.build_chatgpt_skill(context)
 
     with zipfile.ZipFile(artifact.path) as archive:
         names = set(archive.namelist())
-        version = json.loads(archive.read("assets/data/VERSION.json"))
+        skill_text = archive.read("SKILL.md").decode("utf-8")
+        version = json.loads(archive.read("assets/DATA_VERSION.json"))
 
-    assert version["data_root"] == "assets/data/processed"
+    assert (build_dir / "chatgpt-skill" / "assets" / "data").is_dir()
+    assert (build_dir / "chatgpt-skill" / "assets" / "DATA_VERSION.json").is_file()
+    assert "- otherwise use bundled `assets/data`\n" in skill_text
+    assert "otherwise use repo `data/processed`" not in skill_text
+    assert version["data_root"] == "assets/data"
     assert [file_info["path"] for file_info in version["files"]] == [
-        "assets/data/processed/2024_BUDGET_LAW.csv"
+        "assets/data/2024_BUDGET_LAW.csv"
     ]
     assert all(file_info["path"] in names for file_info in version["files"])
+    assert "assets/DATA_VERSION.json" in names
+
+
+def test_data_archive_uses_flat_data_directory(tmp_path: Path, monkeypatch) -> None:
+    repo_root = tmp_path
+    data_root = repo_root / "data" / "processed"
+    data_root.mkdir(parents=True)
+    (data_root / "2024_BUDGET_LAW.csv").write_text("x\n", encoding="utf-8")
+    monkeypatch.setattr(build_artifacts, "git_metadata", lambda _repo_root: {})
+
+    context = build_artifacts.build_context(
+        repo_root, tmp_path / "build", tmp_path / "dist", "0.1.0"
+    )
+    artifact = build_artifacts.build_data_archive(context)
+
+    with zipfile.ZipFile(artifact.path) as archive:
+        names = set(archive.namelist())
+        version = json.loads(archive.read("DATA_VERSION.json"))
+
+    assert (tmp_path / "build" / "data-archive" / "data").is_dir()
+    assert (tmp_path / "build" / "data-archive" / "DATA_VERSION.json").is_file()
+    assert version["data_root"] == "data"
+    assert [file_info["path"] for file_info in version["files"]] == [
+        "data/2024_BUDGET_LAW.csv"
+    ]
+    assert "DATA_VERSION.json" in names
+    assert "data/2024_BUDGET_LAW.csv" in names

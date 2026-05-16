@@ -9,7 +9,6 @@ import json
 import re
 import shutil
 import subprocess
-import tempfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -32,7 +31,20 @@ EXCLUDE_SUFFIXES = {".pyc", ".pyo"}
 EXCLUDE_DIRS = {"__pycache__"}
 SKILL_DIR = Path("skills") / SKILL_NAME
 BUNDLED_DATA_DIR = Path("assets") / "data"
-BUNDLED_PROCESSED_DIR = BUNDLED_DATA_DIR / "processed"
+DATA_VERSION_NAME = "DATA_VERSION.json"
+DEFAULT_TARGETS = ["data", "chatgpt-skill"]
+PACKAGED_SKILL_REPLACEMENTS = {
+    (
+        "   - use `ARMENIAN_BUDGET_DATA_PATH` if set\n"
+        "   - otherwise use bundled `assets/data` when this skill is packaged with data\n"
+        "   - otherwise use repo `data/processed`\n"
+        "   - if neither exists, fail clearly"
+    ): (
+        "   - use `ARMENIAN_BUDGET_DATA_PATH` if set\n"
+        "   - otherwise use bundled `assets/data`\n"
+        "   - if neither exists, fail clearly"
+    ),
+}
 
 
 @dataclass(frozen=True)
@@ -41,6 +53,16 @@ class Artifact:
     path: Path
     sha256: str
     size_bytes: int
+
+
+@dataclass(frozen=True)
+class BuildContext:
+    repo_root: Path
+    build_dir: Path
+    dist_dir: Path
+    version: str
+    generated_at: str
+    source: dict[str, object]
 
 
 def repo_root_from_script() -> Path:
@@ -75,6 +97,37 @@ def git_metadata(repo_root: Path) -> dict[str, object]:
         "commit": run_git(repo_root, "rev-parse", "HEAD"),
         "dirty": bool(status),
     }
+
+
+def utc_timestamp() -> str:
+    return (
+        datetime.now(timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
+
+
+def source_metadata(repo_root: Path, version: str) -> dict[str, object]:
+    return {
+        "project": "armenian-budget-tools",
+        "project_version": version,
+        "repository": "https://github.com/gituzh/armenian-budget-tools",
+        **git_metadata(repo_root),
+    }
+
+
+def build_context(
+    repo_root: Path, build_dir: Path, dist_dir: Path, version: str
+) -> BuildContext:
+    return BuildContext(
+        repo_root=repo_root,
+        build_dir=build_dir,
+        dist_dir=dist_dir,
+        version=version,
+        generated_at=utc_timestamp(),
+        source=source_metadata(repo_root, version),
+    )
 
 
 def iter_files(root: Path) -> list[Path]:
@@ -120,50 +173,42 @@ def iter_processed_artifacts(data_root: Path) -> list[Path]:
     ]
 
 
-def build_data_version(repo_root: Path, version: str) -> dict[str, object]:
-    data_root = repo_root / "data" / "processed"
+def relative_or_display(path: Path, root: Path) -> Path:
+    try:
+        return path.relative_to(root)
+    except ValueError:
+        return path
+
+
+def build_data_version(
+    repo_root: Path,
+    version: str,
+    data_root: Path | None = None,
+    *,
+    package_data_root: Path | None = None,
+    generated_at: str | None = None,
+    source: dict[str, object] | None = None,
+) -> dict[str, object]:
+    data_root = data_root or repo_root / "data" / "processed"
+    package_data_root = package_data_root or relative_or_display(data_root, repo_root)
     primary_csvs = validate_processed_data(data_root)
     files = iter_processed_artifacts(data_root)
     return {
         "data_version": version,
-        "generated_at": datetime.now(timezone.utc)
-        .replace(microsecond=0)
-        .isoformat()
-        .replace("+00:00", "Z"),
-        "source": {
-            "project": "armenian-budget-tools",
-            "project_version": version,
-            "repository": "https://github.com/gituzh/armenian-budget-tools",
-            **git_metadata(repo_root),
-        },
-        "data_root": "data/processed",
+        "generated_at": generated_at or utc_timestamp(),
+        "source": source or source_metadata(repo_root, version),
+        "data_root": str(package_data_root),
         "file_count": len(files),
         "primary_csv_count": len(primary_csvs),
         "files": [
             {
-                "path": str(Path("data") / "processed" / path.relative_to(data_root)),
+                "path": str(package_data_root / path.name),
                 "size_bytes": path.stat().st_size,
                 "sha256": file_sha256(path),
             }
             for path in files
         ],
     }
-
-
-def rebase_data_version(
-    data_version: dict[str, object], data_root: Path
-) -> dict[str, object]:
-    """Return data version metadata for a packaged data location."""
-    rebased = dict(data_version)
-    rebased["data_root"] = str(data_root)
-    rebased["files"] = [
-        {
-            **file_info,
-            "path": str(data_root / Path(str(file_info["path"])).name),
-        }
-        for file_info in data_version["files"]
-    ]
-    return rebased
 
 
 def should_copy(path: Path) -> bool:
@@ -192,6 +237,21 @@ def copy_processed_artifacts(src: Path, dst: Path) -> None:
     dst.mkdir(parents=True)
     for path in iter_processed_artifacts(src):
         shutil.copy2(path, dst / path.name)
+
+
+def clean_dir(path: Path) -> None:
+    if path.exists():
+        shutil.rmtree(path)
+    path.mkdir(parents=True)
+
+
+def rewrite_packaged_skill(skill_path: Path) -> None:
+    text = skill_path.read_text(encoding="utf-8")
+    for old, new in PACKAGED_SKILL_REPLACEMENTS.items():
+        if old not in text:
+            raise ValueError(f"Expected packaged skill replacement text missing in {skill_path}")
+        text = text.replace(old, new, 1)
+    skill_path.write_text(text, encoding="utf-8")
 
 
 def write_json(path: Path, payload: object) -> None:
@@ -230,56 +290,63 @@ def zip_directory(
     )
 
 
-def build_data_archive(
-    repo_root: Path, dist_dir: Path, version: str, data_version: dict[str, object]
-) -> Artifact:
-    with tempfile.TemporaryDirectory(prefix="armenian-budget-data-") as tmp:
-        staging_root = Path(tmp) / f"armenian-budget-data-{version}"
-        copy_processed_artifacts(
-            repo_root / "data" / "processed", staging_root / "data" / "processed"
-        )
-        write_json(staging_root / "data" / "VERSION.json", data_version)
-        artifact_path = dist_dir / f"armenian-budget-data-{version}.zip"
-        artifact = zip_directory(staging_root, artifact_path)
+def build_data_archive(context: BuildContext) -> Artifact:
+    staging_root = context.build_dir / "data-archive"
+    staged_data_root = staging_root / "data"
+    clean_dir(staging_root)
+    copy_processed_artifacts(context.repo_root / "data" / "processed", staged_data_root)
+    data_version = build_data_version(
+        context.repo_root,
+        context.version,
+        staged_data_root,
+        package_data_root=Path("data"),
+        generated_at=context.generated_at,
+        source=context.source,
+    )
+    write_json(staging_root / DATA_VERSION_NAME, data_version)
+    artifact = zip_directory(
+        staging_root,
+        context.dist_dir / f"armenian-budget-data-{context.version}.zip",
+        include_root=False,
+    )
     return Artifact("data", artifact.path, artifact.sha256, artifact.size_bytes)
 
 
-def build_chatgpt_skill(
-    repo_root: Path, dist_dir: Path, version: str, data_version: dict[str, object]
-) -> Artifact:
-    with tempfile.TemporaryDirectory(prefix="armenian-budget-chatgpt-skill-") as tmp:
-        staging_root = Path(tmp) / SKILL_NAME
-        copy_tree(repo_root / SKILL_DIR, staging_root)
-        copy_processed_artifacts(
-            repo_root / "data" / "processed", staging_root / BUNDLED_PROCESSED_DIR
-        )
-        write_json(
-            staging_root / BUNDLED_DATA_DIR / "VERSION.json",
-            rebase_data_version(data_version, BUNDLED_PROCESSED_DIR),
-        )
+def build_chatgpt_skill(context: BuildContext) -> Artifact:
+    staging_root = context.build_dir / "chatgpt-skill"
+    staged_data_root = staging_root / BUNDLED_DATA_DIR
+    copy_tree(context.repo_root / SKILL_DIR, staging_root)
+    rewrite_packaged_skill(staging_root / "SKILL.md")
+    copy_processed_artifacts(context.repo_root / "data" / "processed", staged_data_root)
+    data_version = build_data_version(
+        context.repo_root,
+        context.version,
+        staged_data_root,
+        package_data_root=BUNDLED_DATA_DIR,
+        generated_at=context.generated_at,
+        source=context.source,
+    )
+    write_json(staging_root / "assets" / DATA_VERSION_NAME, data_version)
 
-        artifact = zip_directory(
-            staging_root,
-            dist_dir / f"armenian-budget-chatgpt-skill-{version}.zip",
-            include_root=False,
-        )
+    artifact = zip_directory(
+        staging_root,
+        context.dist_dir / f"armenian-budget-chatgpt-skill-{context.version}.zip",
+        include_root=False,
+    )
     return Artifact("chatgpt-skill", artifact.path, artifact.sha256, artifact.size_bytes)
 
 
 def write_manifest(
-    repo_root: Path,
-    dist_dir: Path,
-    version: str,
+    context: BuildContext,
     targets: list[str],
     artifacts: list[Artifact],
-    data_version: dict[str, object],
 ) -> Path:
-    manifest_path = dist_dir / f"manifest-{version}.json"
+    manifest_path = context.dist_dir / f"manifest-{context.version}.json"
     payload = {
-        "version": version,
-        "generated_at": data_version["generated_at"],
+        "version": context.version,
+        "generated_at": context.generated_at,
         "targets": targets,
-        "source": data_version["source"],
+        "source": context.source,
         "artifacts": [
             {
                 "target": artifact.target,
@@ -298,7 +365,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--target",
-        choices=("all", "data", "chatgpt-skill"),
+        choices=("all", *DEFAULT_TARGETS),
         default="all",
         help="Artifact target to build.",
     )
@@ -307,6 +374,11 @@ def parse_args() -> argparse.Namespace:
         "--dist-dir",
         default="dist",
         help="Output directory, relative to the repo root unless absolute.",
+    )
+    parser.add_argument(
+        "--build-dir",
+        default="build",
+        help="Staging directory, relative to the repo root unless absolute.",
     )
     return parser.parse_args()
 
@@ -318,25 +390,19 @@ def main() -> int:
     dist_dir = Path(args.dist_dir)
     if not dist_dir.is_absolute():
         dist_dir = repo_root / dist_dir
+    build_dir = Path(args.build_dir)
+    if not build_dir.is_absolute():
+        build_dir = repo_root / build_dir
 
-    data_version = build_data_version(repo_root, version)
-    requested_targets = (
-        ["data", "chatgpt-skill"]
-        if args.target == "all"
-        else [args.target]
-    )
+    context = build_context(repo_root, build_dir, dist_dir, version)
+    requested_targets = DEFAULT_TARGETS if args.target == "all" else [args.target]
 
     builders = {
         "data": build_data_archive,
         "chatgpt-skill": build_chatgpt_skill,
     }
-    artifacts = [
-        builders[target](repo_root, dist_dir, version, data_version)
-        for target in requested_targets
-    ]
-    manifest_path = write_manifest(
-        repo_root, dist_dir, version, requested_targets, artifacts, data_version
-    )
+    artifacts = [builders[target](context) for target in requested_targets]
+    manifest_path = write_manifest(context, requested_targets, artifacts)
 
     print(f"Wrote {display_path(manifest_path, repo_root)}")
     for artifact in artifacts:
