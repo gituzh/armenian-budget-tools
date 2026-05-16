@@ -85,9 +85,16 @@ data/
 Official download URLs and metadata for all government archives are maintained in `config/sources.yaml`:
 
 - **Purpose**: Centralized registry of all official data sources with direct download links
-- **Content**: Year, source type, URL, file format, and human-readable descriptions
+- **Content**: Year, source type, URL or multi-file `files` entries, file format,
+  optional local filename, and human-readable descriptions
 - **Source**: Direct URLs from minfin.am government website pages
 - **Usage**: Powers the download system and ensures data provenance
+
+Registry entries may either point to a single archive with top-level `url` and `file_format`
+fields, or group related downloads under `files`. Multi-file entries are used when one
+logical source needs both program attachments and supporting documents, such as budget-law
+Excel attachments plus explanatory notes for GDP extraction. A `filename` field may be set
+when the local archive name should be explicit instead of inferred from the URL.
 
 ### 3.3 Archive Contents and Future Components
 

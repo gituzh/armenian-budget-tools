@@ -25,6 +25,7 @@ src/armenian_budget/
 │   ├── schemas.py            # Field definitions per source type
 │   ├── utils.py              # Shared utilities (filename parsing)
 ├── ingestion/
+│   ├── gdp_indicators.py     # GDP snapshot extraction and HTML report rendering
 │   ├── parsers/
 │   │   ├── _common.py        # ProcessingState, RowType enums
 │   │   ├── excel_2019_2024.py
@@ -34,12 +35,17 @@ src/armenian_budget/
 ├── interfaces/
 │   └── cli/main.py           # CLI entrypoint
 ├── sources/
-│   ├── registry.py           # Source URLs
-│   ├── downloader.py
+│   ├── registry.py           # Source URL registry, including multi-file entries
+│   ├── downloader.py         # Archive download, checksum, and revision handling
+│   ├── minfin_budget.py      # Live MinFin budget-law source listing
+│   ├── minfin_spending_reports.py
+│   │                         # Live MinFin spending report listing
 │   └── organizer.py
 └── validation/
-    ├── financial.py          # Production validation logic
-    └── runner.py             # Validation orchestration
+    ├── checks/               # Individual validation checks
+    ├── config.py             # Tolerances and severity rules
+    ├── models.py             # Validation dataclasses
+    └── registry.py           # Check orchestration
 
 config/
 ├── sources.yaml              # Official source URLs and metadata
@@ -53,7 +59,10 @@ skills/
 
 tests/
 ├── cli/
+├── packaging/
 ├── parser/
+├── sources/
+├── utils/
 └── validation/
 ```
 
@@ -178,9 +187,10 @@ See `validation/config.py` for all tolerance constants and severity maps.
 pytest
 
 # Specific categories
-pytest tests/unit/
-pytest tests/integration/
-pytest tests/data_validation/
+pytest tests/cli/
+pytest tests/parser/
+pytest tests/sources/
+pytest tests/validation/
 
 # With coverage
 pytest --cov=armenian_budget --cov-report=html

@@ -107,12 +107,15 @@ skills/                     # Repo-owned AI skills
 
 config/                     # Configuration files
 ├── sources.yaml
-└── parsers.yaml
+├── parsers.yaml
+├── checksums.yaml
+└── checksum_history.yaml
 
 data/                       # Data directories
 ├── original/               # Downloaded archives
 ├── extracted/              # Unarchived files
-└── processed/              # Normalized outputs
+├── processed/              # Normalized outputs
+└── reports/                # Rendered HTML reports
 ```
 
 ## 6. Access Methods

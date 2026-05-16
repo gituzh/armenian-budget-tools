@@ -32,7 +32,8 @@
 
 **Data quality:**
 
-- Hierarchical totals validated within tolerance (5 AMD for spending, 0 for budget laws)
+- Hierarchical totals validated within configured tolerance (currently 2,000 AMD
+  for spending, 1 AMD for budget laws, 0.5 AMD for MTEP)
 - No structural errors (missing columns, encoding issues)
 - Cross-validation between budget laws and spending reports
 
