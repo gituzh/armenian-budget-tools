@@ -1,11 +1,11 @@
 ---
 name: armenian-budget-analyst
-description: "Analyze parsed Armenian budget and macro/GDP outputs: inspect year and source availability, compare allocations and spending across ministries, programs, subprograms, and GDP denominators, and create source-cited tables, charts, and reports from data/processed."
+description: "Analyze parsed Armenian budget and macro/GDP outputs: inspect year and source availability, compare allocations and spending across ministries, programs, subprograms, and GDP denominators, and create source-cited tables, charts, and reports from the resolved parsed-data root."
 ---
 
 # Armenian Budget Analyst
 
-Use this skill for analysis of parsed Armenian budget and macro/GDP data in `data/processed`.
+Use this skill for analysis of parsed Armenian budget and macro/GDP data from the resolved parsed-data root.
 
 ## Start here
 
@@ -17,15 +17,16 @@ Use this skill for analysis of parsed Armenian budget and macro/GDP data in `dat
      - macOS: install `uv` with `brew install uv`, or install Python 3.10+ with `brew install python`
      - Debian/Ubuntu: install `uv`, or install `python3` plus `python3-venv`
      - Windows: install `uv`, or install Python 3.10+ from `winget` or python.org with venv support enabled
-2. Resolve the data root:
+2. Resolve the active parsed-data root:
    - use `ARMENIAN_BUDGET_DATA_PATH` if set
+   - otherwise use bundled `assets/data` when this skill is packaged with data
    - otherwise use repo `data/processed`
    - if neither exists, fail clearly
 3. Verify parsed data is actually present in the chosen data root.
-   - if `data/processed` is missing or empty, do not invent data; point the user to another parsed data root or generate processed files first
+   - if the resolved data root is missing or empty, do not invent data; point the user to another parsed data root or generate processed files first
 4. Inventory datasets by year and source type before computing anything:
    - prefer `skills/armenian-budget-analyst/scripts/data_availability.py`
-   - if that script is unavailable, fall back to direct filename discovery under `data/processed`
+   - if that script is unavailable, fall back to direct filename discovery under the resolved data root
    - do not assume the helper script lives in the repo root
 5. Pick the source type intentionally, then state the aggregation grain and metric before computing anything.
 
@@ -71,7 +72,7 @@ Use this skill for analysis of parsed Armenian budget and macro/GDP data in `dat
 - Do not substitute a missing factual series with an estimate, forecast, expected value, or external hardcoded number unless the user explicitly asks for that.
 - Do not treat `MTEP` as executed spending.
 - Do not treat budget-law GDP assumptions, spending-report budget scenarios, forecasts, or historical values as actual GDP; use `actual` or source-native factual statuses only when the user asks for actual GDP denominators.
-- Do not use `assets/` as a live data mirror.
+- Treat bundled `assets/data` as a read-only packaged data snapshot. Do not write generated outputs, repaired data, temporary files, or refreshed parses into it.
 - If a mapping is manual or topic-specific, state it explicitly in `filters_or_mappings`.
 - If a topic mapping is reused across years or outputs, keep it as a separate explicit mapping artifact or script rather than implying it as a native dataset fact.
 - Do not omit the official-source citation just because the answer is based on parsed files; parsed files in this repo are derived artifacts and must still cite `minfin.am` plus `https://github.com/gituzh/armenian-budget-tools`.

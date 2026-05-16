@@ -87,6 +87,7 @@ def test_bundled_data_root_candidates_include_skill_assets_and_repo_data():
     skill_root = REPO_ROOT / "skills" / "armenian-budget-analyst"
     candidates = module.bundled_data_root_candidates()
 
+    assert (skill_root / "assets" / "data").resolve() in candidates
     assert (skill_root / "assets" / "data" / "processed").resolve() in candidates
     assert (REPO_ROOT / "data" / "processed").resolve() in candidates
 

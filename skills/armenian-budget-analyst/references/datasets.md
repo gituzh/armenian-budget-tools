@@ -2,9 +2,9 @@
 
 ## File naming and root
 
-- Primary parsed budget datasets live in a single data root and use `{year}_{SOURCE_TYPE}.csv`.
+- Primary parsed budget datasets live in a single active parsed-data root and use `{year}_{SOURCE_TYPE}.csv`.
 - GDP snapshots from `gdp-extract` use `{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`.
-- Prefer `ARMENIAN_BUDGET_DATA_PATH` when set; otherwise use repo `data/processed`.
+- Prefer `ARMENIAN_BUDGET_DATA_PATH` when set; otherwise use bundled `assets/data` when present; otherwise use repo `data/processed`.
 - Availability varies by year. Do not assume every year has every source type. Check with `scripts/data_availability.py` first.
 
 ## Source types

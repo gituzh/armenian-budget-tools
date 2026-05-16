@@ -28,24 +28,29 @@ GDP_DATASET_RE = re.compile(
 
 
 def bundled_data_root_candidates() -> list[Path]:
-    """Return bundled processed-data roots in preference order."""
+    """Return parsed-data roots in preference order."""
     skill_root = Path(__file__).resolve().parents[1]
     repo_root = Path(__file__).resolve().parents[3]
     return [
+        (skill_root / "assets" / "data").resolve(),
         (skill_root / "assets" / "data" / "processed").resolve(),
         (repo_root / "data" / "processed").resolve(),
     ]
 
 
 def resolve_data_root(cli_value: str | None) -> Path:
-    """Resolve the active processed-data root."""
+    """Resolve the active parsed-data root."""
     if cli_value:
         data_root = Path(cli_value).expanduser()
     elif os.environ.get("ARMENIAN_BUDGET_DATA_PATH"):
         data_root = Path(os.environ["ARMENIAN_BUDGET_DATA_PATH"]).expanduser()
     else:
         for candidate in bundled_data_root_candidates():
-            if candidate.exists() and candidate.is_dir():
+            if (
+                candidate.exists()
+                and candidate.is_dir()
+                and iter_processed_datasets(candidate)
+            ):
                 data_root = candidate
                 break
         else:
@@ -61,7 +66,7 @@ def resolve_data_root(cli_value: str | None) -> Path:
 
 
 def iter_processed_datasets(data_root: Path) -> list[tuple[int, str, str]]:
-    """Collect processed dataset artifacts from the data root."""
+    """Collect parsed dataset artifacts from the data root."""
     datasets: list[tuple[int, str, str]] = []
     for path in sorted(data_root.iterdir()):
         if not path.is_file():
