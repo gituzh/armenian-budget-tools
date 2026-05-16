@@ -370,8 +370,14 @@ is easy to miss when a change is mostly data or documentation.
 3. Update coverage statements wherever the packaged data surface changed:
    `README.md`, `CITATION.cff`, `docs/data_schemas.md`, generated/example
    artifact notes, and any source-specific docs.
-4. Update `docs/roadmap.md` so the recently completed milestone reflects what
-   was actually released.
+4. Clean up and update `docs/roadmap.md`:
+   - Keep released detail in `CHANGELOG.md`; the roadmap should only retain a
+     brief recently completed milestone summary.
+   - Move the just-released milestone into `Recently Completed`.
+   - Move the next version into `Active Development`.
+   - Keep future milestones under `Upcoming`, and keep longer-horizon ideas in
+     `Backlog / Stretch`.
+   - Remove stale examples or commands that no longer match the current CLI.
 5. Check for stale release text before testing:
 
    ```bash
