@@ -33,6 +33,14 @@ pytest -q
 pytest --cov=armenian_budget
 ```
 
+## Release Preparation
+
+When preparing a release, read and follow the checklist in
+`docs/developer_guide.md#release-preparation` before tagging or building final
+artifacts. This is especially important for data-only releases because version
+metadata, coverage wording, generated/example artifact notes, and
+`DATA_VERSION.json` can otherwise drift.
+
 ## Coding Style & Naming Conventions
 
 Target Python 3.10+. Follow Black-style formatting (4-space indent, ~88 character lines) and type-hint public functions, as seen in `interfaces/cli/main.py`. Modules and functions use snake_case (`flatten_budget_excel_2025`), classes use PascalCase, and constants are UPPER_SNAKE_CASE. Log through the standard `logging` facade (configured via `colorlog`) and group CLI options in dedicated subcommands. Run `ruff check src/ tests/` and `black src/ tests/` before opening a PR.

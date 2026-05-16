@@ -211,7 +211,7 @@ armenian-budget download --years 2024-2025 --force
 
 # Inspect current MinFin budget law and spending report downloads
 armenian-budget minfin-budget --years 2025 --downloads-only
-armenian-budget minfin-spending-reports --years 2025 --downloads-only
+armenian-budget minfin-spending-reports --years 2026 --quarter Q1 --downloads-only
 
 # Process
 armenian-budget process --years 2023
@@ -359,6 +359,56 @@ black src/
 pytest
 ```
 
+## Release Preparation
+
+Use this checklist before tagging a release. It captures the release surface that
+is easy to miss when a change is mostly data or documentation.
+
+1. Confirm the intended release version and update every version surface:
+   `pyproject.toml`, `src/armenian_budget/__init__.py`, and `CITATION.cff`.
+2. Update `CHANGELOG.md` with a dated version section and comparison links.
+3. Update coverage statements wherever the packaged data surface changed:
+   `README.md`, `CITATION.cff`, `docs/data_schemas.md`, generated/example
+   artifact notes, and any source-specific docs.
+4. Update `docs/roadmap.md` so the recently completed milestone reflects what
+   was actually released.
+5. Check for stale release text before testing:
+
+   ```bash
+   rg -n "0\.6\.0\.dev0|2019-2025|no parsed 2026|unavailable" \
+     README.md CHANGELOG.md CITATION.cff docs pyproject.toml src tests
+   ```
+
+   Treat matches as prompts for review, not automatic failures. Some ranges are
+   intentionally source-specific, such as full-year spending or GDP coverage.
+6. Run release-adjacent checks, then the full test suite:
+
+   ```bash
+   .venv/bin/python -m pytest tests/cli/test_data_availability_script.py \
+     tests/packaging/test_artifacts_packaging.py -q
+   .venv/bin/ruff check src/ tests/
+   .venv/bin/python -m pytest -q
+   ```
+
+7. Run `git diff --check` and inspect `git status --short`.
+8. Build release artifacts only after the release commit is clean, because
+   `DATA_VERSION.json` records the current commit and dirty state:
+
+   ```bash
+   .venv/bin/python scripts/build_artifacts.py --target all
+   ```
+
+9. Verify the generated manifest and artifact metadata include the release
+   version and expected data files before tagging and publishing.
+10. Prepare the GitHub release text from `CHANGELOG.md` before publishing:
+    use a short title in the form `{version} - {main user-visible change}`,
+    keep the body high-signal with `Added`, `Changed`, `Fixed`, `Removed`, or
+    `Notes` sections only when they apply, and end with the compare link.
+11. Attach the generated release artifacts from `dist/` to the GitHub release
+    when the release includes packaged data or skill bundles. Current artifact
+    names follow `armenian-budget-data-{version}.zip` and
+    `armenian-budget-chatgpt-skill-{version}.zip`.
+
 ## Contributing
 
 **Branch naming:**
@@ -376,7 +426,7 @@ pytest
 
 **Documentation updates required when:**
 
-- Architecture change → Update `architechture.md`
+- Architecture change → Update `architecture.md`
 - Roadmap change → Update `roadmap.md`
 - CLI commands change → Update README + this guide
 - Python API changes → Update this guide

@@ -6,6 +6,27 @@ This roadmap is pragmatic and incremental. Each milestone should be shippable an
 
 ## Recently Completed
 
+## Milestone v0.5.1 — 2026 Q1 Spending Release
+
+**Focus:** Package the first 2026 spending execution report and align release metadata
+for a patch release.
+
+### Features
+
+- Add 2026 Q1 spending outputs under `data/processed`.
+- Add the 2026 Q1 spending source registry entry, checksum, and discovery metadata.
+- Refresh README, citation metadata, data schema docs, developer examples, and generated
+  documentation notes for the new partial-year 2026 spending coverage.
+- Refresh the R&D docs example to use 2025 full-year spending actuals and clearly
+  label 2026 Q1 spending as partial-year.
+- Release package version `0.5.1`.
+
+### Exit Criteria
+
+- `2026_SPENDING_Q1.csv` and companion overall/validation sidecars are packaged.
+- Data availability tooling reports the 2026 Q1 spending dataset.
+- Version metadata, changelog, and roadmap are aligned for release.
+
 ## Milestone v0.5.0 — Source Discovery, GDP Context, and Release Artifacts
 
 **Focus:** Improve source maintenance, add GDP denominator context, and make release
