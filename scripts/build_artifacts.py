@@ -15,7 +15,9 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
 
-SKILL_NAME = "armenian-budget-analyst"
+SKILL_NAME = "armenian-budget-data"
+SKILL_ARCHIVE_NAME = "armenian-budget-data-skill"
+DATA_ARCHIVE_NAME = "armenian-budget-data"
 PRIMARY_DATASET_RE = re.compile(r"^\d{4}_[A-Z0-9_]+\.csv$")
 PROCESSED_ARTIFACT_RE = re.compile(
     r"^(?:"
@@ -32,7 +34,7 @@ EXCLUDE_DIRS = {"__pycache__"}
 SKILL_DIR = Path("skills") / SKILL_NAME
 BUNDLED_DATA_DIR = Path("assets") / "data"
 DATA_VERSION_NAME = "DATA_VERSION.json"
-DEFAULT_TARGETS = ["data", "chatgpt-skill"]
+DEFAULT_TARGETS = ["data", "skill"]
 PACKAGED_SKILL_REPLACEMENTS = {
     (
         "   - use `ARMENIAN_BUDGET_DATA_PATH` if set\n"
@@ -306,14 +308,14 @@ def build_data_archive(context: BuildContext) -> Artifact:
     write_json(staging_root / DATA_VERSION_NAME, data_version)
     artifact = zip_directory(
         staging_root,
-        context.dist_dir / f"armenian-budget-data-{context.version}.zip",
+        context.dist_dir / f"{DATA_ARCHIVE_NAME}-{context.version}.zip",
         include_root=False,
     )
     return Artifact("data", artifact.path, artifact.sha256, artifact.size_bytes)
 
 
-def build_chatgpt_skill(context: BuildContext) -> Artifact:
-    staging_root = context.build_dir / "chatgpt-skill"
+def build_skill(context: BuildContext) -> Artifact:
+    staging_root = context.build_dir / SKILL_NAME
     staged_data_root = staging_root / BUNDLED_DATA_DIR
     copy_tree(context.repo_root / SKILL_DIR, staging_root)
     rewrite_packaged_skill(staging_root / "SKILL.md")
@@ -330,10 +332,10 @@ def build_chatgpt_skill(context: BuildContext) -> Artifact:
 
     artifact = zip_directory(
         staging_root,
-        context.dist_dir / f"armenian-budget-chatgpt-skill-{context.version}.zip",
+        context.dist_dir / f"{SKILL_ARCHIVE_NAME}-{context.version}.zip",
         include_root=False,
     )
-    return Artifact("chatgpt-skill", artifact.path, artifact.sha256, artifact.size_bytes)
+    return Artifact("skill", artifact.path, artifact.sha256, artifact.size_bytes)
 
 
 def write_manifest(
@@ -399,7 +401,7 @@ def main() -> int:
 
     builders = {
         "data": build_data_archive,
-        "chatgpt-skill": build_chatgpt_skill,
+        "skill": build_skill,
     }
     artifacts = [builders[target](context) for target in requested_targets]
     manifest_path = write_manifest(context, requested_targets, artifacts)

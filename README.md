@@ -36,13 +36,13 @@ Pre-processed CSVs ready to use:
 
 → See [data_schemas.md](docs/data_schemas.md) for column details
 
-### 🤖 AI-Assisted Analysis
+### AI-Assisted Data Work
 
-The recommended AI analysis path is the
-[`armenian-budget-analyst`](skills/armenian-budget-analyst/SKILL.md) skill.
+The recommended AI-facing data contract is the
+[`armenian-budget-data`](skills/armenian-budget-data/SKILL.md) skill.
 
 - Works directly against `data/processed`
-- Is designed for source-cited tables, charts, and reports
+- Defines valid source types, grains, metrics, GDP denominators, and provenance
 - Uses bundled helper scripts internally when needed
 
 Example workflow:
@@ -55,15 +55,8 @@ cd armenian-budget-tools
 Launch Codex in the repo root and prompt it with:
 
 ```text
-Use $armenian-budget-analyst to create an R&D allocations and spending plot by year from parsed files only. Save the chart as ./artifacts/rd_allocations_and_spending_by_year.svg and include exact source file references plus provenance metadata.
+Use $armenian-budget-data to inspect available parsed budget and GDP files, choose valid source types, grains, metrics, denominators, and include exact source file references plus provenance metadata.
 ```
-
-Example artifact:
-
-![Example R&D allocations and spending plot](docs/examples/rd_allocations_and_spending_by_year.svg)
-
-Provenance metadata:
-[`docs/examples/rd_allocations_and_spending_by_year.svg.provenance.json`](docs/examples/rd_allocations_and_spending_by_year.svg.provenance.json)
 
 ### ✅ How We Ensure Data Quality
 
