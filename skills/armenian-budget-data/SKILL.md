@@ -13,26 +13,22 @@ domain-specific artifact recipes belong in downstream skills.
 
 ## Start here
 
-1. Bootstrap the repo environment:
-   - if `.venv` does not exist, create it with `uv venv .venv` when `uv` is available; otherwise use `python -m venv .venv`
-   - install main dependencies with `.venv/bin/pip install -U -e .`
-   - use `.venv/bin/python` for local scripts and one-off analysis commands
-   - if both venv creation paths fail, explain the minimum prerequisite instead of guessing:
-     - macOS: install `uv` with `brew install uv`, or install Python 3.10+ with `brew install python`
-     - Debian/Ubuntu: install `uv`, or install `python3` plus `python3-venv`
-     - Windows: install `uv`, or install Python 3.10+ from `winget` or python.org with venv support enabled
-2. Resolve the active parsed-data root:
+For simple read-only fact/table requests, do not bootstrap a venv, install dependencies, create session folders, or search external repos. Resolve the data root, read the needed CSV/JSON files with standard tools, and answer compactly.
+
+1. Resolve the active parsed-data root:
    - use `ARMENIAN_BUDGET_DATA_PATH` if set
    - otherwise use bundled `assets/data` when this skill is packaged with data
    - otherwise use repo `data/processed`
    - if neither exists, fail clearly
-3. Verify parsed data is actually present in the chosen data root.
+2. Verify parsed data is actually present in the chosen data root.
    - if the resolved data root is missing or empty, do not invent data; point the user to another parsed data root or generate processed files first
-4. Inventory datasets by year and source type before computing anything:
+3. Inventory only the needed years/source types before computing:
    - prefer `skills/armenian-budget-data/scripts/data_availability.py`
    - if that script is unavailable, fall back to direct filename discovery under the resolved data root
    - do not assume the helper script lives in the repo root
-5. Pick the source type intentionally, then state the aggregation grain and metric before computing anything.
+4. Pick the source type intentionally, then state the aggregation grain and metric in the final derivation.
+
+Bootstrap a repo environment only when running project helper scripts that require repo dependencies. If bootstrapping fails, either use standard-library read-only analysis when enough CSV/JSON data is present, or state the missing prerequisite.
 
 ## Choose the right dataset
 
