@@ -378,5 +378,15 @@
     "size": 211218,
     "checksum": "sha256:c8665a24fe723fb6c3859b69fc065f190f03ee689b51f2636d486aa816854a99",
     "discovered_at": "2026-05-16T19:05:30Z"
+  },
+  "2026/spending_q12": {
+    "key": "2026/spending_q12",
+    "path": "spending_reports/2026/Q12/2026_I կիսամյակ_հաշվետվություն/2.3.Հավելվածներ/2.Ծախսեր_ծրագիր միջոցառում_2026 I կիս..xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1786091235.635456,
+    "size": 225980,
+    "checksum": "sha256:dea88ca8a4e85513c54b56709cf1dfc51a72a92fc52e0ba7a01191fafc0c5e14",
+    "discovered_at": "2026-08-31T12:18:23Z"
   }
 }
