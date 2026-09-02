@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add 2026 first-half (Q12) spending report outputs, including the processed CSV, overall totals, processing report, validation reports, and discovery metadata.
+
+### Changed
+
+- Replace the `armenian-budget-analyst` workflow with the `armenian-budget-data` data contract skill and update its startup guidance, packaging, tests, and supporting documentation.
+- Update the roadmap and developer release-preparation guidance.
+
 ## [0.5.1] - 2026-05-16
 
 ### Added
