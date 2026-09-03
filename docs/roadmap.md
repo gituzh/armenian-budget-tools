@@ -24,7 +24,53 @@ Released:
 
 ## Active Development
 
-### v0.7.0 - CLI Redesign
+### Government Target Metrics
+
+**Focus:** Add government performance target metrics as a new data type.
+
+#### Features
+
+- **New data type**: `GOVERNMENT_TARGETS`
+  - Annual performance targets by ministry/program
+  - Actual achievement metrics
+  - Target vs actual comparison analytics
+
+- **Parser implementation**:
+  - Excel parser for government target reports
+  - Handle target-specific column structures
+  - Extract both quantitative and qualitative metrics
+  - Support multi-year target tracking
+
+- **Integration**:
+  - Add to existing pipeline commands
+  - Cross-reference with budget allocations
+  - Enable budget vs performance analysis
+
+- **Analytics**:
+  - Target achievement rates
+  - Budget efficiency metrics (spending vs target achievement)
+  - Trend analysis across years
+  - Anomaly detection for underperforming programs
+
+#### Exit Criteria
+
+- Government target data processes end-to-end
+- Validation rules for target metrics implemented
+- Example analysis: budget allocation vs target achievement
+
+#### Use Cases
+
+```bash
+# Parse government targets
+armenian-budget process --years 2023 --source-type GOVERNMENT_TARGETS
+
+# Validate parsed target outputs
+armenian-budget validate --csv data/processed/2023_GOVERNMENT_TARGETS.csv
+```
+
+## Upcoming
+
+### CLI Redesign
 
 **Focus:** Clean Unix philosophy with single-responsibility commands plus a
 convenient meta-command.
