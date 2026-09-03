@@ -6,16 +6,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.6.0] - 2026-09-02
 
 ### Added
 
-- Add 2026 first-half (Q12) spending report outputs, including the processed CSV, overall totals, processing report, validation reports, and discovery metadata.
+- Add 2026 first-half (Q12) spending report outputs.
 
 ### Changed
 
-- Replace the `armenian-budget-analyst` workflow with the `armenian-budget-data` data contract skill and update its startup guidance, packaging, tests, and supporting documentation.
-- Update the roadmap and developer release-preparation guidance.
+- Replace the `armenian-budget-analyst` workflow with the `armenian-budget-data` data contract skill.
+- Update release-preparation guidance.
 
 ## [0.5.1] - 2026-05-16
 
@@ -197,7 +197,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release: add standalone script `extract_budget_articles.py` to extract 2025 budget articles; include sample output under `output/2025/`
 
-[Unreleased]: <https://github.com/gituzh/armenian-budget-tools/compare/0.5.1...HEAD>
+[0.6.0]: <https://github.com/gituzh/armenian-budget-tools/compare/0.5.1...0.6.0>
 [0.5.1]: <https://github.com/gituzh/armenian-budget-tools/compare/0.5.0...0.5.1>
 [0.5.0]: <https://github.com/gituzh/armenian-budget-tools/compare/0.4.1...0.5.0>
 [0.4.1]: <https://github.com/gituzh/armenian-budget-tools/compare/0.4.0...0.4.1>

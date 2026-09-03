@@ -14,7 +14,7 @@ Parses official Armenian government budget documents into analysis-ready CSVs wi
 
 **Data Coverage:**
 - **Budget Laws**: 2019-2026
-- **Spending Reports**: 2019-2025 (Q1, Q12, Q123, Q1234) plus 2026 Q1
+- **Spending Reports**: 2019-2025 (Q1, Q12, Q123, Q1234) plus 2026 Q1 and Q12
 - **MTEP**: 2024
 - **GDP snapshots**: budget-law sources and annual spending reports where source
   documents expose GDP/macro tables
@@ -29,7 +29,8 @@ Pre-processed CSVs ready to use:
 
 - **Budget Laws** (2019-2026): `data/processed/{year}_BUDGET_LAW.csv`
 - **Spending Reports**: `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
-  for 2019-2025, plus `data/processed/2026_SPENDING_Q1.csv`
+  for 2019-2025, plus `data/processed/2026_SPENDING_Q1.csv` and
+  `data/processed/2026_SPENDING_Q12.csv`
 - **MTEP** (2024): `data/processed/2024_MTEP.csv`
 - **GDP snapshots**: `data/processed/{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`
 - **GDP report**: `data/reports/gdp_report.html`

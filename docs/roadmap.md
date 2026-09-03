@@ -9,22 +9,22 @@ and keep current functionality working.
 
 ## Recently Completed
 
-### v0.5.1 - 2026 Q1 Spending Release
+### v0.6.0 - 2026 Q12 Spending Release
 
-**Focus:** Package the first 2026 spending execution report and align release metadata.
+**Focus:** Package 2026 first-half spending execution outputs and align release metadata.
 
 Released:
 
-- Add 2026 Q1 spending outputs under `data/processed`.
-- Add the 2026 Q1 spending source registry entry, checksum, and discovery metadata.
-- Refresh README, citation metadata, data schema docs, developer examples, and
-  generated documentation notes for partial-year 2026 spending coverage.
-- Refresh the R&D docs example to use 2025 full-year spending actuals and label
-  2026 Q1 spending as partial-year.
+- Add 2026 Q12 spending outputs under `data/processed`.
+- Add discovery metadata for the 2026 Q12 spending source.
+- Refresh README, citation metadata, and data schema documentation for partial-year
+  2026 spending coverage.
+- Replace the `armenian-budget-analyst` workflow with the
+  `armenian-budget-data` data contract skill.
 
 ## Active Development
 
-### v0.6.0 - Government Target Metrics
+### Government Target Metrics
 
 **Focus:** Add government performance target metrics as a new data type.
 
@@ -70,7 +70,7 @@ armenian-budget validate --csv data/processed/2023_GOVERNMENT_TARGETS.csv
 
 ## Upcoming
 
-### v0.7.0 - CLI Redesign
+### CLI Redesign
 
 **Focus:** Clean Unix philosophy with single-responsibility commands plus a
 convenient meta-command.
