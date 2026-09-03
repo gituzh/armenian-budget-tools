@@ -103,7 +103,7 @@ src/armenian_budget/
 └── validation/             # Business rules
 
 skills/                     # Repo-owned AI skills
-└── armenian-budget-analyst/
+└── armenian-budget-data/
 
 config/                     # Configuration files
 ├── sources.yaml
@@ -130,9 +130,9 @@ The system provides two primary public interfaces:
 
 **Agent Skill:**
 
-- Primary AI-facing interface for analysis of parsed data in `data/processed`
-- Supports dataset availability checks, cross-year analysis, and source-cited tables, charts, and reports
-- Encourages provenance-aware outputs, including sidecar metadata for generated artifacts
+- Primary AI-facing data contract for parsed data in `data/processed`
+- Supports dataset availability checks, source semantics, metric/grain compatibility, GDP denominator rules, and provenance
+- Downstream skills own topic mappings, artifact recipes, and publication framing
 
 **Internal Python API:**
 
@@ -156,7 +156,7 @@ Post-v1 enhancements under consideration:
 | **[docs/prd.md](prd.md)** | Product requirements | Product team |
 | **[docs/developer_guide.md](developer_guide.md)** | Implementation patterns and code | Contributors |
 | **[docs/data_schemas.md](data_schemas.md)** | Data formats and schemas | Data analysts |
-| **[skills/armenian-budget-analyst/SKILL.md](../skills/armenian-budget-analyst/SKILL.md)** | AI analysis workflow and provenance rules | AI agents and developers |
+| **[skills/armenian-budget-data/SKILL.md](../skills/armenian-budget-data/SKILL.md)** | AI data contract and provenance rules | AI agents and developers |
 | **[docs/roadmap.md](roadmap.md)** | Development milestones | All contributors |
 
 ---

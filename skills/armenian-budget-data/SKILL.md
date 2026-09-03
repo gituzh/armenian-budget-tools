@@ -1,34 +1,34 @@
 ---
-name: armenian-budget-analyst
-description: "Analyze parsed Armenian budget and macro/GDP outputs: inspect year and source availability, compare allocations and spending across ministries, programs, subprograms, and GDP denominators, and create source-cited tables, charts, and reports from the resolved parsed-data root."
+name: armenian-budget-data
+description: Use when working with parsed Armenian budget or GDP datasets, resolving available source files, choosing valid source types, grains, metrics, denominators, and provenance.
 ---
 
-# Armenian Budget Analyst
+# Armenian Budget Data
 
-Use this skill for analysis of parsed Armenian budget and macro/GDP data from the resolved parsed-data root.
+Use this skill as the authoritative data contract for parsed Armenian budget
+and macro/GDP outputs. It owns data roots, availability checks, source
+semantics, metric/grain compatibility, GDP denominator validity, and
+provenance. Topic mappings, policy interpretation, publication framing, and
+domain-specific artifact recipes belong in downstream skills.
 
 ## Start here
 
-1. Bootstrap the repo environment:
-   - if `.venv` does not exist, create it with `uv venv .venv` when `uv` is available; otherwise use `python -m venv .venv`
-   - install main dependencies with `.venv/bin/pip install -U -e .`
-   - use `.venv/bin/python` for local scripts and one-off analysis commands
-   - if both venv creation paths fail, explain the minimum prerequisite instead of guessing:
-     - macOS: install `uv` with `brew install uv`, or install Python 3.10+ with `brew install python`
-     - Debian/Ubuntu: install `uv`, or install `python3` plus `python3-venv`
-     - Windows: install `uv`, or install Python 3.10+ from `winget` or python.org with venv support enabled
-2. Resolve the active parsed-data root:
+For simple read-only fact/table requests, do not bootstrap a venv, install dependencies, create session folders, or search external repos. Resolve the data root, read the needed CSV/JSON files with standard tools, and answer compactly.
+
+1. Resolve the active parsed-data root:
    - use `ARMENIAN_BUDGET_DATA_PATH` if set
    - otherwise use bundled `assets/data` when this skill is packaged with data
    - otherwise use repo `data/processed`
    - if neither exists, fail clearly
-3. Verify parsed data is actually present in the chosen data root.
+2. Verify parsed data is actually present in the chosen data root.
    - if the resolved data root is missing or empty, do not invent data; point the user to another parsed data root or generate processed files first
-4. Inventory datasets by year and source type before computing anything:
-   - prefer `skills/armenian-budget-analyst/scripts/data_availability.py`
+3. Inventory only the needed years/source types before computing:
+   - prefer `skills/armenian-budget-data/scripts/data_availability.py`
    - if that script is unavailable, fall back to direct filename discovery under the resolved data root
    - do not assume the helper script lives in the repo root
-5. Pick the source type intentionally, then state the aggregation grain and metric before computing anything.
+4. Pick the source type intentionally, then state the aggregation grain and metric in the final derivation.
+
+Bootstrap a repo environment only when running project helper scripts that require repo dependencies. If bootstrapping fails, either use standard-library read-only analysis when enough CSV/JSON data is present, or state the missing prerequisite.
 
 ## Choose the right dataset
 
@@ -62,6 +62,7 @@ Use this skill for analysis of parsed Armenian budget and macro/GDP data from th
 
 - For simple chart artifacts, direct SVG generation is a robust fallback when plotting libraries are unavailable.
 - If you use the SVG fallback, keep labels, source types, missing-data notes, and comparability warnings inside the chart or its provenance sidecar.
+- When another skill provides a topic mapping or artifact format, use this skill for data validity and the downstream skill for that topic-specific mapping.
 
 ## Hard rules
 
@@ -81,4 +82,4 @@ Use this skill for analysis of parsed Armenian budget and macro/GDP data from th
 
 - `references/datasets.md`: dataset semantics and comparability rules
 - `references/analysis.md`: repeatable output patterns and provenance contract
-- `references/examples.md`: short worked examples, including one R&D example
+- `references/examples.md`: short worked examples for generic dataset use

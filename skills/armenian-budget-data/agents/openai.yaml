@@ -1,0 +1,4 @@
+interface:
+  display_name: "Armenian Budget Data"
+  short_description: "Work with parsed Armenian budget and GDP data safely"
+  default_prompt: "Use $armenian-budget-data to inspect parsed Armenian budget/GDP availability, choose valid source types, grains, metrics, denominators, and provenance."

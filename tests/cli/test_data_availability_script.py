@@ -11,7 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_PATH = (
     REPO_ROOT
     / "skills"
-    / "armenian-budget-analyst"
+    / "armenian-budget-data"
     / "scripts"
     / "data_availability.py"
 )
@@ -84,7 +84,7 @@ def test_build_matrix_orders_known_and_unknown_columns(tmp_path):
 
 def test_bundled_data_root_candidates_include_skill_assets_and_repo_data():
     module = load_script_module()
-    skill_root = REPO_ROOT / "skills" / "armenian-budget-analyst"
+    skill_root = REPO_ROOT / "skills" / "armenian-budget-data"
     candidates = module.bundled_data_root_candidates()
 
     assert (skill_root / "assets" / "data").resolve() in candidates

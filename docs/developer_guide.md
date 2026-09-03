@@ -54,7 +54,7 @@ config/
 └── checksum_history.yaml     # Same-URL archive content changes
 
 skills/
-├── armenian-budget-analyst/  # AI analysis skill for parsed datasets
+├── armenian-budget-data/     # AI data contract skill for parsed datasets
 └── keep-a-changelog/         # Repo-local changelog skill
 
 tests/
@@ -229,20 +229,19 @@ armenian-budget validate --years 2023 --source-type BUDGET_LAW
 
 ```
 
-## AI-Assisted Analysis
+## AI-Assisted Data Work
 
-The recommended AI-facing workflow is the repo-owned skill at
-`skills/armenian-budget-analyst/SKILL.md`.
+The recommended AI-facing data contract is the repo-owned skill at
+`skills/armenian-budget-data/SKILL.md`.
 
-- It analyzes parsed files in `data/processed`
+- It works with parsed files in `data/processed`
 - It includes `scripts/data_availability.py` for year/source inventory
-- It expects source files to be cited in answers
-- Generated artifacts should have sidecar provenance metadata
+- It defines valid source types, grains, metrics, denominators, and provenance
 
 Example helper command:
 
 ```bash
-python skills/armenian-budget-analyst/scripts/data_availability.py --format both
+python skills/armenian-budget-data/scripts/data_availability.py --format both
 ```
 
 ## Python API Reference
@@ -370,8 +369,14 @@ is easy to miss when a change is mostly data or documentation.
 3. Update coverage statements wherever the packaged data surface changed:
    `README.md`, `CITATION.cff`, `docs/data_schemas.md`, generated/example
    artifact notes, and any source-specific docs.
-4. Update `docs/roadmap.md` so the recently completed milestone reflects what
-   was actually released.
+4. Clean up and update `docs/roadmap.md`:
+   - Keep released detail in `CHANGELOG.md`; the roadmap should only retain a
+     brief recently completed milestone summary.
+   - Move the just-released milestone into `Recently Completed`.
+   - Move the next version into `Active Development`.
+   - Keep future milestones under `Upcoming`, and keep longer-horizon ideas in
+     `Backlog / Stretch`.
+   - Remove stale examples or commands that no longer match the current CLI.
 5. Check for stale release text before testing:
 
    ```bash
@@ -407,7 +412,7 @@ is easy to miss when a change is mostly data or documentation.
 11. Attach the generated release artifacts from `dist/` to the GitHub release
     when the release includes packaged data or skill bundles. Current artifact
     names follow `armenian-budget-data-{version}.zip` and
-    `armenian-budget-chatgpt-skill-{version}.zip`.
+    `armenian-budget-data-skill-{version}.zip`.
 
 ## Contributing
 

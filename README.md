@@ -14,7 +14,7 @@ Parses official Armenian government budget documents into analysis-ready CSVs wi
 
 **Data Coverage:**
 - **Budget Laws**: 2019-2026
-- **Spending Reports**: 2019-2025 (Q1, Q12, Q123, Q1234) plus 2026 Q1
+- **Spending Reports**: 2019-2025 (Q1, Q12, Q123, Q1234) plus 2026 Q1 and Q12
 - **MTEP**: 2024
 - **GDP snapshots**: budget-law sources and annual spending reports where source
   documents expose GDP/macro tables
@@ -29,20 +29,21 @@ Pre-processed CSVs ready to use:
 
 - **Budget Laws** (2019-2026): `data/processed/{year}_BUDGET_LAW.csv`
 - **Spending Reports**: `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
-  for 2019-2025, plus `data/processed/2026_SPENDING_Q1.csv`
+  for 2019-2025, plus `data/processed/2026_SPENDING_Q1.csv` and
+  `data/processed/2026_SPENDING_Q12.csv`
 - **MTEP** (2024): `data/processed/2024_MTEP.csv`
 - **GDP snapshots**: `data/processed/{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`
 - **GDP report**: `data/reports/gdp_report.html`
 
 → See [data_schemas.md](docs/data_schemas.md) for column details
 
-### 🤖 AI-Assisted Analysis
+### AI-Assisted Data Work
 
-The recommended AI analysis path is the
-[`armenian-budget-analyst`](skills/armenian-budget-analyst/SKILL.md) skill.
+The recommended AI-facing data contract is the
+[`armenian-budget-data`](skills/armenian-budget-data/SKILL.md) skill.
 
 - Works directly against `data/processed`
-- Is designed for source-cited tables, charts, and reports
+- Defines valid source types, grains, metrics, GDP denominators, and provenance
 - Uses bundled helper scripts internally when needed
 
 Example workflow:
@@ -55,15 +56,8 @@ cd armenian-budget-tools
 Launch Codex in the repo root and prompt it with:
 
 ```text
-Use $armenian-budget-analyst to create an R&D allocations and spending plot by year from parsed files only. Save the chart as ./artifacts/rd_allocations_and_spending_by_year.svg and include exact source file references plus provenance metadata.
+Use $armenian-budget-data to inspect available parsed budget and GDP files, choose valid source types, grains, metrics, denominators, and include exact source file references plus provenance metadata.
 ```
-
-Example artifact:
-
-![Example R&D allocations and spending plot](docs/examples/rd_allocations_and_spending_by_year.svg)
-
-Provenance metadata:
-[`docs/examples/rd_allocations_and_spending_by_year.svg.provenance.json`](docs/examples/rd_allocations_and_spending_by_year.svg.provenance.json)
 
 ### ✅ How We Ensure Data Quality
 

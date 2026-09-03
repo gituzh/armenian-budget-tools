@@ -41,6 +41,10 @@ artifacts. This is especially important for data-only releases because version
 metadata, coverage wording, generated/example artifact notes, and
 `DATA_VERSION.json` can otherwise drift.
 
+Do not delete, repurpose, or renumber future roadmap milestones during release
+preparation without explicit approval; update `Recently Completed` only with
+factual release work.
+
 ## Coding Style & Naming Conventions
 
 Target Python 3.10+. Follow Black-style formatting (4-space indent, ~88 character lines) and type-hint public functions, as seen in `interfaces/cli/main.py`. Modules and functions use snake_case (`flatten_budget_excel_2025`), classes use PascalCase, and constants are UPPER_SNAKE_CASE. Log through the standard `logging` facade (configured via `colorlog`) and group CLI options in dedicated subcommands. Run `ruff check src/ tests/` and `black src/ tests/` before opening a PR.

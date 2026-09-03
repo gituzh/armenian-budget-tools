@@ -20,8 +20,8 @@ sys.modules[BUILD_ARTIFACTS_SPEC.name] = build_artifacts
 BUILD_ARTIFACTS_SPEC.loader.exec_module(build_artifacts)
 
 
-def test_analyst_skill_exists() -> None:
-    skill_root = REPO_ROOT / "skills" / "armenian-budget-analyst"
+def test_data_skill_exists() -> None:
+    skill_root = REPO_ROOT / "skills" / "armenian-budget-data"
 
     assert skill_root.is_dir()
     assert not skill_root.is_symlink()
@@ -79,11 +79,11 @@ def test_data_version_counts_gdp_snapshots(tmp_path: Path, monkeypatch) -> None:
     }
 
 
-def test_chatgpt_skill_version_paths_exist_in_archive(
+def test_skill_version_paths_exist_in_archive(
     tmp_path: Path, monkeypatch
 ) -> None:
     repo_root = tmp_path
-    skill_root = repo_root / "skills" / "armenian-budget-analyst"
+    skill_root = repo_root / "skills" / "armenian-budget-data"
     data_root = repo_root / "data" / "processed"
     build_dir = tmp_path / "build"
     skill_root.mkdir(parents=True)
@@ -108,15 +108,19 @@ def test_chatgpt_skill_version_paths_exist_in_archive(
     context = build_artifacts.build_context(
         repo_root, build_dir, tmp_path / "dist", "0.1.0"
     )
-    artifact = build_artifacts.build_chatgpt_skill(context)
+    artifact = build_artifacts.build_skill(context)
+
+    assert artifact.path.name == "armenian-budget-data-skill-0.1.0.zip"
 
     with zipfile.ZipFile(artifact.path) as archive:
         names = set(archive.namelist())
         skill_text = archive.read("SKILL.md").decode("utf-8")
         version = json.loads(archive.read("assets/DATA_VERSION.json"))
 
-    assert (build_dir / "chatgpt-skill" / "assets" / "data").is_dir()
-    assert (build_dir / "chatgpt-skill" / "assets" / "DATA_VERSION.json").is_file()
+    assert (build_dir / "armenian-budget-data" / "assets" / "data").is_dir()
+    assert (
+        build_dir / "armenian-budget-data" / "assets" / "DATA_VERSION.json"
+    ).is_file()
     assert "- otherwise use bundled `assets/data`\n" in skill_text
     assert "otherwise use repo `data/processed`" not in skill_text
     assert version["data_root"] == "assets/data"
@@ -138,6 +142,8 @@ def test_data_archive_uses_flat_data_directory(tmp_path: Path, monkeypatch) -> N
         repo_root, tmp_path / "build", tmp_path / "dist", "0.1.0"
     )
     artifact = build_artifacts.build_data_archive(context)
+
+    assert artifact.path.name == "armenian-budget-data-0.1.0.zip"
 
     with zipfile.ZipFile(artifact.path) as archive:
         names = set(archive.namelist())
