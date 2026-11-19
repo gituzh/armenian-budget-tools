@@ -9,18 +9,16 @@ and keep current functionality working.
 
 ## Recently Completed
 
-### v0.6.0 - 2026 Q12 Spending Release
+### v0.7.0 - 2026 Q123 Spending Release
 
-**Focus:** Package 2026 first-half spending execution outputs and align release metadata.
+**Focus:** Package 2026 January-September spending execution outputs and align release metadata.
 
 Released:
 
-- Add 2026 Q12 spending outputs under `data/processed`.
-- Add discovery metadata for the 2026 Q12 spending source.
+- Add 2026 Q123 spending outputs under `data/processed`.
+- Add the 2026 Q123 spending source registry entry, checksum, and discovery metadata.
 - Refresh README, citation metadata, and data schema documentation for partial-year
   2026 spending coverage.
-- Replace the `armenian-budget-analyst` workflow with the
-  `armenian-budget-data` data contract skill.
 
 ## Active Development
 
