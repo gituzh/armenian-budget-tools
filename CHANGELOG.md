@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add 2026 January-September (Q123) spending report outputs.
+- Add the 2026 Q123 spending source registry entry, checksum, and discovery index metadata.
+
 ## [0.6.0] - 2026-09-02
 
 ### Added

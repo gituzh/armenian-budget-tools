@@ -388,5 +388,15 @@
     "size": 225980,
     "checksum": "sha256:dea88ca8a4e85513c54b56709cf1dfc51a72a92fc52e0ba7a01191fafc0c5e14",
     "discovered_at": "2026-08-31T12:18:23Z"
+  },
+  "2026/spending_q123": {
+    "key": "2026/spending_q123",
+    "path": "spending_reports/2026/Q123/2026_9 ամիս_հաշվետվություն/2026_9 ամիս_հաշվետվություն/2. Ծախսային քաղաքականություն/2.3.Հավելվածներ/2.Ծախսեր_ծրագիր միջոցառում_2026 9 ամիս.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1794211360.0,
+    "size": 229422,
+    "checksum": "sha256:b471ee93398dbf3e0c103fbee509c411855c59a5f8dac1bab1307407f4887edd",
+    "discovered_at": "2026-11-19T15:12:50Z"
   }
 }
