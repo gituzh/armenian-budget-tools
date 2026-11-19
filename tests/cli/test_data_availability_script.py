@@ -147,4 +147,8 @@ def test_cli_both_outputs_markdown_and_json_for_repo_data():
         row["year"] == 2026 and row["SPENDING_Q1"] == "2026_SPENDING_Q1.csv"
         for row in payload["rows"]
     )
+    assert any(
+        row["year"] == 2026 and row["SPENDING_Q123"] == "2026_SPENDING_Q123.csv"
+        for row in payload["rows"]
+    )
     assert any(row["MTEP"] == "2024_MTEP.csv" for row in payload["rows"])
