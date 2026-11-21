@@ -132,7 +132,7 @@ Archives contain multiple budget components beyond the currently parsed program 
 
 **Extraction Process:**
 
-- **Tools Required**: 7-Zip with RAR support or `unrar` for RAR files (`unar` as a last resort; it fails on some RAR5 archives); standard `unzip` for ZIP
+- **Tools Required**: 7-Zip with RAR support or `unrar` for RAR files (`unar` as a last resort; it fails on some RAR5 archives); Python's `zipfile` module for ZIP
 - **Inconsistent Structures**: Each archive has unique folder organization
 - **File Discovery**: Pattern-based matching to identify relevant Excel files
 - **Intermediate Format**: Preserves original .xlsx/.xls files before processing
