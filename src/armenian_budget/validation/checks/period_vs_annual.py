@@ -80,6 +80,7 @@ class PeriodVsAnnualCheck:
                 CheckResult(
                     check_id="period_vs_annual",
                     severity=get_severity("period_vs_annual", "overall"),
+                    rule="overall",
                     passed=False,
                     fail_count=len(violations),
                     messages=[f"Overall violations: {', '.join(violations)}"],
@@ -90,6 +91,7 @@ class PeriodVsAnnualCheck:
                 CheckResult(
                     check_id="period_vs_annual",
                     severity=get_severity("period_vs_annual", "overall"),
+                    rule="overall",
                     passed=True,
                     fail_count=0,
                 )
@@ -179,6 +181,7 @@ class PeriodVsAnnualCheck:
                     CheckResult(
                         check_id="period_vs_annual",
                         severity=get_severity("period_vs_annual", level),
+                        rule=level,
                         passed=False,
                         fail_count=len(messages),
                         messages=messages,
@@ -189,6 +192,7 @@ class PeriodVsAnnualCheck:
                     CheckResult(
                         check_id="period_vs_annual",
                         severity=get_severity("period_vs_annual", level),
+                        rule=level,
                         passed=True,
                         fail_count=0,
                     )

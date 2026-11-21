@@ -321,3 +321,38 @@ def test_markdown_json_consistency_all_passed(mock_validation_report_all_passed)
     # Verify all checks appear in passed section
     for check in json_data["passed_checks"]:
         assert f"- **{check['check_id']}**" in md_output
+
+
+def test_reports_name_the_rule_of_each_entry():
+    """Results of one check are told apart by their rule, passed ones included."""
+    totals = "hierarchical_totals"
+    report = ValidationReport(
+        results=[
+            CheckResult(totals, "error", True, 0, rule="overall: annual_plan"),
+            CheckResult(totals, "error", True, 0, rule="state_body: actual"),
+            CheckResult(
+                totals,
+                "error",
+                False,
+                1,
+                ["X: expected 1, got 2, diff 1"],
+                rule="program: actual",
+            ),
+            CheckResult("required_fields", "error", True, 0),
+        ],
+        source_type=SourceType.SPENDING_Q1,
+        csv_path=Path("data/processed/2023_SPENDING_Q1.csv"),
+    )
+    md = report.to_markdown()
+    assert "- **hierarchical_totals** (overall: annual_plan)" in md
+    assert "- **hierarchical_totals** (state_body: actual)" in md
+    assert "### ❌ hierarchical_totals: program: actual (1 failures)" in md
+    assert "- **required_fields**\n" in md
+
+    data = json.loads(report.to_json())
+    assert [c["rule"] for c in data["passed_checks"]] == [
+        "overall: annual_plan",
+        "state_body: actual",
+        "",
+    ]
+    assert data["error_checks"][0]["rule"] == "program: actual"

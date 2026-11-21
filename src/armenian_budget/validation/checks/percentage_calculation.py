@@ -80,6 +80,7 @@ class PercentageCalculationCheck:
                         CheckResult(
                             check_id="percentage_calculation",
                             severity=get_severity("percentage_calculation", "overall"),
+                            rule=overall_pct,
                             passed=False,
                             fail_count=1,
                             messages=[
@@ -94,6 +95,7 @@ class PercentageCalculationCheck:
                         CheckResult(
                             check_id="percentage_calculation",
                             severity=get_severity("percentage_calculation", "overall"),
+                            rule=overall_pct,
                             passed=True,
                             fail_count=0,
                         )
@@ -104,6 +106,7 @@ class PercentageCalculationCheck:
                     CheckResult(
                         check_id="percentage_calculation",
                         severity=get_severity("percentage_calculation", "overall"),
+                        rule=overall_pct,
                         passed=True,
                         fail_count=0,
                     )
@@ -128,6 +131,7 @@ class PercentageCalculationCheck:
                             CheckResult(
                                 check_id="percentage_calculation",
                                 severity=get_severity("percentage_calculation", level),
+                                rule=level_pct,
                                 passed=True,
                                 fail_count=0,
                             )
@@ -156,6 +160,7 @@ class PercentageCalculationCheck:
                             CheckResult(
                                 check_id="percentage_calculation",
                                 severity=get_severity("percentage_calculation", level),
+                                rule=level_pct,
                                 passed=False,
                                 fail_count=len(messages),
                                 messages=messages,
@@ -166,6 +171,7 @@ class PercentageCalculationCheck:
                             CheckResult(
                                 check_id="percentage_calculation",
                                 severity=get_severity("percentage_calculation", level),
+                                rule=level_pct,
                                 passed=True,
                                 fail_count=0,
                             )
@@ -176,6 +182,7 @@ class PercentageCalculationCheck:
                         CheckResult(
                             check_id="percentage_calculation",
                             severity=get_severity("percentage_calculation", level),
+                            rule=level_pct,
                             passed=True,
                             fail_count=0,
                         )

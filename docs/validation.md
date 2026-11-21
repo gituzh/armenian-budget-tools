@@ -113,6 +113,8 @@ Markdown reports are human-readable with clear sections:
 
 Each failure message includes specific context (entity names, actual vs expected values, etc.).
 
+A check can produce several results, one per rule (for example one per hierarchy level or field). Each entry names its rule after the check ID, e.g. `**negative_totals** (program)` in the passed list and `### ❌ hierarchical_totals: overall_actual vs state_body_actual (1 failures)` for a failure. Single-result checks show the check ID only.
+
 #### JSON Format
 
 JSON reports are machine-readable with this structure:
@@ -136,6 +138,7 @@ JSON reports are machine-readable with this structure:
   "passed_checks": [
     {
       "check_id": "required_fields",
+      "rule": "",
       "severity": "error",
       "messages": []
     }
@@ -143,6 +146,7 @@ JSON reports are machine-readable with this structure:
   "warning_checks": [
     {
       "check_id": "negative_totals",
+      "rule": "program",
       "severity": "warning",
       "fail_count": 3,
       "messages": [
@@ -153,6 +157,7 @@ JSON reports are machine-readable with this structure:
   "error_checks": [
     {
       "check_id": "hierarchical_totals",
+      "rule": "overall_total vs state_body_total",
       "severity": "error",
       "fail_count": 2,
       "messages": [

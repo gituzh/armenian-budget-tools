@@ -70,6 +70,7 @@ class EmptyIdentifiersCheck:
                     CheckResult(
                         check_id="empty_identifiers",
                         severity=get_severity("empty_identifiers", level),
+                        rule=level,
                         passed=False,
                         fail_count=len(messages),
                         messages=messages,
@@ -80,6 +81,7 @@ class EmptyIdentifiersCheck:
                     CheckResult(
                         check_id="empty_identifiers",
                         severity=get_severity("empty_identifiers", level),
+                        rule=level,
                         passed=True,
                         fail_count=0,
                     )

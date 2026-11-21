@@ -63,13 +63,14 @@ def _repeated_blocks(keys: pd.Series) -> dict[str, list[str]]:
     }
 
 
-def _result(level: str, messages: list[str]) -> CheckResult:
+def _result(level: str, rule: str, messages: list[str]) -> CheckResult:
     return CheckResult(
         check_id=CHECK_ID,
         severity=get_severity(CHECK_ID, level),
         passed=not messages,
         fail_count=len(messages),
         messages=messages,
+        rule=f"{level} {rule}",
     )
 
 
@@ -135,7 +136,7 @@ class DuplicateRecordsCheck:
             f"(CSV lines {', '.join(lines)})"
             for sb, lines in _repeated_blocks(state_body).items()
         ]
-        results.append(_result("state_body", messages))
+        results.append(_result("state_body", "blocks", messages))
 
         if "program_code" in df.columns:
             results.extend(self._program_results(df, state_body))
@@ -153,13 +154,13 @@ class DuplicateRecordsCheck:
                     f"State body '{norm}' has {len(variants)} whitespace variants: "
                     f"{described}"
                 )
-        results.append(_result("state_body", messages))
+        results.append(_result("state_body", "whitespace variants", messages))
 
         messages = [
             f"State body '{sb}' totals differ across its rows: {desc}"
             for sb, desc in _differing_totals(df, state_body, "state_body_").items()
         ]
-        results.append(_result("state_body", messages))
+        results.append(_result("state_body", "totals", messages))
 
         return results
 
@@ -175,7 +176,7 @@ class DuplicateRecordsCheck:
                 f"State body '{sb}' program {code} appears in {len(lines)} separate "
                 f"blocks (CSV lines {', '.join(lines)})"
             )
-        results = [_result("program", messages)]
+        results = [_result("program", "blocks", messages)]
 
         if "subprogram_code" in df.columns:
             full = pd.DataFrame(
@@ -189,7 +190,7 @@ class DuplicateRecordsCheck:
                     f"State body '{sb}' program {code} subprogram {sub} appears on "
                     f"{len(group)} rows (CSV lines {lines})"
                 )
-            results.append(_result("subprogram", messages))
+            results.append(_result("subprogram", "rows", messages))
 
         messages = []
         totals = _differing_totals(df, state_body + sep + program, "program_")
@@ -199,7 +200,7 @@ class DuplicateRecordsCheck:
                 f"State body '{sb}' program {code} totals differ across its rows: "
                 f"{desc}"
             )
-        results.append(_result("program", messages))
+        results.append(_result("program", "totals", messages))
         return results
 
     def applies_to_source_type(self, source_type: SourceType) -> bool:
