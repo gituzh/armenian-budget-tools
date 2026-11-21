@@ -38,9 +38,9 @@ checksums:
 - name: 2020_budget_law_attachments
   year: 2020
   source_type: budget_law
-  url: https://minfin.am/website/images/website/byuje%20ev%20krknaki%20harkum/Mijnajamket/Orenqi%20havelvacner_Excel.rar
-  checksum: ce84f26ab8ddddc718f3e0e8562191aa3b1bf35e3d611be04cf7da4c36ac7b4d
-  checksum_updated_at: '2025-08-10T14:36:05.159087+00:00'
+  url: https://minfin.am/website/images/website/byuje%20ev%20krknaki%20harkum/2.1.Havelvacner_Orenq%20(1).rar
+  checksum: f86cd85e8bf968b401255d5f7545910da5f24d8c32280ec7d28e857361ff5a56
+  checksum_updated_at: '2026-11-21T22:14:25.461632+00:00'
 - name: 2020_budget_law_explanatory_note
   year: 2020
   source_type: budget_law
