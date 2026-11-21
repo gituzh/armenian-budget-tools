@@ -28,6 +28,7 @@ raw_data/
 data/original/
 data/extracted/*
 !data/extracted/discovery_index.json
+data/superseded/
 data/processed/tmp
 data/processed/processing_report.json
 data/reports/*_partial.html
