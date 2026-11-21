@@ -285,12 +285,6 @@ checksums:
   url: https://minfin.am/website/images/files/2026_9%20%D5%A1%D5%B4%D5%AB%D5%BD_%D5%B0%D5%A1%D5%B7%D5%BE%D5%A5%D5%BF%D5%BE%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.rar
   checksum: 0617aca38ebcdc16c81dc66a78eb4bf5704debb07e7d1a3a1638af66b64ebbc0
   checksum_updated_at: '2026-11-19T15:12:42.637046+00:00'
-- name: 2021_spending_q123
-  year: 2021
-  source_type: spending_q123
-  url: https://minfin.am/website/images/files/2449c06b%201.zip
-  checksum: 0371bcc278a059019918f24067e23de08e05439efeb801283ca7e061275462c1
-  checksum_updated_at: '2025-08-10T14:36:05.171502+00:00'
 - name: 2021_spending_q1234
   year: 2021
   source_type: spending_q1234
