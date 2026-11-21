@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Extract RAR archives with 7-Zip or `unrar` before falling back to `unar`, which fails on some RAR5 archives such as the 2023 January-September spending reports.
+- Remove partial output when RAR extraction fails, so the next run retries the archive instead of skipping it as already extracted.
+
 ## [0.7.0] - 2026-11-19
 
 ### Added
