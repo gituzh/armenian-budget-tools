@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove partial output when RAR extraction fails, so the next run retries the archive instead of skipping it as already extracted.
 - Point the 2020 budget law attachments source and checksum at the 2020 archive; they named the 2019 archive, so a fresh download of 2020 fetched 2019's figures. Committed 2020 outputs were already correct. A new test fails when two source entries share a URL or checksum.
 - Register the 2026 first-half (Q12) spending report package in `config/sources.yaml` and `config/checksums.yaml`; the Q12 outputs had been added without a source entry. Committed 2026 Q12 outputs are unchanged.
+- Save the 2026 Q12 spending archive as `2026_I կիսամյակ_հաշվետվություն.rar`; MinFin's file name ends in `..rar`, which left a trailing dot on the extracted folder that Windows cannot keep.
 
 ## [0.7.0] - 2026-11-19
 
