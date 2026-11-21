@@ -294,7 +294,7 @@ def cmd_process(args: argparse.Namespace) -> int:
                 elif year >= 2025:
                     # Use 2025+ parser for all 2025 and later sources, passing source_type for spending
                     df, overall, _, _ = flatten_budget_excel_2025(
-                        str(input_path), source_type=st_enum
+                        str(input_path), source_type=st_enum, year=int(year)
                     )
                 else:
                     df, overall, _, _ = flatten_budget_excel_2019_2024(

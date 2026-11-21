@@ -270,7 +270,7 @@ def _validate_with_parser(candidate: Path, year: int, source_type: str) -> bool:
     try:
         if int(year) >= 2025:
             df, _overall, _, _ = flatten_budget_excel_2025(
-                str(candidate), source_type=SourceType[source_type]
+                str(candidate), source_type=SourceType[source_type], year=int(year)
             )
         else:
             df, _overall, _, _ = flatten_budget_excel_2019_2024(

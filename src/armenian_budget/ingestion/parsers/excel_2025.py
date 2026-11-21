@@ -55,6 +55,7 @@ def _detect_row_type_2025(row_data: List[str]) -> RowType:
 def flatten_budget_excel_2025(
     excel_file_path: str,
     source_type: SourceType = SourceType.BUDGET_LAW,
+    year: int | None = None,
 ) -> tuple[pd.DataFrame, float | dict, dict, dict]:
     """
     Flattens the 2025 Armenian budget Excel file using a state machine approach.
@@ -68,6 +69,8 @@ def flatten_budget_excel_2025(
 
     Args:
         excel_file_path: Path to the Excel file to process.
+        source_type: Source type being parsed.
+        year: Data year, used only for the progress label.
 
     Returns:
         result_df: Flattened DataFrame.
@@ -102,9 +105,14 @@ def flatten_budget_excel_2025(
 
     # ===================== MARK: Main Loop ====================================
     # Pad desc to align with 2019-2024 label width; include unit rows
+    desc_label = (
+        f"Processing {year} {source_type.name}"
+        if year
+        else f"Processing {source_type.name}"
+    )
     pbar = tqdm(
         total=len(df),
-        desc=f"{'Processing 2025 ' + source_type.name:<31}",
+        desc=f"{desc_label:<31}",
         unit="rows",
         bar_format="{desc}{percentage:3.0f}%|{bar}| {n:>5}/{total:>5} [{elapsed}<{remaining}, {rate_fmt}]",
     )
