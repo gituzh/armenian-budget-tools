@@ -123,6 +123,25 @@ class TestRowTypeDetection:
 class TestExtractionFunctionInputValidation:
     """Test input validation for extraction functions."""
 
+    def test_2025_parser_progress_label_uses_given_year(self, monkeypatch, tmp_path):
+        """The 2025-format parser labels progress with the data year, not 2025."""
+        from armenian_budget.ingestion.parsers import excel_2025
+
+        excel_path = tmp_path / "spending.xlsx"
+        pd.DataFrame([["x"]]).to_excel(excel_path, index=False, header=False)
+        labels = []
+
+        def fake_tqdm(*args, **kwargs):
+            labels.append(kwargs["desc"].strip())
+            raise RuntimeError("stop after label")
+
+        monkeypatch.setattr(excel_2025, "tqdm", fake_tqdm)
+        with pytest.raises(RuntimeError, match="stop after label"):
+            flatten_budget_excel_2025(
+                str(excel_path), source_type=SourceType.SPENDING_Q12, year=2026
+            )
+        assert labels == ["Processing 2026 SPENDING_Q12"]
+
     def test_invalid_file_path(self):
         """Test handling of invalid file paths."""
         with pytest.raises(FileNotFoundError):
