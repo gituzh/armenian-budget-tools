@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extract RAR archives with 7-Zip or `unrar` before falling back to `unar`, which fails on some RAR5 archives such as the 2023 January-September spending reports.
 - Remove partial output when RAR extraction fails, so the next run retries the archive instead of skipping it as already extracted.
 - Point the 2020 budget law attachments source and checksum at the 2020 archive; they named the 2019 archive, so a fresh download of 2020 fetched 2019's figures. Committed 2020 outputs were already correct. A new test fails when two source entries share a URL or checksum.
+- Register the 2026 first-half (Q12) spending report package in `config/sources.yaml` and `config/checksums.yaml`; the Q12 outputs had been added without a source entry. Committed 2026 Q12 outputs are unchanged.
 
 ## [0.7.0] - 2026-11-19
 
