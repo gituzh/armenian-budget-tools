@@ -180,7 +180,8 @@ When using the parsed data, please acknowledge the source to help others discove
 ## Requirements
 
 - Python 3.10+
-- `unar` or `unrar` for RAR extraction
+- 7-Zip with RAR support (`7zz` or `7z`) or `unrar` for RAR extraction; `unar`
+  works only as a last resort because it fails on some RAR5 archives
 
 For installation steps, see [Run the Data Processing Pipeline Yourself](#️-run-the-data-processing-pipeline-yourself) above.
 
