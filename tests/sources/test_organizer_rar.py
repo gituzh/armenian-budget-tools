@@ -15,11 +15,26 @@ def dirs(tmp_path):
     return input_dir, output_dir, output_dir / "2023" / "Q123" / "report"
 
 
-def install_tools(monkeypatch, available, outcomes=None):
+TOOLS = ["7zz", "7z", "unrar", "unar"]
+
+
+def output_arg(tool, cmd):
+    """Return the output directory each real tool would write to."""
+    if tool in ("7zz", "7z"):
+        return Path(next(a for a in cmd if a.startswith("-o"))[2:])
+    if tool == "unrar":
+        return Path(cmd[-1])
+    return Path(cmd[cmd.index("-o") + 1])
+
+
+def install_tools(monkeypatch, available, outcomes=None, members=None):
     """Fake `shutil.which` and `subprocess.run`.
 
-    `outcomes` maps a tool name to True (extract a file and exit 0) or False
-    (write a partial file and exit non-zero). Returns the list of tools run.
+    `outcomes` maps a tool name to True (extract `members`, default
+    `<tool>.xls`, and exit 0) or False (write a partial file and exit
+    non-zero). Like the real `unar`, the fake `unar` wraps several top-level
+    items in a folder named after the archive unless given `-D`.
+    Returns the list of tools run.
     """
     outcomes = outcomes or {}
     paths = {name: f"/fake/bin/{name}" for name in available}
@@ -31,16 +46,47 @@ def install_tools(monkeypatch, available, outcomes=None):
     def fake_run(cmd, **kwargs):
         tool = Path(cmd[0]).name
         calls.append(tool)
-        target = Path(next(a for a in cmd if a.endswith("report")).removeprefix("-o"))
+        out = output_arg(tool, cmd)
+        assert out.is_dir()
         if outcomes.get(tool, True):
-            (target / f"{tool}.xls").write_text("ok")
+            names = members or [f"{tool}.xls"]
+            top_level = {name.split("/")[0] for name in names}
+            if tool == "unar" and "-D" not in cmd and len(top_level) > 1:
+                stem = Path(next(a for a in cmd if a.endswith(".rar"))).stem
+                out = out / stem
+            for name in names:
+                (out / name).parent.mkdir(parents=True, exist_ok=True)
+                (out / name).write_text("ok")
             return subprocess.CompletedProcess(cmd, 0, stdout=b"")
-        (target / "partial.xls").write_text("partial")
+        (out / "partial.xls").write_text("partial")
         raise subprocess.CalledProcessError(2, cmd, output=b"Unpacking failed")
 
     monkeypatch.setattr(organizer.shutil, "which", fake_which)
     monkeypatch.setattr(organizer.subprocess, "run", fake_run)
     return calls
+
+
+def tree(root):
+    return sorted(str(p.relative_to(root)) for p in root.rglob("*") if p.is_file())
+
+
+@pytest.mark.parametrize("tool", TOOLS)
+@pytest.mark.parametrize(
+    ("members", "expected"),
+    [
+        (["only.xls"], ["only.xls"]),
+        (["folder/a.xls", "folder/sub/b.xls"], ["folder/a.xls", "folder/sub/b.xls"]),
+        (["a.xls", "folder/b.xls"], ["report/a.xls", "report/folder/b.xls"]),
+    ],
+    ids=["single-file", "single-folder", "multiple-items"],
+)
+def test_every_tool_reproduces_unar_layout(monkeypatch, dirs, tool, members, expected):
+    input_dir, output_dir, target = dirs
+    install_tools(monkeypatch, [tool], members=members)
+
+    assert organizer.extract_rar_files(input_dir, output_dir) == [target]
+    assert tree(target) == expected
+    assert [p.name for p in target.parent.iterdir()] == ["report"]
 
 
 def test_prefers_7zz_over_other_tools(monkeypatch, dirs):
@@ -70,6 +116,7 @@ def test_fallback_clears_partial_output_of_failed_tool(monkeypatch, dirs):
     organizer.extract_rar_files(input_dir, output_dir)
 
     assert sorted(p.name for p in target.iterdir()) == ["unar.xls"]
+    assert [p.name for p in target.parent.iterdir()] == ["report"]
 
 
 def test_all_tools_failing_leaves_no_target_dir(monkeypatch, dirs, caplog):
@@ -78,6 +125,7 @@ def test_all_tools_failing_leaves_no_target_dir(monkeypatch, dirs, caplog):
 
     assert organizer.extract_rar_files(input_dir, output_dir) == []
     assert not target.exists()
+    assert not any(target.parent.iterdir())
     assert "Unpacking failed" in caplog.text
 
 
