@@ -2,14 +2,14 @@
 
 **Source Type:** SPENDING_Q1
 **File:** 2026_SPENDING_Q1.csv
-**Generated:** 2026-05-16 15:07:55
+**Generated:** 2026-11-22 01:42:46
 
 ## Summary
 
 ### Check Status
 
-- **Total Rules:** 47
-- **Passed:** 43 ✅
+- **Total Rules:** 53
+- **Passed:** 49 ✅
 - **With Warnings:** 4 ⚠️
 - **With Errors:** 0 ❌
 
@@ -20,53 +20,59 @@
 
 ## ✅ Passed Checks
 
-- **empty_identifiers**
-- **empty_identifiers**
-- **empty_identifiers**
-- **execution_exceeds_100**
-- **execution_exceeds_100**
-- **execution_exceeds_100**
-- **execution_exceeds_100**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **missing_financial_data**
-- **missing_financial_data**
-- **missing_financial_data**
-- **missing_financial_data**
-- **negative_percentages**
-- **negative_percentages**
-- **negative_percentages**
-- **negative_totals**
-- **negative_totals**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **period_vs_annual**
-- **period_vs_annual**
-- **period_vs_annual**
+- **duplicate_records** (state_body blocks)
+- **duplicate_records** (program blocks)
+- **duplicate_records** (subprogram rows)
+- **duplicate_records** (program totals)
+- **duplicate_records** (state_body whitespace variants)
+- **duplicate_records** (state_body totals)
+- **empty_identifiers** (state_body)
+- **empty_identifiers** (program)
+- **empty_identifiers** (subprogram)
+- **execution_exceeds_100** (overall)
+- **execution_exceeds_100** (state_body)
+- **execution_exceeds_100** (program)
+- **execution_exceeds_100** (subprogram)
+- **hierarchical_totals** (overall_actual vs state_body_actual)
+- **hierarchical_totals** (state_body_actual vs program_actual)
+- **hierarchical_totals** (program_actual vs subprogram_actual)
+- **hierarchical_totals** (overall_annual_plan vs state_body_annual_plan)
+- **hierarchical_totals** (state_body_annual_plan vs program_annual_plan)
+- **hierarchical_totals** (program_annual_plan vs subprogram_annual_plan)
+- **hierarchical_totals** (overall_period_plan vs state_body_period_plan)
+- **hierarchical_totals** (state_body_period_plan vs program_period_plan)
+- **hierarchical_totals** (program_period_plan vs subprogram_period_plan)
+- **hierarchical_totals** (overall_rev_annual_plan vs state_body_rev_annual_plan)
+- **hierarchical_totals** (state_body_rev_annual_plan vs program_rev_annual_plan)
+- **hierarchical_totals** (program_rev_annual_plan vs subprogram_rev_annual_plan)
+- **hierarchical_totals** (overall_rev_period_plan vs state_body_rev_period_plan)
+- **hierarchical_totals** (state_body_rev_period_plan vs program_rev_period_plan)
+- **hierarchical_totals** (program_rev_period_plan vs subprogram_rev_period_plan)
+- **missing_financial_data** (overall)
+- **missing_financial_data** (state_body)
+- **missing_financial_data** (program)
+- **missing_financial_data** (subprogram)
+- **negative_percentages** (overall)
+- **negative_percentages** (state_body)
+- **negative_percentages** (subprogram)
+- **negative_totals** (overall)
+- **negative_totals** (state_body)
+- **percentage_calculation** (overall_actual_vs_rev_annual_plan)
+- **percentage_calculation** (state_body_actual_vs_rev_annual_plan)
+- **percentage_calculation** (program_actual_vs_rev_annual_plan)
+- **percentage_calculation** (subprogram_actual_vs_rev_annual_plan)
+- **percentage_calculation** (overall_actual_vs_rev_period_plan)
+- **percentage_calculation** (state_body_actual_vs_rev_period_plan)
+- **percentage_calculation** (program_actual_vs_rev_period_plan)
+- **percentage_calculation** (subprogram_actual_vs_rev_period_plan)
+- **period_vs_annual** (overall)
+- **period_vs_annual** (state_body)
+- **period_vs_annual** (program)
 - **required_fields**
 
 ## ⚠️ Warnings
 
-### ⚠️ negative_percentages (18 failures)
+### ⚠️ negative_percentages: program (18 failures)
 
 - Row 153: Negative percentage for 'program_actual_vs_rev_annual_plan' (-11.20%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001
 - Row 154: Negative percentage for 'program_actual_vs_rev_annual_plan' (-11.20%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003
@@ -87,7 +93,7 @@
 - Row 160: Negative percentage for 'program_actual_vs_rev_period_plan' (-80.20%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 - Row 161: Negative percentage for 'program_actual_vs_rev_period_plan' (-80.20%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31004
 
-### ⚠️ negative_totals (36 failures)
+### ⚠️ negative_totals: program (36 failures)
 
 - Program field 'program_annual_plan' has negative value: -7351877.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001
 - Program field 'program_annual_plan' has negative value: -7351877.10 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003
@@ -126,7 +132,7 @@
 - Program field 'program_rev_period_plan' has negative value: -927799.30 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 - Program field 'program_rev_period_plan' has negative value: -927799.30 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31004
 
-### ⚠️ negative_totals (5 failures)
+### ⚠️ negative_totals: subprogram (5 failures)
 
 - Subprogram field 'subprogram_annual_plan' has negative value: -10000000.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 - Subprogram field 'subprogram_rev_annual_plan' has negative value: -10000000.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
@@ -134,7 +140,7 @@
 - Subprogram field 'subprogram_rev_period_plan' has negative value: -2500000.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 - Subprogram field 'subprogram_actual' has negative value: -135429.50 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 
-### ⚠️ period_vs_annual (6 failures)
+### ⚠️ period_vs_annual: subprogram (6 failures)
 
 - Subprogram violation: 'subprogram_period_plan' (30000.00) exceeds limit 'subprogram_annual_plan' (0.00) by 30000.00 for ՀՀ էկոնոմիկայի նախարարություն | 1165 | 12011
 - Subprogram violation: 'subprogram_period_plan' (732120.60) exceeds limit 'subprogram_annual_plan' (591245.10) by 140875.50 for ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն | 1192 | 32006
