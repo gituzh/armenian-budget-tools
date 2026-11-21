@@ -2,61 +2,66 @@
 
 **Source Type:** SPENDING_Q123
 **File:** 2023_SPENDING_Q123.csv
-**Generated:** 2025-12-10 23:40:12
+**Generated:** 2026-11-22 01:42:44
 
 ## Summary
 
 ### Check Status
 
-- **Total Rules:** 47
-- **Passed:** 33 ✅
+- **Total Rules:** 53
+- **Passed:** 38 ✅
 - **With Warnings:** 4 ⚠️
-- **With Errors:** 10 ❌
+- **With Errors:** 11 ❌
 
 ### Issues Found
 
-- **Errors:** 10 ❌
+- **Errors:** 11 ❌
 - **Warnings:** 54 ⚠️
 
 ## ✅ Passed Checks
 
-- **empty_identifiers**
-- **empty_identifiers**
-- **empty_identifiers**
-- **execution_exceeds_100**
-- **execution_exceeds_100**
-- **execution_exceeds_100**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **hierarchical_totals**
-- **missing_financial_data**
-- **missing_financial_data**
-- **missing_financial_data**
-- **missing_financial_data**
-- **negative_percentages**
-- **negative_percentages**
-- **negative_percentages**
-- **negative_percentages**
-- **negative_totals**
-- **negative_totals**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **percentage_calculation**
-- **period_vs_annual**
-- **period_vs_annual**
-- **period_vs_annual**
+- **duplicate_records** (state_body blocks)
+- **duplicate_records** (program blocks)
+- **duplicate_records** (subprogram rows)
+- **duplicate_records** (program totals)
+- **duplicate_records** (state_body whitespace variants)
+- **empty_identifiers** (state_body)
+- **empty_identifiers** (program)
+- **empty_identifiers** (subprogram)
+- **execution_exceeds_100** (overall)
+- **execution_exceeds_100** (state_body)
+- **execution_exceeds_100** (program)
+- **hierarchical_totals** (program_actual vs subprogram_actual)
+- **hierarchical_totals** (program_annual_plan vs subprogram_annual_plan)
+- **hierarchical_totals** (program_period_plan vs subprogram_period_plan)
+- **hierarchical_totals** (program_rev_annual_plan vs subprogram_rev_annual_plan)
+- **hierarchical_totals** (program_rev_period_plan vs subprogram_rev_period_plan)
+- **missing_financial_data** (overall)
+- **missing_financial_data** (state_body)
+- **missing_financial_data** (program)
+- **missing_financial_data** (subprogram)
+- **negative_percentages** (overall)
+- **negative_percentages** (state_body)
+- **negative_percentages** (program)
+- **negative_percentages** (subprogram)
+- **negative_totals** (overall)
+- **negative_totals** (state_body)
+- **percentage_calculation** (overall_actual_vs_rev_annual_plan)
+- **percentage_calculation** (state_body_actual_vs_rev_annual_plan)
+- **percentage_calculation** (program_actual_vs_rev_annual_plan)
+- **percentage_calculation** (subprogram_actual_vs_rev_annual_plan)
+- **percentage_calculation** (overall_actual_vs_rev_period_plan)
+- **percentage_calculation** (state_body_actual_vs_rev_period_plan)
+- **percentage_calculation** (program_actual_vs_rev_period_plan)
+- **percentage_calculation** (subprogram_actual_vs_rev_period_plan)
+- **period_vs_annual** (overall)
+- **period_vs_annual** (state_body)
+- **period_vs_annual** (program)
 - **required_fields**
 
 ## ⚠️ Warnings
 
-### ⚠️ execution_exceeds_100 (13 failures)
+### ⚠️ execution_exceeds_100: subprogram (13 failures)
 
 - Row 178: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (106.50%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1049 | 21008
 - Row 182: Execution > 100% for 'subprogram_actual_vs_rev_annual_plan' (100.50%) in ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1049 | 21013
@@ -72,7 +77,7 @@
 - Row 282: Execution > 100% for 'subprogram_actual_vs_rev_period_plan' (100.70%) in ՀՀ առողջապահության նախարարություն | 1053 | 11015
 - Row 404: Execution > 100% for 'subprogram_actual_vs_rev_period_plan' (107.50%) in ՀՀ էկոնոմիկայի նախարարություն | 1134 | 12004
 
-### ⚠️ negative_totals (30 failures)
+### ⚠️ negative_totals: program (30 failures)
 
 - Program field 'program_annual_plan' has negative value: -8683502.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11001
 - Program field 'program_annual_plan' has negative value: -8683502.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 11003
@@ -105,7 +110,7 @@
 - Program field 'program_actual' has negative value: -5033153.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31001
 - Program field 'program_actual' has negative value: -5033153.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 
-### ⚠️ negative_totals (5 failures)
+### ⚠️ negative_totals: subprogram (5 failures)
 
 - Subprogram field 'subprogram_annual_plan' has negative value: -10000000.00 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 - Subprogram field 'subprogram_rev_annual_plan' has negative value: -24237558.20 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
@@ -113,7 +118,7 @@
 - Subprogram field 'subprogram_rev_period_plan' has negative value: -20314737.80 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 - Subprogram field 'subprogram_actual' has negative value: -5889853.20 for ՀՀ տարածքային կառավարման և ենթակառուցվածքների նախարարություն | 1079 | 31002
 
-### ⚠️ period_vs_annual (6 failures)
+### ⚠️ period_vs_annual: subprogram (6 failures)
 
 - Subprogram violation: 'subprogram_period_plan' (74800.00) exceeds limit 'subprogram_annual_plan' (0.00) by 74800.00 for ՀՀ վարչապետի  աշխատակազմ | 1091 | 32002
 - Subprogram violation: 'subprogram_period_plan' (33000.00) exceeds limit 'subprogram_annual_plan' (0.00) by 33000.00 for ՀՀ վարչապետի  աշխատակազմ | 1136 | 31005
@@ -124,43 +129,47 @@
 
 ## ❌ Errors
 
-### ❌ hierarchical_totals (1 failures)
+### ❌ duplicate_records: state_body totals (1 failures)
+
+- State body 'ՀՀ ներքին գործերի նախարարություն' totals differ across its rows: state_body_annual_plan values [17099402.8, 391973.2]; state_body_rev_annual_plan values [16927007.9, 913714.7]; state_body_period_plan values [12669640.7, 279048.6]; state_body_rev_period_plan values [12858399.4, 527986.1]; state_body_actual values [11372002.0, 414636.6]; state_body_actual_vs_rev_annual_plan values [0.672, 0.454]; state_body_actual_vs_rev_period_plan values [0.884, 0.785] (distinct total sets start at CSV lines 880, 900)
+
+### ❌ hierarchical_totals: overall_actual vs state_body_actual (1 failures)
 
 - Overall overall_actual: expected 1633520314.1000001, got 1633934950.7, diff 414636.59999990463 (tolerance 2000.0)
 
-### ❌ hierarchical_totals (1 failures)
+### ❌ hierarchical_totals: state_body_actual vs program_actual (1 failures)
 
 - ՀՀ ներքին գործերի նախարարություն: expected 11786638.6, got 11372002.0, diff 414636.5999999996
 
-### ❌ hierarchical_totals (1 failures)
+### ❌ hierarchical_totals: overall_annual_plan vs state_body_annual_plan (1 failures)
 
 - Overall overall_annual_plan: expected 2590581177.900001, got 2590973151.1, diff 391973.1999988556 (tolerance 2000.0)
 
-### ❌ hierarchical_totals (1 failures)
+### ❌ hierarchical_totals: state_body_annual_plan vs program_annual_plan (1 failures)
 
 - ՀՀ ներքին գործերի նախարարություն: expected 17491376.0, got 17099402.8, diff 391973.19999999925
 
-### ❌ hierarchical_totals (1 failures)
+### ❌ hierarchical_totals: overall_period_plan vs state_body_period_plan (1 failures)
 
 - Overall overall_period_plan: expected 1856599083.8, got 1856878132.4, diff 279048.60000014305 (tolerance 2000.0)
 
-### ❌ hierarchical_totals (1 failures)
+### ❌ hierarchical_totals: state_body_period_plan vs program_period_plan (1 failures)
 
 - ՀՀ ներքին գործերի նախարարություն: expected 12948689.299999999, got 12669640.7, diff 279048.5999999996
 
-### ❌ hierarchical_totals (1 failures)
+### ❌ hierarchical_totals: overall_rev_annual_plan vs state_body_rev_annual_plan (1 failures)
 
 - Overall overall_rev_annual_plan: expected 2591707984.400001, got 2592621698.9, diff 913714.4999990463 (tolerance 2000.0)
 
-### ❌ hierarchical_totals (1 failures)
+### ❌ hierarchical_totals: state_body_rev_annual_plan vs program_rev_annual_plan (1 failures)
 
 - ՀՀ ներքին գործերի նախարարություն: expected 17840722.6, got 16927007.9, diff 913714.700000003
 
-### ❌ hierarchical_totals (1 failures)
+### ❌ hierarchical_totals: overall_rev_period_plan vs state_body_rev_period_plan (1 failures)
 
 - Overall overall_rev_period_plan: expected 1931118870.9, got 1931646856.8, diff 527985.899999857 (tolerance 2000.0)
 
-### ❌ hierarchical_totals (1 failures)
+### ❌ hierarchical_totals: state_body_rev_period_plan vs program_rev_period_plan (1 failures)
 
 - ՀՀ ներքին գործերի նախարարություն: expected 13386385.5, got 12858399.4, diff 527986.0999999996
 

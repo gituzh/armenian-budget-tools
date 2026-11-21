@@ -26,6 +26,7 @@ from .checks.period_vs_annual import PeriodVsAnnualCheck
 from .checks.negative_percentages import NegativePercentagesCheck
 from .checks.execution_exceeds_100 import ExecutionExceeds100Check
 from .checks.percentage_calculation import PercentageCalculationCheck
+from .checks.duplicate_records import DuplicateRecordsCheck
 from .models import CheckResult, ValidationReport
 
 
@@ -40,6 +41,7 @@ ALL_CHECKS = [
     HierarchicalTotalsCheck(),
     HierarchicalStructureSanityCheck(),
     NegativeTotalsCheck(),
+    DuplicateRecordsCheck(),
     # Phase 5: Spending-Specific Checks
     PeriodVsAnnualCheck(),
     NegativePercentagesCheck(),

@@ -45,6 +45,7 @@ class MissingFinancialDataCheck:
                 CheckResult(
                     check_id="missing_financial_data",
                     severity=get_severity("missing_financial_data", "overall"),
+                    rule="overall",
                     passed=False,
                     fail_count=len(missing_overall),
                     messages=[f"Missing overall fields: {', '.join(missing_overall)}"],
@@ -55,6 +56,7 @@ class MissingFinancialDataCheck:
                 CheckResult(
                     check_id="missing_financial_data",
                     severity=get_severity("missing_financial_data", "overall"),
+                    rule="overall",
                     passed=True,
                     fail_count=0,
                 )
@@ -85,6 +87,7 @@ class MissingFinancialDataCheck:
                     CheckResult(
                         check_id="missing_financial_data",
                         severity=get_severity("missing_financial_data", level),
+                        rule=level,
                         passed=False,
                         fail_count=len(messages),
                         messages=messages,
@@ -95,6 +98,7 @@ class MissingFinancialDataCheck:
                     CheckResult(
                         check_id="missing_financial_data",
                         severity=get_severity("missing_financial_data", level),
+                        rule=level,
                         passed=True,
                         fail_count=0,
                     )

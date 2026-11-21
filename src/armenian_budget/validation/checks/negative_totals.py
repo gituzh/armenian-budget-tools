@@ -49,6 +49,7 @@ class NegativeTotalsCheck:
                 CheckResult(
                     check_id="negative_totals",
                     severity=get_severity("negative_totals", "overall"),
+                    rule="overall",
                     passed=False,
                     fail_count=len(messages),
                     messages=messages,
@@ -59,6 +60,7 @@ class NegativeTotalsCheck:
                 CheckResult(
                     check_id="negative_totals",
                     severity=get_severity("negative_totals", "overall"),
+                    rule="overall",
                     passed=True,
                     fail_count=0,
                 )
@@ -90,6 +92,7 @@ class NegativeTotalsCheck:
                     CheckResult(
                         check_id="negative_totals",
                         severity=get_severity("negative_totals", level),
+                        rule=level,
                         passed=False,
                         fail_count=len(messages),
                         messages=messages,
@@ -100,6 +103,7 @@ class NegativeTotalsCheck:
                     CheckResult(
                         check_id="negative_totals",
                         severity=get_severity("negative_totals", level),
+                        rule=level,
                         passed=True,
                         fail_count=0,
                     )

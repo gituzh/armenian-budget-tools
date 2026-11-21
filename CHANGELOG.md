@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add a `duplicate_records` validation check (error) for state bodies and programs split across separate blocks or carrying differing totals, repeated subprogram rows, and state body names that differ only by whitespace.
+
+### Changed
+
+- Document the 2023 Ministry of Internal Affairs as a confirmed split state body in `docs/validation_known_issues.md`, replacing the suspected Police and Emergency Situations merger cause.
+
+### Fixed
+
+- Validation reports listed multi-result checks once per rule with nothing to tell the entries apart (for example `hierarchical_totals` 15 times in the passed list). Each entry now names its rule: `rule` in JSON, after the check ID in Markdown and console output.
+
 ## [0.7.0] - 2026-11-19
 
 ### Added

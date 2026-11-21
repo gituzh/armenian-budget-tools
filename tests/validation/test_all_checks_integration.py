@@ -17,6 +17,7 @@ from armenian_budget.validation.checks.period_vs_annual import PeriodVsAnnualChe
 from armenian_budget.validation.checks.negative_percentages import NegativePercentagesCheck
 from armenian_budget.validation.checks.execution_exceeds_100 import ExecutionExceeds100Check
 from armenian_budget.validation.checks.percentage_calculation import PercentageCalculationCheck
+from armenian_budget.validation.checks.duplicate_records import DuplicateRecordsCheck
 
 # List of all check classes to be tested
 ALL_CHECKS = [
@@ -29,6 +30,7 @@ ALL_CHECKS = [
     NegativePercentagesCheck,
     ExecutionExceeds100Check,
     PercentageCalculationCheck,
+    DuplicateRecordsCheck,
 ]
 
 
@@ -66,3 +68,20 @@ def test_check_runs_on_real_data(all_budget_data, CheckClass):
 
     except Exception as e:
         pytest.fail(f"{CheckClass.__name__} raised an exception on {source_type.value} data: {e}")
+
+
+def test_results_identify_their_rule(all_budget_data):
+    """Every result of a full run is identified by (check_id, rule), so report
+    entries, passed ones included, are distinguishable."""
+    from pathlib import Path
+
+    from armenian_budget.validation.registry import run_validation
+
+    report = run_validation(
+        all_budget_data.year,
+        SourceType(all_budget_data.source_type),
+        Path(all_budget_data.file_path).parent,
+    )
+    keys = [(r.check_id, r.rule) for r in report.results]
+    duplicates = sorted({k for k in keys if keys.count(k) > 1})
+    assert not duplicates, f"results not distinguishable by rule: {duplicates}"
