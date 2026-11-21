@@ -83,6 +83,6 @@ Validation errors suggest similar patterns in other years, likely due to subsequ
 
 ## Current validation failures
 
-- `2019_SPENDING_Q12.csv`, `2019_SPENDING_Q123.csv`, and `2019_SPENDING_Q1234.csv`: All `hierarchical_totals` errors map to the split-body blocks described in §1 (multiple totals for the same ministry).
-- `2023_SPENDING_Q123.csv` and `2023_SPENDING_Q1234.csv`: `hierarchical_totals` deltas (~0.4–0.8M AMD) for the Ministry of Internal Affairs align with the Police + Emergency Situations merger described in §2.
+- `2019_SPENDING_Q12.csv`, `2019_SPENDING_Q123.csv`, and `2019_SPENDING_Q1234.csv`: All `hierarchical_totals` errors map to the split-body blocks described in §1 (multiple totals for the same ministry). The `duplicate_records` check reports the same split blocks (state bodies and programs in more than one block) and the Prime Minister's Staff whitespace variants from §3.
+- `2023_SPENDING_Q123.csv` and `2023_SPENDING_Q1234.csv`: `hierarchical_totals` deltas (~0.4–0.8M AMD) for the Ministry of Internal Affairs align with the Police + Emergency Situations merger described in §2. In the processed CSVs the ministry appears in a single block, so the delta is not explained by a split block.
 - Other datasets currently have no errors; remaining warnings reflect source numbers (e.g., execution >100%, negative plan values).

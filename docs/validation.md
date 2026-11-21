@@ -228,6 +228,23 @@ Negative values may indicate data quality issues or legitimate corrections/adjus
 
 **Wildcard (`*`) represents:** `overall` (JSON), `state_body`, `program`, `subprogram` (CSV). MTEP has no subprogram.
 
+### Duplicate Records
+
+Each state body, program and subprogram must appear once. Flattened CSVs repeat parent keys on every child row, so repeats on consecutive rows are expected; a key that reappears after other rows is a duplicate. Rows are checked in source file order, and state body names are compared after collapsing whitespace.
+
+| Rule | Key | Flagged when |
+|------|-----|--------------|
+| State body blocks | `state_body` | Appears in more than one separate block of rows |
+| Program blocks | `state_body`, `program_code` | Appears in more than one separate block of rows |
+| Subprogram rows | `state_body`, `program_code`, `subprogram_code` | Appears on more than one row (not MTEP) |
+| Whitespace variants | `state_body` | Two raw names differ only by whitespace |
+
+**Applies to:** All source types
+
+**Severity:** Error
+
+Messages give CSV line numbers (header is line 1). A split state body usually also causes `hierarchical_totals` errors; see [validation_known_issues.md](validation_known_issues.md).
+
 ### Hierarchical Structure Sanity
 
 Verifies that the budget hierarchy has reasonable structure (not degenerate/flat). Catches parser failures or data quality issues where the hierarchy collapses to a single level.

@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add a `duplicate_records` validation check (error) for state bodies and programs split across separate blocks, repeated subprogram rows, and state body names that differ only by whitespace.
+
 ## [0.7.0] - 2026-11-19
 
 ### Added

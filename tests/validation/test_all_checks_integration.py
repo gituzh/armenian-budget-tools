@@ -17,6 +17,7 @@ from armenian_budget.validation.checks.period_vs_annual import PeriodVsAnnualChe
 from armenian_budget.validation.checks.negative_percentages import NegativePercentagesCheck
 from armenian_budget.validation.checks.execution_exceeds_100 import ExecutionExceeds100Check
 from armenian_budget.validation.checks.percentage_calculation import PercentageCalculationCheck
+from armenian_budget.validation.checks.duplicate_records import DuplicateRecordsCheck
 
 # List of all check classes to be tested
 ALL_CHECKS = [
@@ -29,6 +30,7 @@ ALL_CHECKS = [
     NegativePercentagesCheck,
     ExecutionExceeds100Check,
     PercentageCalculationCheck,
+    DuplicateRecordsCheck,
 ]
 
 
