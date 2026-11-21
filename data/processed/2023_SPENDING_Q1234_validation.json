@@ -3,129 +3,182 @@
     "source_type": "SPENDING_Q1234",
     "csv_path": "2023_SPENDING_Q1234.csv",
     "overall_path": "2023_SPENDING_Q1234_overall.json",
-    "generated_at": "2025-12-10T23:40:12.802529"
+    "generated_at": "2026-11-22T01:42:44.954388"
   },
   "summary": {
-    "total_rules": 33,
-    "passed": 23,
+    "total_rules": 39,
+    "passed": 28,
     "with_warnings": 4,
-    "with_errors": 6,
-    "errors": 6,
+    "with_errors": 7,
+    "errors": 7,
     "warnings": 39
   },
   "passed_checks": [
     {
-      "check_id": "empty_identifiers",
+      "check_id": "duplicate_records",
+      "rule": "state_body blocks",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "duplicate_records",
+      "rule": "program blocks",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "duplicate_records",
+      "rule": "subprogram rows",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "duplicate_records",
+      "rule": "program totals",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "duplicate_records",
+      "rule": "state_body whitespace variants",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "empty_identifiers",
+      "rule": "state_body",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "empty_identifiers",
+      "rule": "program",
+      "severity": "error",
+      "messages": []
+    },
+    {
+      "check_id": "empty_identifiers",
+      "rule": "subprogram",
       "severity": "warning",
       "messages": []
     },
     {
       "check_id": "execution_exceeds_100",
+      "rule": "overall",
       "severity": "warning",
       "messages": []
     },
     {
       "check_id": "execution_exceeds_100",
+      "rule": "state_body",
       "severity": "warning",
       "messages": []
     },
     {
       "check_id": "hierarchical_totals",
+      "rule": "program_actual vs subprogram_actual",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "hierarchical_totals",
+      "rule": "program_annual_plan vs subprogram_annual_plan",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "hierarchical_totals",
+      "rule": "program_rev_annual_plan vs subprogram_rev_annual_plan",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "missing_financial_data",
+      "rule": "overall",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "missing_financial_data",
+      "rule": "state_body",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "missing_financial_data",
+      "rule": "program",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "missing_financial_data",
+      "rule": "subprogram",
       "severity": "warning",
       "messages": []
     },
     {
       "check_id": "negative_percentages",
+      "rule": "overall",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "negative_percentages",
+      "rule": "state_body",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "negative_percentages",
+      "rule": "program",
       "severity": "warning",
       "messages": []
     },
     {
       "check_id": "negative_percentages",
+      "rule": "subprogram",
       "severity": "warning",
       "messages": []
     },
     {
       "check_id": "negative_totals",
+      "rule": "overall",
       "severity": "warning",
       "messages": []
     },
     {
       "check_id": "negative_totals",
+      "rule": "state_body",
       "severity": "warning",
       "messages": []
     },
     {
       "check_id": "percentage_calculation",
+      "rule": "overall_actual_vs_rev_annual_plan",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "percentage_calculation",
+      "rule": "state_body_actual_vs_rev_annual_plan",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "percentage_calculation",
+      "rule": "program_actual_vs_rev_annual_plan",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "percentage_calculation",
+      "rule": "subprogram_actual_vs_rev_annual_plan",
       "severity": "error",
       "messages": []
     },
     {
       "check_id": "required_fields",
+      "rule": "",
       "severity": "error",
       "messages": []
     }
@@ -133,6 +186,7 @@
   "warning_checks": [
     {
       "check_id": "execution_exceeds_100",
+      "rule": "program",
       "severity": "warning",
       "fail_count": 2,
       "messages": [
@@ -142,6 +196,7 @@
     },
     {
       "check_id": "execution_exceeds_100",
+      "rule": "subprogram",
       "severity": "warning",
       "fail_count": 10,
       "messages": [
@@ -159,6 +214,7 @@
     },
     {
       "check_id": "negative_totals",
+      "rule": "program",
       "severity": "warning",
       "fail_count": 24,
       "messages": [
@@ -190,6 +246,7 @@
     },
     {
       "check_id": "negative_totals",
+      "rule": "subprogram",
       "severity": "warning",
       "fail_count": 3,
       "messages": [
@@ -201,7 +258,17 @@
   ],
   "error_checks": [
     {
+      "check_id": "duplicate_records",
+      "rule": "state_body totals",
+      "severity": "error",
+      "fail_count": 1,
+      "messages": [
+        "State body 'ՀՀ ներքին գործերի նախարարություն' totals differ across its rows: state_body_annual_plan values [17099402.8, 391973.2]; state_body_rev_annual_plan values [16711698.8, 830181.2]; state_body_actual values [15861142.1, 787969.4] (distinct total sets start at CSV lines 916, 936)"
+      ]
+    },
+    {
       "check_id": "hierarchical_totals",
+      "rule": "overall_actual vs state_body_actual",
       "severity": "error",
       "fail_count": 1,
       "messages": [
@@ -210,6 +277,7 @@
     },
     {
       "check_id": "hierarchical_totals",
+      "rule": "state_body_actual vs program_actual",
       "severity": "error",
       "fail_count": 1,
       "messages": [
@@ -218,6 +286,7 @@
     },
     {
       "check_id": "hierarchical_totals",
+      "rule": "overall_annual_plan vs state_body_annual_plan",
       "severity": "error",
       "fail_count": 1,
       "messages": [
@@ -226,6 +295,7 @@
     },
     {
       "check_id": "hierarchical_totals",
+      "rule": "state_body_annual_plan vs program_annual_plan",
       "severity": "error",
       "fail_count": 1,
       "messages": [
@@ -234,6 +304,7 @@
     },
     {
       "check_id": "hierarchical_totals",
+      "rule": "overall_rev_annual_plan vs state_body_rev_annual_plan",
       "severity": "error",
       "fail_count": 1,
       "messages": [
@@ -242,6 +313,7 @@
     },
     {
       "check_id": "hierarchical_totals",
+      "rule": "state_body_rev_annual_plan vs program_rev_annual_plan",
       "severity": "error",
       "fail_count": 1,
       "messages": [

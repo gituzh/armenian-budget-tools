@@ -113,6 +113,8 @@ Markdown reports are human-readable with clear sections:
 
 Each failure message includes specific context (entity names, actual vs expected values, etc.).
 
+A check can produce several results, one per rule (for example one per hierarchy level or field). Each entry names its rule after the check ID, e.g. `**negative_totals** (program)` in the passed list and `### ❌ hierarchical_totals: overall_actual vs state_body_actual (1 failures)` for a failure. Single-result checks show the check ID only.
+
 #### JSON Format
 
 JSON reports are machine-readable with this structure:
@@ -136,6 +138,7 @@ JSON reports are machine-readable with this structure:
   "passed_checks": [
     {
       "check_id": "required_fields",
+      "rule": "",
       "severity": "error",
       "messages": []
     }
@@ -143,6 +146,7 @@ JSON reports are machine-readable with this structure:
   "warning_checks": [
     {
       "check_id": "negative_totals",
+      "rule": "program",
       "severity": "warning",
       "fail_count": 3,
       "messages": [
@@ -153,6 +157,7 @@ JSON reports are machine-readable with this structure:
   "error_checks": [
     {
       "check_id": "hierarchical_totals",
+      "rule": "overall_total vs state_body_total",
       "severity": "error",
       "fail_count": 2,
       "messages": [
@@ -227,6 +232,27 @@ Negative values may indicate data quality issues or legitimate corrections/adjus
 | **MTEP** | `*_total_y0`, `*_total_y1`, `*_total_y2` | Warning: overall, state_body, program |
 
 **Wildcard (`*`) represents:** `overall` (JSON), `state_body`, `program`, `subprogram` (CSV). MTEP has no subprogram.
+
+### Duplicate Records
+
+Each state body, program and subprogram must appear once. Flattened CSVs repeat parent keys on every child row, so repeats on consecutive rows are expected; a key that reappears after other rows is a duplicate. Rows are checked in source file order, and state body names are compared after collapsing whitespace.
+
+| Rule | Key | Flagged when |
+|------|-----|--------------|
+| State body blocks | `state_body` | Appears in more than one separate block of rows |
+| Program blocks | `state_body`, `program_code` | Appears in more than one separate block of rows |
+| Subprogram rows | `state_body`, `program_code`, `subprogram_code` | Appears on more than one row (not MTEP) |
+| Whitespace variants | `state_body` | Two raw names differ only by whitespace |
+| State body totals | `state_body` | A numeric `state_body_*` column takes more than one value across its rows |
+| Program totals | `state_body`, `program_code` | A numeric `program_*` column takes more than one value across its rows |
+
+The totals rules catch split bodies whose blocks are consecutive: each source block has its own total row, so the repeated totals change within one key.
+
+**Applies to:** All source types
+
+**Severity:** Error
+
+Messages give CSV line numbers (header is line 1). A split state body usually also causes `hierarchical_totals` errors; see [validation_known_issues.md](validation_known_issues.md).
 
 ### Hierarchical Structure Sanity
 

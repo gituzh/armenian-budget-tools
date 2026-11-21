@@ -107,6 +107,13 @@ HIERARCHICAL_STRUCTURE_SANITY_SEVERITY = {
     "overall": "warning",
 }
 
+# Duplicate records - Always error (a key split across blocks breaks totals)
+DUPLICATE_RECORDS_SEVERITY = {
+    "state_body": "error",
+    "program": "error",
+    "subprogram": "error",
+}
+
 
 # ============================================================================
 # SEVERITY MAP (for get_severity helper)
@@ -122,6 +129,7 @@ _SEVERITY_MAP = {
     "execution_exceeds_100": EXECUTION_EXCEEDS_100_SEVERITY,
     "percentage_calculation": PERCENTAGE_CALCULATION_SEVERITY,
     "hierarchical_structure_sanity": HIERARCHICAL_STRUCTURE_SANITY_SEVERITY,
+    "duplicate_records": DUPLICATE_RECORDS_SEVERITY,
 }
 
 

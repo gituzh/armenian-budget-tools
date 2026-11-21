@@ -114,6 +114,7 @@ class HierarchicalTotalsCheck:
         tolerance: float,
     ) -> CheckResult:
         """Check overall JSON total equals sum of unique state body totals."""
+        rule = f"{overall_field} vs {state_body_field}"
         overall_value = overall.get(overall_field, 0)
 
         # Get unique state bodies and their totals
@@ -126,6 +127,7 @@ class HierarchicalTotalsCheck:
             return CheckResult(
                 check_id="hierarchical_totals",
                 severity="error",
+                rule=rule,
                 passed=True,
                 fail_count=0,
             )
@@ -133,6 +135,7 @@ class HierarchicalTotalsCheck:
         return CheckResult(
             check_id="hierarchical_totals",
             severity="error",
+            rule=rule,
             passed=False,
             fail_count=1,
             messages=[
@@ -149,6 +152,7 @@ class HierarchicalTotalsCheck:
         tolerance: float,
     ) -> CheckResult:
         """Check each state body total equals sum of its program totals."""
+        rule = f"{state_body_field} vs {program_field}"
         failures = []
 
         for state_body_name in df["state_body"].unique():
@@ -172,6 +176,7 @@ class HierarchicalTotalsCheck:
             return CheckResult(
                 check_id="hierarchical_totals",
                 severity="error",
+                rule=rule,
                 passed=True,
                 fail_count=0,
             )
@@ -179,6 +184,7 @@ class HierarchicalTotalsCheck:
         return CheckResult(
             check_id="hierarchical_totals",
             severity="error",
+            rule=rule,
             passed=False,
             fail_count=len(failures),
             messages=failures,
@@ -192,6 +198,7 @@ class HierarchicalTotalsCheck:
         tolerance: float,
     ) -> CheckResult:
         """Check each program total equals sum of its subprogram totals."""
+        rule = f"{program_field} vs {subprogram_field}"
         failures = []
 
         for (state_body_name, program_name), group in df.groupby(["state_body", "program_name"]):
@@ -209,6 +216,7 @@ class HierarchicalTotalsCheck:
             return CheckResult(
                 check_id="hierarchical_totals",
                 severity="error",
+                rule=rule,
                 passed=True,
                 fail_count=0,
             )
@@ -216,6 +224,7 @@ class HierarchicalTotalsCheck:
         return CheckResult(
             check_id="hierarchical_totals",
             severity="error",
+            rule=rule,
             passed=False,
             fail_count=len(failures),
             messages=failures,

@@ -45,6 +45,7 @@ class ExecutionExceeds100Check:
                 CheckResult(
                     check_id="execution_exceeds_100",
                     severity=get_severity("execution_exceeds_100", "overall"),
+                    rule="overall",
                     passed=False,
                     fail_count=len(exceeds_overall),
                     messages=[f"Overall execution > 100%: {', '.join(exceeds_overall)}"],
@@ -55,6 +56,7 @@ class ExecutionExceeds100Check:
                 CheckResult(
                     check_id="execution_exceeds_100",
                     severity=get_severity("execution_exceeds_100", "overall"),
+                    rule="overall",
                     passed=True,
                     fail_count=0,
                 )
@@ -81,6 +83,7 @@ class ExecutionExceeds100Check:
                     CheckResult(
                         check_id="execution_exceeds_100",
                         severity=get_severity("execution_exceeds_100", level),
+                        rule=level,
                         passed=False,
                         fail_count=len(messages),
                         messages=messages,
@@ -91,6 +94,7 @@ class ExecutionExceeds100Check:
                     CheckResult(
                         check_id="execution_exceeds_100",
                         severity=get_severity("execution_exceeds_100", level),
+                        rule=level,
                         passed=True,
                         fail_count=0,
                     )

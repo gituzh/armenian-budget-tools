@@ -45,6 +45,7 @@ class NegativePercentagesCheck:
                 CheckResult(
                     check_id="negative_percentages",
                     severity=get_severity("negative_percentages", "overall"),
+                    rule="overall",
                     passed=False,
                     fail_count=len(negative_overall),
                     messages=[f"Negative overall percentages: {', '.join(negative_overall)}"],
@@ -55,6 +56,7 @@ class NegativePercentagesCheck:
                 CheckResult(
                     check_id="negative_percentages",
                     severity=get_severity("negative_percentages", "overall"),
+                    rule="overall",
                     passed=True,
                     fail_count=0,
                 )
@@ -81,6 +83,7 @@ class NegativePercentagesCheck:
                     CheckResult(
                         check_id="negative_percentages",
                         severity=get_severity("negative_percentages", level),
+                        rule=level,
                         passed=False,
                         fail_count=len(messages),
                         messages=messages,
@@ -91,6 +94,7 @@ class NegativePercentagesCheck:
                     CheckResult(
                         check_id="negative_percentages",
                         severity=get_severity("negative_percentages", level),
+                        rule=level,
                         passed=True,
                         fail_count=0,
                     )

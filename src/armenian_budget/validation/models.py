@@ -24,6 +24,9 @@ class CheckResult:
         passed: True if check passed without issues, False otherwise.
         fail_count: Number of failures detected (0 if passed).
         messages: Detailed failure messages with context (e.g., which rows failed).
+        rule: Which rule of the check this result covers (e.g. "state_body:
+            annual_plan"), so the results of a multi-result check can be told
+            apart. Empty for single-result checks.
 
     Examples:
         >>> CheckResult(
@@ -40,6 +43,12 @@ class CheckResult:
     passed: bool
     fail_count: int
     messages: List[str] = field(default_factory=list)
+    rule: str = ""
+
+    @property
+    def label(self) -> str:
+        """Check id plus rule, e.g. "hierarchical_totals: overall: actual"."""
+        return f"{self.check_id}: {self.rule}" if self.rule else self.check_id
 
     def __post_init__(self) -> None:
         """Validate field constraints."""
@@ -221,7 +230,8 @@ class ValidationReport:
             lines.append("## ✅ Passed Checks")
             lines.append("")
             for result in passed_checks:
-                lines.append(f"- **{result.check_id}**")
+                rule = f" ({result.rule})" if result.rule else ""
+                lines.append(f"- **{result.check_id}**{rule}")
             lines.append("")
 
         if not warning_checks and not error_checks:
@@ -235,7 +245,7 @@ class ValidationReport:
                 lines.append("## ⚠️ Warnings")
                 lines.append("")
                 for result in warning_checks:
-                    lines.append(f"### ⚠️ {result.check_id} ({result.fail_count} failures)")
+                    lines.append(f"### ⚠️ {result.label} ({result.fail_count} failures)")
                     lines.append("")
                     for msg in result.messages:
                         lines.append(f"- {msg}")
@@ -246,7 +256,9 @@ class ValidationReport:
                 lines.append("## ❌ Errors")
                 lines.append("")
                 for result in error_checks:
-                    lines.append(f"### ❌ {result.check_id} ({result.fail_count} failures)")
+                    lines.append(
+                        f"### ❌ {result.label} ({result.fail_count} failures)"
+                    )
                     lines.append("")
                     for msg in result.messages:
                         lines.append(f"- {msg}")
@@ -309,6 +321,7 @@ class ValidationReport:
             "passed_checks": [
                 {
                     "check_id": r.check_id,
+                    "rule": r.rule,
                     "severity": r.severity,
                     "messages": r.messages,
                 }
@@ -317,6 +330,7 @@ class ValidationReport:
             "warning_checks": [
                 {
                     "check_id": r.check_id,
+                    "rule": r.rule,
                     "severity": r.severity,
                     "fail_count": r.fail_count,
                     "messages": r.messages,
@@ -326,6 +340,7 @@ class ValidationReport:
             "error_checks": [
                 {
                     "check_id": r.check_id,
+                    "rule": r.rule,
                     "severity": r.severity,
                     "fail_count": r.fail_count,
                     "messages": r.messages,
@@ -352,7 +367,7 @@ class ValidationReport:
             for result in failed_checks:
                 icon = "❌" if result.severity == "error" else "⚠️"
                 lines.append(
-                    f"{icon} {result.check_id} ({result.severity}): {result.fail_count} failures"
+                    f"{icon} {result.label} ({result.severity}): {result.fail_count} failures"
                 )
                 if result.messages:
                     lines.append(f"   - {result.messages[0]}")
