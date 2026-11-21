@@ -5,6 +5,10 @@ key repeated on consecutive rows is expected. A key is duplicated when it
 reappears in a separate, non-contiguous block of rows, or, for the full
 subprogram key, on more than one row. Rows are read in source file order.
 
+A state body or program whose repeated totals differ across its rows is also
+duplicated: each source block carries its own total row, so consecutive blocks
+of the same key show up as differing totals.
+
 Location info uses CSV line numbers (the header is line 1).
 """
 
@@ -69,6 +73,37 @@ def _result(level: str, messages: list[str]) -> CheckResult:
     )
 
 
+def _total_columns(df: pd.DataFrame, prefix: str) -> list[str]:
+    """Numeric columns repeated per key at one level, e.g. `state_body_actual`."""
+    return [
+        c
+        for c in df.columns
+        if c.startswith(prefix)
+        and c != "program_code"
+        and pd.api.types.is_numeric_dtype(df[c])
+    ]
+
+
+def _differing_totals(df: pd.DataFrame, keys: pd.Series, prefix: str) -> dict[str, str]:
+    """Map each key whose total columns differ across its rows to a description."""
+    cols = _total_columns(df, prefix)
+    if not cols:
+        return {}
+    counts = df[cols].groupby(keys, sort=False).nunique(dropna=False)
+    found = {}
+    for key in counts.index[(counts > 1).any(axis=1)]:
+        rows = df.loc[keys == key, cols]
+        differing = [c for c in cols if counts.at[key, c] > 1]
+        values = "; ".join(
+            f"{c} values {rows[c].drop_duplicates().tolist()}" for c in differing
+        )
+        starts = ", ".join(
+            str(i + _CSV_LINE_OFFSET) for i in rows.drop_duplicates().index
+        )
+        found[key] = f"{values} (distinct total sets start at CSV lines {starts})"
+    return found
+
+
 class DuplicateRecordsCheck:
     """Detect state bodies, programs and subprograms that appear more than once."""
 
@@ -120,6 +155,12 @@ class DuplicateRecordsCheck:
                 )
         results.append(_result("state_body", messages))
 
+        messages = [
+            f"State body '{sb}' totals differ across its rows: {desc}"
+            for sb, desc in _differing_totals(df, state_body, "state_body_").items()
+        ]
+        results.append(_result("state_body", messages))
+
         return results
 
     @staticmethod
@@ -149,6 +190,16 @@ class DuplicateRecordsCheck:
                     f"{len(group)} rows (CSV lines {lines})"
                 )
             results.append(_result("subprogram", messages))
+
+        messages = []
+        totals = _differing_totals(df, state_body + sep + program, "program_")
+        for key, desc in totals.items():
+            sb, code = key.split(sep)
+            messages.append(
+                f"State body '{sb}' program {code} totals differ across its rows: "
+                f"{desc}"
+            )
+        results.append(_result("program", messages))
         return results
 
     def applies_to_source_type(self, source_type: SourceType) -> bool:

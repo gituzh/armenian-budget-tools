@@ -53,6 +53,35 @@ Values are annual plan, revised annual plan, and actual.
 | ՀՀ էկոնոմիկայի նախարարություն | 2511, 3122 | `9,322,213.50`, `8,969,716.50`, `4,356,519.00`; `16,085,337.30`, `12,777,853.90`, `8,133,979.50` |
 | ՀՀ կրթության, գիտության, մշակույթի և սպորտի նախարարություն | 3884, 4740, 6524 | `141,696,953.90`, `144,261,843.80`, `134,875,641.90`; `15,933,738.60`, `18,884,769.80`, `17,563,849.30`; `4,361,319.50`, `5,448,873.30`, `4,868,153.70` |
 
+**Confirmed Case (2023 Q123, Q1234): Ministry of Internal Affairs (ՀՀ ներքին գործերի նախարարություն):**
+
+The ministry has two total rows, and its two blocks are consecutive, so it looks
+like one block in the processed CSV; only its `state_body_*` totals change
+between the blocks. The Police (`ՀՀ ոստիկանություն`) is still a separate state
+body in 2023.
+
+* Block 1: programs 1028, 1085, 1089, 1090, 1107, 1112 (former Emergency
+  Situations programs).
+* Block 2: programs 1070 and 1106 (refugee integration and migration policy)
+  and 1234 (ministry policy and management).
+
+`2023_SPENDING_Q1234` source workbook:
+`data/extracted/spending_reports/2023/Q1234/eeb4fff4/4.Հավելվածներ/3.Հավելված N1 աղյուսակ N2_ծախսերն ըստ ծրագրերի և միջոցառումների.xls`.
+Values are annual plan, revised annual plan, and actual.
+
+| Block | Excel row | Block totals |
+|---|---:|---:|
+| 1 | 6483 | `17,099,402.8`, `16,711,698.8`, `15,861,142.1` |
+| 2 | 6648 | `391,973.2`, `830,181.2`, `787,969.4` |
+
+`2023_SPENDING_Q123` (from the processed CSV, lines 880-899 and 900-909): block
+totals are `17,099,402.8`, `16,927,007.9`, `12,669,640.7`, `12,858,399.4`,
+`11,372,002.0` and `391,973.2`, `913,714.7`, `279,048.6`, `527,986.1`,
+`414,636.6` (annual plan, revised annual plan, period plan, revised period
+plan, actual).
+
+The `hierarchical_totals` deltas for this ministry equal the block 2 totals.
+
 **Impact:**
 
 * Parsers that assume a unique `State Body Name` -> `Total` mapping will overwrite the total or only capture the last one.
@@ -62,9 +91,6 @@ Values are annual plan, revised annual plan, and actual.
 
 Validation errors suggest similar patterns in other years, likely due to subsequent reorganizations.
 
-* **2023 (Q3): Ministry of Internal Affairs (ՀՀ ներքին գործերի նախարարություն):**
-  * Validation shows a discrepancy of `~414,636.6` AMD.
-  * Likely due to the 2023 merger of the Police and the Ministry of Emergency Situations.
 * **2021 (Q1): Police (ՀՀ ոստիկանություն):**
   * Small discrepancy (`~1,416.9` AMD). Could be a small fragmented block or a line-item error.
 
@@ -83,6 +109,6 @@ Validation errors suggest similar patterns in other years, likely due to subsequ
 
 ## Current validation failures
 
-- `2019_SPENDING_Q12.csv`, `2019_SPENDING_Q123.csv`, and `2019_SPENDING_Q1234.csv`: All `hierarchical_totals` errors map to the split-body blocks described in §1 (multiple totals for the same ministry). The `duplicate_records` check reports the same split blocks (state bodies and programs in more than one block) and the Prime Minister's Staff whitespace variants from §3.
-- `2023_SPENDING_Q123.csv` and `2023_SPENDING_Q1234.csv`: `hierarchical_totals` deltas (~0.4–0.8M AMD) for the Ministry of Internal Affairs align with the Police + Emergency Situations merger described in §2. In the processed CSVs the ministry appears in a single block, so the delta is not explained by a split block.
+- `2019_SPENDING_Q12.csv`, `2019_SPENDING_Q123.csv`, and `2019_SPENDING_Q1234.csv`: All `hierarchical_totals` errors map to the split-body blocks described in §1 (multiple totals for the same ministry). The `duplicate_records` check reports the same split bodies (state bodies and programs in more than one block or with differing totals) and the Prime Minister's Staff whitespace variants from §3.
+- `2023_SPENDING_Q123.csv` and `2023_SPENDING_Q1234.csv`: `hierarchical_totals` deltas (~0.3–0.9M AMD) for the Ministry of Internal Affairs equal the totals of its second block (§1). `duplicate_records` reports the ministry's differing totals.
 - Other datasets currently have no errors; remaining warnings reflect source numbers (e.g., execution >100%, negative plan values).

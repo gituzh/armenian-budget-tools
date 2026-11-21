@@ -238,6 +238,10 @@ Each state body, program and subprogram must appear once. Flattened CSVs repeat 
 | Program blocks | `state_body`, `program_code` | Appears in more than one separate block of rows |
 | Subprogram rows | `state_body`, `program_code`, `subprogram_code` | Appears on more than one row (not MTEP) |
 | Whitespace variants | `state_body` | Two raw names differ only by whitespace |
+| State body totals | `state_body` | A numeric `state_body_*` column takes more than one value across its rows |
+| Program totals | `state_body`, `program_code` | A numeric `program_*` column takes more than one value across its rows |
+
+The totals rules catch split bodies whose blocks are consecutive: each source block has its own total row, so the repeated totals change within one key.
 
 **Applies to:** All source types
 

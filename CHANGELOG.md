@@ -10,7 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add a `duplicate_records` validation check (error) for state bodies and programs split across separate blocks, repeated subprogram rows, and state body names that differ only by whitespace.
+- Add a `duplicate_records` validation check (error) for state bodies and programs split across separate blocks or carrying differing totals, repeated subprogram rows, and state body names that differ only by whitespace.
+
+### Changed
+
+- Document the 2023 Ministry of Internal Affairs as a confirmed split state body in `docs/validation_known_issues.md`, replacing the suspected Police and Emergency Situations merger cause.
 
 ## [0.7.0] - 2026-11-19
 

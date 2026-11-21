@@ -2,7 +2,8 @@
 
 Flattened CSVs repeat parent keys on every child row, so contiguous repeats are
 expected; only keys that reappear in a separate block (or exact leaf-key
-repeats) are duplicates.
+repeats) are duplicates. A key whose repeated totals differ across its rows is
+also a duplicate, even when its blocks are consecutive.
 """
 
 import pandas as pd
@@ -32,7 +33,7 @@ def test_contiguous_repeats_pass():
         }
     )
     results = _results_by_rule(df)
-    assert len(results) == 4
+    assert len(results) == 6
     assert _failed(results) == []
 
 
@@ -122,7 +123,7 @@ def test_mtep_without_subprogram_columns():
         }
     )
     results = _results_by_rule(df, SourceType.MTEP)
-    assert len(results) == 3
+    assert len(results) == 5
     failed = _failed(results)
     assert len(failed) == 1
     assert "'A'" in failed[0].messages[0]
@@ -147,5 +148,74 @@ def test_missing_key_columns_skip_rules():
         == []
     )
     results = _results_by_rule(pd.DataFrame({"state_body": ["A", "B", "A"]}))
-    assert len(results) == 2
+    assert len(results) == 3
     assert len(_failed(results)) == 1
+
+
+def test_consecutive_blocks_with_different_state_body_totals_fail():
+    """Two consecutive blocks of one ministry, each carrying its own total."""
+    df = pd.DataFrame(
+        {
+            "state_body": ["A", "A", "A", "B"],
+            "program_code": [1, 1, 2, 3],
+            "subprogram_code": [11, 12, 21, 31],
+            "state_body_annual_plan": [10.0, 10.0, 4.5, 7.0],
+            "state_body_actual": [8.0, 8.0, 8.0, 7.0],
+            "program_annual_plan": [6.0, 6.0, 4.5, 7.0],
+        }
+    )
+    failed = _failed(_results_by_rule(df))
+    assert len(failed) == 1
+    assert failed[0].fail_count == 1
+    msg = failed[0].messages[0]
+    assert "'A'" in msg
+    assert "state_body_annual_plan" in msg and "10.0" in msg and "4.5" in msg
+    assert "state_body_actual" not in msg
+    # distinct total sets start at df rows 0 and 2 -> CSV lines 2 and 4
+    assert "2, 4" in msg
+
+
+def test_contiguous_block_with_equal_totals_passes():
+    df = pd.DataFrame(
+        {
+            "state_body": ["A", "A", "A", "B"],
+            "program_code": [1, 1, 2, 3],
+            "subprogram_code": [11, 12, 21, 31],
+            "state_body_annual_plan": [10.0, 10.0, 10.0, 7.0],
+            "program_annual_plan": [6.0, 6.0, 4.0, 7.0],
+        }
+    )
+    assert _failed(_results_by_rule(df)) == []
+
+
+def test_program_totals_differ_fail():
+    df = pd.DataFrame(
+        {
+            "state_body": ["A", "A", "A"],
+            "program_code": [1, 1, 2],
+            "program_name": ["P1", "P1 renamed", "P2"],
+            "subprogram_code": [11, 12, 21],
+            "state_body_annual_plan": [9.0, 9.0, 9.0],
+            "program_annual_plan": [3.0, 4.0, 2.0],
+        }
+    )
+    failed = _failed(_results_by_rule(df))
+    assert len(failed) == 1
+    msg = failed[0].messages[0]
+    assert "'A' program 1" in msg
+    assert "program_annual_plan" in msg and "3.0" in msg and "4.0" in msg
+    assert "program_name" not in msg
+
+
+def test_mtep_state_body_totals_differ_fail():
+    df = pd.DataFrame(
+        {
+            "state_body": ["A", "A"],
+            "program_code": [1, 2],
+            "state_body_total_y0": [5.0, 6.0],
+            "program_total_y0": [5.0, 6.0],
+        }
+    )
+    failed = _failed(_results_by_rule(df, SourceType.MTEP))
+    assert len(failed) == 1
+    assert "state_body_total_y0" in failed[0].messages[0]
