@@ -69,8 +69,8 @@ def run_validation(
         label: Source label of the version to validate; None for the
             unlabelled one.
         published: Published date per label of this year and source type
-            (None key: the unlabelled version). Only used to order and date
-            the identical-data note.
+            (None key: the unlabelled version). Its labels are the registered
+            versions the identical-data note compares; its dates order the note.
 
     Returns:
         ValidationReport containing aggregated results from all applicable checks.

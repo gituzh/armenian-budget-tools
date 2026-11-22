@@ -242,8 +242,9 @@ def test_validate_without_config_file(tmp_path):
     _dataset(processed, None)
     _dataset(processed, "PARLIAMENT")
 
-    _validate(processed, tmp_path / "missing.yaml")
+    exit_code = _validate(processed, tmp_path / "missing.yaml")
 
+    assert exit_code == 0
     markdown = (processed / "2026_BUDGET_LAW_validation.md").read_text("utf-8")
     assert "Identical data" not in markdown
     assert not (processed / "2026_BUDGET_LAW_PARLIAMENT_validation.md").exists()

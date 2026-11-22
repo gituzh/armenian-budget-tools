@@ -428,7 +428,7 @@ def test_missing_registry_runs_unlabelled_only(tree, warnings_log):
     assert _process(extracted, processed, *extra) == 1
 
 
-def test_input_needs_no_registry(tree, tmp_path):
+def test_input_needs_no_registry(tree, tmp_path, warnings_log):
     _extracted, processed = tree
     workbook = _workbook(tmp_path / "elsewhere")
 
@@ -436,6 +436,30 @@ def test_input_needs_no_registry(tree, tmp_path):
 
     assert exit_code == 0
     assert _names(processed) == UNLABELLED_PAIR
+    assert not [m for m in warnings_log if "sources config" in m.lower()]
+
+
+def test_input_ignores_registered_labels(tree, tmp_path):
+    _extracted, processed = tree
+    workbook = _workbook(tmp_path / "elsewhere")
+    registry = tmp_path / "sources.yaml"  # written by the tree fixture: EDRAFT, 2026
+    assert "EDRAFT" in registry.read_text(encoding="utf-8")
+
+    assert _process_input(workbook, processed, "--config", str(registry)) == 0
+
+    assert _names(processed) == UNLABELLED_PAIR
+
+
+def test_input_does_not_read_invalid_registry(tree, tmp_path, warnings_log):
+    _extracted, processed = tree
+    workbook = _workbook(tmp_path / "elsewhere")
+    bad = tmp_path / "bad.yaml"
+    bad.write_text("sources: [ : :\n", encoding="utf-8")
+
+    assert _process_input(workbook, processed, "--config", str(bad)) == 0
+
+    assert _names(processed) == UNLABELLED_PAIR
+    assert not [m for m in warnings_log if "sources config" in m.lower()]
 
 
 def test_validate_reports_registered_version_missing(tmp_path, monkeypatch):
@@ -771,6 +795,50 @@ def test_extract_no_empty_unlabelled_folder(tmp_path):
     out = extracted / "budget_laws"
     assert (out / "2027_DRAFT" / "d" / "d.txt").exists()
     assert not (out / "2027").exists()
+
+
+def test_extract_year_without_original_folder_creates_nothing(tmp_path):
+    original = tmp_path / "original"
+    extracted = tmp_path / "extracted"
+    _original_zips(original, ("2026", "a"))
+    argv = [
+        "extract",
+        "--years",
+        "2025",
+        "--original-root",
+        str(original),
+        "--extracted-root",
+        str(extracted),
+        "--config",
+        str(_sources(tmp_path)),
+    ]
+
+    assert main(argv) == 0
+
+    assert not any(p.name.startswith("2025") for p in extracted.rglob("*"))
+
+
+def test_extract_registered_label_without_original_folder_fails(tmp_path):
+    original = tmp_path / "original"
+    extracted = tmp_path / "extracted"
+    _original_zips(original, ("2026", "a"))
+    argv = [
+        "extract",
+        "--years",
+        "2026",
+        "--label",
+        "EDRAFT",
+        "--original-root",
+        str(original),
+        "--extracted-root",
+        str(extracted),
+        "--config",
+        str(_sources(tmp_path)),
+    ]
+
+    assert main(argv) == 1
+
+    assert not (extracted / "budget_laws" / "2026_EDRAFT").exists()
 
 
 def test_discover_covers_labelled_versions(tmp_path):

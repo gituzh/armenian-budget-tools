@@ -1202,17 +1202,14 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
     source_types = [args.source_type] if args.source_type else list(gdp_mod.GDP_SOURCE_TYPES)
     ok = 0
     failed = 0
-    if "BUDGET_LAW" in source_types and not sources_config.exists():
-        logger.warning(
-            "Sources config %s not found: labelled versions are not run", sources_config
-        )
+    # One warning per run when the registry cannot be read
+    registry_usable = "BUDGET_LAW" in source_types and (
+        _load_source_registry(args.config) is not None
+    )
     for year in years:
         note_labels: dict[str, bool] = {}
-        if "BUDGET_LAW" in source_types:
-            try:
-                note_labels = gdp_mod.budget_law_note_labels(sources_config, int(year))
-            except (yaml.YAMLError, ValueError, TypeError) as exc:
-                logger.warning("Ignoring sources config %s: %s", sources_config, exc)
+        if registry_usable:
+            note_labels = gdp_mod.budget_law_note_labels(sources_config, int(year))
         jobs: list[tuple[str, str | None]] = []
         for source_type in source_types:
             if source_type == "BUDGET_LAW":
@@ -1251,7 +1248,13 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
                 output_path = gdp_mod.write_gdp_snapshot(snapshot, processed_root)
                 logging.info("Saved GDP snapshot: %s", output_path)
                 ok += 1
-            except (FileNotFoundError, ValueError, KeyError, OSError) as exc:
+            except (
+                FileNotFoundError,
+                ValueError,
+                KeyError,
+                OSError,
+                yaml.YAMLError,
+            ) as exc:
                 logging.warning("%s %s: %s", year, _with_label(source_type, label), exc)
                 failed += 1
 

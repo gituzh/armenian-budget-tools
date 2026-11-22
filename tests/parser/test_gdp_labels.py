@@ -272,6 +272,46 @@ def test_gdp_extract_label_not_registered(roots, tmp_path):
     assert not any("no budget message" in m for m in messages)
 
 
+def test_gdp_extract_invalid_config_warns_once_per_run(roots, tmp_path):
+    original, extracted, _config = roots
+    bad = tmp_path / "bad.yaml"
+    bad.write_text("sources: [ : :\n", encoding="utf-8")
+    messages: list[str] = []
+
+    class _Collect(logging.Handler):
+        def emit(self, record):
+            if record.levelno >= logging.WARNING:
+                messages.append(record.getMessage())
+
+    handler = _Collect()
+    cli_logger = logging.getLogger("armenian_budget.interfaces.cli.main")
+    cli_logger.addHandler(handler)
+    try:
+        main(
+            [
+                "gdp-extract",
+                "--years",
+                "2026-2027",
+                "--source-type",
+                "BUDGET_LAW",
+                "--config",
+                str(bad),
+                "--original-root",
+                str(original),
+                "--extracted-root",
+                str(extracted),
+                "--processed-root",
+                str(tmp_path / "processed"),
+            ]
+        )
+    finally:
+        cli_logger.removeHandler(handler)
+
+    config_warnings = [m for m in messages if str(bad) in m]
+    assert len(config_warnings) == 1
+    assert "labelled versions are not run" in config_warnings[0]
+
+
 def test_gdp_extract_registered_note_missing_on_disk_fails(roots, tmp_path):
     original, _extracted, _config = roots
     (original / "budget_laws" / "2026_EDRAFT" / "draft.docx").unlink()
