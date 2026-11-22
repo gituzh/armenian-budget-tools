@@ -299,6 +299,17 @@ sources:
         url: "https://www.e-draft.am/files/project_doc/1/17278710055878.docx"
         file_format: "docx"
 
+  - name: "2025_budget_law_parliament"
+    year: 2025
+    source_type: "budget_law"
+    label: "PARLIAMENT"
+    published: 2024-10-01
+    description: "2025 budget law draft as submitted to parliament (parliament.am draft K-932)"
+    files:
+      - name: "2025_budget_law_parliament_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs8/K-932_havelvatsner.rar"
+        file_format: "rar"
+
   - name: "2025_spending_q1"
     year: 2025
     source_type: "spending_q1"

@@ -448,5 +448,15 @@
     "size": 151979,
     "checksum": "sha256:328926b1440daea249f895616c3ee35d87b0c4c9f56f5d314d26cc67d5c5bad6",
     "discovered_at": "2026-11-22T13:38:33Z"
+  },
+  "2025/budget_law/PARLIAMENT": {
+    "key": "2025/budget_law/PARLIAMENT",
+    "path": "budget_laws/2025_PARLIAMENT/K-932_havelvatsner/K-932_havelvatsner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1727707036.088539,
+    "size": 141584,
+    "checksum": "sha256:98dde81dc310c948f53d96a39a39c040c38d81eed0e38da0ce4bf0dafe6fc9ca",
+    "discovered_at": "2026-11-22T13:42:21Z"
   }
 }
