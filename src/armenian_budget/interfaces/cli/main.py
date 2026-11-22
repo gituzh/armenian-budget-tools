@@ -1023,8 +1023,8 @@ def cmd_download(args: argparse.Namespace) -> int:
             for dir_name in ("spending_reports", "mtep", "budget_laws"):
                 input_dir = original_root / dir_name / year_dir
                 output_dir = extracted_root / dir_name / year_dir
-                if label and not input_dir.is_dir():
-                    # A labelled version exists only in its own category
+                if not input_dir.is_dir():
+                    # Nothing downloaded for this version: leave no empty folder
                     continue
                 extract_rar_files(input_dir, output_dir)
                 extract_zip_files(input_dir, output_dir)

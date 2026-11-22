@@ -715,6 +715,58 @@ sources:
     assert sorted(p.name for p in original.iterdir()) == ["budget_laws"]
 
 
+def test_download_extract_creates_no_empty_folders(tmp_path, monkeypatch):
+    from armenian_budget.sources import downloader, organizer
+
+    original = tmp_path / "original"
+    extracted = tmp_path / "extracted"
+
+    def fake_download(sources, original_root, skip_existing=True):
+        target = original_root / "budget_laws" / "2026"
+        target.mkdir(parents=True)
+        return [
+            downloader.DownloadResult(
+                name=s.name,
+                year=s.year,
+                url=s.url,
+                output_path=target / "law.rar",
+                ok=True,
+            )
+            for s in sources
+        ]
+
+    calls: list[tuple[Path, Path]] = []
+
+    def fake_extract(input_dir, output_dir):
+        calls.append((input_dir, output_dir))
+        output_dir.mkdir(parents=True, exist_ok=True)  # as the real extractors do
+        return []
+
+    monkeypatch.setattr(downloader, "download_sources", fake_download)
+    monkeypatch.setattr(organizer, "extract_rar_files", fake_extract)
+    monkeypatch.setattr(organizer, "extract_zip_files", fake_extract)
+    config = _sources(
+        tmp_path,
+        """
+sources:
+  - name: "2026_budget_law"
+    year: 2026
+    source_type: "budget_law"
+    url: "https://example.test/law.rar"
+""",
+    )
+
+    exit_code = _download(
+        config, original, "--extract", "--extracted-root", str(extracted)
+    )
+
+    assert exit_code == 0
+    assert not (extracted / "spending_reports" / "2026").exists()
+    assert not (extracted / "mtep" / "2026").exists()
+    budget_law = (original / "budget_laws" / "2026", extracted / "budget_laws" / "2026")
+    assert calls == [budget_law, budget_law]
+
+
 def _original_zips(original: Path, *folders: tuple[str, str]) -> None:
     for folder, name in folders:
         target = original / "budget_laws" / folder
