@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add a `duplicate_records` validation check (error) for state bodies and programs split across separate blocks or carrying differing totals, repeated subprogram rows, and state body names that differ only by whitespace.
+- The 2025+ budget law parser reads the government draft layout of table N2 (as in the 2025 e-draft.am draft): grand total `ԸՆԴԱՄԵՆԸ` in column D and activity codes without the program prefix (`11001` instead of `1154 - 11001`), taking `program_code_ext` from the enclosing program. Outputs for existing 2025+ datasets are unchanged.
 
 ### Changed
 

@@ -119,6 +119,17 @@ class TestRowTypeDetection:
         row = ["", "", "1154-11001", "Subprogram", "Description", "Type", "50000"]
         assert _detect_row_type_2025(row) == RowType.SUBPROGRAM_HEADER
 
+    def test_detect_row_type_2025_edraft_variant(self):
+        """Draft layout: total in column 3, activity code without programme prefix."""
+        row = ["", "", "", "ԸՆԴԱՄԵՆԸ", "", "", "1000000"]
+        assert _detect_row_type_2025(row) == RowType.GRAND_TOTAL
+
+        row = ["", "", "11001", "Subprogram", "Description", "Type", "50000"]
+        assert _detect_row_type_2025(row) == RowType.SUBPROGRAM_HEADER
+
+        row = ["", "Ծրագիր", "Միջոցառում", "", "", "", ""]
+        assert _detect_row_type_2025(row) == RowType.UNKNOWN
+
 
 class TestExtractionFunctionInputValidation:
     """Test input validation for extraction functions."""
@@ -343,6 +354,39 @@ class TestMockDataExtraction:
             assert df.iloc[0]["subprogram_actual_vs_rev_annual_plan"] == pytest.approx(0.908)
         finally:
             os.unlink(tmp_path)
+
+    def test_budget_law_2025_edraft_layout(self, tmp_path):
+        """Draft layout: total in column 3, undashed activity codes, title rows."""
+        data = [
+            ["", "", "", "", "", "", "Հավելված N 1"],
+            ["", "", "", "", "", "", "Աղյուսակ N 2"],
+            ["ՀՀ 2025 թվականի պետական բյուջե", "", "", "", "", "", ""],
+            ["", "", "", "", "", "հազար դրամներով", ""],
+            ["ԲԳԿ", "Դասիչը", "", "Անվանումը", "Նպատակը", "Արդյունքը", "Գումար"],
+            ["", "Ծրագիր", "Միջոցառում", "", "", "", ""],
+            ["", "", "", "ԸՆԴԱՄԵՆԸ", "", "", 1000],
+            ["State Body 1", "", "", "", "", "", 1000],
+            ["", " 1154", "", "Program 1", "Goal 1", "Result 1", 700],
+            ["", "", " 11001", "Act 1", "Desc 1", "Type 1", 600],
+            ["", "", " 31001", "Act 2", "Desc 2", "Type 2", 100],
+            ["", " 1024", "", "Program 2", "Goal 2", "Result 2", 300],
+            ["", "", " 11001", "Act 3", "Desc 3", "Type 3", 300],
+        ]
+        excel_path = tmp_path / "edraft.xlsx"
+        pd.DataFrame(data).to_excel(excel_path, index=False, header=False)
+
+        df, overall, _, _ = flatten_budget_excel_2025(
+            str(excel_path), SourceType.BUDGET_LAW
+        )
+
+        assert overall == {"overall_total": 1000.0}
+        assert df["program_code"].tolist() == [1154, 1154, 1024]
+        assert df["program_code_ext"].tolist() == [1154, 1154, 1024]
+        assert df["subprogram_code"].tolist() == [11001, 31001, 11001]
+        assert df["subprogram_name"].tolist() == ["Act 1", "Act 2", "Act 3"]
+        assert df["subprogram_total"].tolist() == [600.0, 100.0, 300.0]
+        assert df["program_total"].tolist() == [700.0, 700.0, 300.0]
+        assert set(df["state_body"]) == {"State Body 1"}
 
 
 class TestErrorHandling:

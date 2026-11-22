@@ -7,7 +7,7 @@ import sys
 from typing import List
 import pandas as pd
 from tqdm import tqdm
-from ._common import ProcessingState, RowType, is_numeric
+from ._common import ProcessingState, RowType, is_numeric, normalize_str
 from armenian_budget.core.enums import SourceType
 
 
@@ -17,17 +17,18 @@ logger = logging.getLogger(__name__)
 def _detect_row_type_2025(row_data: List[str]) -> RowType:
     """
     Detects the row type for 2025 format based on the following criteria:
-      - GRAND_TOTAL: col0 == 'ԸՆԴԱՄԵՆԸ'
+      - GRAND_TOTAL: col0 or col3 == 'ԸՆԴԱՄԵՆԸ' (col3 in government drafts)
       - STATE_BODY_HEADER: col0 has text and col6 is numeric
       - PROGRAM_HEADER: col1 is numeric and col3-6 are non-empty
-      - SUBPROGRAM_HEADER: col2 contains dash and col3-6 are non-empty
+      - SUBPROGRAM_HEADER: col2 is a dashed code or a bare number and col3-4 are
+        non-empty
       - EMPTY: all columns empty or whitespace
       - UNKNOWN: doesn't match any pattern
     """
     col0, col1, col2, col3, col4, col5, col6 = row_data[:7]
     if all(not col.strip() for col in row_data[:7]):
         return RowType.EMPTY
-    if str(col0).strip().lower().replace(" ", "") == "ընդամենը":
+    if "ընդամենը" in (normalize_str(col0), normalize_str(col3)):
         return RowType.GRAND_TOTAL
     if col0.strip() and is_numeric(col6):
         return RowType.STATE_BODY_HEADER
@@ -42,7 +43,7 @@ def _detect_row_type_2025(row_data: List[str]) -> RowType:
         not col0.strip()
         and not col1.strip()
         and col2.strip()
-        and "-" in col2
+        and ("-" in col2 or is_numeric(col2))
         # In 2025 spending, many rows have F (type) empty and sometimes G empty.
         # Treat as subprogram when basic descriptor columns (D, E) are present.
         and col3.strip()
@@ -61,11 +62,14 @@ def flatten_budget_excel_2025(
     Flattens the 2025 Armenian budget Excel file using a state machine approach.
 
     This function handles the 2025 format which differs from 2019-2024:
-    - Grand total is in column 0 ('ԸՆԴԱՄԵՆԸ') with value in column 6
+    - Grand total is in column 0 ('ԸՆԴԱՄԵՆԸ'; column 3 in government drafts)
+      with value in column 6
     - State bodies: col0 has text and col6 is numeric
     - Programs: col1 is numeric and col3-6 are non-empty
-    - Subprograms: col2 contains dash and col3-6 are non-empty
-    - Includes program_code_ext field extracted from dash-separated codes
+    - Subprograms: col2 holds a dashed code ("1154 - 11001") or, in government
+      drafts, the bare activity code ("11001")
+    - Includes program_code_ext field: the code before the dash, or the current
+      program code for bare activity codes
 
     Args:
         excel_file_path: Path to the Excel file to process.
@@ -377,8 +381,11 @@ def flatten_budget_excel_2025(
         # Extract subprogram info (can happen in any state after READY)
         elif state != ProcessingState.INIT and row_type == RowType.SUBPROGRAM_HEADER:
             try:
-                # Parse dash-separated code (e.g., "1154 - 11001")
+                # Parse dash-separated code (e.g., "1154 - 11001"); drafts give
+                # the bare activity code, so take the program from context.
                 parts = row_data[2].split("-")
+                if len(parts) == 1:
+                    parts = [str(current_context["program_code"]), parts[0]]
                 if len(parts) != 2:
                     logger.warning(
                         "Invalid subprogram code format at row %d: %s",
@@ -555,7 +562,9 @@ def flatten_budget_excel_2025(
     pbar.close()
 
     if overall_values is None:
-        logger.error("Could not find overall values row with 'ԸՆԴԱՄԵՆԸ' in column 0")
+        logger.error(
+            "Could not find overall values row with 'ԸՆԴԱՄԵՆԸ' in column 0 or 3"
+        )
         sys.exit(1)
 
     # Column order for 2025 format (includes program_code_ext)
