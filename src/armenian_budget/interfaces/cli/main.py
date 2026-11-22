@@ -126,8 +126,9 @@ def _warn_unregistered_folders(
         )
 
 
-def _not_registered(label: str, year: int) -> str:
-    return f"{label} is not registered for {year} in sources.yaml"
+def _not_registered(label: str, year: int, source_type: str | None = None) -> str:
+    version = f"{year} {source_type}" if source_type else str(year)
+    return f"{label} is not registered for {version} in sources.yaml"
 
 
 def _label_arg(value: str) -> str:
@@ -440,7 +441,7 @@ def cmd_process(args: argparse.Namespace) -> int:
                 if label and label not in _registered_labels(
                     source_registry, year, st_name
                 ):
-                    msg = _not_registered(label, year)
+                    msg = _not_registered(label, year, st_name)
                     logger.warning("%s/%s: %s", year, st_display, msg)
                     report_entries.append(
                         _report_entry(year, st_name, "FAIL", msg, label)
@@ -682,7 +683,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
             )
             for label in versions:
                 if label and label not in registered:
-                    reason = _not_registered(label, year)
+                    reason = _not_registered(label, year, st_name)
                     logger.warning(
                         "%s/%s: %s", year, _with_label(st_name, label), reason
                     )
@@ -894,7 +895,9 @@ def cmd_download(args: argparse.Namespace) -> int:
         sources = [s for s in sources if s.label == args.label]
         for year in years or []:
             if not any(s.year == year for s in sources):
-                logger.warning("%s", _not_registered(args.label, year))
+                logger.warning(
+                    "%s", _not_registered(args.label, year, args.source_type)
+                )
     elif args.unlabelled:
         sources = [s for s in sources if s.label is None]
     if not sources:
@@ -1088,7 +1091,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
                 input_dir = original_root / dir_name / year_dir
                 output_dir = extracted_root / dir_name / year_dir
                 if label and label not in registered:
-                    reason = _not_registered(label, y)
+                    reason = _not_registered(label, y, args.source_type)
                     logger.warning("%s/%s: %s", dir_name, year_dir, reason)
                     continue
                 if not input_dir.is_dir():
@@ -1155,7 +1158,10 @@ def cmd_discover(args: argparse.Namespace) -> int:
         st_display = _with_label(st, label)
         if label and label not in _registered_labels(source_registry, int(y), st):
             logger.warning(
-                "No match for %s/%s: %s", y, st_display, _not_registered(label, int(y))
+                "No match for %s/%s: %s",
+                y,
+                st_display,
+                _not_registered(label, int(y), st),
             )
             continue
         try:
@@ -1223,7 +1229,7 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
             jobs.extend((source_type, label) for label in versions)
         for source_type, label in jobs:
             if label and label not in note_labels:
-                reason = _not_registered(label, year)
+                reason = _not_registered(label, year, source_type)
                 logger.warning("%s %s: %s", year, source_type, reason)
                 failed += 1
                 continue

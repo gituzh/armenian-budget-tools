@@ -268,7 +268,10 @@ def test_gdp_extract_label_not_registered(roots, tmp_path):
 
     assert exit_code == 1
     assert _names(processed) == []
-    assert any("NOPE is not registered for 2026" in m for m in messages)
+    assert any(
+        "NOPE is not registered for 2026 BUDGET_LAW in sources.yaml" in m
+        for m in messages
+    )
     assert not any("no budget message" in m for m in messages)
 
 

@@ -949,3 +949,126 @@ def test_label_not_registered_fails_everywhere(command, tmp_path, stub_parser):
     )
 
     assert exit_code != 0
+
+
+# --- "not registered" messages name the source type ------------------------
+
+
+def test_download_not_registered_names_source_type(tmp_path, warnings_log):
+    config = _sources(
+        tmp_path,
+        """
+sources:
+  - name: "2026_budget_law_edraft"
+    year: 2026
+    source_type: "budget_law"
+    label: "EDRAFT"
+    url: "https://example.test/edraft.rar"
+""",
+    )
+
+    exit_code = main(
+        [
+            "download",
+            "--years",
+            "2026",
+            "--label",
+            "EDRAFT",
+            "--source-type",
+            "SPENDING_Q1",
+            "--config",
+            str(config),
+            "--original-root",
+            str(tmp_path / "original"),
+        ]
+    )
+
+    assert exit_code == 1
+    assert "EDRAFT is not registered for 2026 SPENDING_Q1 in sources.yaml" in (
+        warnings_log
+    )
+
+
+@pytest.mark.parametrize(
+    "command", ["extract", "process", "validate", "discover", "gdp-extract"]
+)
+def test_not_registered_message_names_source_type(command, tmp_path, warnings_log):
+    original = tmp_path / "original"
+    extracted = tmp_path / "extracted"
+    processed = tmp_path / "processed"
+    for folder in (original, extracted, processed):
+        folder.mkdir()
+    roots = {
+        "extract": ["--original-root", str(original), "--extracted-root", str(extracted)],
+        "process": [
+            "--extracted-root",
+            str(extracted),
+            "--processed-root",
+            str(processed),
+            "--parsers-config",
+            str(PARSERS_YAML),
+        ],
+        "validate": ["--processed-root", str(processed)],
+        "discover": ["--extracted-root", str(extracted), "--parsers-config", str(PARSERS_YAML)],
+        "gdp-extract": [
+            "--original-root",
+            str(original),
+            "--extracted-root",
+            str(extracted),
+            "--processed-root",
+            str(processed),
+        ],
+    }[command]
+
+    exit_code = main(
+        [
+            command,
+            "--years",
+            "2026",
+            "--label",
+            "NOPE",
+            "--source-type",
+            "BUDGET_LAW",
+            "--config",
+            str(_sources(tmp_path)),
+            *roots,
+        ]
+    )
+
+    assert exit_code == 1
+    assert any(
+        "NOPE is not registered for 2026 BUDGET_LAW in sources.yaml" in m
+        for m in warnings_log
+    )
+
+
+@pytest.mark.parametrize("command", ["download", "extract"])
+def test_not_registered_message_without_source_type(command, tmp_path, warnings_log):
+    extra = {
+        "download": ["--original-root", str(tmp_path / "original")],
+        "extract": [
+            "--original-root",
+            str(tmp_path / "original"),
+            "--extracted-root",
+            str(tmp_path / "extracted"),
+        ],
+    }[command]
+    (tmp_path / "original").mkdir()
+
+    main(
+        [
+            command,
+            "--years",
+            "2026",
+            "--label",
+            "NOPE",
+            "--config",
+            str(_sources(tmp_path)),
+            *extra,
+        ]
+    )
+
+    assert "NOPE is not registered for 2026 in sources.yaml" in " | ".join(
+        m.split(": ", 1)[-1] for m in warnings_log
+    )
+    assert not any("2026 BUDGET_LAW" in m for m in warnings_log)
