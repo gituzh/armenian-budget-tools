@@ -49,8 +49,10 @@ def test_xml_cell_positions(tmp_path):
     assert df.iloc[1].isna().all()
     # b at col 1, c at index 4, d right after c (col 5) spanning 5-7, e at col 8
     assert df.iloc[2, 0] == "b"
+    assert df.iloc[2, 1:3].isna().all()  # gap before the indexed cell
     assert df.iloc[2, 3] == "c"
     assert df.iloc[2, 4] == "d"
+    assert df.iloc[2, 5:7].isna().all()  # merged span
     assert df.iloc[2, 7] == "e"
     assert list(df.columns) == list(range(8))
 
@@ -71,11 +73,66 @@ def test_xml_number_types(tmp_path):
     assert df[3][0] == "007"
 
 
-def test_xml_control_character_refs_removed(tmp_path):
-    body = f"<Row>{_cell('a&#1;b&#30;c&#9;d')}</Row>"
+@pytest.mark.parametrize(
+    "ref, expected",
+    [
+        *[(f"&#{n};", "") for n in (0, 1, 8, 11, 12, 14, 30, 31)],
+        *[(ref, "") for ref in ("&#x1E;", "&#x1f;", "&#xB;", "&#x1;", "&#x8;")],
+        ("&#9;", "\t"),
+        ("&#10;", "\n"),
+        ("&#13;", "\r"),
+        ("&#x9;", "\t"),
+        ("&#xA;", "\n"),
+        ("&#xD;", "\r"),
+        ("&#65;", "A"),
+        ("&#x41;", "A"),
+        ("&#100;", "d"),
+        ("&#310;", "\u0136"),
+    ],
+)
+def test_xml_control_character_refs_removed(tmp_path, ref, expected):
+    body = f"<Row>{_cell(f'[{ref}]')}</Row>"
     df = read_first_sheet(_write(tmp_path, _workbook(body)))
 
-    assert df.iloc[0, 0] == "abc\td"
+    assert df.iloc[0, 0] == f"[{expected}]"
+
+
+def test_xml_after_bom_and_whitespace(tmp_path):
+    path = tmp_path / "book.xls"
+    path.write_bytes(
+        b"\xef\xbb\xbf\n " + _workbook(f"<Row>{_cell('a')}</Row>").encode("utf-8")
+    )
+
+    assert read_first_sheet(path).iloc[0, 0] == "a"
+
+
+def test_first_worksheet_without_table_is_empty(tmp_path):
+    text = (
+        '<?xml version="1.0"?>'
+        f'<Workbook xmlns="{NS}" xmlns:ss="{NS}">'
+        "<Worksheet ss:Name=\"First\"/>"
+        f"<Worksheet ss:Name=\"Second\"><Table><Row>{_cell('x')}</Row></Table></Worksheet>"
+        "</Workbook>"
+    )
+
+    assert read_first_sheet(_write(tmp_path, text)).empty
+
+
+def test_malformed_xml_goes_to_pandas(tmp_path, monkeypatch):
+    path = _write(tmp_path, f'<?xml version="1.0"?><Workbook xmlns="{NS}"><Worksheet>')
+
+    with pytest.raises(ValueError):
+        read_first_sheet(path)
+
+    calls = []
+
+    def fake(*args, **kwargs):
+        calls.append((args, kwargs))
+        return pd.DataFrame()
+
+    monkeypatch.setattr(workbook_reader.pd, "read_excel", fake)
+    read_first_sheet(path)
+    assert calls == [((path,), {"sheet_name": 0, "header": None})]
 
 
 def test_non_xml_goes_to_pandas(tmp_path, monkeypatch):
