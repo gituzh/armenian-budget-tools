@@ -21,6 +21,7 @@ from typing import Dict, List
 import pandas as pd
 from tqdm import tqdm
 
+from .workbook_reader import read_first_sheet
 from ._common import RowType, ProcessingState, is_numeric, normalize_str
 
 
@@ -63,7 +64,7 @@ def flatten_mtep_excel(
 
     Only the first sheet is parsed.
     """
-    df = pd.read_excel(excel_file_path, sheet_name=0, header=None)
+    df = read_first_sheet(excel_file_path)
     df = df.fillna("")
 
     results: List[dict] = []

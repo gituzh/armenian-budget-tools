@@ -7,6 +7,7 @@ import sys
 from typing import List
 import pandas as pd
 from tqdm import tqdm
+from .workbook_reader import read_first_sheet
 from ._common import ProcessingState, RowType, is_numeric, normalize_str
 from armenian_budget.core.enums import SourceType
 
@@ -83,7 +84,7 @@ def flatten_budget_excel_2025(
         statetrans_stats: Dictionary of state transition counts.
     """
     # ===================== MARK: Read and Prepare Data ========================
-    df = pd.read_excel(excel_file_path, sheet_name=0, header=None)
+    df = read_first_sheet(excel_file_path)
     df = df.fillna("")
 
     logger.debug("DF columns: %s", df.columns)
