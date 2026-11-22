@@ -172,7 +172,8 @@ later revisions on that site.
 | *(none)* | minfin.am | Adopted law |
 
 **Identical data.** When `validate` runs, the CSVs of the same year and source
-type are compared by checksum, whatever `--label` selected. A report whose CSV
+type are compared by checksum, whatever `--label` selected: the unlabelled CSV
+and the CSVs of labels registered in `sources.yaml`. A report whose CSV
 is byte-identical to others carries one line listing the whole group, oldest
 `published` first and undated versions last:
 `**Identical data:** EDRAFT (2025-10-01), PARLIAMENT (2025-10-01)` in Markdown

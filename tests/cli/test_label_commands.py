@@ -349,15 +349,23 @@ def _ignoring(folder: Path, label: str, year: int = 2026) -> str:
     return f"Ignoring {folder}: {label} is not registered for {year} in sources.yaml"
 
 
-def test_unregistered_label_folder_is_ignored(tree, warnings_log):
+def test_unregistered_label_folder_is_ignored(tree, tmp_path, warnings_log):
     extracted, processed = tree
+    plain_report = tmp_path / "plain_report.json"
+    plain_exit = _process(extracted, tmp_path / "plain", report=plain_report)
     parliament = extracted / "budget_laws" / "2026_PARLIAMENT"
     _workbook(parliament)
+    report = tmp_path / "report.json"
 
-    assert _process(extracted, processed) == 0
+    exit_code = _process(extracted, processed, report=report)
 
     assert _names(processed) == sorted(UNLABELLED_PAIR + EDRAFT_PAIR)
     assert warnings_log.count(_ignoring(parliament.resolve(), "PARLIAMENT")) == 1
+    # not a failure: no report entry for it, and the exit code is unchanged
+    entries = json.loads(report.read_text("utf-8"))
+    assert "PARLIAMENT" not in [e.get("label") for e in entries]
+    assert entries == json.loads(plain_report.read_text("utf-8"))
+    assert exit_code == plain_exit == 0
 
 
 def test_unregistered_folder_warned_once_for_shared_category(tree, warnings_log):

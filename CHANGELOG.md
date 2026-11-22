@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The 2025+ budget law parser reads the government draft layout of table N2 (as in the 2025 e-draft.am draft): grand total `ԸՆԴԱՄԵՆԸ` in column D and activity codes without the program prefix (`11001` instead of `1154 - 11001`), taking `program_code_ext` from the enclosing program. Outputs for existing 2025+ datasets are unchanged.
 
 - Source labels: an entry in `config/sources.yaml` may carry a `label` (`^[A-Z0-9]+$`), so one year and source type can hold several versions of a document, each processed by the normal pipeline. Outputs are named `{year}_{SOURCE_TYPE}_{LABEL}.*` and each version has its own `{year}_{LABEL}` folder and discovery key. Unlabelled entries and their outputs are unchanged. See `docs/data_schemas.md`, 3.4.
-- `--label LABEL` and `--unlabelled` on `download`, `extract`, `discover`, `process`, `validate` and `gdp-extract`. Without them a command covers the unlabelled version and every labelled one. `process` and `validate` take `--config` and report a version that is registered in `sources.yaml` but missing on disk.
+- `--label LABEL` and `--unlabelled` on `download`, `extract`, `discover`, `process`, `validate` and `gdp-extract`. Without them a command covers the unlabelled version and every labelled one. All six take `--config`; `process` and `validate` also report a version that is registered in `sources.yaml` but missing on disk.
+- Labelled versions come from `config/sources.yaml` only. A `{year}_{LABEL}` folder on disk with no entry is ignored with one warning per run; nothing is written for it or deleted. `--label X` for a label not registered for the year is reported as missing and the command exits non-zero when nothing was done. Without a valid `sources.yaml`, unlabelled work continues and labelled versions are not run (an error with `--label`).
 - Optional `published` date on source entries, filled in for the new drafts and for 32 of the 40 existing entries (the archive's `Last-Modified` date where plausible).
 - Validation reports name the versions of a year whose CSVs are byte-identical (`Identical data` line in Markdown, `identical_data` in JSON). The dates shown there come from `sources.yaml`.
 - Budget law drafts: 2027 `DRAFT` (e-gov.am), 2026 `EDRAFT` (e-draft.am), `PARLIAMENT` and `DRAFT2` (e-gov.am revised draft), 2025 `EDRAFT`, and the drafts submitted to parliament for 2022-2025 (`PARLIAMENT`), with GDP snapshots where the budget message is a DOCX.
@@ -23,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Labelled versions come from `config/sources.yaml` only. A `{year}_{LABEL}` folder on disk with no entry is ignored with one warning per run; nothing is written for it or deleted. `--label X` for a label not registered for the year is reported as missing and the command exits non-zero when nothing was done. Without a valid `sources.yaml`, unlabelled work continues and labelled versions are not run (an error with `--label`).
+- `extract` no longer creates an empty `data/extracted/<category>/<year>` folder for a year (or labelled version) whose original folder does not exist; it skips it.
 - **BREAKING**: `2026_BUDGET_LAW_DRAFT.csv` and `2026_BUDGET_LAW_DRAFT_overall.json` are renamed to `2026_BUDGET_LAW_EDRAFT.csv` and `2026_BUDGET_LAW_EDRAFT_overall.json`. The data is unchanged; the file is now produced by the pipeline from its e-draft.am source.
 - Document the 2023 Ministry of Internal Affairs as a confirmed split state body in `docs/validation_known_issues.md`, replacing the suspected Police and Emergency Situations merger cause.
 
