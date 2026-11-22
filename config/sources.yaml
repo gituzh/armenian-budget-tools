@@ -258,6 +258,20 @@ sources:
         url: "https://minfin.am/website/images/website/ՀՀ կառավարության 2025 թվականի բյուջետային ուղերձ-բացատրագիր.docx"
         file_format: "docx"
 
+  - name: "2025_budget_law_edraft"
+    year: 2025
+    source_type: "budget_law"
+    label: "EDRAFT"
+    published: 2024-10-02
+    description: "2025 budget law draft, public consultation copy (e-draft.am project 7738)"
+    files:
+      - name: "2025_budget_law_edraft_attachments"
+        url: "https://www.e-draft.am/files/project_file/1/17278710055868.rar"
+        file_format: "rar"
+      - name: "2025_budget_law_edraft_explanatory_note"
+        url: "https://www.e-draft.am/files/project_doc/1/17278710055878.docx"
+        file_format: "docx"
+
   - name: "2025_spending_q1"
     year: 2025
     source_type: "spending_q1"
@@ -298,6 +312,47 @@ sources:
         url: "https://minfin.am/website/images/website/copy_1_ՀՀ կառավարության 2026 թվականի բյուջետային ուղերձ-բացատրագիր.docx"
         file_format: "docx"
 
+  - name: "2026_budget_law_edraft"
+    year: 2026
+    source_type: "budget_law"
+    label: "EDRAFT"
+    published: 2025-10-01
+    description: "2026 budget law draft, public consultation copy (e-draft.am project 9166)"
+    files:
+      - name: "2026_budget_law_edraft_attachments"
+        url: "https://www.e-draft.am/files/project_file/1/17593198520182.rar"
+        file_format: "rar"
+      - name: "2026_budget_law_edraft_explanatory_note"
+        url: "https://www.e-draft.am/files/project_doc/1/17593198520187.docx"
+        file_format: "docx"
+
+  - name: "2026_budget_law_parliament"
+    year: 2026
+    source_type: "budget_law"
+    label: "PARLIAMENT"
+    published: 2025-10-01
+    description: "2026 budget law draft as submitted to parliament (parliament.am draft K-1160)"
+    files:
+      - name: "2026_budget_law_parliament_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs8/K-1160_havelvatsner.rar"
+        file_format: "rar"
+
+  - name: "2026_budget_law_draft2"
+    year: 2026
+    source_type: "budget_law"
+    label: "DRAFT2"
+    published: 2025-11-27
+    description: "2026 budget law revised draft (e-gov.am, government session of 27 Nov 2025)"
+    files:
+      - name: "2026_budget_law_draft2_attachments"
+        url: "https://www.e-gov.am/ajax/gfn_mul.php?file_id=4143266&inst=1289483"
+        filename: "3Orenqi havelvac.rar"
+        file_format: "rar"
+      - name: "2026_budget_law_draft2_explanatory_note"
+        url: "https://www.e-gov.am/ajax/gfn_mul.php?file_id=4143267&inst=1289483"
+        filename: "4Uxerdz.docx"
+        file_format: "docx"
+
   - name: "2026_spending_q1"
     year: 2026
     source_type: "spending_q1"
@@ -319,3 +374,19 @@ sources:
     url: "https://minfin.am/website/images/files/2026_9%20%D5%A1%D5%B4%D5%AB%D5%BD_%D5%B0%D5%A1%D5%B7%D5%BE%D5%A5%D5%BF%D5%BE%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.rar"
     file_format: "rar"
     description: "2026 Q1-Q3 Spending Report"
+
+  - name: "2027_budget_law_draft"
+    year: 2027
+    source_type: "budget_law"
+    label: "DRAFT"
+    published: 2026-10-01
+    description: "2027 budget law draft (e-gov.am, government session of 1 Oct 2026)"
+    files:
+      - name: "2027_budget_law_draft_attachments"
+        url: "https://www.e-gov.am/ajax/gfn_mul.php?file_id=4644032&inst=1429880"
+        filename: "3Orenqi havelvac.rar"
+        file_format: "rar"
+      - name: "2027_budget_law_draft_explanatory_note"
+        url: "https://www.e-gov.am/ajax/gfn_mul.php?file_id=4644033&inst=1429880"
+        filename: "4Uxerdz.docx"
+        file_format: "docx"

@@ -398,5 +398,55 @@
     "size": 229422,
     "checksum": "sha256:b471ee93398dbf3e0c103fbee509c411855c59a5f8dac1bab1307407f4887edd",
     "discovered_at": "2026-11-21T22:23:41Z"
+  },
+  "2025/budget_law/EDRAFT": {
+    "key": "2025/budget_law/EDRAFT",
+    "path": "budget_laws/2025_EDRAFT/17278710055868/17278710055868/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1727707036.088539,
+    "size": 141584,
+    "checksum": "sha256:98dde81dc310c948f53d96a39a39c040c38d81eed0e38da0ce4bf0dafe6fc9ca",
+    "discovered_at": "2026-11-22T13:38:33Z"
+  },
+  "2026/budget_law/DRAFT2": {
+    "key": "2026/budget_law/DRAFT2",
+    "path": "budget_laws/2026_DRAFT2/3Orenqi havelvac/3Orenqi havelvac/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1764134794.4665098,
+    "size": 148959,
+    "checksum": "sha256:d0b93f35e2a0cafac991bb70089a41fd10ef5a53b865f72159e2ec6722782132",
+    "discovered_at": "2026-11-22T13:38:33Z"
+  },
+  "2026/budget_law/EDRAFT": {
+    "key": "2026/budget_law/EDRAFT",
+    "path": "budget_laws/2026_EDRAFT/17593198520182/17593198520182/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1759152741.5654056,
+    "size": 147115,
+    "checksum": "sha256:549d5855255b78e069347ff092fe8552ddacbe55d73342713c8a14e262fc9353",
+    "discovered_at": "2026-11-22T13:38:33Z"
+  },
+  "2026/budget_law/PARLIAMENT": {
+    "key": "2026/budget_law/PARLIAMENT",
+    "path": "budget_laws/2026_PARLIAMENT/K-1160_havelvatsner/K-1160_havelvatsner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1759152741.5654056,
+    "size": 147115,
+    "checksum": "sha256:549d5855255b78e069347ff092fe8552ddacbe55d73342713c8a14e262fc9353",
+    "discovered_at": "2026-11-22T13:38:33Z"
+  },
+  "2027/budget_law/DRAFT": {
+    "key": "2027/budget_law/DRAFT",
+    "path": "budget_laws/2027_DRAFT/3Orenqi havelvac/Օրենքի հավելվածներ/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1790693892.5832222,
+    "size": 151979,
+    "checksum": "sha256:328926b1440daea249f895616c3ee35d87b0c4c9f56f5d314d26cc67d5c5bad6",
+    "discovered_at": "2026-11-22T13:38:33Z"
   }
 }
