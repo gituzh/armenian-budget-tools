@@ -65,6 +65,7 @@ data/
 - **Source Page**: [State Budget Law](https://minfin.am/hy/page/petakan_byuj/) - "Պետական բյուջե"
 - **Years Available**: 2019-2026
 - **Format**: RAR/ZIP archives containing multiple Excel files
+- **Input workbooks**: `.xlsx`, `.xls`, and Excel 2003 XML ("SpreadsheetML") saved with an `.xls` name; the XML kind is read with the standard library
 - **Current Scope**: Only parsing program summary (Ամփոփ ըստ ծրագրերի)
 
 **Note:** 2017-2018 budget laws are PDF-only format and are not currently supported. Before 2019, the Armenian budget was not programmatic (program-based), so the data structure differs significantly from later years.
@@ -144,12 +145,17 @@ versions, each processed by the normal pipeline.
 - **Commands**: `download`, `extract`, `discover`, `process`, `validate` and
   `gdp-extract` cover the unlabelled version and every labelled one;
   `--label LABEL` selects one version and `--unlabelled` only the unlabelled
-  one. `download` and `gdp-extract` take the versions from `sources.yaml`.
-  The others take them from the `{year}_{LABEL}` folders and files on disk, so
-  a folder that is not registered is processed too: keep trial downloads out
-  of `data/original/` and `data/extracted/`. `process` and `validate` also
-  attempt every labelled version registered in `sources.yaml` (`--config`), so
-  one with nothing on disk is reported as `FAIL` or `MISSING`.
+  one.
+- **Registered versions only**: labelled versions come from `sources.yaml`
+  (`--config`) and nowhere else. A `{year}_{LABEL}` folder on disk with no
+  entry for that year is ignored, with one warning per run (`Ignoring <path>:
+  <LABEL> is not registered for <year> in sources.yaml`). Nothing is written
+  for it and nothing is deleted. A registered version with nothing on disk is
+  reported as `FAIL` or `MISSING`. `--label X` for a label not registered for
+  the year is reported as missing, and the command exits non-zero when nothing
+  was done. If `sources.yaml` is missing or invalid, unlabelled work continues,
+  labelled versions are not run and one warning says so; with `--label` it is
+  an error.
 - **Labels are opaque**: they are not ordered and need no code change. A
   version is registered only if the existing downloader fetches it and the
   existing parser reads it.
@@ -161,7 +167,8 @@ later revisions on that site.
 |---|---|---|
 | `DRAFT`, `DRAFT2`, … | e-gov.am | Draft on a government session agenda; `DRAFT2` is the revised draft |
 | `EDRAFT`, … | e-draft.am | Public-consultation copy |
-| `PARLIAMENT`, … | parliament.am | Draft as submitted to parliament (not the adopted law) |
+| `PARLIAMENT` | parliament.am | Draft as submitted to parliament (not the adopted law) |
+| `PARLIAMENT2`, … | parliament.am | Revised draft published for the second reading; in 2020-2026 it holds the same data as the adopted law. A further revision would be `PARLIAMENT3` |
 | *(none)* | minfin.am | Adopted law |
 
 **Identical data.** When `validate` runs, the CSVs of the same year and source
@@ -177,8 +184,17 @@ from the budget message (`explanatory_note` file, DOCX) registered in its own
 entry; the snapshot records its `label`. A version without one gets no GDP
 file. `gdp_report.html` shows unlabelled snapshots only.
 
-**Tests.** The dataset-driven tests cover unlabelled datasets only; labelled
-datasets are covered by their validation reports.
+**Known limitations.**
+
+- PDF sources are not read.
+- 2020 `PARLIAMENT`: the programme table is published only as PDF, so there is
+  no dataset (2020 `PARLIAMENT2` exists).
+- `PARLIAMENT` and `PARLIAMENT2` versions have no `_GDP.json`: parliament.am
+  publishes the budget message only as PDF.
+- 2019: parliament.am shows no draft history for the law.
+- 2026 `DRAFT`: the first e-gov draft (25 Sep 2025) is lost.
+- Dataset-driven tests cover unlabelled datasets only; labelled datasets are
+  covered by their validation reports.
 
 ## 4. Original Table Organization
 

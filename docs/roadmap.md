@@ -129,7 +129,7 @@ armenian-budget process --years 2023 --from-step extract     # resume from extra
 ### Data Sources
 
 - Budget drafts: built as source labels (`label` in `config/sources.yaml`, outputs `{year}_{SOURCE_TYPE}_{LABEL}.csv`; see `docs/data_schemas.md`, 3.4). Still open:
-  - Revised parliament drafts (2020-2026) and the 2020 and 2021 parliament drafts, whose programme tables the current parser cannot read
+  - The 2020 parliament draft, whose programme table is published only as PDF
   - Budget messages published only as PDF (parliament.am), so those versions have no GDP snapshot
 - PDF parsing for historical years (2017-2018)
 - OCR integration with quality scoring

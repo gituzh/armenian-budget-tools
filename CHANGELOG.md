@@ -18,9 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optional `published` date on source entries, filled in for the new drafts and for 32 of the 40 existing entries (the archive's `Last-Modified` date where plausible).
 - Validation reports name the versions of a year whose CSVs are byte-identical (`Identical data` line in Markdown, `identical_data` in JSON). The dates shown there come from `sources.yaml`.
 - Budget law drafts: 2027 `DRAFT` (e-gov.am), 2026 `EDRAFT` (e-draft.am), `PARLIAMENT` and `DRAFT2` (e-gov.am revised draft), 2025 `EDRAFT`, and the drafts submitted to parliament for 2022-2025 (`PARLIAMENT`), with GDP snapshots where the budget message is a DOCX.
+- Budget law revised drafts `PARLIAMENT2` (parliament.am, second reading) for 2020-2026, and the 2021 `PARLIAMENT` draft. In each of 2020-2026 the `PARLIAMENT2` CSV is byte-identical to the adopted law's. There is no 2020 `PARLIAMENT` dataset (its programme table is published only as PDF), and `PARLIAMENT` and `PARLIAMENT2` have no GDP snapshot (the budget message is PDF).
+- Excel 2003 XML workbooks ("SpreadsheetML") saved with an `.xls` name are read with a standard-library reader; other workbooks are read as before.
 
 ### Changed
 
+- Labelled versions come from `config/sources.yaml` only. A `{year}_{LABEL}` folder on disk with no entry is ignored with one warning per run; nothing is written for it or deleted. `--label X` for a label not registered for the year is reported as missing and the command exits non-zero when nothing was done. Without a valid `sources.yaml`, unlabelled work continues and labelled versions are not run (an error with `--label`).
 - **BREAKING**: `2026_BUDGET_LAW_DRAFT.csv` and `2026_BUDGET_LAW_DRAFT_overall.json` are renamed to `2026_BUDGET_LAW_EDRAFT.csv` and `2026_BUDGET_LAW_EDRAFT_overall.json`. The data is unchanged; the file is now produced by the pipeline from its e-draft.am source.
 - Document the 2023 Ministry of Internal Affairs as a confirmed split state body in `docs/validation_known_issues.md`, replacing the suspected Police and Emergency Situations merger cause.
 
