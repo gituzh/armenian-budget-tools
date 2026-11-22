@@ -14,9 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The 2025+ budget law parser reads the government draft layout of table N2 (as in the 2025 e-draft.am draft): grand total `ԸՆԴԱՄԵՆԸ` in column D and activity codes without the program prefix (`11001` instead of `1154 - 11001`), taking `program_code_ext` from the enclosing program. Outputs for existing 2025+ datasets are unchanged.
 
 - Source labels: an entry in `config/sources.yaml` may carry a `label` (`^[A-Z0-9]+$`), so one year and source type can hold several versions of a document, each processed by the normal pipeline. Outputs are named `{year}_{SOURCE_TYPE}_{LABEL}.*` and each version has its own `{year}_{LABEL}` folder and discovery key. Unlabelled entries and their outputs are unchanged. See `docs/data_schemas.md`, 3.4.
-- `--label LABEL` and `--unlabelled` on `download`, `extract`, `discover`, `process`, `validate` and `gdp-extract`. Without them a command covers the unlabelled version and every labelled one.
+- `--label LABEL` and `--unlabelled` on `download`, `extract`, `discover`, `process`, `validate` and `gdp-extract`. Without them a command covers the unlabelled version and every labelled one. `process` and `validate` take `--config` and report a version that is registered in `sources.yaml` but missing on disk.
 - Optional `published` date on source entries, filled in for the new drafts and for 32 of the 40 existing entries (the archive's `Last-Modified` date where plausible).
-- Validation reports name the versions of a year whose CSVs are byte-identical (`Identical data` line in Markdown, `identical_data` in JSON). `validate` takes `--config` for the dates shown there.
+- Validation reports name the versions of a year whose CSVs are byte-identical (`Identical data` line in Markdown, `identical_data` in JSON). The dates shown there come from `sources.yaml`.
 - Budget law drafts: 2027 `DRAFT` (e-gov.am), 2026 `EDRAFT` (e-draft.am), `PARLIAMENT` and `DRAFT2` (e-gov.am revised draft), 2025 `EDRAFT`, and the drafts submitted to parliament for 2022-2025 (`PARLIAMENT`), with GDP snapshots where the budget message is a DOCX.
 
 ### Changed

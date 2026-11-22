@@ -233,10 +233,12 @@ def test_validate_without_config_file(tmp_path):
     assert "**Identical data:** EDRAFT, PARLIAMENT" in markdown.splitlines()
 
 
-def test_validate_with_invalid_config_is_a_load_error(tmp_path):
+def test_validate_with_invalid_config_still_validates(tmp_path):
+    # the config is only read for dates and registered labels: warn, do not stop
     processed = tmp_path / "processed"
     processed.mkdir()
     _dataset(processed, "EDRAFT")
+    expected = _validate(processed, tmp_path / "missing.yaml")
     config = tmp_path / "sources.yaml"
     config.write_text(
         'sources:\n  - name: "x"\n    year: 2026\n    source_type: "budget_law"\n'
@@ -244,4 +246,5 @@ def test_validate_with_invalid_config_is_a_load_error(tmp_path):
         encoding="utf-8",
     )
 
-    assert _validate(processed, config) == 3
+    assert _validate(processed, config) == expected
+    assert (processed / "2026_BUDGET_LAW_EDRAFT_validation.md").exists()

@@ -282,3 +282,30 @@ def test_gdp_extract_label_leaves_spending_alone(roots, tmp_path):
     # no failure is counted for the annual spending report, which has no labels
     assert exit_code == 0
     assert _names(processed) == ["2026_BUDGET_LAW_EDRAFT_GDP.json"]
+
+
+def test_gdp_extract_spending_does_not_need_a_valid_config(roots, tmp_path):
+    # the annual spending report has no labels and never read sources.yaml
+    original, extracted, config = roots
+    config.write_text(CONFIG.replace('"EDRAFT"', '"bad-label"'), encoding="utf-8")
+
+    exit_code = main(
+        [
+            "gdp-extract",
+            "--years",
+            "2026",
+            "--source-type",
+            "SPENDING_Q1234",
+            "--config",
+            str(config),
+            "--original-root",
+            str(original),
+            "--extracted-root",
+            str(extracted),
+            "--processed-root",
+            str(tmp_path / "processed"),
+        ]
+    )
+
+    # 1: nothing extracted (no report on disk); 3 would be a config load error
+    assert exit_code == 1

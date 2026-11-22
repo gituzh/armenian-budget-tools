@@ -144,9 +144,12 @@ versions, each processed by the normal pipeline.
 - **Commands**: `download`, `extract`, `discover`, `process`, `validate` and
   `gdp-extract` cover the unlabelled version and every labelled one;
   `--label LABEL` selects one version and `--unlabelled` only the unlabelled
-  one. `download` and `gdp-extract` take the versions from `sources.yaml`; the
-  others take them from the `{year}_{LABEL}` folders and files on disk, so a
-  folder that is not registered is processed too.
+  one. `download` and `gdp-extract` take the versions from `sources.yaml`.
+  The others take them from the `{year}_{LABEL}` folders and files on disk, so
+  a folder that is not registered is processed too: keep trial downloads out
+  of `data/original/` and `data/extracted/`. `process` and `validate` also
+  attempt every labelled version registered in `sources.yaml` (`--config`), so
+  one with nothing on disk is reported as `FAIL` or `MISSING`.
 - **Labels are opaque**: they are not ordered and need no code change. A
   version is registered only if the existing downloader fetches it and the
   existing parser reads it.

@@ -51,6 +51,38 @@ def _select_versions(
     return [None] + [lb for lb in available if lb is not None]
 
 
+def _load_source_registry(config_arg: str | None):
+    """Load sources.yaml for commands that only read labels and dates from it.
+
+    Returns None when the file is missing or cannot be loaded: those commands
+    worked without it before labels existed, so they go on with what is on disk.
+    """
+    sources_config = resolve_path_with_default(config_arg, "config/sources.yaml")
+    if not sources_config.exists():
+        return None
+    registry_mod = importlib.import_module("armenian_budget.sources.registry")
+    try:
+        return registry_mod.SourceRegistry(sources_config)
+    except (yaml.YAMLError, ValueError, TypeError) as e:
+        logger.warning("Ignoring sources config %s: %s", sources_config, e)
+        return None
+
+
+def _known_versions(
+    on_disk: list[str | None], source_registry, year: int, source_type_name: str
+) -> list[str | None]:
+    """Versions found on disk plus the labelled versions registered in sources.yaml.
+
+    A registered version with nothing on disk is then attempted and reported as
+    failed or missing, instead of being skipped without a word.
+    """
+    labels = {label for label in on_disk if label is not None}
+    if source_registry is not None:
+        registered = source_registry.published_by_label(year, source_type_name.lower())
+        labels.update(label for label in registered if label is not None)
+    return [label for label in on_disk if label is None] + sorted(labels)
+
+
 def _label_arg(value: str) -> str:
     try:
         return validate_label(value.upper())
@@ -301,6 +333,10 @@ def cmd_process(args: argparse.Namespace) -> int:
 
     label_arg = getattr(args, "label", None)
     unlabelled_arg = bool(getattr(args, "unlabelled", False))
+    # Registered labels, so that a registered version missing on disk is reported
+    source_registry = (
+        None if input_provided else _load_source_registry(getattr(args, "config", None))
+    )
 
     total_successes = 0
     # Collect per year/source results for end-of-run report
@@ -314,7 +350,14 @@ def cmd_process(args: argparse.Namespace) -> int:
                 versions = [label_arg]
             else:
                 versions = _select_versions(
-                    list_version_dirs(extracted_root / _CATEGORY_DIRS[st_name], year),
+                    _known_versions(
+                        list_version_dirs(
+                            extracted_root / _CATEGORY_DIRS[st_name], year
+                        ),
+                        source_registry,
+                        year,
+                        st_name,
+                    ),
                     label_arg,
                     unlabelled_arg,
                 )
@@ -536,18 +579,8 @@ def cmd_validate(args: argparse.Namespace) -> int:
         )
         return 2
 
-    # Published dates per version, for the identical-data note only
-    sources_config = resolve_path_with_default(
-        getattr(args, "config", None), "config/sources.yaml"
-    )
-    source_registry = None
-    if sources_config.exists():
-        registry_mod = importlib.import_module("armenian_budget.sources.registry")
-        try:
-            source_registry = registry_mod.SourceRegistry(sources_config)
-        except (yaml.YAMLError, ValueError, TypeError) as e:
-            logger.error("Failed to load sources: %s", e)
-            return 3
+    # Registered labels, and published dates for the identical-data note
+    source_registry = _load_source_registry(getattr(args, "config", None))
 
     # Track results for end-of-run summary
     validation_results: List[dict] = []
@@ -580,7 +613,12 @@ def cmd_validate(args: argparse.Namespace) -> int:
                 continue
 
             versions = _select_versions(
-                list_processed_labels(processed_root, year, st_name),
+                _known_versions(
+                    list_processed_labels(processed_root, year, st_name),
+                    source_registry,
+                    year,
+                    st_name,
+                ),
                 label_arg,
                 unlabelled_arg,
             )
@@ -908,6 +946,9 @@ def cmd_download(args: argparse.Namespace) -> int:
             for dir_name in ("spending_reports", "mtep", "budget_laws"):
                 input_dir = original_root / dir_name / year_dir
                 output_dir = extracted_root / dir_name / year_dir
+                if label and not input_dir.is_dir():
+                    # A labelled version exists only in its own category
+                    continue
                 extract_rar_files(input_dir, output_dir)
                 extract_zip_files(input_dir, output_dir)
 
@@ -1065,11 +1106,12 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
     ok = 0
     failed = 0
     for year in years:
-        try:
-            note_labels = gdp_mod.budget_law_note_labels(sources_config, int(year))
-        except (yaml.YAMLError, ValueError, TypeError) as exc:
-            logger.error("Failed to load sources: %s", exc)
-            return 3
+        note_labels: dict[str, bool] = {}
+        if "BUDGET_LAW" in source_types:
+            try:
+                note_labels = gdp_mod.budget_law_note_labels(sources_config, int(year))
+            except (yaml.YAMLError, ValueError, TypeError) as exc:
+                logger.warning("Ignoring sources config %s: %s", sources_config, exc)
         jobs: list[tuple[str, str | None]] = []
         for source_type in source_types:
             if source_type == "BUDGET_LAW":
@@ -1428,6 +1470,15 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Extracted data root (defaults to ./data/extracted). Required if discovery is used and you provide a non-default location.",
     )
+    p_process.add_argument(
+        "--config",
+        default=None,
+        help=(
+            "Path to sources.yaml (defaults to config/sources.yaml). Only read "
+            "for the labelled versions registered there, so that one with "
+            "nothing extracted is reported."
+        ),
+    )
     _add_version_options(p_process)
     p_process.set_defaults(func=cmd_process)
 
@@ -1524,7 +1575,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Path to sources.yaml (defaults to config/sources.yaml). Only read "
-            "for the published dates shown in the identical-data note."
+            "for the labelled versions registered there and the published "
+            "dates shown in the identical-data note."
         ),
     )
     p_validate.add_argument(

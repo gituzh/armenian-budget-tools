@@ -1,6 +1,8 @@
 """CLI behaviour for labelled source versions."""
 
+import io
 import json
+import zipfile
 from pathlib import Path
 
 import pandas as pd
@@ -10,6 +12,8 @@ from armenian_budget.core.utils import list_processed_labels
 from armenian_budget.interfaces.cli.main import _select_versions, main
 
 PARSERS_YAML = Path(__file__).resolve().parents[2] / "config" / "parsers.yaml"
+# Versions then come from the folders on disk only
+NO_CONFIG = Path(__file__).resolve().parent / "no-such-sources.yaml"
 WORKBOOK_NAME = "ծրագրեր և միջոցառումներ.xlsx"
 
 
@@ -91,6 +95,8 @@ def _process(extracted, processed, *extra, report=None):
         "--parsers-config",
         str(PARSERS_YAML),
     ]
+    if "--config" not in extra:
+        argv += ["--config", str(NO_CONFIG)]
     if report is not None:
         argv += ["--report-json", str(report)]
     return main(argv + list(extra))
@@ -258,6 +264,7 @@ def _dataset(processed: Path, stem: str, total: float = 1000.0) -> None:
 
 
 def _validate(processed, *extra):
+    config = [] if "--config" in extra else ["--config", str(NO_CONFIG)]
     return main(
         [
             "validate",
@@ -267,9 +274,102 @@ def _validate(processed, *extra):
             "BUDGET_LAW",
             "--processed-root",
             str(processed),
+            *config,
             *extra,
         ]
     )
+
+
+REGISTERED = """
+sources:
+  - name: "2026_budget_law"
+    year: 2026
+    source_type: "budget_law"
+    url: "https://example.test/law.rar"
+  - name: "2026_budget_law_edraft"
+    year: 2026
+    source_type: "budget_law"
+    label: "EDRAFT"
+    url: "https://example.test/edraft.rar"
+  - name: "2025_budget_law_other"
+    year: 2025
+    source_type: "budget_law"
+    label: "OTHERYEAR"
+    url: "https://example.test/other.rar"
+"""
+
+
+def _sources(tmp_path, text=REGISTERED):
+    config = tmp_path / "sources.yaml"
+    config.write_text(text, encoding="utf-8")
+    return config
+
+
+def test_process_reports_registered_version_missing_on_disk(tmp_path, stub_parser):
+    # A version that is in the config must never silently produce nothing
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2026")
+    processed = tmp_path / "processed"
+    report = tmp_path / "report.json"
+
+    exit_code = _process(
+        extracted, processed, "--config", str(_sources(tmp_path)), report=report
+    )
+
+    assert exit_code == 0
+    assert _names(processed) == UNLABELLED_PAIR
+    plain, draft = json.loads(report.read_text("utf-8"))
+    assert plain == {"year": 2026, "source": "BUDGET_LAW", "status": "OK", "reason": ""}
+    assert (draft["status"], draft["label"]) == ("FAIL", "EDRAFT")
+    assert draft["reason"].startswith("discovery:")
+
+
+def test_process_covers_folders_that_are_not_registered(tree, tmp_path):
+    extracted, processed = tree
+    _workbook(extracted / "budget_laws" / "2026_LOCAL")
+
+    assert _process(extracted, processed, "--config", str(_sources(tmp_path))) == 0
+
+    assert "2026_BUDGET_LAW_LOCAL.csv" in _names(processed)
+    assert "2026_BUDGET_LAW_EDRAFT.csv" in _names(processed)
+
+
+def test_process_ignores_invalid_config(tree, tmp_path):
+    # process never read sources.yaml before labels; a broken one must not stop it
+    extracted, processed = tree
+    config = _sources(tmp_path, REGISTERED.replace('"EDRAFT"', '"bad-label"'))
+
+    assert _process(extracted, processed, "--config", str(config)) == 0
+
+    assert _names(processed) == sorted(UNLABELLED_PAIR + EDRAFT_PAIR)
+
+
+def test_validate_reports_registered_version_missing(tmp_path, monkeypatch):
+    import armenian_budget.interfaces.cli.main as cli
+
+    processed = tmp_path / "processed"
+    _dataset(processed, "2026_BUDGET_LAW")
+    without_config = _validate(processed)
+    entries = []
+    monkeypatch.setattr(
+        cli, "_log_validation_summary", lambda results: entries.extend(results)
+    )
+
+    exit_code = _validate(processed, "--config", str(_sources(tmp_path)))
+
+    assert exit_code == without_config
+    assert [(e["status"] == "MISSING", e.get("label")) for e in entries] == [
+        (False, None),
+        (True, "EDRAFT"),
+    ]
+
+
+def test_validate_ignores_invalid_config(tmp_path):
+    processed = tmp_path / "processed"
+    _dataset(processed, "2026_BUDGET_LAW")
+    config = _sources(tmp_path, REGISTERED.replace('"EDRAFT"', '"bad-label"'))
+
+    assert _validate(processed, "--config", str(config)) == _validate(processed)
 
 
 def test_validate_default_covers_labelled(tmp_path):
@@ -351,7 +451,10 @@ class _FakeResponse:
         return None
 
     def iter_bytes(self, chunk_size=None):
-        yield b"archive-bytes"
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as zf:
+            zf.writestr("inside.txt", "x")
+        yield buffer.getvalue()
 
 
 class _FakeClient:
@@ -436,9 +539,37 @@ def test_download_unlabelled_selects_one(download_config, tmp_path):
     assert _files(original) == ["budget_laws/2026/law.rar"]
 
 
-def test_extract_label_selects_one(tmp_path):
-    import zipfile
+def test_download_extract_stays_in_own_category(tmp_path, monkeypatch):
+    # A budget-law draft must not create spending or MTEP version folders
+    from armenian_budget.sources import downloader
 
+    monkeypatch.setattr(downloader.httpx, "Client", _FakeClient)
+    config = tmp_path / "sources.yaml"
+    config.write_text(
+        """
+sources:
+  - name: "2026_budget_law_edraft"
+    year: 2026
+    source_type: "budget_law"
+    label: "EDRAFT"
+    url: "https://example.test/edraft.zip"
+""",
+        encoding="utf-8",
+    )
+    original = tmp_path / "original"
+    extracted = tmp_path / "extracted"
+
+    exit_code = _download(
+        config, original, "--extract", "--extracted-root", str(extracted)
+    )
+
+    assert exit_code == 0
+    assert (extracted / "budget_laws/2026_EDRAFT/edraft/inside.txt").exists()
+    assert sorted(p.name for p in extracted.iterdir()) == ["budget_laws"]
+    assert sorted(p.name for p in original.iterdir()) == ["budget_laws"]
+
+
+def test_extract_label_selects_one(tmp_path):
     original = tmp_path / "original"
     extracted = tmp_path / "extracted"
     for folder, name in [("2026", "a"), ("2026_EDRAFT", "b")]:

@@ -97,18 +97,20 @@ def run_validation(
         year, source_type, processed_root, label
     )
 
+    label_part = "_{LABEL}" if label else ""
+
     # Validate CSV file exists
     if not csv_path.exists():
         raise FileNotFoundError(
             f"CSV file not found: {csv_path}. "
-            f"Expected format: {{year}}_{{SOURCE_TYPE}}[_{{LABEL}}].csv"
+            f"Expected format: {{year}}_{{SOURCE_TYPE}}{label_part}.csv"
         )
 
     # Validate overall.json file exists
     if not overall_path.exists():
         raise FileNotFoundError(
             f"Overall JSON file not found: {overall_path}. "
-            f"Expected format: {{year}}_{{SOURCE_TYPE}}[_{{LABEL}}]_overall.json"
+            f"Expected format: {{year}}_{{SOURCE_TYPE}}{label_part}_overall.json"
         )
 
     # Load CSV data
