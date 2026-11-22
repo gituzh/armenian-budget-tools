@@ -51,7 +51,10 @@ ALL_CHECKS = [
 
 
 def run_validation(
-    year: int, source_type: SourceType, processed_root: Path
+    year: int,
+    source_type: SourceType,
+    processed_root: Path,
+    label: str | None = None,
 ) -> ValidationReport:
     """Run all applicable validation checks on a dataset.
 
@@ -59,6 +62,8 @@ def run_validation(
         year: The year of the budget data to validate (e.g., 2023).
         source_type: The source type of the data (e.g., BUDGET_LAW, SPENDING_Q1).
         processed_root: Path to the processed data root directory.
+        label: Source label of the version to validate; None for the
+            unlabelled one.
 
     Returns:
         ValidationReport containing aggregated results from all applicable checks.
@@ -81,20 +86,22 @@ def run_validation(
         )
 
     # Construct file paths using utility function
-    csv_path, overall_path = get_processed_paths(year, source_type, processed_root)
+    csv_path, overall_path = get_processed_paths(
+        year, source_type, processed_root, label
+    )
 
     # Validate CSV file exists
     if not csv_path.exists():
         raise FileNotFoundError(
             f"CSV file not found: {csv_path}. "
-            f"Expected format: {{year}}_{{SOURCE_TYPE}}.csv"
+            f"Expected format: {{year}}_{{SOURCE_TYPE}}[_{{LABEL}}].csv"
         )
 
     # Validate overall.json file exists
     if not overall_path.exists():
         raise FileNotFoundError(
             f"Overall JSON file not found: {overall_path}. "
-            f"Expected format: {{year}}_{{SOURCE_TYPE}}_overall.json"
+            f"Expected format: {{year}}_{{SOURCE_TYPE}}[_{{LABEL}}]_overall.json"
         )
 
     # Load CSV data

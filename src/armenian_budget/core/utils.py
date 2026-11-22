@@ -53,6 +53,31 @@ def list_version_dirs(category_root: Path, year: int) -> list[str | None]:
     return versions
 
 
+def list_processed_labels(
+    processed_root: Path, year: int, source_type_name: str
+) -> list[str | None]:
+    """Labels of the processed CSVs of a year and source type.
+
+    Looks for ``<year>_<TYPE>.csv`` and ``<year>_<TYPE>_<LABEL>.csv``: None
+    first when the unlabelled CSV exists, then labels sorted.
+    """
+    if not processed_root.is_dir():
+        return []
+    stem = f"{year}_{source_type_name}"
+    versions: list[str | None] = []
+    if (processed_root / f"{stem}.csv").is_file():
+        versions.append(None)
+    prefix = f"{stem}_"
+    versions.extend(
+        sorted(
+            p.stem[len(prefix) :]
+            for p in processed_root.glob(f"{prefix}*.csv")
+            if p.is_file() and LABEL_RE.match(p.stem[len(prefix) :])
+        )
+    )
+    return versions
+
+
 def dataset_stem(year: int, source_type_name: str, label: str | None = None) -> str:
     """File-name stem of a dataset: {year}_{SOURCE_TYPE}[_{LABEL}]."""
     stem = f"{year}_{source_type_name}"
