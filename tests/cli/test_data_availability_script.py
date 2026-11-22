@@ -82,6 +82,30 @@ def test_build_matrix_orders_known_and_unknown_columns(tmp_path):
     ]
 
 
+def test_data_availability_ignores_labelled_gdp(tmp_path):
+    module = load_script_module()
+    for name in [
+        "2026_BUDGET_LAW.csv",
+        "2026_BUDGET_LAW_GDP.json",
+        "2026_BUDGET_LAW_EDRAFT.csv",
+        "2026_BUDGET_LAW_EDRAFT_GDP.json",
+        "2026_BUDGET_LAW_EDRAFT_overall.json",
+        "2026_BUDGET_LAW_EDRAFT_validation.json",
+    ]:
+        (tmp_path / name).write_text("stub\n", encoding="utf-8")
+
+    columns, rows = module.build_matrix(tmp_path)
+
+    # the labelled CSV is its own column; its GDP snapshot adds none
+    assert [c for c in columns if c not in module.DEFAULT_COLUMN_ORDER] == [
+        "BUDGET_LAW_EDRAFT"
+    ]
+    (row,) = rows
+    assert row["BUDGET_LAW"] == "2026_BUDGET_LAW.csv"
+    assert row["BUDGET_LAW_GDP"] == "2026_BUDGET_LAW_GDP.json"
+    assert row["BUDGET_LAW_EDRAFT"] == "2026_BUDGET_LAW_EDRAFT.csv"
+
+
 def test_bundled_data_root_candidates_include_skill_assets_and_repo_data():
     module = load_script_module()
     skill_root = REPO_ROOT / "skills" / "armenian-budget-data"

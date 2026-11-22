@@ -127,3 +127,46 @@ def _gdp_snapshot(year: int, source_type: str) -> dict:
             }
         ],
     }
+
+
+def _version_snapshot(nominal_gdp, label=None):
+    snapshot = {
+        "year": 2026,
+        "source_type": "BUDGET_LAW",
+        "metric_set": "GDP",
+        "source_file": "note.docx",
+        "tables": [
+            {
+                "records": [
+                    {
+                        "target_year": 2026,
+                        "status": "ծրագիր",
+                        "indicator": "Անվանական ՀՆԱ",
+                        "unit": "մլրդ դրամ",
+                        "value": nominal_gdp,
+                    }
+                ]
+            }
+        ],
+    }
+    if label:
+        snapshot["label"] = label
+    return snapshot
+
+
+def test_load_gdp_snapshots_skips_labelled(tmp_path):
+    processed = tmp_path / "processed"
+    gdp_indicators.write_gdp_snapshot(_version_snapshot(11933.7), processed)
+    without_draft = gdp_indicators.load_gdp_snapshots(processed)
+    report_without = gdp_indicators._render_gdp_html(without_draft)
+
+    draft_path = gdp_indicators.write_gdp_snapshot(
+        _version_snapshot(11900.0, "EDRAFT"), processed
+    )
+
+    assert draft_path.name == "2026_BUDGET_LAW_EDRAFT_GDP.json"
+    with_draft = gdp_indicators.load_gdp_snapshots(processed)
+    assert with_draft == without_draft
+    assert len(with_draft) == 1
+    assert gdp_indicators._render_gdp_html(with_draft) == report_without
+    assert gdp_indicators.load_gdp_snapshots(processed, years=[2026]) == without_draft

@@ -1047,7 +1047,32 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
     ok = 0
     failed = 0
     for year in years:
+        try:
+            note_labels = gdp_mod.budget_law_note_labels(sources_config, int(year))
+        except (yaml.YAMLError, ValueError, TypeError) as exc:
+            logger.error("Failed to load sources: %s", exc)
+            return 3
+        jobs: list[tuple[str, str | None]] = []
         for source_type in source_types:
+            if source_type == "BUDGET_LAW":
+                # Every labelled version registered for the year, by default
+                versions = _select_versions(
+                    sorted(note_labels), args.label, args.unlabelled
+                )
+            else:
+                # Labels apply to budget laws only
+                versions = [] if args.label else [None]
+            jobs.extend((source_type, label) for label in versions)
+        for source_type, label in jobs:
+            if label and not note_labels.get(label):
+                # Reported, not an error: this version has no budget message
+                logger.info(
+                    "%s %s %s: skipped, no budget message registered",
+                    year,
+                    source_type,
+                    label,
+                )
+                continue
             try:
                 snapshot = gdp_mod.extract_gdp_snapshot(
                     year=int(year),
@@ -1055,12 +1080,13 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
                     original_root=original_root,
                     extracted_root=extracted_root,
                     sources_config=sources_config,
+                    label=label,
                 )
                 output_path = gdp_mod.write_gdp_snapshot(snapshot, processed_root)
                 logging.info("Saved GDP snapshot: %s", output_path)
                 ok += 1
             except (FileNotFoundError, ValueError, KeyError, OSError) as exc:
-                logging.warning("%s %s: %s", year, source_type, exc)
+                logging.warning("%s %s: %s", year, _with_label(source_type, label), exc)
                 failed += 1
 
     if ok == 0:
@@ -1422,6 +1448,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Processed outputs root (defaults to ./data/processed)",
     )
+    _add_version_options(p_gdp_extract)
     p_gdp_extract.set_defaults(func=cmd_gdp_extract)
 
     p_gdp_report = sub.add_parser(
