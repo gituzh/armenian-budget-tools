@@ -59,6 +59,31 @@ def test_processed_artifact_allowlist_includes_gdp_snapshots(tmp_path: Path) -> 
     assert [path.name for path in artifacts] == sorted(included_files)
 
 
+def test_processed_artifact_allowlist_includes_labelled_files(
+    tmp_path: Path, monkeypatch
+) -> None:
+    repo_root = tmp_path
+    data_root = repo_root / "data" / "processed"
+    data_root.mkdir(parents=True)
+    labelled_files = [
+        "2026_BUDGET_LAW_EDRAFT.csv",
+        "2026_BUDGET_LAW_EDRAFT_GDP.json",
+        "2026_BUDGET_LAW_EDRAFT_overall.json",
+        "2026_BUDGET_LAW_EDRAFT_validation.json",
+        "2026_BUDGET_LAW_EDRAFT_validation.md",
+    ]
+    for name in labelled_files:
+        (data_root / name).write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(build_artifacts, "git_metadata", lambda _repo_root: {})
+
+    artifacts = build_artifacts.iter_processed_artifacts(data_root)
+    data_version = build_artifacts.build_data_version(repo_root, "0.1.0")
+
+    assert [path.name for path in artifacts] == labelled_files
+    assert data_version["file_count"] == len(labelled_files)
+    assert data_version["primary_csv_count"] == 1
+
+
 def test_data_version_counts_gdp_snapshots(tmp_path: Path, monkeypatch) -> None:
     repo_root = tmp_path
     data_root = repo_root / "data" / "processed"
