@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Budget law revised drafts `PARLIAMENT2` (parliament.am, second reading) for 2020-2026, and the 2021 `PARLIAMENT` draft. In each of 2020-2026 the `PARLIAMENT2` CSV is byte-identical to the adopted law's. There is no 2020 `PARLIAMENT` dataset (its programme table is published only as PDF), and `PARLIAMENT` and `PARLIAMENT2` have no GDP snapshot (the budget message is PDF).
 - Budget law `EDRAFT` drafts (e-draft.am) for 2020-2024, with GDP snapshots for 2021-2024. The 2021-2024 drafts hold the same data as `PARLIAMENT`. The docs now list draft coverage by year (`docs/data_schemas.md`, 3.4).
 - Excel 2003 XML workbooks ("SpreadsheetML") saved with an `.xls` name are read with a standard-library reader; other workbooks are read as before.
+- README table of registered sources by year, generated from `config/sources.yaml` with `python scripts/build_sources_table.py` (`--check` reports a stale table; a test fails on one).
 
 ### Changed
 

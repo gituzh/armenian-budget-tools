@@ -13,9 +13,25 @@
 Parses official Armenian government budget documents into analysis-ready CSVs with full validation and lineage tracking.
 
 **Data Coverage:**
-- **Budget Laws**: 2019-2026
-- **Spending Reports**: 2019-2025 (Q1, Q12, Q123, Q1234) plus 2026 Q1, Q12 and Q123
-- **MTEP**: 2024
+
+<!-- sources-table:start -->
+| Year | Budget law | Budget-law drafts | Spending reports | MTEP |
+|---|---|---|---|---|
+| 2019 | yes | – | Q1, Q12, Q123, Q1234 | – |
+| 2020 | yes | `EDRAFT`, `PARLIAMENT2` | Q1, Q12, Q123, Q1234 | – |
+| 2021 | yes | `PARLIAMENT`, `EDRAFT`, `PARLIAMENT2` | Q1, Q12, Q123, Q1234 | – |
+| 2022 | yes | `PARLIAMENT`, `EDRAFT`, `PARLIAMENT2` | Q1, Q12, Q123, Q1234 | – |
+| 2023 | yes | `PARLIAMENT`, `EDRAFT`, `PARLIAMENT2` | Q1, Q12, Q123, Q1234 | – |
+| 2024 | yes | `PARLIAMENT`, `EDRAFT`, `PARLIAMENT2` | Q1, Q12, Q123, Q1234 | yes |
+| 2025 | yes | `PARLIAMENT`, `EDRAFT`, `PARLIAMENT2` | Q1, Q12, Q123, Q1234 | – |
+| 2026 | yes | `EDRAFT`, `PARLIAMENT`, `DRAFT2`, `PARLIAMENT2` | Q1, Q12, Q123 | – |
+| 2027 | – | `DRAFT` | – | – |
+<!-- sources-table:end -->
+
+Drafts are labelled versions of the budget law; see
+[data_schemas.md](docs/data_schemas.md) section 3.4 for what each label means
+and why some are missing.
+
 - **GDP snapshots**: budget-law sources and annual spending reports where source
   documents expose GDP/macro tables
 

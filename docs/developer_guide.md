@@ -66,6 +66,8 @@ tests/
 └── validation/
 ```
 
+After changing `config/sources.yaml`, run `python scripts/build_sources_table.py` to refresh the README sources table (`pytest` fails while it is out of date).
+
 ## Parser Implementation
 
 ### Understanding the State Machine
