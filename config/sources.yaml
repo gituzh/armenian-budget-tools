@@ -144,6 +144,17 @@ sources:
         url: "https://minfin.am/website/images/website/documents/copy_1_2.Uxerdz_bacatragir.docx"
         file_format: "docx"
 
+  - name: "2022_budget_law_parliament"
+    year: 2022
+    source_type: "budget_law"
+    label: "PARLIAMENT"
+    published: 2021-10-01
+    description: "2022 budget law draft as submitted to parliament (parliament.am draft K-059)"
+    files:
+      - name: "2022_budget_law_parliament_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs8/K-059_%20Havelvatcner.rar"
+        file_format: "rar"
+
   - name: "2022_spending_q1"
     year: 2022
     source_type: "spending_q1"
