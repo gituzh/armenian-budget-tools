@@ -57,6 +57,16 @@ sources:
         url: "https://minfin.am/website/images/website/byuje ev krknaki harkum/3.1.2020_Uxerdz (2).docx"
         file_format: "docx"
 
+  - name: "2020_budget_law_parliament2"
+    year: 2020
+    source_type: "budget_law"
+    label: "PARLIAMENT2"
+    description: "2020 budget law revised draft for the second reading (parliament.am draft K-306)"
+    files:
+      - name: "2020_budget_law_parliament2_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs7/K-306lr_havelvatsner.rar"
+        file_format: "rar"
+
   - name: "2020_spending_q1"
     year: 2020
     source_type: "spending_q1"
@@ -113,6 +123,17 @@ sources:
         url: "https://parliament.am/diskStorage/draft_docs7/K-752/K-752_orenqi_havelvacner.rar"
         file_format: "rar"
 
+  - name: "2021_budget_law_parliament2"
+    year: 2021
+    source_type: "budget_law"
+    label: "PARLIAMENT2"
+    published: 2020-12-07
+    description: "2021 budget law revised draft for the second reading (parliament.am draft K-752)"
+    files:
+      - name: "2021_budget_law_parliament2_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs7/K-752lr/K-752lr_orenq_havelvacner.rar"
+        file_format: "rar"
+
   - name: "2021_spending_q1"
     year: 2021
     source_type: "spending_q1"
@@ -164,6 +185,16 @@ sources:
     files:
       - name: "2022_budget_law_parliament_attachments"
         url: "https://parliament.am/diskStorage/draft_docs8/K-059_%20Havelvatcner.rar"
+        file_format: "rar"
+
+  - name: "2022_budget_law_parliament2"
+    year: 2022
+    source_type: "budget_law"
+    label: "PARLIAMENT2"
+    description: "2022 budget law revised draft for the second reading (parliament.am draft K-059)"
+    files:
+      - name: "2022_budget_law_parliament2_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs8/K-059lr_havelvatsner.rar"
         file_format: "rar"
 
   - name: "2022_spending_q1"
@@ -220,6 +251,16 @@ sources:
     files:
       - name: "2023_budget_law_parliament_attachments"
         url: "https://parliament.am/diskStorage/draft_docs8/K-382_ORENQI_HAVELVACNER.rar"
+        file_format: "rar"
+
+  - name: "2023_budget_law_parliament2"
+    year: 2023
+    source_type: "budget_law"
+    label: "PARLIAMENT2"
+    description: "2023 budget law revised draft for the second reading (parliament.am draft K-382)"
+    files:
+      - name: "2023_budget_law_parliament2_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs8/K-382lr_orenqi_havelvatsner.rar"
         file_format: "rar"
 
   - name: "2023_spending_q1"
@@ -283,6 +324,17 @@ sources:
     files:
       - name: "2024_budget_law_parliament_attachments"
         url: "https://parliament.am/diskStorage/draft_docs8/K-669_ORENQ%20HAVELVACNER.rar"
+        file_format: "rar"
+
+  - name: "2024_budget_law_parliament2"
+    year: 2024
+    source_type: "budget_law"
+    label: "PARLIAMENT2"
+    published: 2023-12-04
+    description: "2024 budget law revised draft for the second reading (parliament.am draft K-669)"
+    files:
+      - name: "2024_budget_law_parliament2_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs8/K-669lr_havelvatsner.rar"
         file_format: "rar"
 
   - name: "2024_spending_q1"
@@ -352,6 +404,17 @@ sources:
     files:
       - name: "2025_budget_law_parliament_attachments"
         url: "https://parliament.am/diskStorage/draft_docs8/K-932_havelvatsner.rar"
+        file_format: "rar"
+
+  - name: "2025_budget_law_parliament2"
+    year: 2025
+    source_type: "budget_law"
+    label: "PARLIAMENT2"
+    published: 2024-12-02
+    description: "2025 budget law revised draft for the second reading (parliament.am draft K-932)"
+    files:
+      - name: "2025_budget_law_parliament2_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs8/K-932lr_havelvatsner.rar"
         file_format: "rar"
 
   - name: "2025_spending_q1"
@@ -438,6 +501,17 @@ sources:
         url: "https://www.e-gov.am/ajax/gfn_mul.php?file_id=4143267&inst=1289483"
         filename: "4Uxerdz.docx"
         file_format: "docx"
+
+  - name: "2026_budget_law_parliament2"
+    year: 2026
+    source_type: "budget_law"
+    label: "PARLIAMENT2"
+    published: 2025-12-01
+    description: "2026 budget law revised draft for the second reading (parliament.am draft K-1160)"
+    files:
+      - name: "2026_budget_law_parliament2_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs8/K-1160lr_havelvatsner.rar"
+        file_format: "rar"
 
   - name: "2026_spending_q1"
     year: 2026

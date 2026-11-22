@@ -2,7 +2,8 @@
 
 **Source Type:** BUDGET_LAW
 **File:** 2025_BUDGET_LAW.csv
-**Generated:** 2026-11-22 01:42:45
+**Generated:** 2026-11-22 19:07:43
+**Identical data:** PARLIAMENT2 (2024-12-02), (unlabelled) (2024-12-05)
 
 ## Summary
 

@@ -48,6 +48,12 @@ checksums:
     (2).docx
   checksum: 6c68a5652b7565e5734999a73d0dbf23c77b137db389a57e1af2925c35ebb1be
   checksum_updated_at: '2026-05-10T18:44:31.682436+00:00'
+- name: 2020_budget_law_parliament2_attachments
+  year: 2020
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs7/K-306lr_havelvatsner.rar
+  checksum: 0b7272a6190b706718d07b2ca9633c6a89e217bcbe745faab8c0c554749f3d3f
+  checksum_updated_at: '2026-11-22T15:07:29.576102+00:00'
 - name: 2020_spending_q1
   year: 2020
   source_type: spending_q1
@@ -90,6 +96,12 @@ checksums:
   url: https://parliament.am/diskStorage/draft_docs7/K-752/K-752_orenqi_havelvacner.rar
   checksum: d712bcc0ff80b7b1d0f44b9885d5a807f6add453eb451ef8605792ca8a2d88ac
   checksum_updated_at: '2026-11-22T15:07:29.116083+00:00'
+- name: 2021_budget_law_parliament2_attachments
+  year: 2021
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs7/K-752lr/K-752lr_orenq_havelvacner.rar
+  checksum: b962d5739de11907216450019d4e644da6cff22eaaf6802a0f8aa4b66852828f
+  checksum_updated_at: '2026-11-22T15:07:29.576324+00:00'
 - name: 2021_spending_q1
   year: 2021
   source_type: spending_q1
@@ -132,6 +144,12 @@ checksums:
   url: https://parliament.am/diskStorage/draft_docs8/K-059_%20Havelvatcner.rar
   checksum: 0798d215ddd9830f30d9122e08c476f6bd03f2a106b95085c5f96f62be8250b5
   checksum_updated_at: '2026-11-22T13:43:23.652613+00:00'
+- name: 2022_budget_law_parliament2_attachments
+  year: 2022
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-059lr_havelvatsner.rar
+  checksum: 22501d02259af577257a39d07f5b7e071bf2633373e38b13a7324da08efcf595
+  checksum_updated_at: '2026-11-22T15:07:29.576527+00:00'
 - name: 2022_spending_q1
   year: 2022
   source_type: spending_q1
@@ -174,6 +192,12 @@ checksums:
   url: https://parliament.am/diskStorage/draft_docs8/K-382_ORENQI_HAVELVACNER.rar
   checksum: 1215044039416558fee6eb723ff6bb76f44e8d7cc8e08d6dd38cde38c473d1c9
   checksum_updated_at: '2026-11-22T13:43:21.856299+00:00'
+- name: 2023_budget_law_parliament2_attachments
+  year: 2023
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-382lr_orenqi_havelvatsner.rar
+  checksum: 8a7d2ad0cd78eed0830746d8d9bb263578d44cfd4f9edbff70eb73c5deba14d1
+  checksum_updated_at: '2026-11-22T15:07:29.576748+00:00'
 - name: 2023_spending_q1
   year: 2023
   source_type: spending_q1
@@ -223,6 +247,12 @@ checksums:
   url: https://parliament.am/diskStorage/draft_docs8/K-669_ORENQ%20HAVELVACNER.rar
   checksum: a04cdd5bb531e4ad7384969698aa7af0b97d8d1ed3144b78f161c996f3c94bdf
   checksum_updated_at: '2026-11-22T13:42:52.824376+00:00'
+- name: 2024_budget_law_parliament2_attachments
+  year: 2024
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-669lr_havelvatsner.rar
+  checksum: 29c4e8489a6b4adaf95f7ccb282145fdaa4914e8f94d15ba6e23b6431bf14ea8
+  checksum_updated_at: '2026-11-22T15:07:29.576953+00:00'
 - name: 2024_spending_q1
   year: 2024
   source_type: spending_q1
@@ -278,6 +308,12 @@ checksums:
   url: https://parliament.am/diskStorage/draft_docs8/K-932_havelvatsner.rar
   checksum: e551935d99e6ec5aee8375455b4d4a96d74d9c1ef861a1ba47a0e8572b41024c
   checksum_updated_at: '2026-11-22T13:42:21.716427+00:00'
+- name: 2025_budget_law_parliament2_attachments
+  year: 2025
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-932lr_havelvatsner.rar
+  checksum: d88ec56060303d71155287180da423fe87cd608c45f4ebeaa59bcabde528ac08
+  checksum_updated_at: '2026-11-22T15:07:29.577155+00:00'
 - name: 2025_spending_q1
   year: 2025
   source_type: spending_q1
@@ -345,6 +381,12 @@ checksums:
   url: https://www.e-gov.am/ajax/gfn_mul.php?file_id=4143267&inst=1289483
   checksum: 403fe16e02c83a75be3256f05d1f0ffb3728d02d9cbf97ac028910c259fd00d7
   checksum_updated_at: '2026-11-22T13:38:18.922523+00:00'
+- name: 2026_budget_law_parliament2_attachments
+  year: 2026
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-1160lr_havelvatsner.rar
+  checksum: b3bdc72b2fa666cb44274491eb897497347994d0476553c00a43f644bfa6d712
+  checksum_updated_at: '2026-11-22T15:07:29.577380+00:00'
 - name: 2026_spending_q1
   year: 2026
   source_type: spending_q1

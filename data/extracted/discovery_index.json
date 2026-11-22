@@ -489,6 +489,16 @@
     "checksum": "sha256:c0e3bbf8b317e6912c972e59b5494cadb739f002495683718cbb13c96afb5687",
     "discovered_at": "2026-11-22T13:43:23Z"
   },
+  "2020/budget_law/PARLIAMENT2": {
+    "key": "2020/budget_law/PARLIAMENT2",
+    "path": "budget_laws/2020_PARLIAMENT2/K-306lr_havelvatsner/2.1.Havelvacner_Orenq/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1575278034.0,
+    "size": 258514,
+    "checksum": "sha256:3c61ec0656d4c650fbcbaf0c945d1a18d43fcad42ed06d272dd8c14108f88d78",
+    "discovered_at": "2026-11-22T15:07:38Z"
+  },
   "2021/budget_law/PARLIAMENT": {
     "key": "2021/budget_law/PARLIAMENT",
     "path": "budget_laws/2021_PARLIAMENT/K-752_orenqi_havelvacner/K-752_orenqi_havelvacner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xls",
@@ -498,5 +508,65 @@
     "size": 1274277,
     "checksum": "sha256:fc49b25c959f40f7e7538e1b87b04f12f3a15a87871037ff5154ca2d8b1c6caa",
     "discovered_at": "2026-11-22T15:07:39Z"
+  },
+  "2021/budget_law/PARLIAMENT2": {
+    "key": "2021/budget_law/PARLIAMENT2",
+    "path": "budget_laws/2021_PARLIAMENT2/K-752lr_orenq_havelvacner/K-752lr_orenq_havelvacner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1606740163.7910907,
+    "size": 814080,
+    "checksum": "sha256:8c01855b9f583d9e16a97a5ded2e8bbf7655f3a54770aab6fd760fb435ee4d55",
+    "discovered_at": "2026-11-22T15:07:39Z"
+  },
+  "2022/budget_law/PARLIAMENT2": {
+    "key": "2022/budget_law/PARLIAMENT2",
+    "path": "budget_laws/2022_PARLIAMENT2/K-059lr_havelvatsner/K-059lr_havelvatsner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1638524501.3471463,
+    "size": 856576,
+    "checksum": "sha256:616f9df6479956227d7e8de468c1e8f6f25b65c4a9bdbbbd90c5b4ab843c7370",
+    "discovered_at": "2026-11-22T15:07:40Z"
+  },
+  "2023/budget_law/PARLIAMENT2": {
+    "key": "2023/budget_law/PARLIAMENT2",
+    "path": "budget_laws/2023_PARLIAMENT2/K-382lr_orenqi_havelvatsner/1.1.ORENQI HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1669895940.161524,
+    "size": 893440,
+    "checksum": "sha256:205688e49d344a2b18e3a08f873ff854e7812235c3cc9e344fe18b7bb2c82e3a",
+    "discovered_at": "2026-11-22T15:07:40Z"
+  },
+  "2024/budget_law/PARLIAMENT2": {
+    "key": "2024/budget_law/PARLIAMENT2",
+    "path": "budget_laws/2024_PARLIAMENT2/K-669lr_havelvatsner/K-669lr_havelvatsner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների+.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1701420985.1346297,
+    "size": 897024,
+    "checksum": "sha256:133bbe687ca05f6463f0d259a05dcaa530915bda24bfaf1570cf899abdd67402",
+    "discovered_at": "2026-11-22T15:07:41Z"
+  },
+  "2025/budget_law/PARLIAMENT2": {
+    "key": "2025/budget_law/PARLIAMENT2",
+    "path": "budget_laws/2025_PARLIAMENT2/K-932lr_havelvatsner/K-932lr_havelvatsner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1732891222.0389729,
+    "size": 146864,
+    "checksum": "sha256:7ed783d4f4aa7a81aabc9928550c7dd3b30db7f7daa4eb8bcce748e0e5f90a30",
+    "discovered_at": "2026-11-22T15:07:42Z"
+  },
+  "2026/budget_law/PARLIAMENT2": {
+    "key": "2026/budget_law/PARLIAMENT2",
+    "path": "budget_laws/2026_PARLIAMENT2/K-1160lr_havelvatsner/K-1160lr_havelvatsner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1764134794.4665098,
+    "size": 148959,
+    "checksum": "sha256:d0b93f35e2a0cafac991bb70089a41fd10ef5a53b865f72159e2ec6722782132",
+    "discovered_at": "2026-11-22T15:07:42Z"
   }
 }
