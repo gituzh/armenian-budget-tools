@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `extract` no longer creates an empty `data/extracted/<category>/<year>` folder for a year (or labelled version) whose original folder does not exist; it skips it.
 - `download --extract` no longer creates empty extracted folders for versions with no downloaded files.
+- A year that has only labelled versions no longer reports its absent unlabelled version as a failure in `process`, `validate`, `discover` and `gdp-extract`; the version is skipped with one `INFO` line.
 - **BREAKING**: `2026_BUDGET_LAW_DRAFT.csv` and `2026_BUDGET_LAW_DRAFT_overall.json` are renamed to `2026_BUDGET_LAW_EDRAFT.csv` and `2026_BUDGET_LAW_EDRAFT_overall.json`. The data is unchanged; the file is now produced by the pipeline from its e-draft.am source.
 - Document the 2023 Ministry of Internal Affairs as a confirmed split state body in `docs/validation_known_issues.md`, replacing the suspected Police and Emergency Situations merger cause.
 

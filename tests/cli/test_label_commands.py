@@ -1124,3 +1124,219 @@ def test_not_registered_message_without_source_type(command, tmp_path, warnings_
         m.split(": ", 1)[-1] for m in warnings_log
     )
     assert not any("2026 BUDGET_LAW" in m for m in warnings_log)
+
+
+# --- a year with only labelled versions has no unlabelled failure ----------
+
+SKIP_LINE = (
+    "2027 BUDGET_LAW: unlabelled version skipped: "
+    "not registered in sources.yaml and no data on disk"
+)
+DRAFT_ONLY = """
+sources:
+  - name: "2027_budget_law_draft"
+    year: 2027
+    source_type: "budget_law"
+    label: "DRAFT"
+    url: "https://example.test/draft.rar"
+"""
+UNLABELLED_ENTRY = """
+  - name: "2027_budget_law"
+    year: 2027
+    source_type: "budget_law"
+    url: "https://example.test/law.rar"
+"""
+
+
+@pytest.fixture
+def draft_only(tmp_path):
+    return _sources(tmp_path, DRAFT_ONLY)
+
+
+def _process_2027(extracted, processed, config, *extra, report=None):
+    return _process(
+        extracted,
+        processed,
+        "--years",
+        "2027",
+        "--config",
+        str(config),
+        *extra,
+        report=report,
+    )
+
+
+def _validate_2027(processed, config, *extra):
+    return _validate(
+        processed, "--years", "2027", "--config", str(config), *extra
+    )
+
+
+@pytest.fixture
+def validation_entries(monkeypatch):
+    import armenian_budget.interfaces.cli.main as cli
+
+    entries: list[dict] = []
+    monkeypatch.setattr(
+        cli, "_log_validation_summary", lambda results: entries.extend(results)
+    )
+    return entries
+
+
+def test_process_skips_absent_unlabelled_version(
+    tmp_path, stub_parser, draft_only, capsys
+):
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2027_DRAFT")
+    report = tmp_path / "report.json"
+
+    exit_code = _process_2027(extracted, tmp_path / "processed", draft_only, report=report)
+
+    err = capsys.readouterr().err
+    assert exit_code == 0
+    (entry,) = json.loads(report.read_text("utf-8"))
+    assert (entry["label"], entry["status"]) == ("DRAFT", "OK")
+    assert err.count(SKIP_LINE) == 1
+    assert "2027 BUDGET_LAW: FAIL" not in err
+    assert not (extracted / "budget_laws" / "2027").exists()
+
+
+def test_validate_skips_absent_unlabelled_version(
+    tmp_path, draft_only, capsys, validation_entries
+):
+    _dataset(tmp_path, "2027_BUDGET_LAW_DRAFT")
+
+    exit_code = _validate_2027(tmp_path, draft_only)
+
+    err = capsys.readouterr().err
+    assert exit_code == 0
+    assert err.count(SKIP_LINE) == 1
+    assert [(e["status"], e.get("label")) for e in validation_entries] == [
+        ("OK", "DRAFT")
+    ]
+    assert "Dataset not found" not in err
+
+
+def test_discover_skips_absent_unlabelled_version(tmp_path, draft_only, capsys):
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2027_DRAFT")
+
+    exit_code = main(
+        [
+            "discover",
+            "--years",
+            "2027",
+            "--source-type",
+            "BUDGET_LAW",
+            "--extracted-root",
+            str(extracted),
+            "--parsers-config",
+            str(PARSERS_YAML),
+            "--config",
+            str(draft_only),
+        ]
+    )
+
+    err = capsys.readouterr().err
+    assert exit_code == 0
+    assert err.count(SKIP_LINE) == 1
+    assert "No match for 2027/BUDGET_LAW:" not in err
+    index = json.loads((extracted / "discovery_index.json").read_text("utf-8"))
+    assert set(index) == {"2027/budget_law/DRAFT"}
+
+
+def test_explicit_unlabelled_still_fails_when_absent(
+    tmp_path, stub_parser, draft_only, capsys, validation_entries
+):
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2027_DRAFT")
+    _dataset(tmp_path / "processed", "2027_BUDGET_LAW_DRAFT")
+    report = tmp_path / "report.json"
+
+    process_exit = _process_2027(
+        extracted, tmp_path / "out", draft_only, "--unlabelled", report=report
+    )
+    validate_exit = _validate_2027(tmp_path / "processed", draft_only, "--unlabelled")
+
+    err = capsys.readouterr().err
+    assert (process_exit, validate_exit) == (1, 1)
+    assert SKIP_LINE not in err
+    (entry,) = json.loads(report.read_text("utf-8"))
+    assert (entry["status"], "label" in entry) == ("FAIL", False)
+    assert entry["reason"].startswith("discovery: No .xls/.xlsx candidates found")
+    (missing,) = validation_entries
+    assert missing["status"] == "MISSING"
+    assert missing["reason"] == (
+        f"CSV file not found: {tmp_path / 'processed' / '2027_BUDGET_LAW.csv'}. "
+        "Expected format: {year}_{SOURCE_TYPE}.csv"
+    )
+
+
+def test_registered_unlabelled_missing_still_fails(
+    tmp_path, stub_parser, capsys, validation_entries
+):
+    config = _sources(tmp_path, DRAFT_ONLY + UNLABELLED_ENTRY)
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2027_DRAFT")
+    _dataset(tmp_path / "processed", "2027_BUDGET_LAW_DRAFT")
+    report = tmp_path / "report.json"
+
+    process_exit = _process_2027(
+        extracted, tmp_path / "out", config, report=report
+    )
+    validate_exit = _validate_2027(tmp_path / "processed", config)
+
+    err = capsys.readouterr().err
+    assert (process_exit, validate_exit) == (0, 0)
+    assert SKIP_LINE not in err
+    plain, draft = json.loads(report.read_text("utf-8"))
+    assert (plain["status"], draft["status"]) == ("FAIL", "OK")
+    assert [(e["status"], e.get("label")) for e in validation_entries] == [
+        ("MISSING", None),
+        ("OK", "DRAFT"),
+    ]
+
+
+def test_unlabelled_on_disk_without_entry_still_runs(
+    tmp_path, stub_parser, draft_only, capsys, validation_entries
+):
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2027")
+    _workbook(extracted / "budget_laws" / "2027_DRAFT")
+    _dataset(tmp_path / "processed", "2027_BUDGET_LAW")
+    _dataset(tmp_path / "processed", "2027_BUDGET_LAW_DRAFT")
+    report = tmp_path / "report.json"
+
+    process_exit = _process_2027(extracted, tmp_path / "out", draft_only, report=report)
+    validate_exit = _validate_2027(tmp_path / "processed", draft_only)
+
+    assert (process_exit, validate_exit) == (0, 0)
+    assert SKIP_LINE not in capsys.readouterr().err
+    assert [e.get("label") for e in json.loads(report.read_text("utf-8"))] == [
+        None,
+        "DRAFT",
+    ]
+    assert [(e["status"], e.get("label")) for e in validation_entries] == [
+        ("OK", None),
+        ("OK", "DRAFT"),
+    ]
+
+
+def test_invalid_registry_does_not_skip_unlabelled(
+    tmp_path, stub_parser, capsys, validation_entries
+):
+    config = _sources(tmp_path, DRAFT_ONLY.replace('"DRAFT"', '"bad-label"'))
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2027_DRAFT")
+    _dataset(tmp_path / "processed", "2027_BUDGET_LAW_DRAFT")
+    report = tmp_path / "report.json"
+
+    process_exit = _process_2027(extracted, tmp_path / "out", config, report=report)
+    validate_exit = _validate_2027(tmp_path / "processed", config)
+
+    assert (process_exit, validate_exit) == (1, 1)
+    assert SKIP_LINE not in capsys.readouterr().err
+    (entry,) = json.loads(report.read_text("utf-8"))
+    assert (entry["status"], "label" in entry) == ("FAIL", False)
+    (missing,) = validation_entries
+    assert (missing["status"], "label" in missing) == ("MISSING", False)

@@ -151,7 +151,11 @@ versions, each processed by the normal pipeline.
   entry for that year is ignored, with one warning per run (`Ignoring <path>:
   <LABEL> is not registered for <year> in sources.yaml`). Nothing is written
   for it and nothing is deleted. A registered version with nothing on disk is
-  reported as `FAIL` or `MISSING`. `--label X` for a label not registered for
+  reported as `FAIL` or `MISSING`. A year that has only labelled versions
+  (an unlabelled entry is not registered and nothing of it is on disk) skips
+  its unlabelled version in `process`, `validate`, `discover` and
+  `gdp-extract` with one `INFO` line; `--unlabelled` still reports it as
+  missing. `--label X` for a label not registered for
   the year is reported as missing, and the command exits non-zero when nothing
   was done. If `sources.yaml` is missing or invalid, unlabelled work continues,
   labelled versions are not run and one warning says so; with `--label` it is

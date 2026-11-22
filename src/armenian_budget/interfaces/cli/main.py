@@ -1,7 +1,7 @@
 import argparse
 import logging
 import re
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Optional, List
 import importlib
@@ -94,6 +94,47 @@ def _registered_labels(source_registry, year: int, *source_types: str) -> list[s
 def _category_types(category: str) -> list[str]:
     """Source types whose files live in a category folder."""
     return [st for st, name in _CATEGORY_DIRS.items() if name == category]
+
+
+def _drop_absent_unlabelled(
+    versions: list[str | None],
+    explicit: bool,
+    source_registry,
+    year: int,
+    source_type: str,
+    places: Sequence[Path],
+    has_data: Callable[[Path], bool],
+) -> list[str | None]:
+    """Remove the unlabelled version of a labelled-only year from a default run.
+
+    ``explicit`` is true when --label or --unlabelled was given: then nothing
+    is removed. Otherwise it goes when sources.yaml was read, registers a
+    labelled version but no unlabelled entry for the year and source type, and
+    ``has_data`` finds nothing in any of ``places``. One INFO line says so.
+    """
+    if explicit or source_registry is None:
+        return versions
+    published = source_registry.published_by_label(year, source_type.lower())
+    if None in published or not published or any(has_data(p) for p in places):
+        return versions
+    logger.info(
+        "%s %s: unlabelled version skipped: "
+        "not registered in sources.yaml and no data on disk",
+        year,
+        source_type,
+    )
+    return [v for v in versions if v is not None]
+
+
+def _has_workbook(folder: Path) -> bool:
+    """Whether a folder holds an .xls/.xlsx workbook at any depth."""
+    return folder.is_dir() and any(
+        p.suffix.lower() in (".xls", ".xlsx") for p in folder.rglob("*")
+    )
+
+
+def _has_file(folder: Path) -> bool:
+    return folder.is_dir() and any(p.is_file() for p in folder.rglob("*"))
 
 
 def _warn_unregistered_folders(
@@ -410,6 +451,15 @@ def cmd_process(args: argparse.Namespace) -> int:
                     label_arg,
                     unlabelled_arg,
                 )
+                versions = _drop_absent_unlabelled(
+                    versions,
+                    bool(label_arg or unlabelled_arg),
+                    source_registry,
+                    year,
+                    st_name,
+                    [extracted_root / _CATEGORY_DIRS[st_name] / year_dir_name(year)],
+                    _has_workbook,
+                )
             jobs.extend((st_name, label) for label in versions)
         for st_name, label in jobs:
             st_display = _with_label(st_name, label)
@@ -675,6 +725,15 @@ def cmd_validate(args: argparse.Namespace) -> int:
                 registered,
                 label_arg,
                 unlabelled_arg,
+            )
+            versions = _drop_absent_unlabelled(
+                versions,
+                bool(label_arg or unlabelled_arg),
+                source_registry,
+                year,
+                st_name,
+                [processed_root / f"{dataset_stem(year, st_name)}.csv"],
+                Path.exists,
             )
             published = (
                 source_registry.published_by_label(year, st_name.lower())
@@ -1150,10 +1209,16 @@ def cmd_discover(args: argparse.Namespace) -> int:
                 source_registry, extracted_root, _CATEGORY_DIRS[st], int(y), warned
             )
             registered = _registered_labels(source_registry, int(y), st)
-            jobs.extend(
-                (y, st, label)
-                for label in _select_versions(registered, args.label, args.unlabelled)
+            versions = _drop_absent_unlabelled(
+                _select_versions(registered, args.label, args.unlabelled),
+                bool(args.label or args.unlabelled),
+                source_registry,
+                int(y),
+                st,
+                [extracted_root / _CATEGORY_DIRS[st] / year_dir_name(int(y))],
+                _has_workbook,
             )
+            jobs.extend((y, st, label) for label in versions)
     for y, st, label in jobs:
         st_display = _with_label(st, label)
         if label and label not in _registered_labels(source_registry, int(y), st):
@@ -1209,9 +1274,10 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
     ok = 0
     failed = 0
     # One warning per run when the registry cannot be read
-    registry_usable = "BUDGET_LAW" in source_types and (
-        _load_source_registry(args.config) is not None
+    source_registry = (
+        _load_source_registry(args.config) if "BUDGET_LAW" in source_types else None
     )
+    registry_usable = source_registry is not None
     for year in years:
         note_labels: dict[str, bool] = {}
         if registry_usable:
@@ -1222,6 +1288,18 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
                 # Every labelled version registered for the year, by default
                 versions = _select_versions(
                     sorted(note_labels), args.label, args.unlabelled
+                )
+                versions = _drop_absent_unlabelled(
+                    versions,
+                    bool(args.label or args.unlabelled),
+                    source_registry,
+                    int(year),
+                    source_type,
+                    [
+                        root / "budget_laws" / year_dir_name(int(year))
+                        for root in (original_root, extracted_root)
+                    ],
+                    _has_file,
                 )
             else:
                 # Labels apply to budget laws only

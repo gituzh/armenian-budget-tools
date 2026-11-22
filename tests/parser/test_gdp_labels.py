@@ -248,6 +248,58 @@ def test_gdp_extract_only_version_without_note_exits_1(roots, tmp_path):
     assert _names(processed) == []
 
 
+def test_gdp_extract_skips_absent_unlabelled_version(tmp_path):
+    config = tmp_path / "sources.yaml"
+    config.write_text(
+        CONFIG.replace("2026", "2027").split('  - name: "2027_budget_law_parliament"')[0],
+        encoding="utf-8",
+    )
+    original = tmp_path / "original"
+    extracted = tmp_path / "extracted"
+    extracted.mkdir()
+    _docx(original / "budget_laws" / "2027_EDRAFT" / "draft.docx", "12,000.0")
+    processed = tmp_path / "processed"
+    messages: list[str] = []
+
+    class _Collect(logging.Handler):
+        def emit(self, record):
+            if record.levelno >= logging.INFO:
+                messages.append(f"{record.levelname} {record.getMessage()}")
+
+    handler = _Collect()
+    cli_logger = logging.getLogger("armenian_budget.interfaces.cli.main")
+    cli_logger.addHandler(handler)
+    try:
+        exit_code = main(
+            [
+                "gdp-extract",
+                "--years",
+                "2027",
+                "--source-type",
+                "BUDGET_LAW",
+                "--config",
+                str(config),
+                "--original-root",
+                str(original),
+                "--extracted-root",
+                str(extracted),
+                "--processed-root",
+                str(processed),
+            ]
+        )
+    finally:
+        cli_logger.removeHandler(handler)
+
+    assert exit_code == 0
+    assert _names(processed) == ["2027_BUDGET_LAW_EDRAFT_GDP.json"]
+    skip = (
+        "INFO 2027 BUDGET_LAW: unlabelled version skipped: "
+        "not registered in sources.yaml and no data on disk"
+    )
+    assert messages.count(skip) == 1
+    assert not [m for m in messages if m.startswith("WARNING")]
+
+
 def test_gdp_extract_label_not_registered(roots, tmp_path):
     original, _extracted, _config = roots
     _docx(original / "budget_laws" / "2026_NOPE" / "draft.docx", "1.0")
