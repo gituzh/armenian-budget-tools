@@ -64,6 +64,7 @@ data/
 
 - **Source Page**: [State Budget Law](https://minfin.am/hy/page/petakan_byuj/) - "Պետական բյուջե"
 - **Years Available**: 2019-2026
+- **Drafts**: published on other sites (e-gov.am, e-draft.am, parliament.am); see 3.4
 - **Format**: RAR/ZIP archives containing multiple Excel files
 - **Input workbooks**: `.xlsx`, `.xls`, and Excel 2003 XML ("SpreadsheetML") saved with an `.xls` name; the XML kind is read with the standard library
 - **Current Scope**: Only parsing program summary (Ամփոփ ըստ ծրագրերի)
@@ -80,7 +81,7 @@ data/
 **MTEP Archives:**
 
 - **Source Page**: [Mid-Term Expenditure Program](https://minfin.am/hy/page/petakan_mijnazhamket_tsakhseri_tsragre/) - "Պետական միջնաժամկետ ծախսերի ծրագրե"
-- **Years Available**: 2024+
+- **Years Available**: 2024
 - **Format**: RAR/ZIP archives
 - **Purpose**: Multi-year budget projections (3-year horizon)
 

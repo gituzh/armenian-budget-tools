@@ -44,6 +44,8 @@ and why some are missing.
 Pre-processed CSVs ready to use:
 
 - **Budget Laws** (2019-2026): `data/processed/{year}_BUDGET_LAW.csv`
+- **Budget-law drafts** (2020-2027): `data/processed/{year}_BUDGET_LAW_{LABEL}.csv`,
+  e.g. `2026_BUDGET_LAW_PARLIAMENT.csv`; see the table above for the labels of each year
 - **Spending Reports**: `data/processed/{year}_SPENDING_Q{1,12,123,1234}.csv`
   for 2019-2025, plus `data/processed/2026_SPENDING_Q1.csv`,
   `data/processed/2026_SPENDING_Q12.csv` and
