@@ -8,7 +8,9 @@ This module orchestrates validation checks:
 
 from __future__ import annotations
 
+import datetime
 import json
+from collections.abc import Mapping
 from pathlib import Path
 from typing import List
 
@@ -27,6 +29,7 @@ from .checks.negative_percentages import NegativePercentagesCheck
 from .checks.execution_exceeds_100 import ExecutionExceeds100Check
 from .checks.percentage_calculation import PercentageCalculationCheck
 from .checks.duplicate_records import DuplicateRecordsCheck
+from .identical import find_identical_versions
 from .models import CheckResult, ValidationReport
 
 
@@ -55,6 +58,7 @@ def run_validation(
     source_type: SourceType,
     processed_root: Path,
     label: str | None = None,
+    published: Mapping[str | None, datetime.date | None] | None = None,
 ) -> ValidationReport:
     """Run all applicable validation checks on a dataset.
 
@@ -64,6 +68,9 @@ def run_validation(
         processed_root: Path to the processed data root directory.
         label: Source label of the version to validate; None for the
             unlabelled one.
+        published: Published date per label of this year and source type
+            (None key: the unlabelled version). Only used to order and date
+            the identical-data note.
 
     Returns:
         ValidationReport containing aggregated results from all applicable checks.
@@ -142,6 +149,9 @@ def run_validation(
         source_type=source_type,
         csv_path=csv_path,
         overall_path=overall_path,
+        identical_data=find_identical_versions(
+            processed_root, year, source_type, label, published or {}
+        ),
     )
 
 

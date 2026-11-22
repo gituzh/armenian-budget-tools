@@ -16,6 +16,8 @@ from armenian_budget.core.utils import (
     year_dir_name,
 )
 
+logger = logging.getLogger(__name__)
+
 # Source type choices for argparse - used across all commands
 SOURCE_TYPE_CHOICES = list(SourceType.__members__.keys())
 
@@ -516,6 +518,19 @@ def cmd_validate(args: argparse.Namespace) -> int:
         )
         return 2
 
+    # Published dates per version, for the identical-data note only
+    sources_config = resolve_path_with_default(
+        getattr(args, "config", None), "config/sources.yaml"
+    )
+    source_registry = None
+    if sources_config.exists():
+        registry_mod = importlib.import_module("armenian_budget.sources.registry")
+        try:
+            source_registry = registry_mod.SourceRegistry(sources_config)
+        except (yaml.YAMLError, ValueError, TypeError) as e:
+            logger.error("Failed to load sources: %s", e)
+            return 3
+
     # Track results for end-of-run summary
     validation_results: List[dict] = []
     total_errors = 0
@@ -551,9 +566,14 @@ def cmd_validate(args: argparse.Namespace) -> int:
                 label_arg,
                 unlabelled_arg,
             )
+            published = (
+                source_registry.published_by_label(year, st_name.lower())
+                if source_registry
+                else {}
+            )
             for label in versions:
                 result = _validate_version(
-                    registry, args, year, source_type, processed_root, label
+                    registry, args, year, source_type, processed_root, label, published
                 )
                 if label:
                     result["label"] = label
@@ -583,6 +603,7 @@ def _validate_version(
     source_type: SourceType,
     processed_root: Path,
     label: str | None,
+    published: dict,
 ) -> dict:
     """Validate one version of a dataset and return its summary entry."""
     st_display = _with_label(source_type.value, label)
@@ -590,7 +611,9 @@ def _validate_version(
     logging.info("Validating %s/%s...", year, st_display)
 
     try:
-        report = registry.run_validation(year, source_type, processed_root, label=label)
+        report = registry.run_validation(
+            year, source_type, processed_root, label=label, published=published
+        )
 
         has_errors = report.has_errors(strict=False)
         error_count = report.get_error_count()
@@ -929,7 +952,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
                 output_dir = extracted_root / dir_name / year_dir
                 if label and not input_dir.is_dir():
                     # Nothing to extract; do not leave an empty version folder
-                    logging.warning("No original folder for %s: %s", label, input_dir)
+                    logger.warning("No original folder for %s: %s", label, input_dir)
                     continue
                 extract_rar_files(input_dir, output_dir)
                 extract_zip_files(input_dir, output_dir)
@@ -1450,6 +1473,14 @@ def build_parser() -> argparse.ArgumentParser:
         required=False,
         default=None,
         help="Processed data root. Defaults to ./data/processed",
+    )
+    p_validate.add_argument(
+        "--config",
+        default=None,
+        help=(
+            "Path to sources.yaml (defaults to config/sources.yaml). Only read "
+            "for the published dates shown in the identical-data note."
+        ),
     )
     p_validate.add_argument(
         "--report",
