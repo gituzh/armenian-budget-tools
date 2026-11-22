@@ -5,24 +5,53 @@ This module provides shared utilities used across the project.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from armenian_budget.core.enums import SourceType
 
+LABEL_RE = re.compile(r"^[A-Z0-9]+$")
+# GDP would collide with {year}_{SOURCE_TYPE}_GDP.json
+RESERVED_LABELS = frozenset({"GDP"})
+
+
+def validate_label(label: str) -> str:
+    """Return a valid source label unchanged, or raise ValueError."""
+    if not LABEL_RE.match(label):
+        raise ValueError(f"invalid label {label!r}: must match {LABEL_RE.pattern}")
+    if label in RESERVED_LABELS:
+        raise ValueError(f"label {label!r} is reserved")
+    return label
+
+
+def year_dir_name(year: int, label: str | None = None) -> str:
+    """Year folder of a version: "2026", or "2026_EDRAFT" when labelled."""
+    return f"{year}_{label}" if label else str(year)
+
+
+def dataset_stem(year: int, source_type_name: str, label: str | None = None) -> str:
+    """File-name stem of a dataset: {year}_{SOURCE_TYPE}[_{LABEL}]."""
+    stem = f"{year}_{source_type_name}"
+    return f"{stem}_{label}" if label else stem
+
 
 def get_processed_paths(
-    year: int, source_type: SourceType, processed_root: Path
+    year: int,
+    source_type: SourceType,
+    processed_root: Path,
+    label: str | None = None,
 ) -> tuple[Path, Path]:
     """Get CSV and overall.json paths for a given year and source type.
 
     Constructs file paths following the standard naming convention:
-    - CSV: {processed_root}/{year}_{SOURCE_TYPE}.csv
-    - JSON: {processed_root}/{year}_{SOURCE_TYPE}_overall.json
+    - CSV: {processed_root}/{year}_{SOURCE_TYPE}[_{LABEL}].csv
+    - JSON: {processed_root}/{year}_{SOURCE_TYPE}[_{LABEL}]_overall.json
 
     Args:
         year: The year of the budget data (e.g., 2023).
         source_type: The source type (e.g., BUDGET_LAW, SPENDING_Q1).
         processed_root: Path to the processed data root directory.
+        label: Source label of the version; None for the unlabelled one.
 
     Returns:
         A tuple of (csv_path, overall_path).
@@ -38,7 +67,5 @@ def get_processed_paths(
         >>> print(overall_path)
         data/processed/2023_BUDGET_LAW_overall.json
     """
-    processed_dir = processed_root
-    csv_path = processed_dir / f"{year}_{source_type.value}.csv"
-    overall_path = processed_dir / f"{year}_{source_type.value}_overall.json"
-    return csv_path, overall_path
+    stem = dataset_stem(year, source_type.value, label)
+    return processed_root / f"{stem}.csv", processed_root / f"{stem}_overall.json"
