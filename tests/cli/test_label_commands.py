@@ -1245,6 +1245,53 @@ def test_discover_skips_absent_unlabelled_version(tmp_path, draft_only, capsys):
     assert set(index) == {"2027/budget_law/DRAFT"}
 
 
+def _discover_2027(extracted, config, *extra):
+    return main(
+        [
+            "discover",
+            "--years",
+            "2027",
+            "--source-type",
+            "BUDGET_LAW",
+            "--extracted-root",
+            str(extracted),
+            "--parsers-config",
+            str(PARSERS_YAML),
+            "--config",
+            str(config),
+            *extra,
+        ]
+    )
+
+
+def test_discover_runs_unlabelled_when_workbook_on_disk(
+    tmp_path, draft_only, capsys
+):
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2027")
+    _workbook(extracted / "budget_laws" / "2027_DRAFT")
+
+    exit_code = _discover_2027(extracted, draft_only)
+
+    err = capsys.readouterr().err
+    assert exit_code == 0
+    assert SKIP_LINE not in err
+    index = json.loads((extracted / "discovery_index.json").read_text("utf-8"))
+    assert set(index) == {"2027/budget_law", "2027/budget_law/DRAFT"}
+
+
+def test_discover_explicit_unlabelled_is_not_skipped(tmp_path, draft_only, capsys):
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2027_DRAFT")
+
+    exit_code = _discover_2027(extracted, draft_only, "--unlabelled")
+
+    err = capsys.readouterr().err
+    assert exit_code == 1
+    assert SKIP_LINE not in err
+    assert "No match for 2027/BUDGET_LAW:" in err
+
+
 def test_explicit_unlabelled_still_fails_when_absent(
     tmp_path, stub_parser, draft_only, capsys, validation_entries
 ):

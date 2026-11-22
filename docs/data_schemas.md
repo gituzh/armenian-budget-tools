@@ -216,10 +216,10 @@ snapshot for 2021-2026 but not for 2020.
 **Known limitations.**
 
 - PDF sources are not read.
-- 2019 and 2020: parliament.am, e-gov.am and the 2019 e-draft.am project publish
-  the programme tables only as PDF, so the registry holds no 2019 draft
-  and no 2020 `PARLIAMENT`, `DRAFT` or `DRAFT2` (2020 `EDRAFT` and
-  `PARLIAMENT2` exist).
+- 2019: every source publishes the programme tables only as PDF (`DRAFT2`: one
+  sheet of changes, no annexes archive), so there is no 2019 draft dataset.
+  2020: the `PARLIAMENT`, `DRAFT` and `DRAFT2` programme tables are PDF only
+  (`EDRAFT` and `PARLIAMENT2` exist).
 - Lost e-gov.am files: `DRAFT` 2022-2026 and `DRAFT2` 2023-2025 are listed on
   the session agendas but cannot be downloaded (table above has the session
   and file id).

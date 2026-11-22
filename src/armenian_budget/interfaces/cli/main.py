@@ -44,7 +44,8 @@ def _select_versions(
     ``available`` are the labels registered in sources.yaml. --label selects
     that version whether or not it is registered, so the caller can report it
     as missing instead of skipping it. Without flags the unlabelled version is
-    always attempted, followed by every registered labelled version.
+    attempted, followed by every registered labelled version; a year that has
+    only labelled versions and no unlabelled data skips the unlabelled one.
     """
     if label:
         return [label]
@@ -188,7 +189,8 @@ def _add_version_options(parser: argparse.ArgumentParser) -> None:
         help=(
             "Only the version with this source label, e.g. EDRAFT (case "
             "insensitive). By default the unlabelled version and every "
-            "labelled version are covered."
+            "labelled version are covered; a year that has only labelled "
+            "versions and no unlabelled data skips the unlabelled one."
         ),
     )
     group.add_argument(

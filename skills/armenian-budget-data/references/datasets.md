@@ -11,7 +11,12 @@
   - `DRAFT`, `DRAFT2`: draft and revised draft from a government session agenda on e-gov.am (2026 `DRAFT2`, 2027 `DRAFT`). 2027 has only a draft so far.
   - Drafts with a budget message in DOCX also have `{year}_BUDGET_LAW_{LABEL}_GDP.json` (`EDRAFT` 2021-2026; 2020 `EDRAFT` has none: the extractor finds no GDP table); `PARLIAMENT` and `PARLIAMENT2` have none.
   - A draft's `_validation.md` has an `Identical data` line when its CSV is byte-identical to other versions of that year (2026 `DRAFT2` and `PARLIAMENT2` of 2020-2026 equal the adopted law; `EDRAFT` of 2021-2024 equals `PARLIAMENT`; 2020 `EDRAFT` equals no other version).
-  - Missing versions (not an error in the data): 2019, every draft is published as PDF only; 2020 `PARLIAMENT`, `DRAFT`, `DRAFT2`, programme table is PDF only; e-gov.am `DRAFT` 2022-2026 and `DRAFT2` 2023-2025 files are lost; 2021 `DRAFT`, `DRAFT2` and 2022 `DRAFT2` not found by search; 2027 has only `DRAFT` so far. Table with reasons and dates: `docs/data_schemas.md` 3.4.
+  - Missing versions (not an error in the data). Every year 2019-2027 and label not covered by a year range above is one of these (searches: 22 Nov 2026; "not found" means a bounded search missed it, not that it was never published):
+    - Not published as a spreadsheet: every 2019 draft (programme tables are PDF only; 2019 `DRAFT2` is one sheet of changes with no annexes archive); 2020 `PARLIAMENT`, `DRAFT` and `DRAFT2` (programme tables are PDF only); 2027 `EDRAFT` (the e-draft.am project has only the law text).
+    - File lost (the e-gov.am session agenda lists the file, the link no longer downloads): `DRAFT` 2022-2026, `DRAFT2` 2023-2025.
+    - Not found: 2021 `DRAFT` and `DRAFT2`, 2022 `DRAFT2` (e-gov.am session archive searched on 22 Nov 2026); 2027 `PARLIAMENT` and `PARLIAMENT2` (parliament.am draft lists searched on 22 Nov 2026; they hold no draft later than 3 Jul 2026).
+    - Not yet published: 2027 `DRAFT2` (session agendas read up to 19 Nov 2026).
+    - Table with reasons, sessions and file ids: `docs/data_schemas.md` 3.4.
 - Prefer `ARMENIAN_BUDGET_DATA_PATH` when set; otherwise use bundled `assets/data` when present; otherwise use repo `data/processed`.
 - Availability varies by year. Do not assume every year has every source type. Check with `scripts/data_availability.py` first.
 
