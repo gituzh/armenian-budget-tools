@@ -170,10 +170,30 @@ later revisions on that site.
 | Label | Site | Meaning for a budget law |
 |---|---|---|
 | `DRAFT`, `DRAFT2`, … | e-gov.am | Draft on a government session agenda; `DRAFT2` is the revised draft |
-| `EDRAFT`, … | e-draft.am | Public-consultation copy |
+| `EDRAFT`, … | e-draft.am | Public-consultation copy (2020-2026) |
 | `PARLIAMENT` | parliament.am | Draft as submitted to parliament (not the adopted law) |
 | `PARLIAMENT2`, … | parliament.am | Revised draft published for the second reading; in 2020-2026 it holds the same data as the adopted law. A further revision would be `PARLIAMENT3` |
 | *(none)* | minfin.am | Adopted law |
+
+**Draft coverage by year.** State of the search on 22 Nov 2026. "Not found"
+means a bounded search missed it; it does not show that the version was never
+published. "File lost" means the session agenda still lists the file and the
+link answers "Problem with file download: Invalid file identifier" while other
+files of the same session download.
+
+| Budget year | `DRAFT` (e-gov.am) | `EDRAFT` (e-draft.am) | `PARLIAMENT` | `DRAFT2` (e-gov.am) | `PARLIAMENT2` |
+|---|---|---|---|---|---|
+| 2019 | not published as a spreadsheet (session of 27 Sep 2018: programme table only as PDF) | not published as a spreadsheet (project 1230 links a minfin.am archive of 15 PDFs) | not published as a spreadsheet (draft K-383: annexes archive holds only PDFs) | not published as a spreadsheet archive (session of 19 Nov 2018: one sheet of changes, no annexes archive) | not published as a spreadsheet (K-383 revised: only PDFs) |
+| 2020 | not published as a spreadsheet (session of 30 Sep 2019: programme tables N1 and N2 are PDF) | exists (project 1980, 4 Oct 2019) | not published as a spreadsheet (programme table is PDF only) | not published as a spreadsheet (session of 28 Nov 2019: programme tables are PDF) | exists |
+| 2021 | not found: searched the e-gov.am session archive for 10 Sep-31 Dec 2020 on 22 Nov 2026; it lists no session between 24 Sep and 12 Nov 2020 | exists (project 2786, 2 Oct 2020) | exists | not found: searched the e-gov.am session archive for 10 Sep-31 Dec 2020 on 22 Nov 2026; no agenda item about the revised draft | exists |
+| 2022 | file lost (session of 30 Sep 2021, file id 1576078) | exists (project 3614, 5 Oct 2021) | exists | not found: searched every e-gov.am session agenda of 4 Nov-30 Dec 2021 on 22 Nov 2026 | exists |
+| 2023 | file lost (session of 29 Sep 2022, file id 2175808) | exists (project 4797, 5 Oct 2022) | exists | file lost (session of 1 Dec 2022, file id 2285509) | exists |
+| 2024 | file lost (session of 28 Sep 2023, file id 2806894) | exists (project 6318, 4 Oct 2023) | exists | file lost (session of 30 Nov 2023, file id 2920939) | exists |
+| 2025 | file lost (session of 26 Sep 2024, file id 3431295) | exists (project 7738, 2 Oct 2024) | exists | file lost (session of 28 Nov 2024, file id 3542251) | exists |
+| 2026 | file lost (session of 25 Sep 2025, file id 4035951) | exists (project 9166, 1 Oct 2025) | exists | exists (session of 27 Nov 2025) | exists |
+| 2027 | exists (session of 1 Oct 2026) | not published as a spreadsheet (project 10708, 2 Oct 2026, has only the law text) | not found: searched parliament.am's draft lists on 22 Nov 2026; they hold no draft later than 3 Jul 2026 | not yet published (session agendas read up to 19 Nov 2026) | not found: searched parliament.am's draft lists on 22 Nov 2026; they hold no draft later than 3 Jul 2026 |
+
+"exists" means a dataset is registered in `sources.yaml` and processed.
 
 **Identical data.** When `validate` runs, the CSVs of the same year and source
 type are compared by checksum, whatever `--label` selected: the unlabelled CSV
@@ -183,21 +203,34 @@ is byte-identical to others carries one line listing the whole group, oldest
 `**Identical data:** EDRAFT (2025-10-01), PARLIAMENT (2025-10-01)` in Markdown
 and a top-level `identical_data` list in JSON (absent when nothing matches).
 The note is information, not a check.
+The 2021-2024 `EDRAFT` CSVs are identical to the `PARLIAMENT` CSV of the
+same year; 2020 `EDRAFT` is identical to no other version (its total
+1,880,186,389.82 differs from 1,855,697,119.479 in the adopted law).
 
 **GDP.** A labelled budget-law version gets `{year}_BUDGET_LAW_{LABEL}_GDP.json`
 from the budget message (`explanatory_note` file, DOCX) registered in its own
 entry; the snapshot records its `label`. A version without one gets no GDP
-file. `gdp_report.html` shows unlabelled snapshots only.
+file. `gdp_report.html` shows unlabelled snapshots only. `EDRAFT` has a
+snapshot for 2021-2026 but not for 2020.
 
 **Known limitations.**
 
 - PDF sources are not read.
-- 2020 `PARLIAMENT`: the programme table is published only as PDF, so there is
-  no dataset (2020 `PARLIAMENT2` exists).
+- 2019 and 2020: parliament.am, e-gov.am and the 2019 e-draft.am project publish
+  the programme tables only as PDF, so the registry holds no 2019 draft
+  and no 2020 `PARLIAMENT`, `DRAFT` or `DRAFT2` (2020 `EDRAFT` and
+  `PARLIAMENT2` exist).
+- Lost e-gov.am files: `DRAFT` 2022-2026 and `DRAFT2` 2023-2025 are listed on
+  the session agendas but cannot be downloaded (table above has the session
+  and file id).
+- Not found by a bounded search (22 Nov 2026): 2021 `DRAFT` and `DRAFT2`
+  (e-gov.am session archive), 2022 `DRAFT2` (e-gov.am session agendas),
+  2027 `PARLIAMENT` and `PARLIAMENT2` (parliament.am draft lists). 2027
+  `EDRAFT` has no spreadsheet and 2027 `DRAFT2` is not yet published.
 - `PARLIAMENT` and `PARLIAMENT2` versions have no `_GDP.json`: parliament.am
   publishes the budget message only as PDF.
-- 2019: parliament.am shows no draft history for the law.
-- 2026 `DRAFT`: the first e-gov draft (25 Sep 2025) is lost.
+- 2020 `EDRAFT` has no `_GDP.json`: the extractor does not find the GDP table
+  in the 2020 budget message (the adopted 2020 law has none either).
 - Dataset-driven tests cover unlabelled datasets only; labelled datasets are
   covered by their validation reports.
 

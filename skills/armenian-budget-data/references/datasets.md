@@ -5,13 +5,13 @@
 - Primary parsed budget datasets live in a single active parsed-data root and use `{year}_{SOURCE_TYPE}.csv`.
 - GDP snapshots from `gdp-extract` use `{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`.
 - A name with a label after the source type, `{year}_BUDGET_LAW_{LABEL}.csv`, is another published version of that year's budget law, not the adopted one. `{year}_BUDGET_LAW.csv` without a label is the adopted law; use it unless the question is about a draft.
-  - `EDRAFT`: public-consultation copy from e-draft.am (2025, 2026).
+  - `EDRAFT`: public-consultation copy from e-draft.am (2020-2026).
   - `PARLIAMENT`: draft as submitted to parliament (2021-2026).
   - `PARLIAMENT2`: revised draft published by parliament.am for the second reading (2020-2026). Its data is identical to the adopted law in each of these years.
   - `DRAFT`, `DRAFT2`: draft and revised draft from a government session agenda on e-gov.am (2026 `DRAFT2`, 2027 `DRAFT`). 2027 has only a draft so far.
-  - Drafts with a budget message in DOCX also have `{year}_BUDGET_LAW_{LABEL}_GDP.json`; `PARLIAMENT` and `PARLIAMENT2` have none.
-  - A draft's `_validation.md` has an `Identical data` line when its CSV is byte-identical to other versions of that year (2026 `DRAFT2` and `PARLIAMENT2` of 2020-2026 equal the adopted law).
-  - There is no 2020 `PARLIAMENT` dataset and no 2019 draft.
+  - Drafts with a budget message in DOCX also have `{year}_BUDGET_LAW_{LABEL}_GDP.json` (`EDRAFT` 2021-2026; 2020 `EDRAFT` has none: the extractor finds no GDP table); `PARLIAMENT` and `PARLIAMENT2` have none.
+  - A draft's `_validation.md` has an `Identical data` line when its CSV is byte-identical to other versions of that year (2026 `DRAFT2` and `PARLIAMENT2` of 2020-2026 equal the adopted law; `EDRAFT` of 2021-2024 equals `PARLIAMENT`; 2020 `EDRAFT` equals no other version).
+  - Missing versions (not an error in the data): 2019, every draft is published as PDF only; 2020 `PARLIAMENT`, `DRAFT`, `DRAFT2`, programme table is PDF only; e-gov.am `DRAFT` 2022-2026 and `DRAFT2` 2023-2025 files are lost; 2021 `DRAFT`, `DRAFT2` and 2022 `DRAFT2` not found by search; 2027 has only `DRAFT` so far. Table with reasons and dates: `docs/data_schemas.md` 3.4.
 - Prefer `ARMENIAN_BUDGET_DATA_PATH` when set; otherwise use bundled `assets/data` when present; otherwise use repo `data/processed`.
 - Availability varies by year. Do not assume every year has every source type. Check with `scripts/data_availability.py` first.
 

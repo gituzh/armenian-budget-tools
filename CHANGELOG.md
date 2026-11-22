@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Validation reports name the versions of a year whose CSVs are byte-identical (`Identical data` line in Markdown, `identical_data` in JSON). The dates shown there come from `sources.yaml`.
 - Budget law drafts: 2027 `DRAFT` (e-gov.am), 2026 `EDRAFT` (e-draft.am), `PARLIAMENT` and `DRAFT2` (e-gov.am revised draft), 2025 `EDRAFT`, and the drafts submitted to parliament for 2022-2025 (`PARLIAMENT`), with GDP snapshots where the budget message is a DOCX.
 - Budget law revised drafts `PARLIAMENT2` (parliament.am, second reading) for 2020-2026, and the 2021 `PARLIAMENT` draft. In each of 2020-2026 the `PARLIAMENT2` CSV is byte-identical to the adopted law's. There is no 2020 `PARLIAMENT` dataset (its programme table is published only as PDF), and `PARLIAMENT` and `PARLIAMENT2` have no GDP snapshot (the budget message is PDF).
+- Budget law `EDRAFT` drafts (e-draft.am) for 2020-2024, with GDP snapshots for 2021-2024. The 2021-2024 drafts hold the same data as `PARLIAMENT`. The docs now list draft coverage by year (`docs/data_schemas.md`, 3.4).
 - Excel 2003 XML workbooks ("SpreadsheetML") saved with an `.xls` name are read with a standard-library reader; other workbooks are read as before.
 
 ### Changed
