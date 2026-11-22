@@ -241,6 +241,17 @@ sources:
     file_format: "rar"
     description: "2024 Mid-Term Expenditure Program"
 
+  - name: "2024_budget_law_parliament"
+    year: 2024
+    source_type: "budget_law"
+    label: "PARLIAMENT"
+    published: 2023-10-02
+    description: "2024 budget law draft as submitted to parliament (parliament.am draft K-669)"
+    files:
+      - name: "2024_budget_law_parliament_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs8/K-669_ORENQ%20HAVELVACNER.rar"
+        file_format: "rar"
+
   - name: "2024_spending_q1"
     year: 2024
     source_type: "spending_q1"

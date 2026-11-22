@@ -199,6 +199,12 @@ checksums:
   url: https://minfin.am/website/images/website/637cb1feeb346546589329b6ac4a9320ba2c7db0a30054205ddaf02f2be116a4.rar
   checksum: 1b1d49a05c7fd979be62aebb2d90755ecbaac48c72c851c605213128433548f6
   checksum_updated_at: '2025-09-15T02:20:52.789149+00:00'
+- name: 2024_budget_law_parliament_attachments
+  year: 2024
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-669_ORENQ%20HAVELVACNER.rar
+  checksum: a04cdd5bb531e4ad7384969698aa7af0b97d8d1ed3144b78f161c996f3c94bdf
+  checksum_updated_at: '2026-11-22T13:42:52.824376+00:00'
 - name: 2024_spending_q1
   year: 2024
   source_type: spending_q1

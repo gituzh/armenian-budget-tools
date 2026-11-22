@@ -458,5 +458,15 @@
     "size": 141584,
     "checksum": "sha256:98dde81dc310c948f53d96a39a39c040c38d81eed0e38da0ce4bf0dafe6fc9ca",
     "discovered_at": "2026-11-22T13:42:21Z"
+  },
+  "2024/budget_law/PARLIAMENT": {
+    "key": "2024/budget_law/PARLIAMENT",
+    "path": "budget_laws/2024_PARLIAMENT/K-669_ORENQ HAVELVACNER/K-669_ORENQ HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1696001064.5653832,
+    "size": 908800,
+    "checksum": "sha256:bac8b166b39869ed93820669be5b188fb89306f24a407a4d9cd11a6977a1a109",
+    "discovered_at": "2026-11-22T13:42:53Z"
   }
 }
