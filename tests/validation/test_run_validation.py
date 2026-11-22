@@ -246,3 +246,24 @@ class TestRunValidationIntegration:
         # Should have results from multiple checks
         check_ids = {result.check_id for result in report.results}
         assert len(check_ids) > 0
+
+
+def test_missing_dataset_message_unchanged_for_unlabelled(tmp_path):
+    with pytest.raises(FileNotFoundError) as exc:
+        run_validation(2026, SourceType.BUDGET_LAW, tmp_path)
+
+    assert str(exc.value).endswith("Expected format: {year}_{SOURCE_TYPE}.csv")
+
+    (tmp_path / "2026_BUDGET_LAW.csv").write_text("a\n1\n", encoding="utf-8")
+    with pytest.raises(FileNotFoundError) as exc:
+        run_validation(2026, SourceType.BUDGET_LAW, tmp_path)
+
+    assert str(exc.value).endswith("Expected format: {year}_{SOURCE_TYPE}_overall.json")
+
+
+def test_missing_dataset_message_names_the_labelled_format(tmp_path):
+    with pytest.raises(FileNotFoundError) as exc:
+        run_validation(2026, SourceType.BUDGET_LAW, tmp_path, label="EDRAFT")
+
+    assert "2026_BUDGET_LAW_EDRAFT.csv" in str(exc.value)
+    assert str(exc.value).endswith("Expected format: {year}_{SOURCE_TYPE}_{LABEL}.csv")

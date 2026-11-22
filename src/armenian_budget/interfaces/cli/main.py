@@ -1,5 +1,8 @@
 import argparse
 import logging
+import re
+from collections.abc import Callable, Sequence
+from fnmatch import fnmatch
 from pathlib import Path
 from typing import Optional, List
 import importlib
@@ -7,9 +10,207 @@ import colorlog
 import yaml
 
 from armenian_budget.core.enums import SourceType
+from armenian_budget.core.utils import (
+    dataset_stem,
+    list_version_dirs,
+    validate_label,
+    year_dir_name,
+)
+
+logger = logging.getLogger(__name__)
 
 # Source type choices for argparse - used across all commands
 SOURCE_TYPE_CHOICES = list(SourceType.__members__.keys())
+
+# Year folder of a version under data/original: "2026" or "2026_EDRAFT"
+_YEAR_DIR_RE = re.compile(r"^(\d+)(_[A-Z0-9]+)?$")
+
+# Folder under data/original and data/extracted that holds each source type
+_CATEGORY_DIRS = {
+    "BUDGET_LAW": "budget_laws",
+    "SPENDING_Q1": "spending_reports",
+    "SPENDING_Q12": "spending_reports",
+    "SPENDING_Q123": "spending_reports",
+    "SPENDING_Q1234": "spending_reports",
+    "MTEP": "mtep",
+}
+
+
+def _select_versions(
+    available: Sequence[str | None], label: str | None, unlabelled: bool
+) -> list[str | None]:
+    """Versions a command works on; None is the unlabelled version.
+
+    ``available`` are the labels registered in sources.yaml. --label selects
+    that version whether or not it is registered, so the caller can report it
+    as missing instead of skipping it. Without flags the unlabelled version is
+    attempted, followed by every registered labelled version; a year that has
+    only labelled versions and no unlabelled data skips the unlabelled one.
+    """
+    if label:
+        return [label]
+    if unlabelled:
+        return [None]
+    return [None] + [lb for lb in available if lb is not None]
+
+
+def _load_source_registry(config_arg: str | None):
+    """Load sources.yaml, the list of labelled versions, for a command.
+
+    Returns None when the file is missing or cannot be loaded, with one warning:
+    unlabelled work went on without it before labels existed, so it goes on, and
+    no labelled version is then run.
+    """
+    sources_config = resolve_path_with_default(config_arg, "config/sources.yaml")
+    if not sources_config.exists():
+        logger.warning(
+            "Sources config %s not found: labelled versions are not run", sources_config
+        )
+        return None
+    registry_mod = importlib.import_module("armenian_budget.sources.registry")
+    try:
+        return registry_mod.SourceRegistry(sources_config)
+    except (yaml.YAMLError, ValueError, TypeError) as e:
+        logger.warning(
+            "Ignoring sources config %s: %s; labelled versions are not run",
+            sources_config,
+            e,
+        )
+        return None
+
+
+def _registered_labels(source_registry, year: int, *source_types: str) -> list[str]:
+    """Labels registered in sources.yaml for a year and source types, sorted."""
+    if source_registry is None:
+        return []
+    return sorted(
+        {
+            label
+            for source_type in source_types
+            for label in source_registry.published_by_label(year, source_type.lower())
+            if label is not None
+        }
+    )
+
+
+def _category_types(category: str) -> list[str]:
+    """Source types whose files live in a category folder."""
+    return [st for st, name in _CATEGORY_DIRS.items() if name == category]
+
+
+def _drop_absent_unlabelled(
+    versions: list[str | None],
+    explicit: bool,
+    source_registry,
+    year: int,
+    source_type: str,
+    places: Sequence[Path],
+    has_data: Callable[[Path], bool],
+) -> list[str | None]:
+    """Remove the unlabelled version of a labelled-only year from a default run.
+
+    ``explicit`` is true when --label or --unlabelled was given: then nothing
+    is removed. Otherwise it goes when sources.yaml was read, registers a
+    labelled version but no unlabelled entry for the year and source type, and
+    ``has_data`` finds nothing in any of ``places``. One INFO line says so.
+    """
+    if explicit or source_registry is None:
+        return versions
+    published = source_registry.published_by_label(year, source_type.lower())
+    if None in published or not published or any(has_data(p) for p in places):
+        return versions
+    logger.info(
+        "%s %s: unlabelled version skipped: "
+        "not registered in sources.yaml and no data on disk",
+        year,
+        source_type,
+    )
+    return [v for v in versions if v is not None]
+
+
+def _has_workbook(folder: Path) -> bool:
+    """Whether a folder holds a file discovery would list: ``*.xls*``, any case."""
+    return folder.is_dir() and any(
+        p.is_file() and fnmatch(p.name.lower(), "*.xls*") for p in folder.rglob("*")
+    )
+
+
+def _has_file(folder: Path) -> bool:
+    return folder.is_dir() and any(p.is_file() for p in folder.rglob("*"))
+
+
+def _warn_unregistered_folders(
+    source_registry,
+    root: Path,
+    category: str,
+    year: int,
+    warned: set[Path],
+) -> None:
+    """Warn, once per folder, about labelled folders of a category not in sources.yaml.
+
+    ``root`` is data/original or data/extracted. Such a folder is ignored.
+    Without a registry every labelled version is already reported as not run,
+    so there is nothing to add.
+    """
+    if source_registry is None:
+        return
+    category_root = root / category
+    source_types = _category_types(category)
+    registered = _registered_labels(source_registry, year, *source_types)
+    for label in list_version_dirs(category_root, year):
+        folder = category_root / year_dir_name(year, label)
+        if label is None or label in registered or folder in warned:
+            continue
+        warned.add(folder)
+        logger.warning(
+            "Ignoring %s: %s",
+            folder,
+            _not_registered(label, year, ", ".join(source_types)),
+        )
+
+
+def _not_registered(label: str, year: int, source_type: str | None = None) -> str:
+    version = f"{year} {source_type}" if source_type else str(year)
+    return f"{label} is not registered for {version} in sources.yaml"
+
+
+def _label_arg(value: str) -> str:
+    try:
+        return validate_label(value.upper())
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
+
+
+def _add_version_options(parser: argparse.ArgumentParser) -> None:
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "--label",
+        type=_label_arg,
+        help=(
+            "Only the version with this source label, e.g. EDRAFT (case "
+            "insensitive). By default the unlabelled version and every "
+            "labelled version are covered; a year that has only labelled "
+            "versions and no unlabelled data skips the unlabelled one."
+        ),
+    )
+    group.add_argument(
+        "--unlabelled",
+        action="store_true",
+        help="Only the unlabelled version (for a budget law: the adopted law).",
+    )
+
+
+def _with_label(text: str, label: str | None) -> str:
+    return f"{text} {label}" if label else text
+
+
+def _report_entry(
+    year: int, source: str, status: str, reason: str, label: str | None
+) -> dict:
+    entry = {"year": year, "source": source, "status": status, "reason": reason}
+    if label:
+        entry["label"] = label
+    return entry
 
 
 def _checksum_key(item: dict) -> tuple[int, str | None, str | None]:
@@ -133,6 +334,10 @@ def resolve_path_with_default(arg_value: Optional[str], default: str) -> Path:
     return Path(arg_value or default).resolve()
 
 
+def _report_order(entry: dict) -> tuple[int, str, str]:
+    return (int(entry["year"]), str(entry["source"]), entry.get("label") or "")
+
+
 def cmd_process(args: argparse.Namespace) -> int:
     """Process one or more years of budget data.
 
@@ -218,23 +423,55 @@ def cmd_process(args: argparse.Namespace) -> int:
 
     parsers_yaml = Path(args.parsers_config or Path("config/parsers.yaml").resolve())
 
+    label_arg = getattr(args, "label", None)
+    unlabelled_arg = bool(getattr(args, "unlabelled", False))
+    # The labelled versions of a year are the ones registered in sources.yaml
+    source_registry = (
+        None if input_provided else _load_source_registry(getattr(args, "config", None))
+    )
+    warned: set[Path] = set()
+
     total_successes = 0
     # Collect per year/source results for end-of-run report
     report_entries: list[dict] = []
     for year in years:
         year_successes = 0
+        jobs: list[tuple[str, str | None]] = []
         for st_name in source_types:
+            if input_provided or st_name not in _CATEGORY_DIRS:
+                # An explicit input is one version: the labelled one if asked
+                versions = [label_arg]
+            else:
+                _warn_unregistered_folders(
+                    source_registry,
+                    extracted_root,
+                    _CATEGORY_DIRS[st_name],
+                    year,
+                    warned,
+                )
+                versions = _select_versions(
+                    _registered_labels(source_registry, year, st_name),
+                    label_arg,
+                    unlabelled_arg,
+                )
+                versions = _drop_absent_unlabelled(
+                    versions,
+                    bool(label_arg or unlabelled_arg),
+                    source_registry,
+                    year,
+                    st_name,
+                    [extracted_root / _CATEGORY_DIRS[st_name] / year_dir_name(year)],
+                    _has_workbook,
+                )
+            jobs.extend((st_name, label) for label in versions)
+        for st_name, label in jobs:
+            st_display = _with_label(st_name, label)
             try:
                 st_enum = SourceType[st_name]
             except KeyError:
                 logging.warning("Skipping unknown source type: %s", st_name)
                 report_entries.append(
-                    {
-                        "year": year,
-                        "source": st_name,
-                        "status": "FAIL",
-                        "reason": "unknown source type",
-                    }
+                    _report_entry(year, st_name, "FAIL", "unknown source type", label)
                 )
                 continue
 
@@ -246,19 +483,23 @@ def cmd_process(args: argparse.Namespace) -> int:
                     logging.warning(
                         "Input file does not exist for %s/%s: %s",
                         year,
-                        st_name,
+                        st_display,
                         input_path,
                     )
                     report_entries.append(
-                        {
-                            "year": year,
-                            "source": st_name,
-                            "status": "FAIL",
-                            "reason": msg,
-                        }
+                        _report_entry(year, st_name, "FAIL", msg, label)
                     )
                     continue
             else:
+                if label and label not in _registered_labels(
+                    source_registry, year, st_name
+                ):
+                    msg = _not_registered(label, year, st_name)
+                    logger.warning("%s/%s: %s", year, st_display, msg)
+                    report_entries.append(
+                        _report_entry(year, st_name, "FAIL", msg, label)
+                    )
+                    continue
                 try:
                     input_path = discover_best_file(
                         extracted_root=extracted_root,
@@ -267,6 +508,7 @@ def cmd_process(args: argparse.Namespace) -> int:
                         parsers_config_path=parsers_yaml,
                         force_discover=args.force_discover,
                         deep_validate=args.deep_validate,
+                        label=label,
                     )
                 except (
                     AssertionError,
@@ -276,14 +518,11 @@ def cmd_process(args: argparse.Namespace) -> int:
                     KeyError,
                     OSError,
                 ) as e:
-                    logging.warning("Discovery failed for %s/%s: %s", year, st_name, e)
+                    logging.warning(
+                        "Discovery failed for %s/%s: %s", year, st_display, e
+                    )
                     report_entries.append(
-                        {
-                            "year": year,
-                            "source": st_name,
-                            "status": "FAIL",
-                            "reason": f"discovery: {e}",
-                        }
+                        _report_entry(year, st_name, "FAIL", f"discovery: {e}", label)
                     )
                     continue
 
@@ -302,14 +541,11 @@ def cmd_process(args: argparse.Namespace) -> int:
                     )
             except SystemExit:
                 # Strict parser exit is treated as a failure for this type only
-                logging.error("Parsing failed for %s/%s", year, st_name)
+                logging.error("Parsing failed for %s/%s", year, st_display)
                 report_entries.append(
-                    {
-                        "year": year,
-                        "source": st_name,
-                        "status": "FAIL",
-                        "reason": "parse error (see logs)",
-                    }
+                    _report_entry(
+                        year, st_name, "FAIL", "parse error (see logs)", label
+                    )
                 )
                 continue
             except (
@@ -320,20 +556,22 @@ def cmd_process(args: argparse.Namespace) -> int:
                 OSError,
                 RuntimeError,
             ) as e:
-                logging.error("Error parsing %s/%s: %s", year, st_name, e)
+                logging.error("Error parsing %s/%s: %s", year, st_display, e)
                 report_entries.append(
-                    {
-                        "year": year,
-                        "source": st_name,
-                        "status": "FAIL",
-                        "reason": f"parse error: {type(e).__name__}: {e}",
-                    }
+                    _report_entry(
+                        year,
+                        st_name,
+                        "FAIL",
+                        f"parse error: {type(e).__name__}: {e}",
+                        label,
+                    )
                 )
                 continue
 
             # Write outputs
-            csv_name = f"{year}_{st_name}.csv"
-            overall_name = f"{year}_{st_name}_overall.json"
+            stem = dataset_stem(year, st_name, label)
+            csv_name = f"{stem}.csv"
+            overall_name = f"{stem}_overall.json"
             try:
                 df.to_csv(out_dir / csv_name, index=False, encoding="utf-8-sig")
                 import json
@@ -341,23 +579,26 @@ def cmd_process(args: argparse.Namespace) -> int:
                 with open(out_dir / overall_name, "w", encoding="utf-8") as f:
                     json.dump(overall, f, ensure_ascii=False, indent=2)
             except (OSError, ValueError) as e:
-                logging.error("Failed writing outputs for %s/%s: %s", year, st_name, e)
+                logging.error(
+                    "Failed writing outputs for %s/%s: %s", year, st_display, e
+                )
                 report_entries.append(
-                    {
-                        "year": year,
-                        "source": st_name,
-                        "status": "FAIL",
-                        "reason": f"write error: {type(e).__name__}: {e}",
-                    }
+                    _report_entry(
+                        year,
+                        st_name,
+                        "FAIL",
+                        f"write error: {type(e).__name__}: {e}",
+                        label,
+                    )
                 )
                 continue
 
-            logging.info("Processed %s/%s", year, st_name)
+            logging.info("Processed %s/%s", year, st_display)
             logging.info("Saved CSV: %s", out_dir / csv_name)
             logging.info("Saved overall JSON: %s", out_dir / overall_name)
             year_successes += 1
             total_successes += 1
-            report_entries.append({"year": year, "source": st_name, "status": "OK", "reason": ""})
+            report_entries.append(_report_entry(year, st_name, "OK", "", label))
 
         if year_successes == 0:
             logging.warning("No datasets processed for year %s.", year)
@@ -369,7 +610,7 @@ def cmd_process(args: argparse.Namespace) -> int:
             try:
                 import json
 
-                ordered = sorted(report_entries, key=lambda r: (int(r["year"]), str(r["source"])))
+                ordered = sorted(report_entries, key=_report_order)
                 with open(args.report_json, "w", encoding="utf-8") as f:
                     json.dump(ordered, f, ensure_ascii=False, indent=2)
                 logging.info("Saved processing report JSON: %s", args.report_json)
@@ -377,15 +618,16 @@ def cmd_process(args: argparse.Namespace) -> int:
                 logging.error("Failed to write report JSON %s: %s", args.report_json, e)
 
         logging.info("Processing report:")
-        # Stable order: by year, then by source name
-        for entry in sorted(report_entries, key=lambda r: (int(r["year"]), str(r["source"]))):
+        # Stable order: by year, then by source name, then by label
+        for entry in sorted(report_entries, key=_report_order):
+            source = _with_label(entry["source"], entry.get("label"))
             if entry["status"] == "OK":
-                logging.info("%s %s: OK", entry["year"], entry["source"])
+                logging.info("%s %s: OK", entry["year"], source)
             else:
                 logging.info(
                     "%s %s: FAIL (%s)",
                     entry["year"],
-                    entry["source"],
+                    source,
                     entry.get("reason", ""),
                 )
 
@@ -409,9 +651,10 @@ def cmd_validate(args: argparse.Namespace) -> int:
     """
     # Import validation module and utilities
     from armenian_budget.core.enums import SourceType
-    from armenian_budget.core.utils import get_processed_paths
 
     registry = importlib.import_module("armenian_budget.validation.registry")
+    label_arg = getattr(args, "label", None)
+    unlabelled_arg = bool(getattr(args, "unlabelled", False))
 
     # Parse years argument
     years: List[int] = []
@@ -447,6 +690,9 @@ def cmd_validate(args: argparse.Namespace) -> int:
         )
         return 2
 
+    # Registered labels, and published dates for the identical-data note
+    source_registry = _load_source_registry(getattr(args, "config", None))
+
     # Track results for end-of-run summary
     validation_results: List[dict] = []
     total_errors = 0
@@ -477,149 +723,55 @@ def cmd_validate(args: argparse.Namespace) -> int:
                 )
                 continue
 
-            logging.info("Validating %s/%s...", year, source_type.value)
-
-            try:
-                # Run validation for this year
-                report = registry.run_validation(year, source_type, processed_root)
-
-                # Track results
-                has_errors = report.has_errors(strict=False)
-                error_count = report.get_error_count()
-                warning_count = report.get_warning_count()
-
-                if has_errors:
-                    total_errors += error_count
-                    logging.warning(
-                        "Validation failed for %s/%s: %d errors, %d warnings",
-                        year,
-                        source_type.value,
-                        error_count,
-                        warning_count,
+            registered = _registered_labels(source_registry, year, st_name)
+            versions = _select_versions(
+                registered,
+                label_arg,
+                unlabelled_arg,
+            )
+            versions = _drop_absent_unlabelled(
+                versions,
+                bool(label_arg or unlabelled_arg),
+                source_registry,
+                year,
+                st_name,
+                [processed_root / f"{dataset_stem(year, st_name)}.csv"],
+                Path.exists,
+            )
+            published = (
+                source_registry.published_by_label(year, st_name.lower())
+                if source_registry
+                else {}
+            )
+            for label in versions:
+                if label and label not in registered:
+                    reason = _not_registered(label, year, st_name)
+                    logger.warning(
+                        "%s/%s: %s", year, _with_label(st_name, label), reason
                     )
-                else:
-                    logging.info(
-                        "Validation passed for %s/%s",
-                        year,
-                        source_type.value,
+                    validation_results.append(
+                        {
+                            "year": year,
+                            "source_type": st_name,
+                            "status": "MISSING",
+                            "errors": 0,
+                            "warnings": 0,
+                            "reason": reason,
+                            "label": label,
+                        }
                     )
-
-                # Print console report
-                registry.print_report(report)
-
-                # Generate markdown report if requested
-                if args.report:
-                    if args.report is True:
-                        # Default location: next to CSV file
-                        csv_path, _ = get_processed_paths(year, source_type, processed_root)
-                        report_dir = csv_path.parent
-                        report_path = report_dir / f"{year}_{source_type.value}_validation.md"
-                    else:
-                        # Custom directory provided - create per-year files
-                        report_dir = Path(args.report)
-                        report_dir.mkdir(parents=True, exist_ok=True)
-                        report_path = report_dir / f"{year}_{source_type.value}_validation.md"
-
-                    # Write markdown report
-                    markdown_content = report.to_markdown()
-                    report_path.parent.mkdir(parents=True, exist_ok=True)
-                    with open(report_path, "w", encoding="utf-8") as f:
-                        f.write(markdown_content)
-
-                    logging.info("Markdown report saved: %s", report_path)
-
-                # Generate JSON report if requested
-                if args.report_json:
-                    if args.report_json is True:
-                        # Default location: next to CSV file
-                        csv_path, _ = get_processed_paths(year, source_type, processed_root)
-                        report_dir = csv_path.parent
-                        report_path = report_dir / f"{year}_{source_type.value}_validation.json"
-                    else:
-                        # Custom directory provided - create per-year files
-                        report_dir = Path(args.report_json)
-                        report_dir.mkdir(parents=True, exist_ok=True)
-                        report_path = report_dir / f"{year}_{source_type.value}_validation.json"
-
-                    # Write JSON report
-                    json_content = report.to_json()
-                    report_path.parent.mkdir(parents=True, exist_ok=True)
-                    with open(report_path, "w", encoding="utf-8") as f:
-                        f.write(json_content)
-
-                    logging.info("JSON report saved: %s", report_path)
-
-                # Track success
-                successful_validations += 1
-                validation_results.append(
-                    {
-                        "year": year,
-                        "source_type": source_type.value,
-                        "status": "FAIL" if has_errors else "OK",
-                        "errors": error_count,
-                        "warnings": warning_count,
-                    }
+                    continue
+                result = _validate_version(
+                    registry, args, year, source_type, processed_root, label, published
                 )
+                if label:
+                    result["label"] = label
+                validation_results.append(result)
+                total_errors += result["errors"]
+                if result["status"] in ("OK", "FAIL"):
+                    successful_validations += 1
 
-            except FileNotFoundError as e:
-                logging.warning(
-                    "Dataset not found for %s/%s: %s",
-                    year,
-                    source_type.value,
-                    e,
-                )
-                validation_results.append(
-                    {
-                        "year": year,
-                        "source_type": source_type.value,
-                        "status": "MISSING",
-                        "errors": 0,
-                        "warnings": 0,
-                        "reason": str(e),
-                    }
-                )
-                continue
-            except (ValueError, OSError) as e:
-                logging.error(
-                    "Error validating %s/%s: %s",
-                    year,
-                    source_type.value,
-                    e,
-                )
-                validation_results.append(
-                    {
-                        "year": year,
-                        "source_type": source_type.value,
-                        "status": "ERROR",
-                        "errors": 0,
-                        "warnings": 0,
-                        "reason": str(e),
-                    }
-                )
-                continue
-
-    # Print summary if multiple years or source types
-    if (len(years) > 1 or len(source_types) > 1) and validation_results:
-        logging.info("Validation Summary:")
-        for entry in validation_results:
-            if entry["status"] == "OK":
-                logging.info("%s %s: PASSED", entry["year"], entry["source_type"])
-            elif entry["status"] == "FAIL":
-                logging.info(
-                    "%s %s: FAILED (%d errors, %d warnings)",
-                    entry["year"],
-                    entry["source_type"],
-                    entry["errors"],
-                    entry["warnings"],
-                )
-            else:
-                logging.info(
-                    "%s %s: %s (%s)",
-                    entry["year"],
-                    entry["source_type"],
-                    entry["status"],
-                    entry.get("reason", ""),
-                )
+    _log_validation_summary(validation_results)
 
     # Determine exit code (strict: fail if ANY errors found)
     if total_errors > 0:
@@ -631,6 +783,114 @@ def cmd_validate(args: argparse.Namespace) -> int:
         return 1
 
     return 0
+
+
+def _validate_version(
+    registry,
+    args: argparse.Namespace,
+    year: int,
+    source_type: SourceType,
+    processed_root: Path,
+    label: str | None,
+    published: dict,
+) -> dict:
+    """Validate one version of a dataset and return its summary entry."""
+    st_display = _with_label(source_type.value, label)
+    stem = dataset_stem(year, source_type.value, label)
+    logging.info("Validating %s/%s...", year, st_display)
+
+    try:
+        report = registry.run_validation(
+            year, source_type, processed_root, label=label, published=published
+        )
+
+        has_errors = report.has_errors(strict=False)
+        error_count = report.get_error_count()
+        warning_count = report.get_warning_count()
+
+        if has_errors:
+            logging.warning(
+                "Validation failed for %s/%s: %d errors, %d warnings",
+                year,
+                st_display,
+                error_count,
+                warning_count,
+            )
+        else:
+            logging.info("Validation passed for %s/%s", year, st_display)
+
+        # Print console report
+        registry.print_report(report)
+
+        # Write Markdown / JSON reports if requested: next to the CSV by default,
+        # or into the custom directory given with the flag
+        for flag, kind, suffix, render in (
+            (args.report, "Markdown", "md", report.to_markdown),
+            (args.report_json, "JSON", "json", report.to_json),
+        ):
+            if not flag:
+                continue
+            report_dir = processed_root if flag is True else Path(flag)
+            report_dir.mkdir(parents=True, exist_ok=True)
+            report_path = report_dir / f"{stem}_validation.{suffix}"
+            with open(report_path, "w", encoding="utf-8") as f:
+                f.write(render())
+            logging.info("%s report saved: %s", kind, report_path)
+
+        return {
+            "year": year,
+            "source_type": source_type.value,
+            "status": "FAIL" if has_errors else "OK",
+            "errors": error_count,
+            "warnings": warning_count,
+        }
+    except FileNotFoundError as e:
+        logging.warning("Dataset not found for %s/%s: %s", year, st_display, e)
+        return {
+            "year": year,
+            "source_type": source_type.value,
+            "status": "MISSING",
+            "errors": 0,
+            "warnings": 0,
+            "reason": str(e),
+        }
+    except (ValueError, OSError) as e:
+        logging.error("Error validating %s/%s: %s", year, st_display, e)
+        return {
+            "year": year,
+            "source_type": source_type.value,
+            "status": "ERROR",
+            "errors": 0,
+            "warnings": 0,
+            "reason": str(e),
+        }
+
+
+def _log_validation_summary(validation_results: list[dict]) -> None:
+    """Log one line per dataset when a run covered more than one."""
+    if len(validation_results) < 2:
+        return
+    logging.info("Validation Summary:")
+    for entry in validation_results:
+        source = _with_label(entry["source_type"], entry.get("label"))
+        if entry["status"] == "OK":
+            logging.info("%s %s: PASSED", entry["year"], source)
+        elif entry["status"] == "FAIL":
+            logging.info(
+                "%s %s: FAILED (%d errors, %d warnings)",
+                entry["year"],
+                source,
+                entry["errors"],
+                entry["warnings"],
+            )
+        else:
+            logging.info(
+                "%s %s: %s (%s)",
+                entry["year"],
+                source,
+                entry["status"],
+                entry.get("reason", ""),
+            )
 
 
 def _parse_years_arg(years_arg: Optional[str]) -> Optional[List[int]]:
@@ -693,9 +953,19 @@ def cmd_download(args: argparse.Namespace) -> int:
             or s.source_type == "budget_law"
             or s.source_type == "mtep"
         ]
+    if args.label:
+        sources = [s for s in sources if s.label == args.label]
+        for year in years or []:
+            if not any(s.year == year for s in sources):
+                logger.warning(
+                    "%s", _not_registered(args.label, year, args.source_type)
+                )
+    elif args.unlabelled:
+        sources = [s for s in sources if s.label is None]
     if not sources:
         logging.warning("No matching sources to download.")
-        return 0
+        # A requested label that nothing registers counts as a failure
+        return 1 if args.label else 0
 
     results = download_sources(
         sources,
@@ -806,25 +1076,20 @@ def cmd_download(args: argparse.Namespace) -> int:
     logging.info("Downloads: %d ok, %d failed, %d checksums recorded", ok, fail, recorded)
 
     if args.extract:
-        years_to_extract = sorted({r.year for r in results if r.ok})
-        for y in years_to_extract:
-            # Extract spending reports
-            input_dir = original_root / "spending_reports" / str(y)
-            output_dir = extracted_root / "spending_reports" / str(y)
-            extract_rar_files(input_dir, output_dir)
-            extract_zip_files(input_dir, output_dir)
-
-            # Extract MTEP files
-            mtep_input_dir = original_root / "mtep" / str(y)
-            mtep_output_dir = extracted_root / "mtep" / str(y)
-            extract_rar_files(mtep_input_dir, mtep_output_dir)
-            extract_zip_files(mtep_input_dir, mtep_output_dir)
-
-            # Extract budget law files
-            budget_law_input_dir = original_root / "budget_laws" / str(y)
-            budget_law_output_dir = extracted_root / "budget_laws" / str(y)
-            extract_rar_files(budget_law_input_dir, budget_law_output_dir)
-            extract_zip_files(budget_law_input_dir, budget_law_output_dir)
+        versions_to_extract = sorted(
+            {(s.year, s.label or "") for s, r in zip(sources, results) if r.ok}
+        )
+        for y, label in versions_to_extract:
+            year_dir = year_dir_name(y, label or None)
+            # Spending reports, MTEP files and budget law files
+            for dir_name in ("spending_reports", "mtep", "budget_laws"):
+                input_dir = original_root / dir_name / year_dir
+                output_dir = extracted_root / dir_name / year_dir
+                if not input_dir.is_dir():
+                    # Nothing downloaded for this version: leave no empty folder
+                    continue
+                extract_rar_files(input_dir, output_dir)
+                extract_zip_files(input_dir, output_dir)
 
     return 0 if fail == 0 else 1
 
@@ -844,16 +1109,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
     source_type_dirs = []
     if source_type_filter:
         # Map the filter to directory name
-        # argparse already uppercased it via type=str.upper, so convert to lowercase
-        type_to_dir = {
-            "BUDGET_LAW": "budget_laws",
-            "SPENDING_Q1": "spending_reports",
-            "SPENDING_Q12": "spending_reports",
-            "SPENDING_Q123": "spending_reports",
-            "SPENDING_Q1234": "spending_reports",
-            "MTEP": "mtep",
-        }
-        dir_name = type_to_dir.get(source_type_filter)
+        dir_name = _CATEGORY_DIRS.get(source_type_filter)
         if dir_name:
             source_type_dirs = [dir_name]
     else:
@@ -867,8 +1123,9 @@ def cmd_extract(args: argparse.Namespace) -> int:
             base = original_root / dir_name
             if base.exists():
                 for p in base.iterdir():
-                    if p.is_dir() and p.name.isdigit():
-                        years_set.add(int(p.name))
+                    year_match = _YEAR_DIR_RE.match(p.name)
+                    if p.is_dir() and year_match:
+                        years_set.add(int(year_match.group(1)))
         if years_set:
             years = sorted(years_set)
         else:
@@ -879,14 +1136,40 @@ def cmd_extract(args: argparse.Namespace) -> int:
         logging.warning("No years to extract.")
         return 0
 
+    source_registry = _load_source_registry(args.config)
+    warned: set[Path] = set()
+    extracted_any = False
     # Extract from each source type directory
     for y in years:
         for dir_name in source_type_dirs:
-            input_dir = original_root / dir_name / str(y)
-            output_dir = extracted_root / dir_name / str(y)
-            extract_rar_files(input_dir, output_dir)
-            extract_zip_files(input_dir, output_dir)
+            _warn_unregistered_folders(
+                source_registry, original_root, dir_name, y, warned
+            )
+            registered = _registered_labels(
+                source_registry, y, *_category_types(dir_name)
+            )
+            for label in _select_versions(registered, args.label, args.unlabelled):
+                year_dir = year_dir_name(y, label)
+                input_dir = original_root / dir_name / year_dir
+                output_dir = extracted_root / dir_name / year_dir
+                if label and label not in registered:
+                    reason = _not_registered(label, y, args.source_type)
+                    logger.warning("%s/%s: %s", dir_name, year_dir, reason)
+                    continue
+                if not input_dir.is_dir():
+                    # Nothing to extract; do not leave an empty version folder
+                    if label:
+                        logger.warning(
+                            "No original folder for %s: %s", label, input_dir
+                        )
+                    continue
+                extract_rar_files(input_dir, output_dir)
+                extract_zip_files(input_dir, output_dir)
+                extracted_any = True
 
+    if args.label and not extracted_any:
+        logger.error("Nothing extracted for label %s.", args.label)
+        return 1
     return 0
 
 
@@ -919,29 +1202,57 @@ def cmd_discover(args: argparse.Namespace) -> int:
             "SPENDING_Q123",
             "SPENDING_Q1234",
         ]
+    source_registry = _load_source_registry(args.config)
+    warned: set[Path] = set()
     ok = 0
+    jobs = []
     for y in years:
         for st in src_types:
-            try:
-                path = discover_best_file(
-                    extracted_root=extracted_root,
-                    year=int(y),
-                    source_type=st,
-                    parsers_config_path=parsers_yaml,
-                    force_discover=args.force_discover,
-                    deep_validate=args.deep_validate,
-                )
-                logging.info("Discovered %s/%s → %s", y, st, path)
-                ok += 1
-            except (
-                AssertionError,
-                FileNotFoundError,
-                RuntimeError,
-                ValueError,
-                KeyError,
-            ) as e:
-                logging.warning("No match for %s/%s: %s", y, st, e)
-                continue
+            _warn_unregistered_folders(
+                source_registry, extracted_root, _CATEGORY_DIRS[st], int(y), warned
+            )
+            registered = _registered_labels(source_registry, int(y), st)
+            versions = _drop_absent_unlabelled(
+                _select_versions(registered, args.label, args.unlabelled),
+                bool(args.label or args.unlabelled),
+                source_registry,
+                int(y),
+                st,
+                [extracted_root / _CATEGORY_DIRS[st] / year_dir_name(int(y))],
+                _has_workbook,
+            )
+            jobs.extend((y, st, label) for label in versions)
+    for y, st, label in jobs:
+        st_display = _with_label(st, label)
+        if label and label not in _registered_labels(source_registry, int(y), st):
+            logger.warning(
+                "No match for %s/%s: %s",
+                y,
+                st_display,
+                _not_registered(label, int(y), st),
+            )
+            continue
+        try:
+            path = discover_best_file(
+                extracted_root=extracted_root,
+                year=int(y),
+                source_type=st,
+                parsers_config_path=parsers_yaml,
+                force_discover=args.force_discover,
+                deep_validate=args.deep_validate,
+                label=label,
+            )
+            logging.info("Discovered %s/%s → %s", y, st_display, path)
+            ok += 1
+        except (
+            AssertionError,
+            FileNotFoundError,
+            RuntimeError,
+            ValueError,
+            KeyError,
+        ) as e:
+            logging.warning("No match for %s/%s: %s", y, st_display, e)
+            continue
     return 0 if ok > 0 else 1
 
 
@@ -965,8 +1276,53 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
     source_types = [args.source_type] if args.source_type else list(gdp_mod.GDP_SOURCE_TYPES)
     ok = 0
     failed = 0
+    # One warning per run when the registry cannot be read
+    source_registry = (
+        _load_source_registry(args.config) if "BUDGET_LAW" in source_types else None
+    )
+    registry_usable = source_registry is not None
     for year in years:
+        note_labels: dict[str, bool] = {}
+        if registry_usable:
+            note_labels = gdp_mod.budget_law_note_labels(sources_config, int(year))
+        jobs: list[tuple[str, str | None]] = []
         for source_type in source_types:
+            if source_type == "BUDGET_LAW":
+                # Every labelled version registered for the year, by default
+                versions = _select_versions(
+                    sorted(note_labels), args.label, args.unlabelled
+                )
+                versions = _drop_absent_unlabelled(
+                    versions,
+                    bool(args.label or args.unlabelled),
+                    source_registry,
+                    int(year),
+                    source_type,
+                    [
+                        root / "budget_laws" / year_dir_name(int(year))
+                        for root in (original_root, extracted_root)
+                    ],
+                    _has_file,
+                )
+            else:
+                # Labels apply to budget laws only
+                versions = [] if args.label else [None]
+            jobs.extend((source_type, label) for label in versions)
+        for source_type, label in jobs:
+            if label and label not in note_labels:
+                reason = _not_registered(label, year, source_type)
+                logger.warning("%s %s: %s", year, source_type, reason)
+                failed += 1
+                continue
+            if label and not note_labels[label]:
+                # Reported, not an error: this version has no budget message
+                logger.info(
+                    "%s %s %s: skipped, no budget message registered",
+                    year,
+                    source_type,
+                    label,
+                )
+                continue
             try:
                 snapshot = gdp_mod.extract_gdp_snapshot(
                     year=int(year),
@@ -974,12 +1330,19 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
                     original_root=original_root,
                     extracted_root=extracted_root,
                     sources_config=sources_config,
+                    label=label,
                 )
                 output_path = gdp_mod.write_gdp_snapshot(snapshot, processed_root)
                 logging.info("Saved GDP snapshot: %s", output_path)
                 ok += 1
-            except (FileNotFoundError, ValueError, KeyError, OSError) as exc:
-                logging.warning("%s %s: %s", year, source_type, exc)
+            except (
+                FileNotFoundError,
+                ValueError,
+                KeyError,
+                OSError,
+                yaml.YAMLError,
+            ) as exc:
+                logging.warning("%s %s: %s", year, _with_label(source_type, label), exc)
                 failed += 1
 
     if ok == 0:
@@ -1140,6 +1503,7 @@ def build_parser() -> argparse.ArgumentParser:
         choices=SOURCE_TYPE_CHOICES,
         help="Limit download to a specific source type (case insensitive)",
     )
+    _add_version_options(p_download)
     p_download.set_defaults(func=cmd_download)
 
     p_extract = sub.add_parser("extract", help="Extract already downloaded spending archives")
@@ -1162,6 +1526,15 @@ def build_parser() -> argparse.ArgumentParser:
         "--extracted-root",
         default=None,
         help="Extracted data root (defaults to ./data/extracted)",
+    )
+    _add_version_options(p_extract)
+    p_extract.add_argument(
+        "--config",
+        default=None,
+        help=(
+            "Path to sources.yaml (defaults to config/sources.yaml). Only read "
+            "for the labelled versions registered there."
+        ),
     )
     p_extract.set_defaults(func=cmd_extract)
 
@@ -1200,6 +1573,15 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Probe-parse candidates during discovery to validate content (slower)",
     )
+    p_discover.add_argument(
+        "--config",
+        default=None,
+        help=(
+            "Path to sources.yaml (defaults to config/sources.yaml). Only read "
+            "for the labelled versions registered there."
+        ),
+    )
+    _add_version_options(p_discover)
     p_discover.set_defaults(func=cmd_discover)
 
     p_minfin = sub.add_parser(
@@ -1300,6 +1682,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Extracted data root (defaults to ./data/extracted). Required if discovery is used and you provide a non-default location.",
     )
+    p_process.add_argument(
+        "--config",
+        default=None,
+        help=(
+            "Path to sources.yaml (defaults to config/sources.yaml). Only read "
+            "for the labelled versions registered there, so that one with "
+            "nothing extracted is reported."
+        ),
+    )
+    _add_version_options(p_process)
     p_process.set_defaults(func=cmd_process)
 
     p_gdp_extract = sub.add_parser(
@@ -1337,6 +1729,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Processed outputs root (defaults to ./data/processed)",
     )
+    _add_version_options(p_gdp_extract)
     p_gdp_extract.set_defaults(func=cmd_gdp_extract)
 
     p_gdp_report = sub.add_parser(
@@ -1390,6 +1783,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Processed data root. Defaults to ./data/processed",
     )
     p_validate.add_argument(
+        "--config",
+        default=None,
+        help=(
+            "Path to sources.yaml (defaults to config/sources.yaml). Only read "
+            "for the labelled versions registered there and the published "
+            "dates shown in the identical-data note."
+        ),
+    )
+    p_validate.add_argument(
         "--report",
         nargs="?",
         const=True,
@@ -1403,6 +1805,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=False,
         help="Generate detailed JSON report (one per year). Optionally specify custom directory path.",
     )
+    _add_version_options(p_validate)
     p_validate.set_defaults(func=cmd_validate)
 
     return p

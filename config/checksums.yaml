@@ -48,6 +48,24 @@ checksums:
     (2).docx
   checksum: 6c68a5652b7565e5734999a73d0dbf23c77b137db389a57e1af2925c35ebb1be
   checksum_updated_at: '2026-05-10T18:44:31.682436+00:00'
+- name: 2020_budget_law_edraft_attachments
+  year: 2020
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/15701988212706.rar
+  checksum: c09a5e7735d705760c0dc27772c5c7525b9d16fa54413f2209d755f61e62df0f
+  checksum_updated_at: '2026-11-22T16:34:47.220844+00:00'
+- name: 2020_budget_law_edraft_explanatory_note
+  year: 2020
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/15701988212718.docx
+  checksum: ec00ccc829fcd41c1bf27de35dc133bf748b6b7e35ab7c59391462e4ded5e7ce
+  checksum_updated_at: '2026-11-22T16:34:47.222478+00:00'
+- name: 2020_budget_law_parliament2_attachments
+  year: 2020
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs7/K-306lr_havelvatsner.rar
+  checksum: 0b7272a6190b706718d07b2ca9633c6a89e217bcbe745faab8c0c554749f3d3f
+  checksum_updated_at: '2026-11-22T15:07:29.576102+00:00'
 - name: 2020_spending_q1
   year: 2020
   source_type: spending_q1
@@ -84,6 +102,30 @@ checksums:
   url: https://minfin.am/website/images/website/byuje ev krknaki harkum/2021_Uxerdz.docx
   checksum: 3d4386c6c58809a06553b3bc3c534dad4227d8c0ca5c5271f965a312ea38be8b
   checksum_updated_at: '2026-05-10T18:44:31.686713+00:00'
+- name: 2021_budget_law_edraft_attachments
+  year: 2021
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/16016615633382.rar
+  checksum: 50b7b5ba5907cc90ac54d509c6d4654af3b2c699b4b9adb8100a148238e5c031
+  checksum_updated_at: '2026-11-22T16:34:47.222741+00:00'
+- name: 2021_budget_law_edraft_explanatory_note
+  year: 2021
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/16016615633395.docx
+  checksum: dcb82e73b72a81046cd395dd3bb91c5c2db6de200321235407497a72eb798900
+  checksum_updated_at: '2026-11-22T16:34:47.225221+00:00'
+- name: 2021_budget_law_parliament_attachments
+  year: 2021
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs7/K-752/K-752_orenqi_havelvacner.rar
+  checksum: d712bcc0ff80b7b1d0f44b9885d5a807f6add453eb451ef8605792ca8a2d88ac
+  checksum_updated_at: '2026-11-22T15:07:29.116083+00:00'
+- name: 2021_budget_law_parliament2_attachments
+  year: 2021
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs7/K-752lr/K-752lr_orenq_havelvacner.rar
+  checksum: b962d5739de11907216450019d4e644da6cff22eaaf6802a0f8aa4b66852828f
+  checksum_updated_at: '2026-11-22T15:07:29.576324+00:00'
 - name: 2021_spending_q1
   year: 2021
   source_type: spending_q1
@@ -120,6 +162,30 @@ checksums:
   url: https://minfin.am/website/images/website/documents/copy_1_2.Uxerdz_bacatragir.docx
   checksum: b074e49780f3c2324a968a458d862e2ad2202513c01b68e2afcc5a67856f5e3c
   checksum_updated_at: '2026-05-10T18:44:31.690865+00:00'
+- name: 2022_budget_law_edraft_attachments
+  year: 2022
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/16334196692535.rar
+  checksum: 0798d215ddd9830f30d9122e08c476f6bd03f2a106b95085c5f96f62be8250b5
+  checksum_updated_at: '2026-11-22T16:34:47.225512+00:00'
+- name: 2022_budget_law_edraft_explanatory_note
+  year: 2022
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/16334196692545.docx
+  checksum: 08276aa0d42bf60caf99de47655ae3b774e5e1c3439cbe4d99d2cf0273660202
+  checksum_updated_at: '2026-11-22T16:34:47.228362+00:00'
+- name: 2022_budget_law_parliament_attachments
+  year: 2022
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-059_%20Havelvatcner.rar
+  checksum: 0798d215ddd9830f30d9122e08c476f6bd03f2a106b95085c5f96f62be8250b5
+  checksum_updated_at: '2026-11-22T13:43:23.652613+00:00'
+- name: 2022_budget_law_parliament2_attachments
+  year: 2022
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-059lr_havelvatsner.rar
+  checksum: 22501d02259af577257a39d07f5b7e071bf2633373e38b13a7324da08efcf595
+  checksum_updated_at: '2026-11-22T15:07:29.576527+00:00'
 - name: 2022_spending_q1
   year: 2022
   source_type: spending_q1
@@ -156,6 +222,30 @@ checksums:
   url: https://minfin.am/website/images/website/2.Uxerdz_bacatragir (1).docx
   checksum: 0c2b50648f3196ebd6c8c4824c2da2b8cdbd4f0100b762d5bcb1b364c953c443
   checksum_updated_at: '2026-05-10T18:44:31.695886+00:00'
+- name: 2023_budget_law_edraft_attachments
+  year: 2023
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/16649643952337.rar
+  checksum: 1215044039416558fee6eb723ff6bb76f44e8d7cc8e08d6dd38cde38c473d1c9
+  checksum_updated_at: '2026-11-22T16:34:47.228694+00:00'
+- name: 2023_budget_law_edraft_explanatory_note
+  year: 2023
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/16649632970717.docx
+  checksum: b67755cc0e300460472cafc83e15fa4f00552b686299e9340e7ba8824c80ce22
+  checksum_updated_at: '2026-11-22T16:34:47.232794+00:00'
+- name: 2023_budget_law_parliament_attachments
+  year: 2023
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-382_ORENQI_HAVELVACNER.rar
+  checksum: 1215044039416558fee6eb723ff6bb76f44e8d7cc8e08d6dd38cde38c473d1c9
+  checksum_updated_at: '2026-11-22T13:43:21.856299+00:00'
+- name: 2023_budget_law_parliament2_attachments
+  year: 2023
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-382lr_orenqi_havelvatsner.rar
+  checksum: 8a7d2ad0cd78eed0830746d8d9bb263578d44cfd4f9edbff70eb73c5deba14d1
+  checksum_updated_at: '2026-11-22T15:07:29.576748+00:00'
 - name: 2023_spending_q1
   year: 2023
   source_type: spending_q1
@@ -193,12 +283,36 @@ checksums:
   url: https://minfin.am/website/images/website/2.Uxerdz_bacatragir_2024.docx
   checksum: 991f4776cec43a4582df3097d3f5f1493562445264c4dbcc760c761126c39772
   checksum_updated_at: '2026-05-10T18:44:31.709054+00:00'
+- name: 2024_budget_law_edraft_attachments
+  year: 2024
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/16964278422171.rar
+  checksum: a04cdd5bb531e4ad7384969698aa7af0b97d8d1ed3144b78f161c996f3c94bdf
+  checksum_updated_at: '2026-11-22T16:34:47.233105+00:00'
+- name: 2024_budget_law_edraft_explanatory_note
+  year: 2024
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/16964280276406.docx
+  checksum: b9386b1dcb0c67c8fe78c53d6374d950137dd19b9836ef49a2741c50c48926f6
+  checksum_updated_at: '2026-11-22T16:34:47.235476+00:00'
 - name: 2024_mtep
   year: 2024
   source_type: mtep
   url: https://minfin.am/website/images/website/637cb1feeb346546589329b6ac4a9320ba2c7db0a30054205ddaf02f2be116a4.rar
   checksum: 1b1d49a05c7fd979be62aebb2d90755ecbaac48c72c851c605213128433548f6
   checksum_updated_at: '2025-09-15T02:20:52.789149+00:00'
+- name: 2024_budget_law_parliament_attachments
+  year: 2024
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-669_ORENQ%20HAVELVACNER.rar
+  checksum: a04cdd5bb531e4ad7384969698aa7af0b97d8d1ed3144b78f161c996f3c94bdf
+  checksum_updated_at: '2026-11-22T13:42:52.824376+00:00'
+- name: 2024_budget_law_parliament2_attachments
+  year: 2024
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-669lr_havelvatsner.rar
+  checksum: 29c4e8489a6b4adaf95f7ccb282145fdaa4914e8f94d15ba6e23b6431bf14ea8
+  checksum_updated_at: '2026-11-22T15:07:29.576953+00:00'
 - name: 2024_spending_q1
   year: 2024
   source_type: spending_q1
@@ -236,6 +350,30 @@ checksums:
     ուղերձ-բացատրագիր.docx
   checksum: 043be794d045e7e3c9a2a374f0f4025425dd8e0f75308df2ccc524281f118808
   checksum_updated_at: '2026-05-10T18:44:31.713637+00:00'
+- name: 2025_budget_law_edraft_attachments
+  year: 2025
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/17278710055868.rar
+  checksum: 734488252b701d29dc54d4e5e6efda0bf08eaeea3133cf54f479de553dafd147
+  checksum_updated_at: '2026-11-22T13:38:18.907097+00:00'
+- name: 2025_budget_law_edraft_explanatory_note
+  year: 2025
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/17278710055878.docx
+  checksum: 358206cb8616a8977e8bcf2770660ae4b1e997cd33e048b971972decf085f0e1
+  checksum_updated_at: '2026-11-22T13:38:18.909697+00:00'
+- name: 2025_budget_law_parliament_attachments
+  year: 2025
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-932_havelvatsner.rar
+  checksum: e551935d99e6ec5aee8375455b4d4a96d74d9c1ef861a1ba47a0e8572b41024c
+  checksum_updated_at: '2026-11-22T13:42:21.716427+00:00'
+- name: 2025_budget_law_parliament2_attachments
+  year: 2025
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-932lr_havelvatsner.rar
+  checksum: d88ec56060303d71155287180da423fe87cd608c45f4ebeaa59bcabde528ac08
+  checksum_updated_at: '2026-11-22T15:07:29.577155+00:00'
 - name: 2025_spending_q1
   year: 2025
   source_type: spending_q1
@@ -273,6 +411,42 @@ checksums:
     բյուջետային ուղերձ-բացատրագիր.docx
   checksum: a2dd20e53054426481105154509538024cb52c9f0fa444e0dc1854c713c04c56
   checksum_updated_at: '2026-05-10T18:44:31.717823+00:00'
+- name: 2026_budget_law_edraft_attachments
+  year: 2026
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/17593198520182.rar
+  checksum: 3af4834743f8b221f8b6f00b1bbc028854de5252efb7bd998d23eb46f26c4050
+  checksum_updated_at: '2026-11-22T13:38:18.915815+00:00'
+- name: 2026_budget_law_edraft_explanatory_note
+  year: 2026
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/17593198520187.docx
+  checksum: d5bc483f37820691fb01cdd5f7f6b42f6cf273de70c96a09a19a8afe3c261754
+  checksum_updated_at: '2026-11-22T13:38:18.919199+00:00'
+- name: 2026_budget_law_parliament_attachments
+  year: 2026
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-1160_havelvatsner.rar
+  checksum: 3af4834743f8b221f8b6f00b1bbc028854de5252efb7bd998d23eb46f26c4050
+  checksum_updated_at: '2026-11-22T13:38:18.919491+00:00'
+- name: 2026_budget_law_draft2_attachments
+  year: 2026
+  source_type: budget_law
+  url: https://www.e-gov.am/ajax/gfn_mul.php?file_id=4143266&inst=1289483
+  checksum: b3bdc72b2fa666cb44274491eb897497347994d0476553c00a43f644bfa6d712
+  checksum_updated_at: '2026-11-22T13:38:18.919741+00:00'
+- name: 2026_budget_law_draft2_explanatory_note
+  year: 2026
+  source_type: budget_law
+  url: https://www.e-gov.am/ajax/gfn_mul.php?file_id=4143267&inst=1289483
+  checksum: 403fe16e02c83a75be3256f05d1f0ffb3728d02d9cbf97ac028910c259fd00d7
+  checksum_updated_at: '2026-11-22T13:38:18.922523+00:00'
+- name: 2026_budget_law_parliament2_attachments
+  year: 2026
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs8/K-1160lr_havelvatsner.rar
+  checksum: b3bdc72b2fa666cb44274491eb897497347994d0476553c00a43f644bfa6d712
+  checksum_updated_at: '2026-11-22T15:07:29.577380+00:00'
 - name: 2026_spending_q1
   year: 2026
   source_type: spending_q1
@@ -291,6 +465,18 @@ checksums:
   url: https://minfin.am/website/images/files/2026_9%20%D5%A1%D5%B4%D5%AB%D5%BD_%D5%B0%D5%A1%D5%B7%D5%BE%D5%A5%D5%BF%D5%BE%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.rar
   checksum: 0617aca38ebcdc16c81dc66a78eb4bf5704debb07e7d1a3a1638af66b64ebbc0
   checksum_updated_at: '2026-11-19T15:12:42.637046+00:00'
+- name: 2027_budget_law_draft_attachments
+  year: 2027
+  source_type: budget_law
+  url: https://www.e-gov.am/ajax/gfn_mul.php?file_id=4644032&inst=1429880
+  checksum: e546296dd798ca8e520df8e87c552f6ba749415d6c7b9498b8b7978088868241
+  checksum_updated_at: '2026-11-22T13:38:18.922826+00:00'
+- name: 2027_budget_law_draft_explanatory_note
+  year: 2027
+  source_type: budget_law
+  url: https://www.e-gov.am/ajax/gfn_mul.php?file_id=4644033&inst=1429880
+  checksum: 82792c23096f481cba802baca91c1fe421c0d82aad0a216d931be5a4f118edf7
+  checksum_updated_at: '2026-11-22T13:38:18.928855+00:00'
 - name: 2021_spending_q1234
   year: 2021
   source_type: spending_q1234

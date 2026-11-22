@@ -14,6 +14,7 @@ from typing import Dict, List, Tuple
 import pandas as pd
 from tqdm import tqdm
 from armenian_budget.core.enums import SourceType
+from .workbook_reader import read_first_sheet
 from ._common import (
     ProcessingState,
     RowType,
@@ -186,7 +187,7 @@ def flatten_budget_excel_2019_2024(
     """
     # ===================== MARK: Read and Prepare Data ========================
     # Read the Excel file and fill NaNs with empty strings for easier processing.
-    df = pd.read_excel(excel_file_path, sheet_name=0, header=None)
+    df = read_first_sheet(excel_file_path)
     df = df.fillna("")
 
     # Get expected number of columns for this source type

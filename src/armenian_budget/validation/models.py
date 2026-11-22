@@ -7,11 +7,14 @@ This module defines core data structures for validation results:
 
 from __future__ import annotations
 
+import datetime
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
 
 from armenian_budget.core.enums import SourceType
+
+from .identical import format_identical_versions
 
 
 @dataclass(frozen=True)
@@ -69,6 +72,10 @@ class ValidationReport:
         source_type: Type of data source being validated.
         csv_path: Path to the CSV file being validated.
         overall_path: Path to the corresponding overall.json file (if exists).
+        identical_data: Versions of the same year and source type whose CSV is
+            byte-identical to this one, itself included, as (label, published)
+            pairs; empty when there is none. Information only: it never
+            affects results or counts.
 
     Examples:
         >>> report = ValidationReport(
@@ -87,6 +94,9 @@ class ValidationReport:
     source_type: SourceType
     csv_path: Path
     overall_path: Optional[Path] = None
+    identical_data: list[tuple[str | None, datetime.date | None]] = field(
+        default_factory=list
+    )
 
     def has_errors(self, strict: bool = False) -> bool:
         """Check if validation failed.
@@ -208,6 +218,7 @@ class ValidationReport:
             f"**Source Type:** {self.source_type.value}",
             f"**File:** {self.csv_path.name}",
             f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            *self._identical_data_lines("**Identical data:**"),
             "",
             "## Summary",
             "",
@@ -348,7 +359,21 @@ class ValidationReport:
                 for r in error_checks
             ],
         }
+        if self.identical_data:
+            # Key only present when there is a group, so other reports keep their shape
+            report_data["identical_data"] = [
+                {
+                    "label": label,
+                    "published": published.isoformat() if published else None,
+                }
+                for label, published in self.identical_data
+            ]
         return json.dumps(report_data, indent=2, ensure_ascii=False)
+
+    def _identical_data_lines(self, prefix: str) -> list[str]:
+        if not self.identical_data:
+            return []
+        return [f"{prefix} {format_identical_versions(self.identical_data)}"]
 
     def to_console_summary(self) -> str:
         """Generate a concise summary for console output.
@@ -356,7 +381,7 @@ class ValidationReport:
         Returns:
             A string containing the overall summary and a brief list of failed checks.
         """
-        lines = [self.summary(), ""]
+        lines = [self.summary(), *self._identical_data_lines("  Identical data:"), ""]
 
         failed_checks = self.get_failed_checks()
 

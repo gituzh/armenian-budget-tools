@@ -12,6 +12,7 @@ from typing import Any
 from urllib.parse import unquote
 from zipfile import ZipFile
 
+from armenian_budget.core.utils import dataset_stem, year_dir_name
 from armenian_budget.sources.registry import SourceRegistry
 
 
@@ -55,28 +56,31 @@ def find_budget_law_explanatory_note_docx(
     extracted_root: Path,
     sources_config: Path,
     year: int,
+    label: str | None = None,
 ) -> Path:
-    """Find the budget-law explanatory note DOCX configured for a year."""
+    """Find the budget-law explanatory note DOCX configured for a year.
 
-    expected_filename = _configured_explanatory_note_filename(sources_config, year)
+    Each version reads only the file registered in its own entry, from its own
+    folder. A labelled version never falls back to another file.
+    """
+
+    expected_filename = _configured_explanatory_note_filename(
+        sources_config, year, label
+    )
+    year_roots = [
+        original_root / "budget_laws" / year_dir_name(year, label),
+        extracted_root / "budget_laws" / year_dir_name(year, label),
+    ]
     candidates: list[Path] = []
     if expected_filename:
-        candidates.extend(
-            [
-                original_root / "budget_laws" / str(year) / expected_filename,
-                extracted_root / "budget_laws" / str(year) / expected_filename,
-            ]
-        )
+        candidates.extend(year_root / expected_filename for year_root in year_roots)
     for candidate in candidates:
         if candidate.exists() and candidate.suffix.lower() == ".docx":
             return candidate
 
-    year_roots = [
-        original_root / "budget_laws" / str(year),
-        extracted_root / "budget_laws" / str(year),
-    ]
     fallback_candidates: list[Path] = []
-    for year_root in year_roots:
+    # Search by file name only for the unlabelled version, as before labels
+    for year_root in [] if label else year_roots:
         if not year_root.exists():
             continue
         fallback_candidates.extend(
@@ -89,11 +93,29 @@ def find_budget_law_explanatory_note_docx(
         fallback_candidates.sort(key=lambda path: (len(path.parts), str(path)))
         return fallback_candidates[0]
 
+    version = f"{year} {label}" if label else str(year)
     if expected_filename and Path(expected_filename).suffix.lower() != ".docx":
         raise ValueError(
-            f"budget-law explanatory note is not DOCX for {year}: {expected_filename}"
+            f"budget-law explanatory note is not DOCX for {version}: {expected_filename}"
         )
-    raise FileNotFoundError(f"budget-law explanatory note DOCX not found for {year}")
+    raise FileNotFoundError(f"budget-law explanatory note DOCX not found for {version}")
+
+
+def budget_law_note_labels(sources_config: Path, year: int) -> dict[str, bool]:
+    """Labelled budget-law versions of a year: whether each has a budget message.
+
+    Returns an empty mapping when the sources file does not exist.
+    """
+    if not sources_config.exists():
+        return {}
+    labels: dict[str, bool] = {}
+    for source in SourceRegistry(sources_config).filter(
+        year=year, source_types=["budget_law"]
+    ):
+        if source.label:
+            has_note = "explanatory_note" in source.name
+            labels[source.label] = labels.get(source.label, False) or has_note
+    return labels
 
 
 def extract_gdp_snapshot(
@@ -103,16 +125,24 @@ def extract_gdp_snapshot(
     original_root: Path,
     extracted_root: Path,
     sources_config: Path,
+    label: str | None = None,
 ) -> dict[str, Any]:
-    """Extract one GDP indicator JSON snapshot."""
+    """Extract one GDP indicator JSON snapshot.
+
+    ``label`` selects a labelled budget-law version; its snapshot records the
+    label. An unlabelled snapshot has no ``label`` key.
+    """
 
     normalized_source_type = source_type.upper()
+    if label and normalized_source_type != "BUDGET_LAW":
+        raise ValueError(f"labels are not supported for GDP source type: {source_type}")
     if normalized_source_type == "BUDGET_LAW":
         docx_path = find_budget_law_explanatory_note_docx(
             original_root,
             extracted_root,
             sources_config,
             year,
+            label,
         )
         table = _find_budget_law_gdp_table(_read_docx_table_blocks(docx_path))
         if table is None:
@@ -138,6 +168,7 @@ def extract_gdp_snapshot(
     return {
         "year": year,
         "source_type": normalized_source_type,
+        **({"label": label} if label else {}),
         "metric_set": "GDP",
         "source_file": docx_path.name,
         "tables": [
@@ -158,6 +189,7 @@ def write_gdp_snapshot(snapshot: dict[str, Any], processed_root: Path) -> Path:
         processed_root,
         int(snapshot["year"]),
         str(snapshot["source_type"]),
+        snapshot.get("label"),
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as json_file:
@@ -166,8 +198,10 @@ def write_gdp_snapshot(snapshot: dict[str, Any], processed_root: Path) -> Path:
     return output_path
 
 
-def gdp_snapshot_path(processed_root: Path, year: int, source_type: str) -> Path:
-    return processed_root / f"{year}_{source_type.upper()}_GDP.json"
+def gdp_snapshot_path(
+    processed_root: Path, year: int, source_type: str, label: str | None = None
+) -> Path:
+    return processed_root / f"{dataset_stem(year, source_type.upper(), label)}_GDP.json"
 
 
 def load_gdp_snapshots(
@@ -175,7 +209,11 @@ def load_gdp_snapshots(
     years: list[int] | None = None,
     source_type: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Load GDP JSON snapshots from processed outputs."""
+    """Load GDP JSON snapshots from processed outputs.
+
+    Only unlabelled snapshots are returned: the GDP report shows adopted laws,
+    not labelled drafts.
+    """
 
     years_set = set(years) if years else None
     source_type_upper = source_type.upper() if source_type else None
@@ -185,6 +223,8 @@ def load_gdp_snapshots(
             with path.open("r", encoding="utf-8") as json_file:
                 snapshot = json.load(json_file)
         except (OSError, ValueError, TypeError):
+            continue
+        if not isinstance(snapshot, dict) or snapshot.get("label"):
             continue
         if years_set is not None and int(snapshot.get("year", 0)) not in years_set:
             continue
@@ -393,10 +433,11 @@ def _spending_gdp_records(rows: list[list[str]]) -> list[dict[str, Any]]:
 def _configured_explanatory_note_filename(
     sources_config: Path,
     year: int,
+    label: str | None = None,
 ) -> str | None:
     registry = SourceRegistry(sources_config)
     for source in registry.filter(year=year, source_types=["budget_law"]):
-        if "explanatory_note" not in source.name:
+        if source.label != label or "explanatory_note" not in source.name:
             continue
         if source.filename:
             return Path(source.filename).name

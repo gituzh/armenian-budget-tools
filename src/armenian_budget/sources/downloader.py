@@ -11,6 +11,8 @@ from urllib.parse import unquote
 
 import httpx
 
+from armenian_budget.core.utils import year_dir_name
+
 from .registry import SourceDefinition
 
 
@@ -85,7 +87,7 @@ def _quarter_dir(source_type: str) -> str:
 
 
 def _category_and_subdir(
-    original_root: Path, year: int, source_type: str
+    original_root: Path, year: int, source_type: str, label: str | None = None
 ) -> tuple[Path, Optional[str]]:
     """Resolve target subdirectory under the given original_root.
 
@@ -93,16 +95,19 @@ def _category_and_subdir(
     Budget law → {original_root}/budget_laws/{year}
     MTEP → {original_root}/mtep/{year}
     Others → {original_root}/other/{year}
+
+    A labelled version uses the year folder {year}_{LABEL} instead.
     """
     st = (source_type or "").lower()
+    year_dir = year_dir_name(year, label)
     if st.startswith("spending_"):
         q = _quarter_dir(st)
-        return original_root / "spending_reports" / str(year) / q, q
+        return original_root / "spending_reports" / year_dir / q, q
     if st == "budget_law":
-        return original_root / "budget_laws" / str(year), None
+        return original_root / "budget_laws" / year_dir, None
     if st == "mtep":
-        return original_root / "mtep" / str(year), None
-    return original_root / "other" / str(year), None
+        return original_root / "mtep" / year_dir, None
+    return original_root / "other" / year_dir, None
 
 
 def download_sources(
@@ -161,7 +166,9 @@ def download_sources(
                 )
                 continue
 
-            subdir, quarter = _category_and_subdir(original_root, s.year, s.source_type)
+            subdir, quarter = _category_and_subdir(
+                original_root, s.year, s.source_type, getattr(s, "label", None)
+            )
             subdir.mkdir(parents=True, exist_ok=True)
             # If override format is provided, force the extension; otherwise infer from URL
             file_name = (

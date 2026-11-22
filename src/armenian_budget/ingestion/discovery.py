@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Optional, Pattern, Tuple
 import yaml
 
 # Import parser implementations from the new package location
+from armenian_budget.core.utils import year_dir_name
 from armenian_budget.ingestion.parsers import (
     flatten_budget_excel_2019_2024,
     flatten_budget_excel_2025,
@@ -96,14 +97,17 @@ def _compile_pattern_for(
         return None, matched_by
 
 
-def _iter_search_roots(extracted_root: Path, year: int, source_type: str) -> List[Path]:
+def _iter_search_roots(
+    extracted_root: Path, year: int, source_type: str, label: str | None = None
+) -> List[Path]:
     st = (source_type or "").lower()
+    year_dir = year_dir_name(year, label)
     if st == "budget_law":
-        return [extracted_root / "budget_laws" / str(year)]
+        return [extracted_root / "budget_laws" / year_dir]
     if st == "mtep":
-        return [extracted_root / "mtep" / str(year)]
+        return [extracted_root / "mtep" / year_dir]
     if st.startswith("spending_"):
-        base = extracted_root / "spending_reports" / str(year)
+        base = extracted_root / "spending_reports" / year_dir
         q = _quarter_label_for_source_type(st)
         if q:
             return [base / q]
@@ -300,6 +304,7 @@ def discover_best_file(
     parsers_config_path: Path,
     force_discover: bool = False,
     deep_validate: bool = False,
+    label: str | None = None,
 ) -> Path:
     """Discover the best-matching source workbook and cache the result.
 
@@ -312,6 +317,9 @@ def discover_best_file(
         patterns.
       force_discover: If True, bypass cache validity and re-discover.
       deep_validate: If True, probe-parse candidates to validate content.
+      label: Source label of the version to discover; None for the
+        unlabelled one. Each version is searched only in its own year
+        folder (``{year}_{LABEL}``) and cached under its own index key.
 
     Returns:
       Absolute path to the selected workbook.
@@ -322,6 +330,8 @@ def discover_best_file(
     logger = logging.getLogger(__name__)
     index = _load_index(extracted_root)
     key = f"{year}/{source_type.lower()}"
+    if label:
+        key = f"{key}/{label}"
     existing = index.get(key)
     if (
         existing
@@ -339,14 +349,15 @@ def discover_best_file(
     pattern, matched_by = _compile_pattern_for(
         cfg=cfg, source_type=source_type, year=int(year), quarter=quarter
     )
-    roots = _iter_search_roots(extracted_root, int(year), source_type)
+    roots = _iter_search_roots(extracted_root, int(year), source_type, label)
     candidates = _list_candidates(roots, pattern)
     if not candidates:
         # As a fallback, search without the regex but still restrict to .xls*
         candidates = _list_candidates(roots, None)
     if not candidates:
         raise FileNotFoundError(
-            f"No .xls/.xlsx candidates found for {year} {source_type} under {roots}"
+            f"No .xls/.xlsx candidates found for {year} {source_type}"
+            f"{' ' + label if label else ''} under {roots}"
         )
 
     selected: Optional[Path] = None

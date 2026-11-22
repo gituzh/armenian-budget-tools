@@ -3,7 +3,7 @@
     "source_type": "BUDGET_LAW",
     "csv_path": "2026_BUDGET_LAW.csv",
     "overall_path": "2026_BUDGET_LAW_overall.json",
-    "generated_at": "2026-11-22T01:42:46.533709"
+    "generated_at": "2026-11-22T19:07:43.838556"
   },
   "summary": {
     "total_rules": 22,
@@ -160,5 +160,19 @@
       ]
     }
   ],
-  "error_checks": []
+  "error_checks": [],
+  "identical_data": [
+    {
+      "label": "DRAFT2",
+      "published": "2025-11-27"
+    },
+    {
+      "label": "PARLIAMENT2",
+      "published": "2025-12-01"
+    },
+    {
+      "label": null,
+      "published": "2025-12-03"
+    }
+  ]
 }
