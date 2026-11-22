@@ -568,5 +568,55 @@
     "size": 148959,
     "checksum": "sha256:d0b93f35e2a0cafac991bb70089a41fd10ef5a53b865f72159e2ec6722782132",
     "discovered_at": "2026-11-22T15:07:42Z"
+  },
+  "2020/budget_law/EDRAFT": {
+    "key": "2020/budget_law/EDRAFT",
+    "path": "budget_laws/2020_EDRAFT/15701988212706/2.Havelvacner_Budget/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xlsx",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1569930662.0,
+    "size": 199601,
+    "checksum": "sha256:9ac4e629c7212f060536441b191361f36e9abe733d240978687eeb49920fbf0d",
+    "discovered_at": "2026-11-22T16:34:47Z"
+  },
+  "2021/budget_law/EDRAFT": {
+    "key": "2021/budget_law/EDRAFT",
+    "path": "budget_laws/2021_EDRAFT/16016615633382/1.2021_Orenqi havelvacner/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների.xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1601229901.0,
+    "size": 1274277,
+    "checksum": "sha256:fc49b25c959f40f7e7538e1b87b04f12f3a15a87871037ff5154ca2d8b1c6caa",
+    "discovered_at": "2026-11-22T16:34:48Z"
+  },
+  "2022/budget_law/EDRAFT": {
+    "key": "2022/budget_law/EDRAFT",
+    "path": "budget_laws/2022_EDRAFT/16334196692535/1.1.ORENQI_HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1633019603.7224545,
+    "size": 849408,
+    "checksum": "sha256:c0e3bbf8b317e6912c972e59b5494cadb739f002495683718cbb13c96afb5687",
+    "discovered_at": "2026-11-22T16:34:49Z"
+  },
+  "2023/budget_law/EDRAFT": {
+    "key": "2023/budget_law/EDRAFT",
+    "path": "budget_laws/2023_EDRAFT/16649643952337/3.ORENQI HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1664526771.1985834,
+    "size": 875520,
+    "checksum": "sha256:2cf39e01fade729a05018efb3837799d55e9f1f123f60edae27e22b2423dcd60",
+    "discovered_at": "2026-11-22T16:34:50Z"
+  },
+  "2024/budget_law/EDRAFT": {
+    "key": "2024/budget_law/EDRAFT",
+    "path": "budget_laws/2024_EDRAFT/16964278422171/16964278422171/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1696001064.5653832,
+    "size": 908800,
+    "checksum": "sha256:bac8b166b39869ed93820669be5b188fb89306f24a407a4d9cd11a6977a1a109",
+    "discovered_at": "2026-11-22T16:34:51Z"
   }
 }

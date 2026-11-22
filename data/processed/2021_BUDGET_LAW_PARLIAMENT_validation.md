@@ -2,7 +2,8 @@
 
 **Source Type:** BUDGET_LAW
 **File:** 2021_BUDGET_LAW_PARLIAMENT.csv
-**Generated:** 2026-11-22 19:07:43
+**Generated:** 2026-11-22 20:34:52
+**Identical data:** PARLIAMENT (2020-10-01), EDRAFT (2020-10-02)
 
 ## Summary
 

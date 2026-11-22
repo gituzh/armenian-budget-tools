@@ -48,6 +48,18 @@ checksums:
     (2).docx
   checksum: 6c68a5652b7565e5734999a73d0dbf23c77b137db389a57e1af2925c35ebb1be
   checksum_updated_at: '2026-05-10T18:44:31.682436+00:00'
+- name: 2020_budget_law_edraft_attachments
+  year: 2020
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/15701988212706.rar
+  checksum: c09a5e7735d705760c0dc27772c5c7525b9d16fa54413f2209d755f61e62df0f
+  checksum_updated_at: '2026-11-22T16:34:47.220844+00:00'
+- name: 2020_budget_law_edraft_explanatory_note
+  year: 2020
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/15701988212718.docx
+  checksum: ec00ccc829fcd41c1bf27de35dc133bf748b6b7e35ab7c59391462e4ded5e7ce
+  checksum_updated_at: '2026-11-22T16:34:47.222478+00:00'
 - name: 2020_budget_law_parliament2_attachments
   year: 2020
   source_type: budget_law
@@ -90,6 +102,18 @@ checksums:
   url: https://minfin.am/website/images/website/byuje ev krknaki harkum/2021_Uxerdz.docx
   checksum: 3d4386c6c58809a06553b3bc3c534dad4227d8c0ca5c5271f965a312ea38be8b
   checksum_updated_at: '2026-05-10T18:44:31.686713+00:00'
+- name: 2021_budget_law_edraft_attachments
+  year: 2021
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/16016615633382.rar
+  checksum: 50b7b5ba5907cc90ac54d509c6d4654af3b2c699b4b9adb8100a148238e5c031
+  checksum_updated_at: '2026-11-22T16:34:47.222741+00:00'
+- name: 2021_budget_law_edraft_explanatory_note
+  year: 2021
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/16016615633395.docx
+  checksum: dcb82e73b72a81046cd395dd3bb91c5c2db6de200321235407497a72eb798900
+  checksum_updated_at: '2026-11-22T16:34:47.225221+00:00'
 - name: 2021_budget_law_parliament_attachments
   year: 2021
   source_type: budget_law
@@ -138,6 +162,18 @@ checksums:
   url: https://minfin.am/website/images/website/documents/copy_1_2.Uxerdz_bacatragir.docx
   checksum: b074e49780f3c2324a968a458d862e2ad2202513c01b68e2afcc5a67856f5e3c
   checksum_updated_at: '2026-05-10T18:44:31.690865+00:00'
+- name: 2022_budget_law_edraft_attachments
+  year: 2022
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/16334196692535.rar
+  checksum: 0798d215ddd9830f30d9122e08c476f6bd03f2a106b95085c5f96f62be8250b5
+  checksum_updated_at: '2026-11-22T16:34:47.225512+00:00'
+- name: 2022_budget_law_edraft_explanatory_note
+  year: 2022
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/16334196692545.docx
+  checksum: 08276aa0d42bf60caf99de47655ae3b774e5e1c3439cbe4d99d2cf0273660202
+  checksum_updated_at: '2026-11-22T16:34:47.228362+00:00'
 - name: 2022_budget_law_parliament_attachments
   year: 2022
   source_type: budget_law
@@ -186,6 +222,18 @@ checksums:
   url: https://minfin.am/website/images/website/2.Uxerdz_bacatragir (1).docx
   checksum: 0c2b50648f3196ebd6c8c4824c2da2b8cdbd4f0100b762d5bcb1b364c953c443
   checksum_updated_at: '2026-05-10T18:44:31.695886+00:00'
+- name: 2023_budget_law_edraft_attachments
+  year: 2023
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_doc/1/16649643952337.rar
+  checksum: 1215044039416558fee6eb723ff6bb76f44e8d7cc8e08d6dd38cde38c473d1c9
+  checksum_updated_at: '2026-11-22T16:34:47.228694+00:00'
+- name: 2023_budget_law_edraft_explanatory_note
+  year: 2023
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/16649632970717.docx
+  checksum: b67755cc0e300460472cafc83e15fa4f00552b686299e9340e7ba8824c80ce22
+  checksum_updated_at: '2026-11-22T16:34:47.232794+00:00'
 - name: 2023_budget_law_parliament_attachments
   year: 2023
   source_type: budget_law
@@ -235,6 +283,18 @@ checksums:
   url: https://minfin.am/website/images/website/2.Uxerdz_bacatragir_2024.docx
   checksum: 991f4776cec43a4582df3097d3f5f1493562445264c4dbcc760c761126c39772
   checksum_updated_at: '2026-05-10T18:44:31.709054+00:00'
+- name: 2024_budget_law_edraft_attachments
+  year: 2024
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/16964278422171.rar
+  checksum: a04cdd5bb531e4ad7384969698aa7af0b97d8d1ed3144b78f161c996f3c94bdf
+  checksum_updated_at: '2026-11-22T16:34:47.233105+00:00'
+- name: 2024_budget_law_edraft_explanatory_note
+  year: 2024
+  source_type: budget_law
+  url: https://www.e-draft.am/files/project_file/1/16964280276406.docx
+  checksum: b9386b1dcb0c67c8fe78c53d6374d950137dd19b9836ef49a2741c50c48926f6
+  checksum_updated_at: '2026-11-22T16:34:47.235476+00:00'
 - name: 2024_mtep
   year: 2024
   source_type: mtep

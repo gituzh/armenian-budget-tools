@@ -57,6 +57,20 @@ sources:
         url: "https://minfin.am/website/images/website/byuje ev krknaki harkum/3.1.2020_Uxerdz (2).docx"
         file_format: "docx"
 
+  - name: "2020_budget_law_edraft"
+    year: 2020
+    source_type: "budget_law"
+    label: "EDRAFT"
+    published: 2019-10-04
+    description: "2020 budget law draft, public consultation copy (e-draft.am project 1980)"
+    files:
+      - name: "2020_budget_law_edraft_attachments"
+        url: "https://www.e-draft.am/files/project_file/1/15701988212706.rar"
+        file_format: "rar"
+      - name: "2020_budget_law_edraft_explanatory_note"
+        url: "https://www.e-draft.am/files/project_file/1/15701988212718.docx"
+        file_format: "docx"
+
   - name: "2020_budget_law_parliament2"
     year: 2020
     source_type: "budget_law"
@@ -110,6 +124,20 @@ sources:
         file_format: "rar"
       - name: "2021_budget_law_explanatory_note"
         url: "https://minfin.am/website/images/website/byuje ev krknaki harkum/2021_Uxerdz.docx"
+        file_format: "docx"
+
+  - name: "2021_budget_law_edraft"
+    year: 2021
+    source_type: "budget_law"
+    label: "EDRAFT"
+    published: 2020-10-02
+    description: "2021 budget law draft, public consultation copy (e-draft.am project 2786)"
+    files:
+      - name: "2021_budget_law_edraft_attachments"
+        url: "https://www.e-draft.am/files/project_doc/1/16016615633382.rar"
+        file_format: "rar"
+      - name: "2021_budget_law_edraft_explanatory_note"
+        url: "https://www.e-draft.am/files/project_doc/1/16016615633395.docx"
         file_format: "docx"
 
   - name: "2021_budget_law_parliament"
@@ -174,6 +202,20 @@ sources:
         file_format: "rar"
       - name: "2022_budget_law_explanatory_note"
         url: "https://minfin.am/website/images/website/documents/copy_1_2.Uxerdz_bacatragir.docx"
+        file_format: "docx"
+
+  - name: "2022_budget_law_edraft"
+    year: 2022
+    source_type: "budget_law"
+    label: "EDRAFT"
+    published: 2021-10-05
+    description: "2022 budget law draft, public consultation copy (e-draft.am project 3614)"
+    files:
+      - name: "2022_budget_law_edraft_attachments"
+        url: "https://www.e-draft.am/files/project_doc/1/16334196692535.rar"
+        file_format: "rar"
+      - name: "2022_budget_law_edraft_explanatory_note"
+        url: "https://www.e-draft.am/files/project_doc/1/16334196692545.docx"
         file_format: "docx"
 
   - name: "2022_budget_law_parliament"
@@ -242,6 +284,20 @@ sources:
         url: "https://minfin.am/website/images/website/2.Uxerdz_bacatragir (1).docx"
         file_format: "docx"
 
+  - name: "2023_budget_law_edraft"
+    year: 2023
+    source_type: "budget_law"
+    label: "EDRAFT"
+    published: 2022-10-05
+    description: "2023 budget law draft, public consultation copy (e-draft.am project 4797)"
+    files:
+      - name: "2023_budget_law_edraft_attachments"
+        url: "https://www.e-draft.am/files/project_doc/1/16649643952337.rar"
+        file_format: "rar"
+      - name: "2023_budget_law_edraft_explanatory_note"
+        url: "https://www.e-draft.am/files/project_file/1/16649632970717.docx"
+        file_format: "docx"
+
   - name: "2023_budget_law_parliament"
     year: 2023
     source_type: "budget_law"
@@ -305,6 +361,20 @@ sources:
         file_format: "rar"
       - name: "2024_budget_law_explanatory_note"
         url: "https://minfin.am/website/images/website/2.Uxerdz_bacatragir_2024.docx"
+        file_format: "docx"
+
+  - name: "2024_budget_law_edraft"
+    year: 2024
+    source_type: "budget_law"
+    label: "EDRAFT"
+    published: 2023-10-04
+    description: "2024 budget law draft, public consultation copy (e-draft.am project 6318)"
+    files:
+      - name: "2024_budget_law_edraft_attachments"
+        url: "https://www.e-draft.am/files/project_file/1/16964278422171.rar"
+        file_format: "rar"
+      - name: "2024_budget_law_edraft_explanatory_note"
+        url: "https://www.e-draft.am/files/project_file/1/16964280276406.docx"
         file_format: "docx"
 
   - name: "2024_mtep"

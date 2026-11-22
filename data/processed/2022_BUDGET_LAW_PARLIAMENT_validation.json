@@ -3,7 +3,7 @@
     "source_type": "BUDGET_LAW",
     "csv_path": "2022_BUDGET_LAW_PARLIAMENT.csv",
     "overall_path": "2022_BUDGET_LAW_PARLIAMENT_overall.json",
-    "generated_at": "2026-11-22T17:43:24.508374"
+    "generated_at": "2026-11-22T20:34:52.822275"
   },
   "summary": {
     "total_rules": 22,
@@ -158,5 +158,15 @@
       ]
     }
   ],
-  "error_checks": []
+  "error_checks": [],
+  "identical_data": [
+    {
+      "label": "PARLIAMENT",
+      "published": "2021-10-01"
+    },
+    {
+      "label": "EDRAFT",
+      "published": "2021-10-05"
+    }
+  ]
 }
