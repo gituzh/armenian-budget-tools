@@ -189,6 +189,17 @@ sources:
         url: "https://minfin.am/website/images/website/2.Uxerdz_bacatragir (1).docx"
         file_format: "docx"
 
+  - name: "2023_budget_law_parliament"
+    year: 2023
+    source_type: "budget_law"
+    label: "PARLIAMENT"
+    published: 2022-10-03
+    description: "2023 budget law draft as submitted to parliament (parliament.am draft K-382)"
+    files:
+      - name: "2023_budget_law_parliament_attachments"
+        url: "https://parliament.am/diskStorage/draft_docs8/K-382_ORENQI_HAVELVACNER.rar"
+        file_format: "rar"
+
   - name: "2023_spending_q1"
     year: 2023
     source_type: "spending_q1"

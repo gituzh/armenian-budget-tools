@@ -468,5 +468,15 @@
     "size": 908800,
     "checksum": "sha256:bac8b166b39869ed93820669be5b188fb89306f24a407a4d9cd11a6977a1a109",
     "discovered_at": "2026-11-22T13:42:53Z"
+  },
+  "2023/budget_law/PARLIAMENT": {
+    "key": "2023/budget_law/PARLIAMENT",
+    "path": "budget_laws/2023_PARLIAMENT/K-382_ORENQI_HAVELVACNER/3.ORENQI HAVELVACNER/2.Հավելված N1 աղյուսակ N2. Ըստ ծրագրերի և միջոցառումների..xls",
+    "matched_by": "global",
+    "pattern": "(?i)(?=.*ծրագ)(?=.*միջոց).*\\.(xlsx|xls)$",
+    "mtime": 1664526771.1985834,
+    "size": 875520,
+    "checksum": "sha256:2cf39e01fade729a05018efb3837799d55e9f1f123f60edae27e22b2423dcd60",
+    "discovered_at": "2026-11-22T13:43:22Z"
   }
 }
