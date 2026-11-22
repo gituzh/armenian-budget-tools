@@ -93,10 +93,25 @@ def test_other_years_and_source_types_are_not_compared(tmp_path):
     assert _find(tmp_path, "EDRAFT") == []
 
 
+def test_unregistered_version_is_not_compared(tmp_path):
+    _dataset(tmp_path, None)
+    _dataset(tmp_path, "EDRAFT")
+    _dataset(tmp_path, "STRAY")
+
+    assert _find(tmp_path, None, {"EDRAFT": D1}) == [("EDRAFT", D1), (None, None)]
+
+
 def test_group_order(tmp_path):
     for label in ["PARLIAMENT", "EDRAFT", "X", "Y", "B", None]:
         _dataset(tmp_path, label)
-    published = {"PARLIAMENT": D1, "EDRAFT": D1, "X": D0, "Y": None, None: D1}
+    published = {
+        "PARLIAMENT": D1,
+        "EDRAFT": D1,
+        "X": D0,
+        "Y": None,
+        "B": None,
+        None: D1,
+    }
 
     # oldest first, ties by label with the unlabelled version first, undated last
     assert _find(tmp_path, "EDRAFT", published) == [
@@ -131,7 +146,8 @@ def test_markdown_note_sits_in_header_block(tmp_path):
     _dataset(tmp_path, "EDRAFT")
     _dataset(tmp_path, "PARLIAMENT")
 
-    lines = _report(tmp_path, "EDRAFT", {"EDRAFT": D1}).to_markdown().splitlines()
+    published = {"EDRAFT": D1, "PARLIAMENT": None}
+    lines = _report(tmp_path, "EDRAFT", published).to_markdown().splitlines()
 
     note = lines.index("**Identical data:** EDRAFT (2025-10-01), PARLIAMENT")
     assert lines[note - 1].startswith("**Generated:**")
@@ -142,7 +158,7 @@ def test_note_does_not_affect_status(tmp_path):
     _dataset(tmp_path, None)
     alone = _report(tmp_path, None)
     _dataset(tmp_path, "DRAFT2")
-    with_note = _report(tmp_path, None)
+    with_note = _report(tmp_path, None, {"DRAFT2": None})
 
     assert with_note.identical_data
     assert with_note.results == alone.results
@@ -220,24 +236,24 @@ def test_note_ignores_label_selection(tmp_path):
 
 
 def test_validate_without_config_file(tmp_path):
+    # no registry: only the unlabelled version is known, so no other version is named
     processed = tmp_path / "processed"
     processed.mkdir()
-    _dataset(processed, "EDRAFT")
-    with_config = _validate(processed, _config(tmp_path), "--label", "EDRAFT")
+    _dataset(processed, None)
     _dataset(processed, "PARLIAMENT")
 
-    exit_code = _validate(processed, tmp_path / "missing.yaml", "--label", "EDRAFT")
+    _validate(processed, tmp_path / "missing.yaml")
 
-    assert exit_code == with_config
-    markdown = (processed / "2026_BUDGET_LAW_EDRAFT_validation.md").read_text("utf-8")
-    assert "**Identical data:** EDRAFT, PARLIAMENT" in markdown.splitlines()
+    markdown = (processed / "2026_BUDGET_LAW_validation.md").read_text("utf-8")
+    assert "Identical data" not in markdown
+    assert not (processed / "2026_BUDGET_LAW_PARLIAMENT_validation.md").exists()
 
 
 def test_validate_with_invalid_config_still_validates(tmp_path):
     # the config is only read for dates and registered labels: warn, do not stop
     processed = tmp_path / "processed"
     processed.mkdir()
-    _dataset(processed, "EDRAFT")
+    _dataset(processed, None)
     expected = _validate(processed, tmp_path / "missing.yaml")
     config = tmp_path / "sources.yaml"
     config.write_text(
@@ -247,4 +263,4 @@ def test_validate_with_invalid_config_still_validates(tmp_path):
     )
 
     assert _validate(processed, config) == expected
-    assert (processed / "2026_BUDGET_LAW_EDRAFT_validation.md").exists()
+    assert (processed / "2026_BUDGET_LAW_validation.md").exists()

@@ -2,6 +2,7 @@
 
 import io
 import json
+import logging
 import zipfile
 from pathlib import Path
 
@@ -12,9 +13,26 @@ from armenian_budget.core.utils import list_processed_labels
 from armenian_budget.interfaces.cli.main import _select_versions, main
 
 PARSERS_YAML = Path(__file__).resolve().parents[2] / "config" / "parsers.yaml"
-# Versions then come from the folders on disk only
+# A sources file that does not exist: only the unlabelled version is known
 NO_CONFIG = Path(__file__).resolve().parent / "no-such-sources.yaml"
 WORKBOOK_NAME = "ծրագրեր և միջոցառումներ.xlsx"
+CLI_LOGGER = "armenian_budget.interfaces.cli.main"
+
+
+@pytest.fixture
+def warnings_log():
+    """Warnings of the CLI module; main() resets root handlers, so not caplog."""
+    messages: list[str] = []
+
+    class _Collect(logging.Handler):
+        def emit(self, record):
+            if record.levelno >= logging.WARNING:
+                messages.append(record.getMessage())
+
+    handler = _Collect()
+    logging.getLogger(CLI_LOGGER).addHandler(handler)
+    yield messages
+    logging.getLogger(CLI_LOGGER).removeHandler(handler)
 
 
 def test_select_versions():
@@ -77,6 +95,7 @@ def tree(tmp_path, stub_parser):
     extracted = tmp_path / "extracted"
     _workbook(extracted / "budget_laws" / "2026")
     _workbook(extracted / "budget_laws" / "2026_EDRAFT")
+    _sources(tmp_path)
     processed = tmp_path / "processed"
     return extracted, processed
 
@@ -96,7 +115,9 @@ def _process(extracted, processed, *extra, report=None):
         str(PARSERS_YAML),
     ]
     if "--config" not in extra:
-        argv += ["--config", str(NO_CONFIG)]
+        # the registry the tree fixture wrote next to the roots, if any
+        config = extracted.parent / "sources.yaml"
+        argv += ["--config", str(config if config.exists() else NO_CONFIG)]
     if report is not None:
         argv += ["--report-json", str(report)]
     return main(argv + list(extra))
@@ -324,14 +345,54 @@ def test_process_reports_registered_version_missing_on_disk(tmp_path, stub_parse
     assert draft["reason"].startswith("discovery:")
 
 
-def test_process_covers_folders_that_are_not_registered(tree, tmp_path):
+def _ignoring(folder: Path, label: str, year: int = 2026) -> str:
+    return f"Ignoring {folder}: {label} is not registered for {year} in sources.yaml"
+
+
+def test_unregistered_label_folder_is_ignored(tree, warnings_log):
     extracted, processed = tree
-    _workbook(extracted / "budget_laws" / "2026_LOCAL")
+    parliament = extracted / "budget_laws" / "2026_PARLIAMENT"
+    _workbook(parliament)
 
-    assert _process(extracted, processed, "--config", str(_sources(tmp_path))) == 0
+    assert _process(extracted, processed) == 0
 
-    assert "2026_BUDGET_LAW_LOCAL.csv" in _names(processed)
-    assert "2026_BUDGET_LAW_EDRAFT.csv" in _names(processed)
+    assert _names(processed) == sorted(UNLABELLED_PAIR + EDRAFT_PAIR)
+    assert warnings_log.count(_ignoring(parliament.resolve(), "PARLIAMENT")) == 1
+
+
+def test_unregistered_folder_warned_once_for_shared_category(tree, warnings_log):
+    # four spending source types read the same folder: still one warning
+    extracted, processed = tree
+    stray = extracted / "spending_reports" / "2026_STRAY"
+    _workbook(stray)
+
+    main(
+        [
+            "process",
+            "--years",
+            "2026",
+            "--extracted-root",
+            str(extracted),
+            "--processed-root",
+            str(processed),
+            "--parsers-config",
+            str(PARSERS_YAML),
+            "--config",
+            str(extracted.parent / "sources.yaml"),
+        ]
+    )
+
+    assert warnings_log.count(_ignoring(stray.resolve(), "STRAY")) == 1
+
+
+def test_process_reads_only_its_own_categories(tree, warnings_log):
+    # the run reads budget laws only: it never looks in the spending folder
+    extracted, processed = tree
+    _workbook(extracted / "spending_reports" / "2026_STRAY")
+
+    _process(extracted, processed)
+
+    assert not [m for m in warnings_log if m.startswith("Ignoring")]
 
 
 def test_process_ignores_invalid_config(tree, tmp_path):
@@ -341,7 +402,40 @@ def test_process_ignores_invalid_config(tree, tmp_path):
 
     assert _process(extracted, processed, "--config", str(config)) == 0
 
-    assert _names(processed) == sorted(UNLABELLED_PAIR + EDRAFT_PAIR)
+    assert _names(processed) == UNLABELLED_PAIR
+
+
+def test_invalid_registry_runs_unlabelled_only(tree, tmp_path, warnings_log):
+    extracted, processed = tree
+    config = _sources(tmp_path, REGISTERED.replace('"EDRAFT"', '"bad-label"'))
+
+    assert _process(extracted, processed, "--config", str(config)) == 0
+
+    assert _names(processed) == UNLABELLED_PAIR
+    assert [m for m in warnings_log if "labelled versions are not run" in m]
+    extra = ["--config", str(config), "--label", "EDRAFT"]
+    assert _process(extracted, processed, *extra) == 1
+
+
+def test_missing_registry_runs_unlabelled_only(tree, warnings_log):
+    extracted, processed = tree
+
+    assert _process(extracted, processed, "--config", str(NO_CONFIG)) == 0
+
+    assert _names(processed) == UNLABELLED_PAIR
+    assert [m for m in warnings_log if "labelled versions are not run" in m]
+    extra = ["--config", str(NO_CONFIG), "--label", "EDRAFT"]
+    assert _process(extracted, processed, *extra) == 1
+
+
+def test_input_needs_no_registry(tree, tmp_path):
+    _extracted, processed = tree
+    workbook = _workbook(tmp_path / "elsewhere")
+
+    exit_code = _process_input(workbook, processed, "--config", "/nonexistent.yaml")
+
+    assert exit_code == 0
+    assert _names(processed) == UNLABELLED_PAIR
 
 
 def test_validate_reports_registered_version_missing(tmp_path, monkeypatch):
@@ -375,8 +469,9 @@ def test_validate_ignores_invalid_config(tmp_path):
 def test_validate_default_covers_labelled(tmp_path):
     _dataset(tmp_path, "2026_BUDGET_LAW")
     _dataset(tmp_path, "2026_BUDGET_LAW_EDRAFT", total=2000.0)
+    config = _sources(tmp_path)
 
-    _validate(tmp_path, "--report", "--report-json")
+    _validate(tmp_path, "--config", str(config), "--report", "--report-json")
 
     for stem in ["2026_BUDGET_LAW", "2026_BUDGET_LAW_EDRAFT"]:
         markdown = (tmp_path / f"{stem}_validation.md").read_text("utf-8")
@@ -389,11 +484,30 @@ def test_validate_default_covers_labelled(tmp_path):
 def test_validate_label_runs_one(tmp_path):
     _dataset(tmp_path, "2026_BUDGET_LAW")
     _dataset(tmp_path, "2026_BUDGET_LAW_EDRAFT")
+    config = _sources(tmp_path)
 
-    _validate(tmp_path, "--label", "edraft", "--report")
+    _validate(tmp_path, "--config", str(config), "--label", "edraft", "--report")
 
     assert (tmp_path / "2026_BUDGET_LAW_EDRAFT_validation.md").exists()
     assert not (tmp_path / "2026_BUDGET_LAW_validation.md").exists()
+
+
+def test_validate_ignores_unregistered_csv(tmp_path):
+    _dataset(tmp_path, "2026_BUDGET_LAW")
+    _dataset(tmp_path, "2026_BUDGET_LAW_EDRAFT")
+    _dataset(tmp_path, "2026_BUDGET_LAW_STRAYCOPY")  # same bytes, not registered
+    config = _sources(tmp_path)
+
+    exit_code = _validate(
+        tmp_path, "--config", str(config), "--report", "--report-json"
+    )
+
+    assert exit_code == 0
+    assert not list(tmp_path.glob("*STRAYCOPY_validation*"))
+    for suffix in ("md", "json"):
+        report = (tmp_path / f"2026_BUDGET_LAW_validation.{suffix}").read_text("utf-8")
+        assert "EDRAFT" in report
+        assert "STRAYCOPY" not in report
 
 
 def test_validate_unlabelled_runs_one(tmp_path):
@@ -569,34 +683,101 @@ sources:
     assert sorted(p.name for p in original.iterdir()) == ["budget_laws"]
 
 
-def test_extract_label_selects_one(tmp_path):
-    original = tmp_path / "original"
-    extracted = tmp_path / "extracted"
-    for folder, name in [("2026", "a"), ("2026_EDRAFT", "b")]:
+def _original_zips(original: Path, *folders: tuple[str, str]) -> None:
+    for folder, name in folders:
         target = original / "budget_laws" / folder
         target.mkdir(parents=True)
         with zipfile.ZipFile(target / f"{name}.zip", "w") as zf:
             zf.writestr(f"{name}.txt", "x")
+
+
+def test_extract_label_selects_one(tmp_path):
+    original = tmp_path / "original"
+    extracted = tmp_path / "extracted"
+    _original_zips(original, ("2026", "a"), ("2026_EDRAFT", "b"), ("2026_NOPE", "c"))
+    config = _sources(tmp_path)
     base = ["extract", "--years", "2026", "--source-type", "BUDGET_LAW"]
-    roots = ["--original-root", str(original), "--extracted-root", str(extracted)]
+    roots = [
+        "--original-root",
+        str(original),
+        "--extracted-root",
+        str(extracted),
+        "--config",
+        str(config),
+    ]
 
     assert main(base + roots + ["--label", "EDRAFT"]) == 0
     out = extracted / "budget_laws"
     assert (out / "2026_EDRAFT" / "b" / "b.txt").exists()
     assert not (out / "2026").exists()
 
-    # a label with no folder creates nothing
-    assert main(base + roots + ["--label", "NOPE"]) == 0
+    # a label that is not registered extracts nothing, even with a folder
+    assert main(base + roots + ["--label", "NOPE"]) == 1
     assert not (out / "2026_NOPE").exists()
 
     assert main(base + roots + ["--unlabelled"]) == 0
     assert (out / "2026" / "a" / "a.txt").exists()
 
 
+def test_extract_default_skips_unregistered_folder(tmp_path, warnings_log):
+    original = tmp_path / "original"
+    extracted = tmp_path / "extracted"
+    _original_zips(original, ("2026", "a"), ("2026_EDRAFT", "b"), ("2026_NOPE", "c"))
+    argv = [
+        "extract",
+        "--years",
+        "2026",
+        "--original-root",
+        str(original),
+        "--extracted-root",
+        str(extracted),
+        "--config",
+        str(_sources(tmp_path)),
+    ]
+
+    assert main(argv) == 0
+
+    out = extracted / "budget_laws"
+    assert sorted(p.name for p in out.iterdir()) == ["2026", "2026_EDRAFT"]
+    nope = (original / "budget_laws" / "2026_NOPE").resolve()
+    assert warnings_log.count(_ignoring(nope, "NOPE")) == 1
+
+
+def test_extract_no_empty_unlabelled_folder(tmp_path):
+    # 2027 has only a labelled version: no empty extracted/budget_laws/2027
+    original = tmp_path / "original"
+    extracted = tmp_path / "extracted"
+    _original_zips(original, ("2027_DRAFT", "d"))
+    config = _sources(
+        tmp_path,
+        REGISTERED.replace("2026", "2027").replace("EDRAFT", "DRAFT").replace(
+            "edraft", "draft"
+        ),
+    )
+
+    exit_code = main(
+        [
+            "extract",
+            "--original-root",
+            str(original),
+            "--extracted-root",
+            str(extracted),
+            "--config",
+            str(config),
+        ]
+    )
+
+    assert exit_code == 0
+    out = extracted / "budget_laws"
+    assert (out / "2027_DRAFT" / "d" / "d.txt").exists()
+    assert not (out / "2027").exists()
+
+
 def test_discover_covers_labelled_versions(tmp_path):
     extracted = tmp_path / "extracted"
     _workbook(extracted / "budget_laws" / "2026")
     _workbook(extracted / "budget_laws" / "2026_EDRAFT")
+    _workbook(extracted / "budget_laws" / "2026_NOPE")
     argv = [
         "discover",
         "--years",
@@ -607,6 +788,8 @@ def test_discover_covers_labelled_versions(tmp_path):
         str(extracted),
         "--parsers-config",
         str(PARSERS_YAML),
+        "--config",
+        str(_sources(tmp_path)),
     ]
 
     assert main(argv) == 0
@@ -614,3 +797,79 @@ def test_discover_covers_labelled_versions(tmp_path):
     assert set(index) == {"2026/budget_law", "2026/budget_law/EDRAFT"}
 
     assert main(argv + ["--label", "NOPE"]) == 1
+
+
+def test_discover_warns_for_unregistered_folder(tmp_path, warnings_log):
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2026")
+    nope = _workbook(extracted / "budget_laws" / "2026_NOPE").parent
+
+    main(
+        [
+            "discover",
+            "--years",
+            "2026",
+            "--source-type",
+            "BUDGET_LAW",
+            "--extracted-root",
+            str(extracted),
+            "--parsers-config",
+            str(PARSERS_YAML),
+            "--config",
+            str(_sources(tmp_path)),
+        ]
+    )
+
+    assert warnings_log.count(_ignoring(nope.resolve(), "NOPE")) == 1
+
+
+@pytest.mark.parametrize(
+    "command", ["download", "extract", "discover", "process", "validate", "gdp-extract"]
+)
+def test_label_not_registered_fails_everywhere(command, tmp_path, stub_parser):
+    # a folder or CSV with the label exists, but sources.yaml has no entry
+    config = _sources(tmp_path)
+    original = tmp_path / "original"
+    extracted = tmp_path / "extracted"
+    processed = tmp_path / "processed"
+    _original_zips(original, ("2026_NOPE", "c"))
+    _workbook(extracted / "budget_laws" / "2026_NOPE")
+    _dataset(processed, "2026_BUDGET_LAW_NOPE")
+    argv = {
+        "download": ["--original-root", str(original)],
+        "extract": [
+            "--original-root",
+            str(original),
+            "--extracted-root",
+            str(extracted),
+        ],
+        "discover": [
+            "--extracted-root",
+            str(extracted),
+            "--parsers-config",
+            str(PARSERS_YAML),
+        ],
+        "process": [
+            "--extracted-root",
+            str(extracted),
+            "--processed-root",
+            str(processed),
+            "--parsers-config",
+            str(PARSERS_YAML),
+        ],
+        "validate": ["--processed-root", str(processed)],
+        "gdp-extract": [
+            "--original-root",
+            str(original),
+            "--extracted-root",
+            str(extracted),
+            "--processed-root",
+            str(processed),
+        ],
+    }[command]
+
+    exit_code = main(
+        [command, "--years", "2026", "--label", "NOPE", "--config", str(config)] + argv
+    )
+
+    assert exit_code != 0

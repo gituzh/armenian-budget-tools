@@ -30,9 +30,10 @@ def find_identical_versions(
 ) -> list[Version]:
     """List the versions whose CSV is byte-identical to ``label``'s CSV.
 
-    Every version of the year and source type found in ``processed_root`` is
-    compared, whatever a command run selected. The result includes ``label``
-    itself and is empty when no other version matches.
+    The unlabelled version and every labelled version registered in
+    sources.yaml (the keys of ``published``) are compared, whatever a command
+    run selected; other CSVs in ``processed_root`` are ignored. The result
+    includes ``label`` itself and is empty when no other version matches.
 
     Order: by ``published`` date, oldest first; ties by label with the
     unlabelled version (None) first; versions without a date come last.
@@ -43,6 +44,8 @@ def find_identical_versions(
     own_checksum = _sha256(own_csv)
     group: list[Version] = []
     for other in list_processed_labels(processed_root, year, source_type.value):
+        if other is not None and other != label and other not in published:
+            continue
         csv_path, _ = get_processed_paths(year, source_type, processed_root, other)
         if other == label or _sha256(csv_path) == own_checksum:
             group.append((other, published.get(other)))

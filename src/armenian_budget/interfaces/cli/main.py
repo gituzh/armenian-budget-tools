@@ -1,6 +1,7 @@
 import argparse
 import logging
 import re
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Optional, List
 import importlib
@@ -10,7 +11,6 @@ import yaml
 from armenian_budget.core.enums import SourceType
 from armenian_budget.core.utils import (
     dataset_stem,
-    list_processed_labels,
     list_version_dirs,
     validate_label,
     year_dir_name,
@@ -36,13 +36,14 @@ _CATEGORY_DIRS = {
 
 
 def _select_versions(
-    available: list[str | None], label: str | None, unlabelled: bool
+    available: Sequence[str | None], label: str | None, unlabelled: bool
 ) -> list[str | None]:
     """Versions a command works on; None is the unlabelled version.
 
-    --label selects that version whether or not it exists, so a missing one is
-    reported instead of skipped. Without flags the unlabelled version is always
-    attempted, followed by every labelled version that exists.
+    ``available`` are the labels registered in sources.yaml. --label selects
+    that version whether or not it is registered, so the caller can report it
+    as missing instead of skipping it. Without flags the unlabelled version is
+    always attempted, followed by every registered labelled version.
     """
     if label:
         return [label]
@@ -52,35 +53,81 @@ def _select_versions(
 
 
 def _load_source_registry(config_arg: str | None):
-    """Load sources.yaml for commands that only read labels and dates from it.
+    """Load sources.yaml, the list of labelled versions, for a command.
 
-    Returns None when the file is missing or cannot be loaded: those commands
-    worked without it before labels existed, so they go on with what is on disk.
+    Returns None when the file is missing or cannot be loaded, with one warning:
+    unlabelled work went on without it before labels existed, so it goes on, and
+    no labelled version is then run.
     """
     sources_config = resolve_path_with_default(config_arg, "config/sources.yaml")
     if not sources_config.exists():
+        logger.warning(
+            "Sources config %s not found: labelled versions are not run", sources_config
+        )
         return None
     registry_mod = importlib.import_module("armenian_budget.sources.registry")
     try:
         return registry_mod.SourceRegistry(sources_config)
     except (yaml.YAMLError, ValueError, TypeError) as e:
-        logger.warning("Ignoring sources config %s: %s", sources_config, e)
+        logger.warning(
+            "Ignoring sources config %s: %s; labelled versions are not run",
+            sources_config,
+            e,
+        )
         return None
 
 
-def _known_versions(
-    on_disk: list[str | None], source_registry, year: int, source_type_name: str
-) -> list[str | None]:
-    """Versions found on disk plus the labelled versions registered in sources.yaml.
+def _registered_labels(source_registry, year: int, *source_types: str) -> list[str]:
+    """Labels registered in sources.yaml for a year and source types, sorted."""
+    if source_registry is None:
+        return []
+    return sorted(
+        {
+            label
+            for source_type in source_types
+            for label in source_registry.published_by_label(year, source_type.lower())
+            if label is not None
+        }
+    )
 
-    A registered version with nothing on disk is then attempted and reported as
-    failed or missing, instead of being skipped without a word.
+
+def _category_types(category: str) -> list[str]:
+    """Source types whose files live in a category folder."""
+    return [st for st, name in _CATEGORY_DIRS.items() if name == category]
+
+
+def _warn_unregistered_folders(
+    source_registry,
+    root: Path,
+    category: str,
+    year: int,
+    warned: set[Path],
+) -> None:
+    """Warn, once per folder, about labelled folders of a category not in sources.yaml.
+
+    ``root`` is data/original or data/extracted. Such a folder is ignored.
+    Without a registry every labelled version is already reported as not run,
+    so there is nothing to add.
     """
-    labels = {label for label in on_disk if label is not None}
-    if source_registry is not None:
-        registered = source_registry.published_by_label(year, source_type_name.lower())
-        labels.update(label for label in registered if label is not None)
-    return [label for label in on_disk if label is None] + sorted(labels)
+    if source_registry is None:
+        return
+    category_root = root / category
+    registered = _registered_labels(source_registry, year, *_category_types(category))
+    for label in list_version_dirs(category_root, year):
+        folder = category_root / year_dir_name(year, label)
+        if label is None or label in registered or folder in warned:
+            continue
+        warned.add(folder)
+        logger.warning(
+            "Ignoring %s: %s is not registered for %s in sources.yaml",
+            folder,
+            label,
+            year,
+        )
+
+
+def _not_registered(label: str, year: int) -> str:
+    return f"{label} is not registered for {year} in sources.yaml"
 
 
 def _label_arg(value: str) -> str:
@@ -333,10 +380,11 @@ def cmd_process(args: argparse.Namespace) -> int:
 
     label_arg = getattr(args, "label", None)
     unlabelled_arg = bool(getattr(args, "unlabelled", False))
-    # Registered labels, so that a registered version missing on disk is reported
+    # The labelled versions of a year are the ones registered in sources.yaml
     source_registry = (
         None if input_provided else _load_source_registry(getattr(args, "config", None))
     )
+    warned: set[Path] = set()
 
     total_successes = 0
     # Collect per year/source results for end-of-run report
@@ -349,15 +397,15 @@ def cmd_process(args: argparse.Namespace) -> int:
                 # An explicit input is one version: the labelled one if asked
                 versions = [label_arg]
             else:
+                _warn_unregistered_folders(
+                    source_registry,
+                    extracted_root,
+                    _CATEGORY_DIRS[st_name],
+                    year,
+                    warned,
+                )
                 versions = _select_versions(
-                    _known_versions(
-                        list_version_dirs(
-                            extracted_root / _CATEGORY_DIRS[st_name], year
-                        ),
-                        source_registry,
-                        year,
-                        st_name,
-                    ),
+                    _registered_labels(source_registry, year, st_name),
                     label_arg,
                     unlabelled_arg,
                 )
@@ -389,6 +437,15 @@ def cmd_process(args: argparse.Namespace) -> int:
                     )
                     continue
             else:
+                if label and label not in _registered_labels(
+                    source_registry, year, st_name
+                ):
+                    msg = _not_registered(label, year)
+                    logger.warning("%s/%s: %s", year, st_display, msg)
+                    report_entries.append(
+                        _report_entry(year, st_name, "FAIL", msg, label)
+                    )
+                    continue
                 try:
                     input_path = discover_best_file(
                         extracted_root=extracted_root,
@@ -612,13 +669,9 @@ def cmd_validate(args: argparse.Namespace) -> int:
                 )
                 continue
 
+            registered = _registered_labels(source_registry, year, st_name)
             versions = _select_versions(
-                _known_versions(
-                    list_processed_labels(processed_root, year, st_name),
-                    source_registry,
-                    year,
-                    st_name,
-                ),
+                registered,
                 label_arg,
                 unlabelled_arg,
             )
@@ -628,6 +681,23 @@ def cmd_validate(args: argparse.Namespace) -> int:
                 else {}
             )
             for label in versions:
+                if label and label not in registered:
+                    reason = _not_registered(label, year)
+                    logger.warning(
+                        "%s/%s: %s", year, _with_label(st_name, label), reason
+                    )
+                    validation_results.append(
+                        {
+                            "year": year,
+                            "source_type": st_name,
+                            "status": "MISSING",
+                            "errors": 0,
+                            "warnings": 0,
+                            "reason": reason,
+                            "label": label,
+                        }
+                    )
+                    continue
                 result = _validate_version(
                     registry, args, year, source_type, processed_root, label, published
                 )
@@ -822,11 +892,15 @@ def cmd_download(args: argparse.Namespace) -> int:
         ]
     if args.label:
         sources = [s for s in sources if s.label == args.label]
+        for year in years or []:
+            if not any(s.year == year for s in sources):
+                logger.warning("%s", _not_registered(args.label, year))
     elif args.unlabelled:
         sources = [s for s in sources if s.label is None]
     if not sources:
         logging.warning("No matching sources to download.")
-        return 0
+        # A requested label that nothing registers counts as a failure
+        return 1 if args.label else 0
 
     results = download_sources(
         sources,
@@ -997,25 +1071,40 @@ def cmd_extract(args: argparse.Namespace) -> int:
         logging.warning("No years to extract.")
         return 0
 
+    source_registry = _load_source_registry(args.config)
+    warned: set[Path] = set()
+    extracted_any = False
     # Extract from each source type directory
     for y in years:
         for dir_name in source_type_dirs:
-            versions = _select_versions(
-                list_version_dirs(original_root / dir_name, y),
-                args.label,
-                args.unlabelled,
+            _warn_unregistered_folders(
+                source_registry, original_root, dir_name, y, warned
             )
-            for label in versions:
+            registered = _registered_labels(
+                source_registry, y, *_category_types(dir_name)
+            )
+            for label in _select_versions(registered, args.label, args.unlabelled):
                 year_dir = year_dir_name(y, label)
                 input_dir = original_root / dir_name / year_dir
                 output_dir = extracted_root / dir_name / year_dir
-                if label and not input_dir.is_dir():
+                if label and label not in registered:
+                    reason = _not_registered(label, y)
+                    logger.warning("%s/%s: %s", dir_name, year_dir, reason)
+                    continue
+                if not input_dir.is_dir():
                     # Nothing to extract; do not leave an empty version folder
-                    logger.warning("No original folder for %s: %s", label, input_dir)
+                    if label:
+                        logger.warning(
+                            "No original folder for %s: %s", label, input_dir
+                        )
                     continue
                 extract_rar_files(input_dir, output_dir)
                 extract_zip_files(input_dir, output_dir)
+                extracted_any = True
 
+    if args.label and not extracted_any:
+        logger.error("Nothing extracted for label %s.", args.label)
+        return 1
     return 0
 
 
@@ -1048,19 +1137,27 @@ def cmd_discover(args: argparse.Namespace) -> int:
             "SPENDING_Q123",
             "SPENDING_Q1234",
         ]
+    source_registry = _load_source_registry(args.config)
+    warned: set[Path] = set()
     ok = 0
-    jobs = [
-        (y, st, label)
-        for y in years
-        for st in src_types
-        for label in _select_versions(
-            list_version_dirs(extracted_root / _CATEGORY_DIRS[st], int(y)),
-            args.label,
-            args.unlabelled,
-        )
-    ]
+    jobs = []
+    for y in years:
+        for st in src_types:
+            _warn_unregistered_folders(
+                source_registry, extracted_root, _CATEGORY_DIRS[st], int(y), warned
+            )
+            registered = _registered_labels(source_registry, int(y), st)
+            jobs.extend(
+                (y, st, label)
+                for label in _select_versions(registered, args.label, args.unlabelled)
+            )
     for y, st, label in jobs:
         st_display = _with_label(st, label)
+        if label and label not in _registered_labels(source_registry, int(y), st):
+            logger.warning(
+                "No match for %s/%s: %s", y, st_display, _not_registered(label, int(y))
+            )
+            continue
         try:
             path = discover_best_file(
                 extracted_root=extracted_root,
@@ -1105,6 +1202,10 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
     source_types = [args.source_type] if args.source_type else list(gdp_mod.GDP_SOURCE_TYPES)
     ok = 0
     failed = 0
+    if "BUDGET_LAW" in source_types and not sources_config.exists():
+        logger.warning(
+            "Sources config %s not found: labelled versions are not run", sources_config
+        )
     for year in years:
         note_labels: dict[str, bool] = {}
         if "BUDGET_LAW" in source_types:
@@ -1124,7 +1225,12 @@ def cmd_gdp_extract(args: argparse.Namespace) -> int:
                 versions = [] if args.label else [None]
             jobs.extend((source_type, label) for label in versions)
         for source_type, label in jobs:
-            if label and not note_labels.get(label):
+            if label and label not in note_labels:
+                reason = _not_registered(label, year)
+                logger.warning("%s %s: %s", year, source_type, reason)
+                failed += 1
+                continue
+            if label and not note_labels[label]:
                 # Reported, not an error: this version has no budget message
                 logger.info(
                     "%s %s %s: skipped, no budget message registered",
@@ -1332,6 +1438,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Extracted data root (defaults to ./data/extracted)",
     )
     _add_version_options(p_extract)
+    p_extract.add_argument(
+        "--config",
+        default=None,
+        help=(
+            "Path to sources.yaml (defaults to config/sources.yaml). Only read "
+            "for the labelled versions registered there."
+        ),
+    )
     p_extract.set_defaults(func=cmd_extract)
 
     p_discover = sub.add_parser(
@@ -1368,6 +1482,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--deep-validate",
         action="store_true",
         help="Probe-parse candidates during discovery to validate content (slower)",
+    )
+    p_discover.add_argument(
+        "--config",
+        default=None,
+        help=(
+            "Path to sources.yaml (defaults to config/sources.yaml). Only read "
+            "for the labelled versions registered there."
+        ),
     )
     _add_version_options(p_discover)
     p_discover.set_defaults(func=cmd_discover)

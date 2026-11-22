@@ -1,6 +1,7 @@
 """GDP extraction for labelled budget-law versions (synthetic documents)."""
 
 import json
+import logging
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -245,6 +246,30 @@ def test_gdp_extract_only_version_without_note_exits_1(roots, tmp_path):
     # only a version without a budget message was asked for: nothing extracted
     assert _gdp_extract(roots, processed, "--label", "PARLIAMENT") == 1
     assert _names(processed) == []
+
+
+def test_gdp_extract_label_not_registered(roots, tmp_path):
+    original, _extracted, _config = roots
+    _docx(original / "budget_laws" / "2026_NOPE" / "draft.docx", "1.0")
+    processed = tmp_path / "processed"
+    messages: list[str] = []
+
+    class _Collect(logging.Handler):
+        def emit(self, record):
+            messages.append(record.getMessage())
+
+    handler = _Collect()
+    cli_logger = logging.getLogger("armenian_budget.interfaces.cli.main")
+    cli_logger.addHandler(handler)
+    try:
+        exit_code = _gdp_extract(roots, processed, "--label", "NOPE")
+    finally:
+        cli_logger.removeHandler(handler)
+
+    assert exit_code == 1
+    assert _names(processed) == []
+    assert any("NOPE is not registered for 2026" in m for m in messages)
+    assert not any("no budget message" in m for m in messages)
 
 
 def test_gdp_extract_registered_note_missing_on_disk_fails(roots, tmp_path):
