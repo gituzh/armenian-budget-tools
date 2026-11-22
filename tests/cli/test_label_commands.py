@@ -345,8 +345,14 @@ def test_process_reports_registered_version_missing_on_disk(tmp_path, stub_parse
     assert draft["reason"].startswith("discovery:")
 
 
-def _ignoring(folder: Path, label: str, year: int = 2026) -> str:
-    return f"Ignoring {folder}: {label} is not registered for {year} in sources.yaml"
+SPENDING_TYPES = "SPENDING_Q1, SPENDING_Q12, SPENDING_Q123, SPENDING_Q1234"
+
+
+def _ignoring(folder: Path, label: str, source_types: str = "BUDGET_LAW") -> str:
+    return (
+        f"Ignoring {folder}: {label} is not registered for 2026 {source_types}"
+        " in sources.yaml"
+    )
 
 
 def test_unregistered_label_folder_is_ignored(tree, tmp_path, warnings_log):
@@ -390,7 +396,40 @@ def test_unregistered_folder_warned_once_for_shared_category(tree, warnings_log)
         ]
     )
 
-    assert warnings_log.count(_ignoring(stray.resolve(), "STRAY")) == 1
+    assert warnings_log.count(_ignoring(stray.resolve(), "STRAY", SPENDING_TYPES)) == 1
+
+
+def test_unregistered_folder_warning_names_source_types(tree, warnings_log):
+    # a folder belongs to a category: the warning names its source types
+    extracted, processed = tree
+    law = _workbook(extracted / "budget_laws" / "2026_PARLIAMENT").parent
+    spending = _workbook(extracted / "spending_reports" / "2026_STRAY").parent
+
+    main(
+        [
+            "process",
+            "--years",
+            "2026",
+            "--extracted-root",
+            str(extracted),
+            "--processed-root",
+            str(processed),
+            "--parsers-config",
+            str(PARSERS_YAML),
+            "--config",
+            str(extracted.parent / "sources.yaml"),
+        ]
+    )
+
+    ignoring = sorted(m for m in warnings_log if m.startswith("Ignoring"))
+    assert ignoring == [
+        _ignoring(law.resolve(), "PARLIAMENT", "BUDGET_LAW"),
+        _ignoring(spending.resolve(), "STRAY", SPENDING_TYPES),
+    ]
+    assert ignoring[1].endswith(
+        ": STRAY is not registered for 2026 SPENDING_Q1, SPENDING_Q12,"
+        " SPENDING_Q123, SPENDING_Q1234 in sources.yaml"
+    )
 
 
 def test_process_reads_only_its_own_categories(tree, warnings_log):

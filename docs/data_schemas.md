@@ -149,7 +149,8 @@ versions, each processed by the normal pipeline.
 - **Registered versions only**: labelled versions come from `sources.yaml`
   (`--config`) and nowhere else. A `{year}_{LABEL}` folder on disk with no
   entry for that year is ignored, with one warning per run (`Ignoring <path>:
-  <LABEL> is not registered for <year> in sources.yaml`). Nothing is written
+  <LABEL> is not registered for <year> <SOURCE_TYPES> in sources.yaml`, naming
+  the source types of the folder's category). Nothing is written
   for it and nothing is deleted. A registered version with nothing on disk is
   reported as `FAIL` or `MISSING`. A year that has only labelled versions
   (an unlabelled entry is not registered and nothing of it is on disk) skips

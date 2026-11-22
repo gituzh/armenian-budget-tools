@@ -155,17 +155,17 @@ def _warn_unregistered_folders(
     if source_registry is None:
         return
     category_root = root / category
-    registered = _registered_labels(source_registry, year, *_category_types(category))
+    source_types = _category_types(category)
+    registered = _registered_labels(source_registry, year, *source_types)
     for label in list_version_dirs(category_root, year):
         folder = category_root / year_dir_name(year, label)
         if label is None or label in registered or folder in warned:
             continue
         warned.add(folder)
         logger.warning(
-            "Ignoring %s: %s is not registered for %s in sources.yaml",
+            "Ignoring %s: %s",
             folder,
-            label,
-            year,
+            _not_registered(label, year, ", ".join(source_types)),
         )
 
 
