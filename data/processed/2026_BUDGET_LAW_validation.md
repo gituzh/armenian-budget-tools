@@ -2,8 +2,8 @@
 
 **Source Type:** BUDGET_LAW
 **File:** 2026_BUDGET_LAW.csv
-**Generated:** 2026-11-22 17:38:47
-**Identical data:** DRAFT2 (2025-11-27), (unlabelled)
+**Generated:** 2026-11-22 17:39:56
+**Identical data:** DRAFT2 (2025-11-27), (unlabelled) (2025-12-03)
 
 ## Summary
 

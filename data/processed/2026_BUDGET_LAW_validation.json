@@ -3,7 +3,7 @@
     "source_type": "BUDGET_LAW",
     "csv_path": "2026_BUDGET_LAW.csv",
     "overall_path": "2026_BUDGET_LAW_overall.json",
-    "generated_at": "2026-11-22T17:38:47.966767"
+    "generated_at": "2026-11-22T17:39:56.854904"
   },
   "summary": {
     "total_rules": 22,
@@ -168,7 +168,7 @@
     },
     {
       "label": null,
-      "published": null
+      "published": "2025-12-03"
     }
   ]
 }
