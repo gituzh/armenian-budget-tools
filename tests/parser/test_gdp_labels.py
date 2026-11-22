@@ -429,3 +429,44 @@ def test_gdp_extract_spending_does_not_need_a_valid_config(roots, tmp_path):
 
     # 1: nothing extracted (no report on disk); 3 would be a config load error
     assert exit_code == 1
+
+
+@pytest.mark.parametrize("place", ["original", "extracted"])
+def test_gdp_extract_unlabelled_data_in_either_place_is_attempted(
+    place, tmp_path, capsys
+):
+    config = tmp_path / "sources.yaml"
+    config.write_text(
+        CONFIG.replace("2026", "2027").split('  - name: "2027_budget_law_parliament"')[0],
+        encoding="utf-8",
+    )
+    original = tmp_path / "original"
+    extracted = tmp_path / "extracted"
+    extracted.mkdir()
+    _docx(original / "budget_laws" / "2027_EDRAFT" / "draft.docx", "12,000.0")
+    other = original if place == "original" else extracted
+    folder = other / "budget_laws" / "2027"
+    folder.mkdir(parents=True)
+    (folder / "anything.txt").write_text("x", encoding="utf-8")
+    exit_code = main(
+        [
+            "gdp-extract",
+            "--years",
+            "2027",
+            "--source-type",
+            "BUDGET_LAW",
+            "--config",
+            str(config),
+            "--original-root",
+            str(original),
+            "--extracted-root",
+            str(extracted),
+            "--processed-root",
+            str(tmp_path / "processed"),
+        ]
+    )
+    err = capsys.readouterr().err
+
+    assert exit_code == 1
+    assert "unlabelled version skipped" not in err
+    assert "WARNING" in err and "2027 BUDGET_LAW:" in err

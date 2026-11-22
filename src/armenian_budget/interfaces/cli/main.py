@@ -2,6 +2,7 @@ import argparse
 import logging
 import re
 from collections.abc import Callable, Sequence
+from fnmatch import fnmatch
 from pathlib import Path
 from typing import Optional, List
 import importlib
@@ -127,9 +128,9 @@ def _drop_absent_unlabelled(
 
 
 def _has_workbook(folder: Path) -> bool:
-    """Whether a folder holds an .xls/.xlsx workbook at any depth."""
+    """Whether a folder holds a file discovery would list: ``*.xls*``, any case."""
     return folder.is_dir() and any(
-        p.suffix.lower() in (".xls", ".xlsx") for p in folder.rglob("*")
+        p.is_file() and fnmatch(p.name.lower(), "*.xls*") for p in folder.rglob("*")
     )
 
 

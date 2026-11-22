@@ -1340,3 +1340,112 @@ def test_invalid_registry_does_not_skip_unlabelled(
     assert (entry["status"], "label" in entry) == ("FAIL", False)
     (missing,) = validation_entries
     assert (missing["status"], "label" in missing) == ("MISSING", False)
+
+
+def test_year_without_registered_versions_still_fails(
+    tmp_path, stub_parser, draft_only, capsys, validation_entries
+):
+    extracted = tmp_path / "extracted"
+    extracted.mkdir()
+    processed = tmp_path / "processed"
+    processed.mkdir()
+    report = tmp_path / "report.json"
+
+    process_exit = main(
+        [
+            "process",
+            "--years",
+            "2030",
+            "--source-type",
+            "BUDGET_LAW",
+            "--extracted-root",
+            str(extracted),
+            "--processed-root",
+            str(tmp_path / "out"),
+            "--parsers-config",
+            str(PARSERS_YAML),
+            "--config",
+            str(draft_only),
+            "--report-json",
+            str(report),
+        ]
+    )
+    validate_exit = main(
+        [
+            "validate",
+            "--years",
+            "2030",
+            "--source-type",
+            "BUDGET_LAW",
+            "--processed-root",
+            str(processed),
+            "--config",
+            str(draft_only),
+        ]
+    )
+
+    err = capsys.readouterr().err
+    assert (process_exit, validate_exit) == (1, 1)
+    assert "unlabelled version skipped" not in err
+    (entry,) = json.loads(report.read_text("utf-8"))
+    assert (entry["year"], entry["status"], "label" in entry) == (2030, "FAIL", False)
+    assert entry["reason"].startswith("discovery: No .xls/.xlsx candidates found")
+    (missing,) = validation_entries
+    assert (missing["status"], "label" in missing) == ("MISSING", False)
+
+
+def _unlabelled_folder_with(extracted: Path, *names: str, dirs: tuple = ()) -> None:
+    folder = extracted / "budget_laws" / "2027"
+    folder.mkdir(parents=True)
+    for name in names:
+        (folder / name).write_bytes(b"x" * 100)
+    for name in dirs:
+        (folder / name).mkdir()
+
+
+@pytest.mark.parametrize("name", ["table.xlsm", "t.xlsb", "n.xls.pdf", "X.XLSX"])
+def test_process_runs_unlabelled_when_discovery_glob_matches(
+    name, tmp_path, stub_parser, draft_only, capsys
+):
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2027_DRAFT")
+    _unlabelled_folder_with(extracted, name)
+    report = tmp_path / "report.json"
+
+    _process_2027(extracted, tmp_path / "out", draft_only, report=report)
+
+    assert SKIP_LINE not in capsys.readouterr().err
+    entries = json.loads(report.read_text("utf-8"))
+    assert [e.get("label") for e in entries] == [None, "DRAFT"]
+
+
+def test_process_skips_when_xlsx_is_a_directory(
+    tmp_path, stub_parser, draft_only, capsys
+):
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2027_DRAFT")
+    _unlabelled_folder_with(extracted, dirs=("foo.xlsx",))
+    report = tmp_path / "report.json"
+
+    exit_code = _process_2027(extracted, tmp_path / "out", draft_only, report=report)
+
+    assert exit_code == 0
+    assert capsys.readouterr().err.count(SKIP_LINE) == 1
+    (entry,) = json.loads(report.read_text("utf-8"))
+    assert entry["label"] == "DRAFT"
+
+
+def test_process_skips_when_only_non_workbook_files(
+    tmp_path, stub_parser, draft_only, capsys
+):
+    extracted = tmp_path / "extracted"
+    _workbook(extracted / "budget_laws" / "2027_DRAFT")
+    _unlabelled_folder_with(extracted, "readme.txt")
+    report = tmp_path / "report.json"
+
+    exit_code = _process_2027(extracted, tmp_path / "out", draft_only, report=report)
+
+    assert exit_code == 0
+    assert capsys.readouterr().err.count(SKIP_LINE) == 1
+    (entry,) = json.loads(report.read_text("utf-8"))
+    assert entry["label"] == "DRAFT"
