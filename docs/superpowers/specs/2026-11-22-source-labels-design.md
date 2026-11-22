@@ -229,3 +229,44 @@ downloads and the existing extractor reads it.
   the release artifact allowlist including labelled files.
 - The 2026 report for `EDRAFT` names `EDRAFT` and `PARLIAMENT` as identical,
   and the report for the adopted law names `(unlabelled)` and `DRAFT2`.
+
+## Amendments after the first build (owner feedback, 2026-11-22)
+
+These override anything above that says otherwise.
+
+1. **`sources.yaml` is the list of labelled versions.** A labelled version
+   exists only if it is registered. Commands take labelled versions from the
+   registry, never from folders. A labelled folder on disk with no entry
+   (`2020_PARLIAMENT` today) is skipped with one warning naming it, and nothing
+   is written for it. Nothing on disk is deleted. The unlabelled version is
+   found as before. This replaces "Left to the builder: how commands enumerate
+   the versions".
+2. **XML spreadsheets are read.** Some workbooks are Excel 2003 XML
+   ("SpreadsheetML") saved with an `.xls` name; pandas cannot open them. They
+   are read by a small standard-library reader, no new dependency. Every other
+   file is read exactly as before. This lifts "existing parser unchanged" for
+   this one case; outputs of all existing datasets must stay byte-identical.
+3. **Revised parliament drafts are added as `PARLIAMENT2`.** The annexes
+   parliament.am publishes for the second reading (file names with `lr`).
+   Further revisions would be `PARLIAMENT3`, and so on.
+4. **PDF sources are a documented limit, not work.** No PDF reading. Listed
+   under known limitations in the docs: the 2020 `PARLIAMENT` programme table
+   (PDF only), the budget message of every `PARLIAMENT`/`PARLIAMENT2` version
+   (PDF only, so no GDP file), and 2019 (no draft history on parliament.am).
+
+Measured in scratch on 2026-11-22 (existing parser; the 2021 `PARLIAMENT`
+workbook through a 25-line XML reader, script in the plan):
+
+| Year | Label | Archive | Result |
+|---|---|---|---|
+| 2021 | `PARLIAMENT` | `draft_docs7/K-752/K-752_orenqi_havelvacner.rar` | XML workbook. 746 rows, total 1,843,133,616.39, 0 errors |
+| 2020 | `PARLIAMENT2` | `draft_docs7/K-306lr_havelvatsner.rar` | 802 rows; CSV byte-identical to `2020_BUDGET_LAW.csv` |
+| 2021 | `PARLIAMENT2` | `draft_docs7/K-752lr/K-752lr_orenq_havelvacner.rar` | 752 rows; identical to `2021_BUDGET_LAW.csv` |
+| 2022 | `PARLIAMENT2` | `draft_docs8/K-059lr_havelvatsner.rar` | 801 rows; identical to `2022_BUDGET_LAW.csv` |
+| 2023 | `PARLIAMENT2` | `draft_docs8/K-382lr_orenqi_havelvatsner.rar` | 853 rows; identical to `2023_BUDGET_LAW.csv` |
+| 2024 | `PARLIAMENT2` | `draft_docs8/K-669lr_havelvatsner.rar` | 857 rows; identical to `2024_BUDGET_LAW.csv` |
+| 2025 | `PARLIAMENT2` | `draft_docs8/K-932lr_havelvatsner.rar` | 827 rows; identical to `2025_BUDGET_LAW.csv` |
+| 2026 | `PARLIAMENT2` | `draft_docs8/K-1160lr_havelvatsner.rar` | Archive byte-identical to `DRAFT2`; CSV identical to `2026_BUDGET_LAW.csv` |
+
+All URLs are under `https://parliament.am/diskStorage/`. Every revised draft
+holds the same data as the adopted law of its year.
