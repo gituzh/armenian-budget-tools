@@ -29,6 +29,30 @@ def year_dir_name(year: int, label: str | None = None) -> str:
     return f"{year}_{label}" if label else str(year)
 
 
+def list_version_dirs(category_root: Path, year: int) -> list[str | None]:
+    """Labels of the version folders of a year under a category root.
+
+    Looks for ``<year>`` and ``<year>_<LABEL>`` folders: None first when
+    ``<year>`` exists, then labels sorted. Other names are ignored.
+    """
+    if not category_root.is_dir():
+        return []
+    versions: list[str | None] = []
+    if (category_root / str(year)).is_dir():
+        versions.append(None)
+    prefix = f"{year}_"
+    versions.extend(
+        sorted(
+            p.name[len(prefix) :]
+            for p in category_root.iterdir()
+            if p.is_dir()
+            and p.name.startswith(prefix)
+            and LABEL_RE.match(p.name[len(prefix) :])
+        )
+    )
+    return versions
+
+
 def dataset_stem(year: int, source_type_name: str, label: str | None = None) -> str:
     """File-name stem of a dataset: {year}_{SOURCE_TYPE}[_{LABEL}]."""
     stem = f"{year}_{source_type_name}"

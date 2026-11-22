@@ -1,5 +1,6 @@
 import argparse
 import logging
+import re
 from pathlib import Path
 from typing import Optional, List
 import importlib
@@ -7,9 +8,13 @@ import colorlog
 import yaml
 
 from armenian_budget.core.enums import SourceType
+from armenian_budget.core.utils import list_version_dirs, year_dir_name
 
 # Source type choices for argparse - used across all commands
 SOURCE_TYPE_CHOICES = list(SourceType.__members__.keys())
+
+# Year folder of a version under data/original: "2026" or "2026_EDRAFT"
+_YEAR_DIR_RE = re.compile(r"^(\d+)(_[A-Z0-9]+)?$")
 
 
 def _checksum_key(item: dict) -> tuple[int, str | None, str | None]:
@@ -867,8 +872,9 @@ def cmd_extract(args: argparse.Namespace) -> int:
             base = original_root / dir_name
             if base.exists():
                 for p in base.iterdir():
-                    if p.is_dir() and p.name.isdigit():
-                        years_set.add(int(p.name))
+                    year_match = _YEAR_DIR_RE.match(p.name)
+                    if p.is_dir() and year_match:
+                        years_set.add(int(year_match.group(1)))
         if years_set:
             years = sorted(years_set)
         else:
@@ -882,10 +888,14 @@ def cmd_extract(args: argparse.Namespace) -> int:
     # Extract from each source type directory
     for y in years:
         for dir_name in source_type_dirs:
-            input_dir = original_root / dir_name / str(y)
-            output_dir = extracted_root / dir_name / str(y)
-            extract_rar_files(input_dir, output_dir)
-            extract_zip_files(input_dir, output_dir)
+            # Always attempt the unlabelled folder, as before labels existed
+            labels = list_version_dirs(original_root / dir_name, y)
+            for label in [None] + [lb for lb in labels if lb is not None]:
+                year_dir = year_dir_name(y, label)
+                input_dir = original_root / dir_name / year_dir
+                output_dir = extracted_root / dir_name / year_dir
+                extract_rar_files(input_dir, output_dir)
+                extract_zip_files(input_dir, output_dir)
 
     return 0
 
