@@ -84,6 +84,12 @@ checksums:
   url: https://minfin.am/website/images/website/byuje ev krknaki harkum/2021_Uxerdz.docx
   checksum: 3d4386c6c58809a06553b3bc3c534dad4227d8c0ca5c5271f965a312ea38be8b
   checksum_updated_at: '2026-05-10T18:44:31.686713+00:00'
+- name: 2021_budget_law_parliament_attachments
+  year: 2021
+  source_type: budget_law
+  url: https://parliament.am/diskStorage/draft_docs7/K-752/K-752_orenqi_havelvacner.rar
+  checksum: d712bcc0ff80b7b1d0f44b9885d5a807f6add453eb451ef8605792ca8a2d88ac
+  checksum_updated_at: '2026-11-22T15:07:29.116083+00:00'
 - name: 2021_spending_q1
   year: 2021
   source_type: spending_q1
