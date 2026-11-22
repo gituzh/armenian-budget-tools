@@ -4,6 +4,12 @@
 
 - Primary parsed budget datasets live in a single active parsed-data root and use `{year}_{SOURCE_TYPE}.csv`.
 - GDP snapshots from `gdp-extract` use `{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`.
+- A name with a label after the source type, `{year}_BUDGET_LAW_{LABEL}.csv`, is another published version of that year's budget law, not the adopted one. `{year}_BUDGET_LAW.csv` without a label is the adopted law; use it unless the question is about a draft.
+  - `EDRAFT`: public-consultation copy from e-draft.am (2025, 2026).
+  - `PARLIAMENT`: draft as submitted to parliament (2022-2026).
+  - `DRAFT`, `DRAFT2`: draft and revised draft from a government session agenda on e-gov.am (2026 `DRAFT2`, 2027 `DRAFT`). 2027 has only a draft so far.
+  - Drafts with a budget message also have `{year}_BUDGET_LAW_{LABEL}_GDP.json`.
+  - A draft's `_validation.md` has an `Identical data` line when its CSV is byte-identical to other versions of that year (2026 `DRAFT2` equals the adopted law).
 - Prefer `ARMENIAN_BUDGET_DATA_PATH` when set; otherwise use bundled `assets/data` when present; otherwise use repo `data/processed`.
 - Availability varies by year. Do not assume every year has every source type. Check with `scripts/data_availability.py` first.
 

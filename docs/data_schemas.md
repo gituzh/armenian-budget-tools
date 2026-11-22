@@ -38,8 +38,8 @@ data/
 │       │   │           └── [other spending components]
 │       │   └── [Q12, Q123, Q1234]
 └── processed/          # Normalized outputs
-    ├── {year}_{SOURCE_TYPE}.csv
-    ├── {year}_{SOURCE_TYPE}_GDP.json
+    ├── {year}_{SOURCE_TYPE}[_{LABEL}].csv
+    ├── {year}_{SOURCE_TYPE}[_{LABEL}]_GDP.json
     └── processing_report.json
 └── reports/            # Rendered HTML reports
     └── gdp_report.html
@@ -51,6 +51,9 @@ data/
 - **Extracted Folders**: Varies by archive structure (may preserve archive name or use internal folder names)
 - **Processed CSVs**: `{year}_{SOURCE_TYPE}.csv` (e.g., `2023_BUDGET_LAW.csv`)
 - **GDP snapshots**: `{year}_{SOURCE_TYPE}_GDP.json` for `BUDGET_LAW` and `SPENDING_Q1234`
+- **Labelled versions**: `_{LABEL}` after the source type in every output name, and a
+  `{year}_{LABEL}` year folder under `original/` and `extracted/` (see
+  [3.4 Source Labels](#34-source-labels))
 - **Source Types**: `BUDGET_LAW`, `SPENDING_Q1`, `SPENDING_Q12`, `SPENDING_Q123`, `SPENDING_Q1234`, `MTEP`
 
 ## 3. Original Data Archives
@@ -108,6 +111,72 @@ Archives contain multiple budget components beyond the currently parsed program 
 - **Currently Parsed**: Program summary (ամփոփ ըստ ծրագրերի)
 - **Available for Future**: Detailed breakdowns by responsible entity and activity, loan programs, grants, deficit financing
 
+### 3.4 Source Labels
+
+A document can exist in several public versions, for example a budget law as a
+government draft, a public-consultation copy, the draft submitted to parliament
+and the adopted law. An entry in `config/sources.yaml` may carry a `label`;
+entries with the same year and source type but different labels are separate
+versions, each processed by the normal pipeline.
+
+```yaml
+- name: "2026_budget_law_edraft"
+  year: 2026
+  source_type: "budget_law"
+  label: "EDRAFT"         # optional; ^[A-Z0-9]+$, "GDP" is reserved
+  published: 2025-10-01   # optional ISO date
+  files: [...]
+```
+
+- **No label**: behaves as before. For a budget law the unlabelled entry is the
+  adopted law.
+- **`published`**: the best evidence of the date the file first appeared on
+  that site. It is shown only in the identical-data note below and never
+  affects file names, parsing or which version counts as final. For MinFin
+  entries it is the archive's `Last-Modified` date where that is plausible;
+  entries re-uploaded later have none.
+- **Names**: `{year}_{SOURCE_TYPE}[_{LABEL}]` for the CSV, `_overall.json`,
+  `_validation.md`, `_validation.json` and `_GDP.json`, e.g.
+  `2026_BUDGET_LAW_EDRAFT.csv`.
+- **Folders**: `budget_laws/2026_EDRAFT/` beside `budget_laws/2026/` under
+  `data/original/` and `data/extracted/`. Discovery for one version only
+  searches its own folder; its index key is `{year}/{source_type}/{LABEL}`.
+- **Commands**: `download`, `extract`, `discover`, `process`, `validate` and
+  `gdp-extract` cover the unlabelled version and every labelled one;
+  `--label LABEL` selects one version and `--unlabelled` only the unlabelled
+  one. `download` and `gdp-extract` take the versions from `sources.yaml`; the
+  others take them from the `{year}_{LABEL}` folders and files on disk, so a
+  folder that is not registered is processed too.
+- **Labels are opaque**: they are not ordered and need no code change. A
+  version is registered only if the existing downloader fetches it and the
+  existing parser reads it.
+
+Label convention: a label names the site a version came from, plus a number for
+later revisions on that site.
+
+| Label | Site | Meaning for a budget law |
+|---|---|---|
+| `DRAFT`, `DRAFT2`, … | e-gov.am | Draft on a government session agenda; `DRAFT2` is the revised draft |
+| `EDRAFT`, … | e-draft.am | Public-consultation copy |
+| `PARLIAMENT`, … | parliament.am | Draft as submitted to parliament (not the adopted law) |
+| *(none)* | minfin.am | Adopted law |
+
+**Identical data.** When `validate` runs, the CSVs of the same year and source
+type are compared by checksum, whatever `--label` selected. A report whose CSV
+is byte-identical to others carries one line listing the whole group, oldest
+`published` first and undated versions last:
+`**Identical data:** EDRAFT (2025-10-01), PARLIAMENT (2025-10-01)` in Markdown
+and a top-level `identical_data` list in JSON (absent when nothing matches).
+The note is information, not a check.
+
+**GDP.** A labelled budget-law version gets `{year}_BUDGET_LAW_{LABEL}_GDP.json`
+from the budget message (`explanatory_note` file, DOCX) registered in its own
+entry; the snapshot records its `label`. A version without one gets no GDP
+file. `gdp_report.html` shows unlabelled snapshots only.
+
+**Tests.** The dataset-driven tests cover unlabelled datasets only; labelled
+datasets are covered by their validation reports.
+
 ## 4. Original Table Organization
 
 ### 4.1 BUDGET_LAW Tables (Currently Parsed)
@@ -155,13 +224,13 @@ Archives contain multiple budget components beyond the currently parsed program 
 **CSV Files:**
 
 - **Location**: `data/processed/`
-- **Naming**: `{year}_{SOURCE_TYPE}.csv`
+- **Naming**: `{year}_{SOURCE_TYPE}[_{LABEL}].csv`
 - **Format**: UTF-8 encoded CSV with Armenian text support
 
 **GDP JSON Snapshots:**
 
 - **Location**: `data/processed/`
-- **Naming**: `{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`
+- **Naming**: `{year}_{BUDGET_LAW|SPENDING_Q1234}_GDP.json`; `{year}_BUDGET_LAW_{LABEL}_GDP.json` for a labelled budget-law version
 - **Scope**: GDP and related macro indicators extracted from budget-law explanatory notes and annual spending reports
 
 **GDP HTML Report:**

@@ -364,7 +364,9 @@ def cmd_process(args: argparse.Namespace) -> int:
                     KeyError,
                     OSError,
                 ) as e:
-                    logging.warning("Discovery failed for %s/%s: %s", year, st_display, e)
+                    logging.warning(
+                        "Discovery failed for %s/%s: %s", year, st_display, e
+                    )
                     report_entries.append(
                         _report_entry(year, st_name, "FAIL", f"discovery: {e}", label)
                     )
@@ -387,7 +389,9 @@ def cmd_process(args: argparse.Namespace) -> int:
                 # Strict parser exit is treated as a failure for this type only
                 logging.error("Parsing failed for %s/%s", year, st_display)
                 report_entries.append(
-                    _report_entry(year, st_name, "FAIL", "parse error (see logs)", label)
+                    _report_entry(
+                        year, st_name, "FAIL", "parse error (see logs)", label
+                    )
                 )
                 continue
             except (
@@ -400,7 +404,13 @@ def cmd_process(args: argparse.Namespace) -> int:
             ) as e:
                 logging.error("Error parsing %s/%s: %s", year, st_display, e)
                 report_entries.append(
-                    _report_entry(year, st_name, "FAIL", f"parse error: {type(e).__name__}: {e}", label)
+                    _report_entry(
+                        year,
+                        st_name,
+                        "FAIL",
+                        f"parse error: {type(e).__name__}: {e}",
+                        label,
+                    )
                 )
                 continue
 
@@ -415,9 +425,17 @@ def cmd_process(args: argparse.Namespace) -> int:
                 with open(out_dir / overall_name, "w", encoding="utf-8") as f:
                     json.dump(overall, f, ensure_ascii=False, indent=2)
             except (OSError, ValueError) as e:
-                logging.error("Failed writing outputs for %s/%s: %s", year, st_display, e)
+                logging.error(
+                    "Failed writing outputs for %s/%s: %s", year, st_display, e
+                )
                 report_entries.append(
-                    _report_entry(year, st_name, "FAIL", f"write error: {type(e).__name__}: {e}", label)
+                    _report_entry(
+                        year,
+                        st_name,
+                        "FAIL",
+                        f"write error: {type(e).__name__}: {e}",
+                        label,
+                    )
                 )
                 continue
 

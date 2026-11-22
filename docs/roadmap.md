@@ -128,12 +128,9 @@ armenian-budget process --years 2023 --from-step extract     # resume from extra
 
 ### Data Sources
 
-- Budget draft support with version tagging system
-  - Optional version tag in `config/sources.yaml` (e.g., `version: "draft"`, `version: "first_reading"`)
-  - Missing version tag defaults to "final"
-  - Version suffix in output files: `{year}_{SOURCE_TYPE}_{version}.csv` (e.g., `2026_BUDGET_LAW_draft.csv`)
-  - Supports multiple versions per year (draft, first reading, second reading, final)
-  - Backup archive URLs for versions that may be deleted from minfin.am after final adoption
+- Budget drafts: built as source labels (`label` in `config/sources.yaml`, outputs `{year}_{SOURCE_TYPE}_{LABEL}.csv`; see `docs/data_schemas.md`, 3.4). Still open:
+  - Revised parliament drafts (2020-2026) and the 2020 and 2021 parliament drafts, whose programme tables the current parser cannot read
+  - Budget messages published only as PDF (parliament.am), so those versions have no GDP snapshot
 - PDF parsing for historical years (2017-2018)
 - OCR integration with quality scoring
 - Additional data types (procurement, grants, debt)
