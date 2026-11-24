@@ -130,6 +130,11 @@ class TestRowTypeDetection:
         row = ["", "Ծրագիր", "Միջոցառում", "", "", "", ""]
         assert _detect_row_type_2025(row) == RowType.UNKNOWN
 
+    def test_detect_row_type_2025_subprogram_without_description(self):
+        """A subprogram row with an empty description cell is still a subprogram."""
+        row = ["", "", "1039-11002", "Subprogram", "", "Type", "0", "180", "180"]
+        assert _detect_row_type_2025(row) == RowType.SUBPROGRAM_HEADER
+
 
 class TestExtractionFunctionInputValidation:
     """Test input validation for extraction functions."""
@@ -354,6 +359,49 @@ class TestMockDataExtraction:
             assert df.iloc[0]["subprogram_actual_vs_rev_annual_plan"] == pytest.approx(0.908)
         finally:
             os.unlink(tmp_path)
+
+    def test_spending_q1234_2025_keeps_subprogram_without_description(self, tmp_path):
+        """2025 Q1234 row 1039-11002 has an empty description and must be kept."""
+        data = [
+            ["ԸՆԴԱՄԵՆԸ", "", "", "", "", "", 1000, 1180, 1180, "100.0"],
+            ["State Body 1", "", "", "", "", "", 1000, 1180, 1180, "100.0"],
+            ["", "1039", "", "Program", "Goal", "Result", 1000, 1180, 1180, "100.0"],
+            ["", "", "1039-11001", "Sub", "Desc", "Type", 1000, 1000, 1000, "100.0"],
+            ["", "", "1039-11002", "Sub 2", "", "Type", 0, 180, 180, "100.0"],
+        ]
+        excel_path = tmp_path / "q1234.xlsx"
+        pd.DataFrame(data).to_excel(excel_path, index=False, header=False)
+
+        df, _, _, _ = flatten_budget_excel_2025(
+            str(excel_path), SourceType.SPENDING_Q1234
+        )
+
+        assert df["subprogram_code"].tolist() == [11001, 11002]
+        assert df["subprogram_desc"].tolist() == ["Desc", ""]
+        assert df["subprogram_actual"].sum() == df["program_actual"].iloc[0]
+
+    @pytest.mark.parametrize(
+        "row",
+        [
+            ["", "", "1039-11002", "", "", "", 0, 180, 180, "100.0"],
+            ["", "", "", "", "", "", 0, 180, 180, "100.0"],
+        ],
+        ids=["code-without-name", "amount-without-code"],
+    )
+    def test_2025_parser_rejects_unrecognised_data_row(self, tmp_path, row):
+        """A data-bearing row the parser cannot classify must fail, not vanish."""
+        data = [
+            ["ԸՆԴԱՄԵՆԸ", "", "", "", "", "", 1000, 1180, 1180, "100.0"],
+            ["State Body 1", "", "", "", "", "", 1000, 1180, 1180, "100.0"],
+            ["", "1039", "", "Program", "Goal", "Result", 1000, 1180, 1180, "100.0"],
+            ["", "", "1039-11001", "Sub", "Desc", "Type", 1000, 1000, 1000, "100.0"],
+            row,
+        ]
+        excel_path = tmp_path / "q1234.xlsx"
+        pd.DataFrame(data).to_excel(excel_path, index=False, header=False)
+
+        with pytest.raises(ValueError, match="row 5"):
+            flatten_budget_excel_2025(str(excel_path), SourceType.SPENDING_Q1234)
 
     def test_budget_law_2025_edraft_layout(self, tmp_path):
         """Draft layout: total in column 3, undashed activity codes, title rows."""
