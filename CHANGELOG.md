@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Register the 2026 first-half (Q12) spending report package in `config/sources.yaml` and `config/checksums.yaml`; the Q12 outputs had been added without a source entry. Committed 2026 Q12 outputs are unchanged.
 - Save the 2026 Q12 spending archive as `2026_I կիսամյակ_հաշվետվություն.rar`; MinFin's file name ends in `..rar`, which left a trailing dot on the extracted folder that Windows cannot keep.
 - Label `process` progress bars for 2025-format sources with the actual year; 2026 runs showed "Processing 2025".
+- The 2025+ parser dropped subprogram rows whose description cell is empty. In the 2025 Q12, Q123 and Q1234 spending reports this lost subprogram 1039-11002 of the Shirak governor's office (revised annual plan 60, 100 and 180 thousand AMD), so program 1039's subprograms no longer summed to its total. The row is now read with an empty `subprogram_desc`; re-processing adds one row to each of those three CSVs and changes no other output. The parser now also fails on any row after the grand total that carries a code or an amount but matches no row type, instead of skipping it.
 
 ## [0.7.0] - 2026-11-19
 

@@ -21,8 +21,8 @@ def _detect_row_type_2025(row_data: List[str]) -> RowType:
       - GRAND_TOTAL: col0 or col3 == 'ԸՆԴԱՄԵՆԸ' (col3 in government drafts)
       - STATE_BODY_HEADER: col0 has text and col6 is numeric
       - PROGRAM_HEADER: col1 is numeric and col3-6 are non-empty
-      - SUBPROGRAM_HEADER: col2 is a dashed code or a bare number and col3-4 are
-        non-empty
+      - SUBPROGRAM_HEADER: col2 is a dashed code or a bare number and col3 is
+        non-empty (col4, the description, may be empty)
       - EMPTY: all columns empty or whitespace
       - UNKNOWN: doesn't match any pattern
     """
@@ -46,9 +46,9 @@ def _detect_row_type_2025(row_data: List[str]) -> RowType:
         and col2.strip()
         and ("-" in col2 or is_numeric(col2))
         # In 2025 spending, many rows have F (type) empty and sometimes G empty.
-        # Treat as subprogram when basic descriptor columns (D, E) are present.
+        # E (description) is empty for some rows too, e.g. 2025 spending
+        # 1039-11002. Treat as subprogram when the name column (D) is present.
         and col3.strip()
-        and col4.strip()
     ):
         return RowType.SUBPROGRAM_HEADER
     return RowType.UNKNOWN
@@ -141,6 +141,21 @@ def flatten_budget_excel_2025(
             row_type.name,
             row_data,
         )
+
+        # A row after the grand total that carries a code or an amount but
+        # matches no row type would otherwise be dropped without a trace.
+        if (
+            state != ProcessingState.INIT
+            and row_type == RowType.UNKNOWN
+            and (
+                row_data[1]
+                or row_data[2]
+                or any(is_numeric(v) for v in row_data[6:] if v)
+            )
+        ):
+            raise ValueError(
+                f"Unrecognised data row {i + 1} in {excel_file_path}: {row_data}"
+            )
 
         # ===================== MARK: State Transition =========================
         if row_type == RowType.GRAND_TOTAL:
